@@ -371,12 +371,11 @@ function DetailOrder(props) {
         }}
       ></div>
 
-      {isOpen === true && (
-        <Lightbox
-          mainSrc={imgPreview}
-          onCloseRequest={() => setisOpen(false)}
-        />
-      )}
+      <Lightbox
+        open={isOpen}
+        close={() => setisOpen(false)}
+        slides={[{ src: imgPreview }]}
+      />
     </>
   );
 }
