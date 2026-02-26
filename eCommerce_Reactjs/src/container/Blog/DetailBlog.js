@@ -83,9 +83,11 @@ function DetailBlog(props) {
         <div class="banner_inner d-flex align-items-center">
           <div class="container">
             <div class="banner_content d-md-flex justify-content-between align-items-center">
-              <div class="mb-3 mb-md-0">
-                <h2>Chi tiết bài đăng</h2>
-                <p>Theo dõi bài đăng để nhận thông tin mới nhất</p>
+              <div class="mb-3 mb-md-0  ">
+                <h2 className="text-black">Chi tiết bài đăng</h2>
+                <p className="text-black">
+                  Theo dõi bài đăng để nhận thông tin mới nhất
+                </p>
               </div>
               <div class="page_link">
                 <Link to={"/"}>Trang chủ</Link>
@@ -143,28 +145,33 @@ function DetailBlog(props) {
               {/* update */}
               <div className="comments-area">
                 <h4>{dataComment.length} Bình luận</h4>
+                <div
+                  className="border rounded p-3 overflow-auto"
+                  style={{ maxHeight: "500px" }}
+                >
+                  {dataComment &&
+                    dataComment.length > 0 &&
+                    dataComment.map((item, index) => {
+                      if (item.user) {
+                        let name =
+                          item.user.firstName + " " + item.user.lastName;
 
-                {dataComment &&
-                  dataComment.length > 0 &&
-                  dataComment.map((item, index) => {
-                    if (item.user) {
-                      let name = item.user.firstName + " " + item.user.lastName;
+                        let isMe = user && user.id === item.userId;
 
-                      let isMe = user && user.id === item.userId;
-
-                      return (
-                        <CommentBlog
-                          key={index}
-                          img={item.user.image}
-                          name={name}
-                          content={item.content}
-                          date={moment(item.createdAt).fromNow()}
-                          isMe={isMe}
-                        />
-                      );
-                    }
-                    return null;
-                  })}
+                        return (
+                          <CommentBlog
+                            key={index}
+                            img={item.user.image}
+                            name={name}
+                            content={item.content}
+                            date={moment(item.createdAt).fromNow()}
+                            isMe={isMe}
+                          />
+                        );
+                      }
+                      return null;
+                    })}
+                </div>
               </div>
               {/* update */}
               <CommentFormBlog handleAddComment={handleAddComment} />

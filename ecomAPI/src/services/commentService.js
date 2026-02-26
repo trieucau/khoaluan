@@ -166,7 +166,7 @@ let getAllCommentByBlogId = (id) => {
           where: {
             blogId: id,
           },
-          order: [["createdAt", "DESC"]],
+          order: [["createdAt", "ASC"]],
           raw: true,
         });
 
