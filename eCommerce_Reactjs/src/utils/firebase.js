@@ -1,14 +1,15 @@
 //modular v9
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+require("dotenv").config();
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCdtfOTuT5t5_fv6VroGLE6-AFd_EuHElc",
-  authDomain: "khoaluan-login.firebaseapp.com",
-  projectId: "khoaluan-login",
-  storageBucket: "khoaluan-login.firebasestorage.app",
-  messagingSenderId: "550151094735",
-  appId: "1:550151094735:web:f3ce209f20109c805812ba",
+  apiKey: process.env.APP_FIREBASE_APIKEY,
+  authDomain: process.env.APP_FIREBASE_AUTHDOMAIN,
+  projectId: process.env.APP_FIREBASE_PROJECTID,
+  storageBucket: process.env.APP_FIREBASE_STORAGEBUCKET,
+  messagingSenderId: process.env.APP_FIREBASE_MESSAGINGSENDERID,
+  appId: process.env.APP_FIREBASE_APPID,
 };
 
 const app = initializeApp(firebaseConfig);
