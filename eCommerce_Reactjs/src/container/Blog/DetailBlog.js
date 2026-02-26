@@ -1,82 +1,82 @@
-import React, { useEffect, useState } from 'react';
-import CommentBlog from '../../component/Blog/CommentBlog';
-import CommentFormBlog from '../../component/Blog/CommentFormBlog';
-import RightBlog from '../../component/Blog/RightBlog';
+import React, { useEffect, useState } from "react";
+import CommentBlog from "../../component/Blog/CommentBlog";
+import CommentFormBlog from "../../component/Blog/CommentFormBlog";
+import RightBlog from "../../component/Blog/RightBlog";
 import {
-  getDetailBlogByIdService, getAllCategoryBlogService, createNewcommentService,
-  getAllcommentByBlogIdService, getFeatureBlog
-} from '../../services/userService'
+  getDetailBlogByIdService,
+  getAllCategoryBlogService,
+  createNewcommentService,
+  getAllcommentByBlogIdService,
+  getFeatureBlog,
+} from "../../services/userService";
 import { Link, useParams } from "react-router-dom";
-import { toast } from 'react-toastify';
-import moment from 'moment';
+import { toast } from "react-toastify";
+import moment from "moment";
 function DetailBlog(props) {
-  const [dataSubject, setdataSubject] = useState([])
-  const [dataComment, setdataComment] = useState([])
-  const [dataBlog, setdataBlog] = useState({})
+  const [dataSubject, setdataSubject] = useState([]);
+  const [dataComment, setdataComment] = useState([]);
+  const [dataBlog, setdataBlog] = useState({});
   const { id } = useParams();
-  const [user, setUser] = useState({})
-  const [dataFeatureBlog, setdataFeatureBlog] = useState([])
+  const [user, setUser] = useState({});
+  const [dataFeatureBlog, setdataFeatureBlog] = useState([]);
   useEffect(() => {
     try {
       window.scrollTo(0, 0);
-      loadCategoryBlog()
-      loadFeatureBlog()
+      loadCategoryBlog();
+      loadFeatureBlog();
       if (id) {
-        loadDataBlog(id)
-        loadComment(id)
+        loadDataBlog(id);
+        loadComment(id);
       }
-      const userData = JSON.parse(localStorage.getItem('userData'));
+      const userData = JSON.parse(localStorage.getItem("userData"));
       if (userData) {
-        setUser(userData)
+        setUser(userData);
       }
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-
-  }, [id])
+  }, [id]);
   let loadComment = async (id) => {
-    let res = await getAllcommentByBlogIdService(id)
+    let res = await getAllcommentByBlogIdService(id);
     if (res && res.errCode === 0) {
-
-      setdataComment(res.data)
+      setdataComment(res.data);
     }
-  }
+  };
   let loadFeatureBlog = async () => {
-    let res = await getFeatureBlog(6)
+    let res = await getFeatureBlog(6);
     if (res && res.errCode == 0) {
-      setdataFeatureBlog(res.data)
+      setdataFeatureBlog(res.data);
     }
-  }
+  };
   let loadCategoryBlog = async () => {
-    let res = await getAllCategoryBlogService('SUBJECT')
+    let res = await getAllCategoryBlogService("SUBJECT");
     if (res && res.errCode == 0) {
-      setdataSubject(res.data)
+      setdataSubject(res.data);
     }
-  }
+  };
   let loadDataBlog = async (id) => {
-    let res = await getDetailBlogByIdService(id)
+    let res = await getDetailBlogByIdService(id);
     if (res && res.errCode == 0) {
-      setdataBlog(res.data)
+      setdataBlog(res.data);
     }
-  }
+  };
   let handleAddComment = async (content) => {
     if (user && user.id) {
       let res = await createNewcommentService({
         content: content,
         blogId: id,
         userId: user.id,
-      })
+      });
       if (res && res.errCode == 0) {
-        toast.success('Đăng bình luận thành công')
-        loadComment(id)
+        toast.success("Đăng bình luận thành công");
+        loadComment(id);
       } else {
-        toast.error(res.errMessage)
+        toast.error(res.errMessage);
       }
     } else {
-      toast.error("Hãy đăng nhập để bình luận")
+      toast.error("Hãy đăng nhập để bình luận");
     }
-  }
+  };
   return (
     <>
       <section class="banner_area">
@@ -101,53 +101,83 @@ function DetailBlog(props) {
             <div className="col-lg-8 posts-list">
               <div className="single-post">
                 <div className="feature-img">
-                  <img style={{ width: '100%', height: '514px', objectFit: 'cover' }} className="img-fluid" src={dataBlog.image} alt="" />
+                  <img
+                    style={{
+                      width: "100%",
+                      height: "514px",
+                      objectFit: "cover",
+                    }}
+                    className="img-fluid"
+                    src={dataBlog.image}
+                    alt=""
+                  />
                 </div>
                 <div className="blog_details">
                   <h2>{dataBlog.title}</h2>
                   <ul className="blog-info-link mt-3 mb-4">
-                    <li><a href="#"><i className="ti-user" /> {dataBlog.userData && dataBlog.userData.firstName + " " + dataBlog.userData.lastName}</a></li>
-                    <li><a href="#"><i className="ti-comments" /> {dataComment.length} Bình luận</a></li>
+                    <li>
+                      <a href="#">
+                        <i className="ti-user" />{" "}
+                        {dataBlog.userData &&
+                          dataBlog.userData.firstName +
+                            " " +
+                            dataBlog.userData.lastName}
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#">
+                        <i className="ti-comments" /> {dataComment.length} Bình
+                        luận
+                      </a>
+                    </li>
                   </ul>
                   <div className="quote-wrapper">
-                    <div className="quotes">
-                      {dataBlog.shortdescription}
-                    </div>
+                    <div className="quotes">{dataBlog.shortdescription}</div>
                   </div>
-                  <p dangerouslySetInnerHTML={{ __html: dataBlog.contentHTML }} className="excert">
-
-                  </p>
-
+                  <p
+                    dangerouslySetInnerHTML={{ __html: dataBlog.contentHTML }}
+                    className="excert"
+                  ></p>
                 </div>
               </div>
-
+              {/* update */}
               <div className="comments-area">
                 <h4>{dataComment.length} Bình luận</h4>
-                {dataComment && dataComment.length > 0 &&
+
+                {dataComment &&
+                  dataComment.length > 0 &&
                   dataComment.map((item, index) => {
                     if (item.user) {
-                      let name = item.user.firstName + " " + item.user.lastName
+                      let name = item.user.firstName + " " + item.user.lastName;
+
+                      let isMe = user && user.id === item.userId;
+
                       return (
-                        <CommentBlog img={item.user.image} name={name} content={item.content} key={index}
+                        <CommentBlog
+                          key={index}
+                          img={item.user.image}
+                          name={name}
+                          content={item.content}
                           date={moment(item.createdAt).fromNow()}
+                          isMe={isMe}
                         />
-                      )
+                      );
                     }
-
-                  })
-                }
-
-
+                    return null;
+                  })}
               </div>
+              {/* update */}
               <CommentFormBlog handleAddComment={handleAddComment} />
             </div>
-            <RightBlog dataFeatureBlog={dataFeatureBlog} isPage={false} data={dataSubject}></RightBlog>
+            <RightBlog
+              dataFeatureBlog={dataFeatureBlog}
+              isPage={false}
+              data={dataSubject}
+            ></RightBlog>
           </div>
         </div>
       </section>
     </>
-
-
   );
 }
 
