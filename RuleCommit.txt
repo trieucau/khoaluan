@@ -1,0 +1,15 @@
+--------------Những lưu ý---------------------
+###TRƯỚC KHI COMMIT LÊN GIT FORMAT CODE chạy lệnh
+- npm run lint
+- npm run format
+
+###CHUẨN QUY TẮC COMMIT LÊN GIT
+
+feat(): thêm tính năng
+fix(): sửa lỗi
+chore(): cấu hình
+refactor(): tối ưu code
+style(): thay đổi format
+docs(): tài liệu
+
+VD:       git commit -m "chore(): setup ESLint and Prettier for backend and frontend projects"

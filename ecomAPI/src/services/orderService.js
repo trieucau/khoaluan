@@ -1,17 +1,17 @@
-import { v4 as uuidv4 } from "uuid";
-import db from "../models/index";
-import paypal from "paypal-rest-sdk";
-const { Op } = require("sequelize");
-var querystring = require("qs");
-var crypto = require("crypto");
+import { v4 as uuidv4 } from 'uuid';
+import db from '../models/index';
+import paypal from 'paypal-rest-sdk';
+const { Op } = require('sequelize');
+var querystring = require('qs');
+var crypto = require('crypto');
 
-require("dotenv").config();
-import moment from "moment";
-import localization from "moment/locale/vi";
-import { EXCHANGE_RATES } from "../utils/constants";
-moment.updateLocale("vi", localization);
+require('dotenv').config();
+import moment from 'moment';
+import localization from 'moment/locale/vi';
+import { EXCHANGE_RATES } from '../utils/constants';
+moment.updateLocale('vi', localization);
 paypal.configure({
-  mode: "sandbox",
+  mode: 'sandbox',
   client_id: process.env.PAYPAL_CLIENT_ID,
   client_secret: process.env.PAYPAL_CLIENT_SECRET,
 });
@@ -22,13 +22,13 @@ let createNewOrder = (data) => {
       if (!data.addressUserId || !data.typeShipId) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         let product = await db.OrderProduct.create({
           addressUserId: data.addressUserId,
           isPaymentOnlien: data.isPaymentOnlien,
-          statusId: "S3",
+          statusId: 'S3',
           typeShipId: data.typeShipId,
           voucherId: data.voucherId,
           note: data.note,
@@ -71,7 +71,7 @@ let createNewOrder = (data) => {
         }
         resolve({
           errCode: 0,
-          errMessage: "ok",
+          errMessage: 'ok',
         });
       }
     } catch (error) {
@@ -84,11 +84,11 @@ let getAllOrders = (data) => {
     try {
       let objectFilter = {
         include: [
-          { model: db.TypeShip, as: "typeShipData" },
-          { model: db.Voucher, as: "voucherData" },
-          { model: db.Allcode, as: "statusOrderData" },
+          { model: db.TypeShip, as: 'typeShipData' },
+          { model: db.Voucher, as: 'voucherData' },
+          { model: db.Allcode, as: 'statusOrderData' },
         ],
-        order: [["createdAt", "DESC"]],
+        order: [['createdAt', 'DESC']],
         raw: true,
         nest: true,
       };
@@ -96,7 +96,7 @@ let getAllOrders = (data) => {
         objectFilter.limit = +data.limit;
         objectFilter.offset = +data.offset;
       }
-      if (data.statusId && data.statusId !== "ALL")
+      if (data.statusId && data.statusId !== 'ALL')
         objectFilter.where = { statusId: data.statusId };
       let res = await db.OrderProduct.findAndCountAll(objectFilter);
       for (let i = 0; i < res.rows.length; i++) {
@@ -135,26 +135,25 @@ let getDetailOrderById = (id) => {
       if (!id) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         let order = await db.OrderProduct.findOne({
           where: { id: id },
           include: [
-            { model: db.TypeShip, as: "typeShipData" },
-            { model: db.Voucher, as: "voucherData" },
-            { model: db.Allcode, as: "statusOrderData" },
+            { model: db.TypeShip, as: 'typeShipData' },
+            { model: db.Voucher, as: 'voucherData' },
+            { model: db.Allcode, as: 'statusOrderData' },
           ],
           raw: true,
           nest: true,
         });
         if (order.image) {
-          order.image = new Buffer(order.image, "base64").toString("binary");
+          order.image = new Buffer(order.image, 'base64').toString('binary');
         }
-        order.voucherData.typeVoucherOfVoucherData =
-          await db.TypeVoucher.findOne({
-            where: { id: order.voucherData.typeVoucherId },
-          });
+        order.voucherData.typeVoucherOfVoucherData = await db.TypeVoucher.findOne({
+          where: { id: order.voucherData.typeVoucherId },
+        });
         let orderDetail = await db.OrderDetail.findAll({
           where: { orderId: id },
         });
@@ -165,21 +164,19 @@ let getDetailOrderById = (id) => {
         let user = await db.User.findOne({
           where: { id: addressUser.userId },
           attributes: {
-            exclude: ["password", "image"],
+            exclude: ['password', 'image'],
           },
           raw: true,
           nest: true,
         });
         order.userData = user;
         for (let i = 0; i < orderDetail.length; i++) {
-          orderDetail[i].productDetailSize = await db.ProductDetailSize.findOne(
-            {
-              where: { id: orderDetail[i].productId },
-              include: [{ model: db.Allcode, as: "sizeData" }],
-              raw: true,
-              nest: true,
-            },
-          );
+          orderDetail[i].productDetailSize = await db.ProductDetailSize.findOne({
+            where: { id: orderDetail[i].productId },
+            include: [{ model: db.Allcode, as: 'sizeData' }],
+            raw: true,
+            nest: true,
+          });
           orderDetail[i].productDetail = await db.ProductDetail.findOne({
             where: {
               id: orderDetail[i].productDetailSize.productdetailId,
@@ -196,8 +193,8 @@ let getDetailOrderById = (id) => {
           for (let j = 0; j < orderDetail[i].productImage.length; j++) {
             orderDetail[i].productImage[j].image = new Buffer(
               orderDetail[i].productImage[j].image,
-              "base64",
-            ).toString("binary");
+              'base64'
+            ).toString('binary');
           }
         }
 
@@ -219,7 +216,7 @@ let updateStatusOrder = (data) => {
       if (!data.id || !data.statusId) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         let order = await db.OrderProduct.findOne({
@@ -230,7 +227,7 @@ let updateStatusOrder = (data) => {
         await order.save();
         // cong lai stock khi huy don
         if (
-          data.statusId == "S7" &&
+          data.statusId == 'S7' &&
           data.dataOrder.orderDetail &&
           data.dataOrder.orderDetail.length > 0
         ) {
@@ -249,7 +246,7 @@ let updateStatusOrder = (data) => {
 
         resolve({
           errCode: 0,
-          errMessage: "ok",
+          errMessage: 'ok',
         });
       }
     } catch (error) {
@@ -263,7 +260,7 @@ let getAllOrdersByUser = (userId) => {
       if (!userId) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         let addressUser = await db.AddressUser.findAll({
@@ -273,9 +270,9 @@ let getAllOrdersByUser = (userId) => {
           addressUser[i].order = await db.OrderProduct.findAll({
             where: { addressUserId: addressUser[i].id },
             include: [
-              { model: db.TypeShip, as: "typeShipData" },
-              { model: db.Voucher, as: "voucherData" },
-              { model: db.Allcode, as: "statusOrderData" },
+              { model: db.TypeShip, as: 'typeShipData' },
+              { model: db.Voucher, as: 'voucherData' },
+              { model: db.Allcode, as: 'statusOrderData' },
             ],
             raw: true,
             nest: true,
@@ -291,13 +288,12 @@ let getAllOrdersByUser = (userId) => {
               where: { orderId: addressUser[i].order[j].id },
             });
             for (let k = 0; k < orderDetail.length; k++) {
-              orderDetail[k].productDetailSize =
-                await db.ProductDetailSize.findOne({
-                  where: { id: orderDetail[k].productId },
-                  include: [{ model: db.Allcode, as: "sizeData" }],
-                  raw: true,
-                  nest: true,
-                });
+              orderDetail[k].productDetailSize = await db.ProductDetailSize.findOne({
+                where: { id: orderDetail[k].productId },
+                include: [{ model: db.Allcode, as: 'sizeData' }],
+                raw: true,
+                nest: true,
+              });
               orderDetail[k].productDetail = await db.ProductDetail.findOne({
                 where: {
                   id: orderDetail[k].productDetailSize.productdetailId,
@@ -316,8 +312,8 @@ let getAllOrdersByUser = (userId) => {
               for (let f = 0; f < orderDetail[k].productImage.length; f++) {
                 orderDetail[k].productImage[f].image = new Buffer(
                   orderDetail[k].productImage[f].image,
-                  "base64",
-                ).toString("binary");
+                  'base64'
+                ).toString('binary');
               }
             }
 
@@ -341,20 +337,20 @@ let getAllOrdersByShipper = (data) => {
       console.log(data.shipperId);
       let objectFilter = {
         include: [
-          { model: db.TypeShip, as: "typeShipData" },
-          { model: db.Voucher, as: "voucherData" },
-          { model: db.Allcode, as: "statusOrderData" },
+          { model: db.TypeShip, as: 'typeShipData' },
+          { model: db.Voucher, as: 'voucherData' },
+          { model: db.Allcode, as: 'statusOrderData' },
         ],
-        order: [["createdAt", "DESC"]],
+        order: [['createdAt', 'DESC']],
         raw: true,
         nest: true,
         where: { shipperId: data.shipperId },
       };
 
-      if (data.status && data.status == "working")
-        objectFilter.where = { ...objectFilter.where, statusId: "S5" };
-      if (data.status && data.status == "done")
-        objectFilter.where = { ...objectFilter.where, statusId: "S6" };
+      if (data.status && data.status == 'working')
+        objectFilter.where = { ...objectFilter.where, statusId: 'S5' };
+      if (data.status && data.status == 'done')
+        objectFilter.where = { ...objectFilter.where, statusId: 'S6' };
 
       let res = await db.OrderProduct.findAll(objectFilter);
 
@@ -393,7 +389,7 @@ let paymentOrder = (data) => {
       for (let i = 0; i < data.result.length; i++) {
         data.result[i].productDetailSize = await db.ProductDetailSize.findOne({
           where: { id: data.result[i].productId },
-          include: [{ model: db.Allcode, as: "sizeData" }],
+          include: [{ model: db.Allcode, as: 'sizeData' }],
           raw: true,
           nest: true,
         });
@@ -406,7 +402,7 @@ let paymentOrder = (data) => {
           where: { id: data.result[i].productDetail.productId },
         });
         data.result[i].realPrice = parseFloat(
-          (data.result[i].realPrice / EXCHANGE_RATES.USD).toFixed(2),
+          (data.result[i].realPrice / EXCHANGE_RATES.USD).toFixed(2)
         );
 
         console.log(data.result[i].realPrice);
@@ -414,34 +410,34 @@ let paymentOrder = (data) => {
         listItem.push({
           name:
             data.result[i].product.name +
-            " | " +
+            ' | ' +
             data.result[i].productDetail.nameDetail +
-            " | " +
+            ' | ' +
             data.result[i].productDetailSize.sizeData.value,
-          sku: data.result[i].productId + "",
-          price: data.result[i].realPrice + "",
-          currency: "USD",
+          sku: data.result[i].productId + '',
+          price: data.result[i].realPrice + '',
+          currency: 'USD',
           quantity: data.result[i].quantity,
         });
         totalPriceProduct += data.result[i].realPrice * data.result[i].quantity;
         console.log(data.total - totalPriceProduct);
       }
       listItem.push({
-        name: "Phi ship + Voucher",
-        sku: "1",
-        price: parseFloat(data.total - totalPriceProduct).toFixed(2) + "",
-        currency: "USD",
+        name: 'Phi ship + Voucher',
+        sku: '1',
+        price: parseFloat(data.total - totalPriceProduct).toFixed(2) + '',
+        currency: 'USD',
         quantity: 1,
       });
 
       var create_payment_json = {
-        intent: "sale",
+        intent: 'sale',
         payer: {
-          payment_method: "paypal",
+          payment_method: 'paypal',
         },
         redirect_urls: {
           return_url: `http://localhost:5000/payment/success`,
-          cancel_url: "http://localhost:5000/payment/cancel",
+          cancel_url: 'http://localhost:5000/payment/cancel',
         },
         transactions: [
           {
@@ -449,10 +445,10 @@ let paymentOrder = (data) => {
               items: listItem,
             },
             amount: {
-              currency: "USD",
+              currency: 'USD',
               total: data.total,
             },
-            description: "This is the payment description.",
+            description: 'This is the payment description.',
           },
         ],
       };
@@ -466,7 +462,7 @@ let paymentOrder = (data) => {
         } else {
           resolve({
             errCode: 0,
-            errMessage: "ok",
+            errMessage: 'ok',
             link: payment.links[1].href,
           });
         }
@@ -482,7 +478,7 @@ let paymentOrderSuccess = (data) => {
       if (!data.PayerID || !data.paymentId || !data.token) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         var execute_payment_json = {
@@ -490,7 +486,7 @@ let paymentOrderSuccess = (data) => {
           transactions: [
             {
               amount: {
-                currency: "USD",
+                currency: 'USD',
                 total: data.total,
               },
             },
@@ -499,68 +495,64 @@ let paymentOrderSuccess = (data) => {
 
         var paymentId = data.paymentId;
 
-        paypal.payment.execute(
-          paymentId,
-          execute_payment_json,
-          async function (error, payment) {
-            if (error) {
-              resolve({
-                errCode: 0,
-                errMessage: error,
-              });
-            } else {
-              let product = await db.OrderProduct.create({
-                addressUserId: data.addressUserId,
-                isPaymentOnlien: data.isPaymentOnlien,
-                statusId: "S3",
-                typeShipId: data.typeShipId,
-                voucherId: data.voucherId,
-                note: data.note,
-              });
+        paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
+          if (error) {
+            resolve({
+              errCode: 0,
+              errMessage: error,
+            });
+          } else {
+            let product = await db.OrderProduct.create({
+              addressUserId: data.addressUserId,
+              isPaymentOnlien: data.isPaymentOnlien,
+              statusId: 'S3',
+              typeShipId: data.typeShipId,
+              voucherId: data.voucherId,
+              note: data.note,
+            });
 
-              data.arrDataShopCart = data.arrDataShopCart.map((item, index) => {
-                item.orderId = product.dataValues.id;
-                return item;
-              });
+            data.arrDataShopCart = data.arrDataShopCart.map((item, index) => {
+              item.orderId = product.dataValues.id;
+              return item;
+            });
 
-              await db.OrderDetail.bulkCreate(data.arrDataShopCart);
-              let res = await db.ShopCart.findOne({
-                where: { userId: data.userId, statusId: 0 },
+            await db.OrderDetail.bulkCreate(data.arrDataShopCart);
+            let res = await db.ShopCart.findOne({
+              where: { userId: data.userId, statusId: 0 },
+            });
+            if (res) {
+              await db.ShopCart.destroy({
+                where: { userId: data.userId },
               });
-              if (res) {
-                await db.ShopCart.destroy({
-                  where: { userId: data.userId },
-                });
-                for (let i = 0; i < data.arrDataShopCart.length; i++) {
-                  let productDetailSize = await db.ProductDetailSize.findOne({
-                    where: {
-                      id: data.arrDataShopCart[i].productId,
-                    },
-                    raw: false,
-                  });
-                  productDetailSize.stock =
-                    productDetailSize.stock - data.arrDataShopCart[i].quantity;
-                  await productDetailSize.save();
-                }
-              }
-              if (data.voucherId && data.userId) {
-                let voucherUses = await db.VoucherUsed.findOne({
+              for (let i = 0; i < data.arrDataShopCart.length; i++) {
+                let productDetailSize = await db.ProductDetailSize.findOne({
                   where: {
-                    voucherId: data.voucherId,
-                    userId: data.userId,
+                    id: data.arrDataShopCart[i].productId,
                   },
                   raw: false,
                 });
-                voucherUses.status = 1;
-                await voucherUses.save();
+                productDetailSize.stock =
+                  productDetailSize.stock - data.arrDataShopCart[i].quantity;
+                await productDetailSize.save();
               }
-              resolve({
-                errCode: 0,
-                errMessage: "ok",
-              });
             }
-          },
-        );
+            if (data.voucherId && data.userId) {
+              let voucherUses = await db.VoucherUsed.findOne({
+                where: {
+                  voucherId: data.voucherId,
+                  userId: data.userId,
+                },
+                raw: false,
+              });
+              voucherUses.status = 1;
+              await voucherUses.save();
+            }
+            resolve({
+              errCode: 0,
+              errMessage: 'ok',
+            });
+          }
+        });
       }
     } catch (error) {
       reject(error);
@@ -573,7 +565,7 @@ let paymentOrderVnpaySuccess = (data) => {
       let product = await db.OrderProduct.create({
         addressUserId: data.addressUserId,
         isPaymentOnlien: data.isPaymentOnlien,
-        statusId: "S3",
+        statusId: 'S3',
         typeShipId: data.typeShipId,
         voucherId: data.voucherId,
         note: data.note,
@@ -597,8 +589,7 @@ let paymentOrderVnpaySuccess = (data) => {
             where: { id: data.arrDataShopCart[i].productId },
             raw: false,
           });
-          productDetailSize.stock =
-            productDetailSize.stock - data.arrDataShopCart[i].quantity;
+          productDetailSize.stock = productDetailSize.stock - data.arrDataShopCart[i].quantity;
           await productDetailSize.save();
         }
       }
@@ -615,7 +606,7 @@ let paymentOrderVnpaySuccess = (data) => {
       }
       resolve({
         errCode: 0,
-        errMessage: "ok",
+        errMessage: 'ok',
       });
     } catch (error) {
       reject(error);
@@ -628,7 +619,7 @@ let confirmOrder = (data) => {
       if (!data.shipperId || !data.orderId || !data.statusId) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         let orderProduct = await db.OrderProduct.findOne({
@@ -641,7 +632,7 @@ let confirmOrder = (data) => {
 
         resolve({
           errCode: 0,
-          errMessage: "ok",
+          errMessage: 'ok',
         });
       }
     } catch (error) {
@@ -653,7 +644,7 @@ let paymentOrderVnpay = (req) => {
   return new Promise(async (resolve, reject) => {
     try {
       var ipAddr =
-        req.headers["x-forwarded-for"] ||
+        req.headers['x-forwarded-for'] ||
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
@@ -666,45 +657,45 @@ let paymentOrderVnpay = (req) => {
       var createDate = process.env.DATE_VNPAYMENT;
       var orderId = uuidv4();
 
-      console.log("createDate", createDate);
-      console.log("orderId", orderId);
+      console.log('createDate', createDate);
+      console.log('orderId', orderId);
       var amount = req.body.amount;
       var bankCode = req.body.bankCode;
 
       var orderInfo = req.body.orderDescription;
       var orderType = req.body.orderType;
       var locale = req.body.language;
-      if (locale === null || locale === "") {
-        locale = "vn";
+      if (locale === null || locale === '') {
+        locale = 'vn';
       }
-      var currCode = "VND";
+      var currCode = 'VND';
       var vnp_Params = {};
-      vnp_Params["vnp_Version"] = "2.1.0";
-      vnp_Params["vnp_Command"] = "pay";
-      vnp_Params["vnp_TmnCode"] = tmnCode;
+      vnp_Params['vnp_Version'] = '2.1.0';
+      vnp_Params['vnp_Command'] = 'pay';
+      vnp_Params['vnp_TmnCode'] = tmnCode;
       // vnp_Params['vnp_Merchant'] = ''
-      vnp_Params["vnp_Locale"] = locale;
-      vnp_Params["vnp_CurrCode"] = currCode;
-      vnp_Params["vnp_TxnRef"] = orderId;
-      vnp_Params["vnp_OrderInfo"] = orderInfo;
-      vnp_Params["vnp_OrderType"] = orderType;
-      vnp_Params["vnp_Amount"] = amount * 100;
-      vnp_Params["vnp_ReturnUrl"] = returnUrl;
-      vnp_Params["vnp_IpAddr"] = ipAddr;
-      vnp_Params["vnp_CreateDate"] = createDate;
-      if (bankCode !== null && bankCode !== "") {
-        vnp_Params["vnp_BankCode"] = bankCode;
+      vnp_Params['vnp_Locale'] = locale;
+      vnp_Params['vnp_CurrCode'] = currCode;
+      vnp_Params['vnp_TxnRef'] = orderId;
+      vnp_Params['vnp_OrderInfo'] = orderInfo;
+      vnp_Params['vnp_OrderType'] = orderType;
+      vnp_Params['vnp_Amount'] = amount * 100;
+      vnp_Params['vnp_ReturnUrl'] = returnUrl;
+      vnp_Params['vnp_IpAddr'] = ipAddr;
+      vnp_Params['vnp_CreateDate'] = createDate;
+      if (bankCode !== null && bankCode !== '') {
+        vnp_Params['vnp_BankCode'] = bankCode;
       }
 
       vnp_Params = sortObject(vnp_Params);
 
       var signData = querystring.stringify(vnp_Params, { encode: false });
 
-      var hmac = crypto.createHmac("sha512", secretKey);
-      var signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
-      vnp_Params["vnp_SecureHash"] = signed;
+      var hmac = crypto.createHmac('sha512', secretKey);
+      var signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex');
+      vnp_Params['vnp_SecureHash'] = signed;
 
-      vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
+      vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
       console.log(vnpUrl);
       resolve({
         errCode: 200,
@@ -720,10 +711,10 @@ let confirmOrderVnpay = (data) => {
     try {
       var vnp_Params = data;
 
-      var secureHash = vnp_Params["vnp_SecureHash"];
+      var secureHash = vnp_Params['vnp_SecureHash'];
 
-      delete vnp_Params["vnp_SecureHash"];
-      delete vnp_Params["vnp_SecureHashType"];
+      delete vnp_Params['vnp_SecureHash'];
+      delete vnp_Params['vnp_SecureHashType'];
 
       vnp_Params = sortObject(vnp_Params);
 
@@ -732,18 +723,18 @@ let confirmOrderVnpay = (data) => {
 
       var signData = querystring.stringify(vnp_Params, { encode: false });
 
-      var hmac = crypto.createHmac("sha512", secretKey);
-      var signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+      var hmac = crypto.createHmac('sha512', secretKey);
+      var signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex');
 
       if (secureHash === signed) {
         resolve({
           errCode: 0,
-          errMessage: "Success",
+          errMessage: 'Success',
         });
       } else {
         resolve({
           errCode: 1,
-          errMessage: "failed",
+          errMessage: 'failed',
         });
       }
     } catch (error) {
@@ -762,7 +753,7 @@ function sortObject(obj) {
   }
   str.sort();
   for (key = 0; key < str.length; key++) {
-    sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+    sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, '+');
   }
   return sorted;
 }
@@ -772,7 +763,7 @@ let updateImageOrder = (data) => {
       if (!data.id || !data.image) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         let order = await db.OrderProduct.findOne({
@@ -784,7 +775,7 @@ let updateImageOrder = (data) => {
 
         resolve({
           errCode: 0,
-          errMessage: "ok",
+          errMessage: 'ok',
         });
       }
     } catch (error) {

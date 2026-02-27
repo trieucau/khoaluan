@@ -1,5 +1,5 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React from 'react';
+import { useEffect, useState } from 'react';
 import {
   getAllProductDetailImageByIdService,
   createNewProductImageService,
@@ -9,14 +9,14 @@ import {
   createNewProductSizeService,
   UpdateProductDetailSizeService,
   DeleteProductDetailSizeService,
-} from "../../../../services/userService";
-import moment from "moment";
-import { toast } from "react-toastify";
-import "./ManageProductImage.scss";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import { PAGINATION } from "../../../../utils/constant";
-import ReactPaginate from "react-paginate";
+} from '../../../../services/userService';
+import moment from 'moment';
+import { toast } from 'react-toastify';
+import './ManageProductImage.scss';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+import { PAGINATION } from '../../../../utils/constant';
+import ReactPaginate from 'react-paginate';
 import {
   BrowserRouter as Router,
   Switch,
@@ -24,9 +24,9 @@ import {
   Link,
   Redirect,
   useParams,
-} from "react-router-dom";
-import AddImageModal from "./AddImageModal";
-import AddSizeModal from "./AddSizeModal";
+} from 'react-router-dom';
+import AddImageModal from './AddImageModal';
+import AddSizeModal from './AddSizeModal';
 const ManageProductImage = () => {
   const { id } = useParams();
   const [dataProductDetailImage, setdataProductDetailImage] = useState([]);
@@ -34,12 +34,12 @@ const ManageProductImage = () => {
   const [isOpen, setisOpen] = useState(false);
   const [isOpenModal, setisOpenModal] = useState(false);
   const [isOpenModalSize, setisOpenModalSize] = useState(false);
-  const [imgPreview, setimgPreview] = useState("");
-  const [productImageId, setproductImageId] = useState("");
-  const [productSizeId, setproductSizeId] = useState("");
-  const [count, setCount] = useState("");
-  const [countSize, setcountSizes] = useState("");
-  const [numberPage, setnumberPage] = useState("");
+  const [imgPreview, setimgPreview] = useState('');
+  const [productImageId, setproductImageId] = useState('');
+  const [productSizeId, setproductSizeId] = useState('');
+  const [count, setCount] = useState('');
+  const [countSize, setcountSizes] = useState('');
+  const [numberPage, setnumberPage] = useState('');
   useEffect(() => {
     let fetchProductDetailImage = async () => {
       await loadProductDetailImage();
@@ -78,14 +78,14 @@ const ManageProductImage = () => {
   };
   let closeModal = () => {
     setisOpenModal(false);
-    setproductImageId("");
+    setproductImageId('');
   };
   let handleOpenModal = () => {
     setisOpenModal(true);
   };
   let closeModalSize = () => {
     setisOpenModalSize(false);
-    setproductSizeId("");
+    setproductSizeId('');
   };
   let handleOpenModalSize = () => {
     setisOpenModalSize(true);
@@ -98,11 +98,11 @@ const ManageProductImage = () => {
         id: id,
       });
       if (response && response.errCode === 0) {
-        toast.success("Thêm hình ảnh thành công !");
+        toast.success('Thêm hình ảnh thành công !');
         setisOpenModal(false);
         await loadProductDetailImage();
       } else {
-        toast.error("Thêm hình ảnh thất bại !");
+        toast.error('Thêm hình ảnh thất bại !');
       }
     } else {
       let response = await UpdateProductDetailImageService({
@@ -111,12 +111,12 @@ const ManageProductImage = () => {
         id: data.id,
       });
       if (response && response.errCode === 0) {
-        setproductImageId("");
-        toast.success("Cập nhật hình ảnh thành công !");
+        setproductImageId('');
+        toast.success('Cập nhật hình ảnh thành công !');
         setisOpenModal(false);
         await loadProductDetailImage();
       } else {
-        toast.error("Cập nhật ảnh thất bại !");
+        toast.error('Cập nhật ảnh thất bại !');
       }
     }
   };
@@ -131,11 +131,11 @@ const ManageProductImage = () => {
         weight: data.weight,
       });
       if (response && response.errCode === 0) {
-        toast.success("Thêm kích thước thành công !");
+        toast.success('Thêm kích thước thành công !');
         setisOpenModalSize(false);
         await loadProductDetailSize();
       } else {
-        toast.error("Thêm kích thước thất bại");
+        toast.error('Thêm kích thước thất bại');
       }
     } else {
       let response = await UpdateProductDetailSizeService({
@@ -147,12 +147,12 @@ const ManageProductImage = () => {
         weight: data.weight,
       });
       if (response && response.errCode === 0) {
-        setproductSizeId("");
-        toast.success("Cập nhật kích thước thành công !");
+        setproductSizeId('');
+        toast.success('Cập nhật kích thước thành công !');
         setisOpenModalSize(false);
         await loadProductDetailSize();
       } else {
-        toast.error("Cập nhật kích thước thất bại !");
+        toast.error('Cập nhật kích thước thất bại !');
       }
     }
   };
@@ -171,7 +171,7 @@ const ManageProductImage = () => {
       },
     });
     if (response && response.errCode === 0) {
-      toast.success("Xóa hình ảnh thành công !");
+      toast.success('Xóa hình ảnh thành công !');
       let arrData = await getAllProductDetailImageByIdService({
         id: id,
         limit: PAGINATION.pagerow,
@@ -182,7 +182,7 @@ const ManageProductImage = () => {
         setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
       }
     } else {
-      toast.error("Xóa hình ảnh thất bại !");
+      toast.error('Xóa hình ảnh thất bại !');
     }
   };
   let handleDeleteProductSize = async (productdetailsizeId) => {
@@ -192,7 +192,7 @@ const ManageProductImage = () => {
       },
     });
     if (response && response.errCode === 0) {
-      toast.success("Xóa kích thước thành công !");
+      toast.success('Xóa kích thước thành công !');
       let arrData = await getAllProductDetailSizeByIdService({
         id: id,
         limit: PAGINATION.pagerow,
@@ -203,7 +203,7 @@ const ManageProductImage = () => {
         setcountSizes(Math.ceil(arrData.count / PAGINATION.pagerow));
       }
     } else {
-      toast.error("Xóa hình ảnh thất bại !");
+      toast.error('Xóa hình ảnh thất bại !');
     }
   };
   let handleChangePage = async (number) => {
@@ -240,9 +240,9 @@ const ManageProductImage = () => {
             <div onClick={() => handleOpenModal()} className="float-right">
               <i
                 style={{
-                  fontSize: "35px",
-                  cursor: "pointer",
-                  color: "#0D6EFD",
+                  fontSize: '35px',
+                  cursor: 'pointer',
+                  color: '#0D6EFD',
                 }}
                 className="fas fa-plus-square"
               ></i>
@@ -252,7 +252,7 @@ const ManageProductImage = () => {
             <div className="table-responsive">
               <table
                 className="table table-bordered"
-                style={{ border: "1" }}
+                style={{ border: '1' }}
                 width="100%"
                 cellspacing="0"
               >
@@ -283,14 +283,14 @@ const ManageProductImage = () => {
                           <td>
                             <span
                               onClick={() => handleEditProductImage(item.id)}
-                              style={{ color: "#0E6DFE", cursor: "pointer" }}
+                              style={{ color: '#0E6DFE', cursor: 'pointer' }}
                             >
                               Edit
                             </span>
                             &nbsp; &nbsp;
                             <span
                               onClick={() => handleDeleteProductImage(item.id)}
-                              style={{ color: "#0E6DFE", cursor: "pointer" }}
+                              style={{ color: '#0E6DFE', cursor: 'pointer' }}
                             >
                               Delete
                             </span>
@@ -311,26 +311,23 @@ const ManageProductImage = () => {
         </div>
 
         {isOpen === true && (
-          <Lightbox
-            mainSrc={imgPreview}
-            onCloseRequest={() => setisOpen(false)}
-          />
+          <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />
         )}
         <ReactPaginate
-          previousLabel={"Quay lại"}
-          nextLabel={"Tiếp"}
-          breakLabel={"..."}
+          previousLabel={'Quay lại'}
+          nextLabel={'Tiếp'}
+          breakLabel={'...'}
           pageCount={count}
           marginPagesDisplayed={3}
-          containerClassName={"pagination justify-content-center"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousLinkClassName={"page-link"}
-          nextClassName={"page-item"}
-          nextLinkClassName={"page-link"}
-          breakLinkClassName={"page-link"}
-          breakClassName={"page-item"}
-          activeClassName={"active"}
+          containerClassName={'pagination justify-content-center'}
+          pageClassName={'page-item'}
+          pageLinkClassName={'page-link'}
+          previousLinkClassName={'page-link'}
+          nextClassName={'page-item'}
+          nextLinkClassName={'page-link'}
+          breakLinkClassName={'page-link'}
+          breakClassName={'page-item'}
+          activeClassName={'active'}
           onPageChange={handleChangePage}
         />
       </div>
@@ -343,9 +340,9 @@ const ManageProductImage = () => {
             <div onClick={() => handleOpenModalSize()} className="float-right">
               <i
                 style={{
-                  fontSize: "35px",
-                  cursor: "pointer",
-                  color: "#0D6EFD",
+                  fontSize: '35px',
+                  cursor: 'pointer',
+                  color: '#0D6EFD',
                 }}
                 className="fas fa-plus-square"
               ></i>
@@ -355,7 +352,7 @@ const ManageProductImage = () => {
             <div className="table-responsive">
               <table
                 className="table table-bordered"
-                style={{ border: "1" }}
+                style={{ border: '1' }}
                 width="100%"
                 cellspacing="0"
               >
@@ -386,14 +383,14 @@ const ManageProductImage = () => {
                           <td>
                             <span
                               onClick={() => handleEditProductSize(item.id)}
-                              style={{ color: "#0E6DFE", cursor: "pointer" }}
+                              style={{ color: '#0E6DFE', cursor: 'pointer' }}
                             >
                               Edit
                             </span>
                             &nbsp; &nbsp;
                             <span
                               onClick={() => handleDeleteProductSize(item.id)}
-                              style={{ color: "#0E6DFE", cursor: "pointer" }}
+                              style={{ color: '#0E6DFE', cursor: 'pointer' }}
                             >
                               Delete
                             </span>
@@ -415,26 +412,23 @@ const ManageProductImage = () => {
         </div>
 
         {isOpen === true && (
-          <Lightbox
-            mainSrc={imgPreview}
-            onCloseRequest={() => setisOpen(false)}
-          />
+          <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />
         )}
         <ReactPaginate
-          previousLabel={"Quay lại"}
-          nextLabel={"Tiếp"}
-          breakLabel={"..."}
+          previousLabel={'Quay lại'}
+          nextLabel={'Tiếp'}
+          breakLabel={'...'}
           pageCount={countSize}
           marginPagesDisplayed={3}
-          containerClassName={"pagination justify-content-center"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousLinkClassName={"page-link"}
-          nextClassName={"page-item"}
-          nextLinkClassName={"page-link"}
-          breakLinkClassName={"page-link"}
-          breakClassName={"page-item"}
-          activeClassName={"active"}
+          containerClassName={'pagination justify-content-center'}
+          pageClassName={'page-item'}
+          pageLinkClassName={'page-link'}
+          previousLinkClassName={'page-link'}
+          nextClassName={'page-item'}
+          nextLinkClassName={'page-link'}
+          breakLinkClassName={'page-link'}
+          breakClassName={'page-item'}
+          activeClassName={'active'}
           onPageChange={handleChangePageProductSize}
         />
       </div>

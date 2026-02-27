@@ -1,43 +1,43 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import DatePicker from "react-datepicker";
-import moment from "moment";
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
 import {
   getDetailUserById,
   UpdateUserService,
   handleSendVerifyEmail,
-} from "../../services/userService";
-import { useFetchAllcode } from "../../container/customize/fetch";
-import CommonUtils from "../../utils/CommonUtils";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import "./DetailUserPage.scss";
+} from '../../services/userService';
+import { useFetchAllcode } from '../../container/customize/fetch';
+import CommonUtils from '../../utils/CommonUtils';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+import './DetailUserPage.scss';
 
 function DetailUserPage(props) {
   const { id } = useParams();
-  const { data: dataGender } = useFetchAllcode("GENDER");
+  const { data: dataGender } = useFetchAllcode('GENDER');
   const [birthday, setbirthday] = useState(new Date());
   const [isChangeDate, setisChangeDate] = useState(false);
   const [inputValues, setInputValues] = useState({
-    firstName: "",
-    lastName: "",
-    address: "",
-    phonenumber: "",
-    genderId: "",
-    dob: "",
-    roleId: "",
-    email: "",
-    image: "",
-    isActiveEmail: "",
-    imageReview: "",
+    firstName: '',
+    lastName: '',
+    address: '',
+    phonenumber: '',
+    genderId: '',
+    dob: '',
+    roleId: '',
+    email: '',
+    image: '',
+    isActiveEmail: '',
+    imageReview: '',
     isOpen: false,
   });
   console.log(dataGender);
   if (dataGender && dataGender.length > 0 && inputValues.genderId === null) {
-    setInputValues({ ...inputValues, ["genderId"]: dataGender[0].code });
+    setInputValues({ ...inputValues, ['genderId']: dataGender[0].code });
   }
   useEffect(() => {
     let fetchUser = async () => {
@@ -52,26 +52,26 @@ function DetailUserPage(props) {
   let setStateUser = (data) => {
     setInputValues({
       ...inputValues,
-      ["firstName"]: data.firstName,
-      ["lastName"]: data.lastName,
-      ["address"]: data.address,
-      ["phonenumber"]: data.phonenumber,
-      ["genderId"]: data.genderId,
-      ["roleId"]: data.roleId,
-      ["email"]: data.email,
-      ["id"]: data.id,
-      ["dob"]: data.dob,
-      ["image"]: data.image
+      ['firstName']: data.firstName,
+      ['lastName']: data.lastName,
+      ['address']: data.address,
+      ['phonenumber']: data.phonenumber,
+      ['genderId']: data.genderId,
+      ['roleId']: data.roleId,
+      ['email']: data.email,
+      ['id']: data.id,
+      ['dob']: data.dob,
+      ['image']: data.image
         ? data.image
-        : "https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg",
-      ["isActiveEmail"]: data.isActiveEmail,
+        : 'https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg',
+      ['isActiveEmail']: data.isActiveEmail,
     });
 
     setbirthday(
       moment
         .unix(+data.dob / 1000)
-        .locale("vi")
-        .toDate(),
+        .locale('vi')
+        .toDate()
     );
   };
   const handleOnChange = (event) => {
@@ -92,12 +92,11 @@ function DetailUserPage(props) {
       roleId: inputValues.roleId,
       genderId: inputValues.genderId,
       phonenumber: inputValues.phonenumber,
-      dob:
-        isChangeDate === false ? inputValues.dob : new Date(birthday).getTime(),
+      dob: isChangeDate === false ? inputValues.dob : new Date(birthday).getTime(),
       image: inputValues.image,
     });
     if (res && res.errCode === 0) {
-      toast.success("Cập nhật người dùng thành công");
+      toast.success('Cập nhật người dùng thành công');
     } else {
       toast.error(res.errMessage);
     }
@@ -107,7 +106,7 @@ function DetailUserPage(props) {
       id: id,
     });
     if (res && res.errCode === 0) {
-      toast.success("Vui lòng kiểm tra email !");
+      toast.success('Vui lòng kiểm tra email !');
     } else {
       toast.error(res.errMessage);
     }
@@ -116,22 +115,22 @@ function DetailUserPage(props) {
     let data = event.target.files;
     let file = data[0];
     if (file?.size > 31312281) {
-      toast.error("Dung lượng file bé hơn 30mb");
+      toast.error('Dung lượng file bé hơn 30mb');
     } else {
       let base64 = await CommonUtils.getBase64(file);
       let objectUrl = URL.createObjectURL(file);
       setInputValues({
         ...inputValues,
-        ["image"]: base64,
-        ["imageReview"]: objectUrl,
+        ['image']: base64,
+        ['imageReview']: objectUrl,
       });
     }
   };
   let openPreviewImage = (url) => {
     setInputValues({
       ...inputValues,
-      ["isOpen"]: true,
-      ["imageReview"]: url,
+      ['isOpen']: true,
+      ['imageReview']: url,
     });
   };
   return (
@@ -143,7 +142,7 @@ function DetailUserPage(props) {
               onClick={() => openPreviewImage(inputValues.image)}
               className="rounded-circle mt-5"
               height="170px"
-              style={{ objectFit: "cover", cursor: "pointer" }}
+              style={{ objectFit: 'cover', cursor: 'pointer' }}
               width="150px"
               src={inputValues.image}
             />
@@ -151,16 +150,10 @@ function DetailUserPage(props) {
             <div className="box-email-verify">
               <span className="text-black-50">{inputValues.email}</span>
               {inputValues.isActiveEmail === 0 && (
-                <i
-                  style={{ color: "#dc0707" }}
-                  className="fas fa-times-circle"
-                ></i>
+                <i style={{ color: '#dc0707' }} className="fas fa-times-circle"></i>
               )}
               {inputValues.isActiveEmail === 1 && (
-                <i
-                  style={{ color: "green" }}
-                  className="fas fa-check-circle"
-                ></i>
+                <i style={{ color: 'green' }} className="fas fa-check-circle"></i>
               )}
             </div>
 
@@ -262,10 +255,10 @@ function DetailUserPage(props) {
                 />
                 <label
                   style={{
-                    backgroundColor: "#eee",
-                    borderRadius: "5px",
-                    padding: "6px",
-                    cursor: "pointer",
+                    backgroundColor: '#eee',
+                    borderRadius: '5px',
+                    padding: '6px',
+                    cursor: 'pointer',
                   }}
                   className="label-upload"
                   htmlFor="previewImg"
@@ -285,9 +278,7 @@ function DetailUserPage(props) {
       {inputValues.isOpen === true && (
         <Lightbox
           mainSrc={inputValues.imageReview}
-          onCloseRequest={() =>
-            setInputValues({ ...inputValues, ["isOpen"]: false })
-          }
+          onCloseRequest={() => setInputValues({ ...inputValues, ['isOpen']: false })}
         />
       )}
     </div>

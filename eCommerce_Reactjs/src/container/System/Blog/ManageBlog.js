@@ -1,14 +1,14 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { getAllBlog, deleteBlogService } from "../../../services/userService";
-import moment from "moment";
-import { toast } from "react-toastify";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import "../Banner/AddBanner.scss";
-import { PAGINATION } from "../../../utils/constant";
-import ReactPaginate from "react-paginate";
-import CommonUtils from "../../../utils/CommonUtils";
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { getAllBlog, deleteBlogService } from '../../../services/userService';
+import moment from 'moment';
+import { toast } from 'react-toastify';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+import '../Banner/AddBanner.scss';
+import { PAGINATION } from '../../../utils/constant';
+import ReactPaginate from 'react-paginate';
+import CommonUtils from '../../../utils/CommonUtils';
 import {
   BrowserRouter as Router,
   Switch,
@@ -16,22 +16,22 @@ import {
   Link,
   Redirect,
   useParams,
-} from "react-router-dom";
-import FormSearch from "../../../component/Search/FormSearch";
+} from 'react-router-dom';
+import FormSearch from '../../../component/Search/FormSearch';
 
 const ManageBlog = () => {
   const [dataBlog, setdataBlog] = useState([]);
-  const [imgPreview, setimgPreview] = useState("");
+  const [imgPreview, setimgPreview] = useState('');
   const [isOpen, setisOpen] = useState(false);
-  const [count, setCount] = useState("");
-  const [numberPage, setnumberPage] = useState("");
-  const [keyword, setkeyword] = useState("");
+  const [count, setCount] = useState('');
+  const [numberPage, setnumberPage] = useState('');
+  const [keyword, setkeyword] = useState('');
   useEffect(() => {
     loadBlog(keyword);
   }, []);
   let loadBlog = async (keyword) => {
     let arrData = await getAllBlog({
-      subjectId: "",
+      subjectId: '',
       limit: PAGINATION.pagerow,
       offset: 0,
       keyword: keyword,
@@ -53,9 +53,9 @@ const ManageBlog = () => {
       },
     });
     if (response && response.errCode === 0) {
-      toast.success("Xóa bài đăng thành công thành công !");
+      toast.success('Xóa bài đăng thành công thành công !');
       let arrData = await getAllBlog({
-        subjectId: "",
+        subjectId: '',
         limit: PAGINATION.pagerow,
         offset: numberPage * PAGINATION.pagerow,
         keyword: keyword,
@@ -65,13 +65,13 @@ const ManageBlog = () => {
         setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
       }
     } else {
-      toast.error("Xóa bài đăng thất bại");
+      toast.error('Xóa bài đăng thất bại');
     }
   };
   let handleChangePage = async (number) => {
     setnumberPage(number.selected);
     let arrData = await getAllBlog({
-      subjectId: "",
+      subjectId: '',
       limit: PAGINATION.pagerow,
       offset: number.selected * PAGINATION.pagerow,
       keyword: keyword,
@@ -85,23 +85,23 @@ const ManageBlog = () => {
     setkeyword(keyword);
   };
   let handleOnchangeSearch = (keyword) => {
-    if (keyword === "") {
+    if (keyword === '') {
       loadBlog(keyword);
       setkeyword(keyword);
     }
   };
   let handleOnClickExport = async () => {
     let res = await getAllBlog({
-      subjectId: "",
-      limit: "",
-      offset: "",
-      keyword: "",
+      subjectId: '',
+      limit: '',
+      offset: '',
+      keyword: '',
     });
     if (res && res.errCode == 0) {
       res.data.forEach((element) => {
-        element.image = "";
+        element.image = '';
       });
-      await CommonUtils.exportExcel(res.data, "Danh sách bài viết", "ListBlog");
+      await CommonUtils.exportExcel(res.data, 'Danh sách bài viết', 'ListBlog');
     }
   };
   return (
@@ -117,14 +117,14 @@ const ManageBlog = () => {
           <div className="row">
             <div className="col-4">
               <FormSearch
-                title={"tiêu đề"}
+                title={'tiêu đề'}
                 handleOnchange={handleOnchangeSearch}
                 handleSearch={handleSearchBlog}
               />
             </div>
             <div className="col-8">
               <button
-                style={{ float: "right" }}
+                style={{ float: 'right' }}
                 onClick={() => handleOnClickExport()}
                 className="btn btn-success"
               >
@@ -135,7 +135,7 @@ const ManageBlog = () => {
           <div className="table-responsive">
             <table
               className="table table-bordered"
-              style={{ border: "1" }}
+              style={{ border: '1' }}
               width="100%"
               cellspacing="0"
             >
@@ -158,22 +158,22 @@ const ManageBlog = () => {
                         <td>{index + 1}</td>
                         <td>{item.title}</td>
                         <td>{item.subjectData.value}</td>
-                        <td style={{ width: "30%" }}>
+                        <td style={{ width: '30%' }}>
                           <div
                             onClick={() => openPreviewImage(item.image)}
                             className="box-img-preview"
                             style={{
                               backgroundImage: `url(${item.image})`,
-                              width: "100%",
+                              width: '100%',
                             }}
                           ></div>
                         </td>
-                        <td style={{ width: "20%" }}>
+                        <td style={{ width: '20%' }}>
                           <Link to={`/admin/edit-blog/${item.id}`}>Edit</Link>
                           &nbsp; &nbsp;
                           <span
                             onClick={() => handleDeleteBlog(item.id)}
-                            style={{ color: "#0E6DFE", cursor: "pointer" }}
+                            style={{ color: '#0E6DFE', cursor: 'pointer' }}
                           >
                             Delete
                           </span>
@@ -186,29 +186,24 @@ const ManageBlog = () => {
           </div>
         </div>
         <ReactPaginate
-          previousLabel={"Quay lại"}
-          nextLabel={"Tiếp"}
-          breakLabel={"..."}
+          previousLabel={'Quay lại'}
+          nextLabel={'Tiếp'}
+          breakLabel={'...'}
           pageCount={count}
           marginPagesDisplayed={3}
-          containerClassName={"pagination justify-content-center"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousLinkClassName={"page-link"}
-          nextClassName={"page-item"}
-          nextLinkClassName={"page-link"}
-          breakLinkClassName={"page-link"}
-          breakClassName={"page-item"}
-          activeClassName={"active"}
+          containerClassName={'pagination justify-content-center'}
+          pageClassName={'page-item'}
+          pageLinkClassName={'page-link'}
+          previousLinkClassName={'page-link'}
+          nextClassName={'page-item'}
+          nextLinkClassName={'page-link'}
+          breakLinkClassName={'page-link'}
+          breakClassName={'page-item'}
+          activeClassName={'active'}
           onPageChange={handleChangePage}
         />
       </div>
-      {isOpen === true && (
-        <Lightbox
-          mainSrc={imgPreview}
-          onCloseRequest={() => setisOpen(false)}
-        />
-      )}
+      {isOpen === true && <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />}
     </div>
   );
 };

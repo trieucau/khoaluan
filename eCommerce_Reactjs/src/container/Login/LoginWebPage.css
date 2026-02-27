@@ -1,14 +1,11 @@
-
-.box-login{
-   background: #f7edd5;
-   font-family: "Montserrat", sans-serif;
-   height: 100vh;
- 
+.box-login {
+  background: #f7edd5;
+  font-family: 'Montserrat', sans-serif;
+  height: 100vh;
 }
 .login-container {
   max-width: 900px;
   margin: 0 auto;
-  
 }
 
 a {
@@ -19,8 +16,6 @@ a {
 input {
   outline: none !important;
 }
-
-
 
 section#formHolder {
   padding: 50px 0;
@@ -42,7 +37,7 @@ section#formHolder {
   width: 100%;
 }
 .brand::before {
-  content: "";
+  content: '';
   display: block;
   width: 100%;
   height: 100%;
@@ -91,7 +86,7 @@ section#formHolder {
   text-transform: uppercase;
   letter-spacing: 2px;
   white-space: 4px;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
 }
 .brand .success-msg {
   width: 100%;
@@ -105,7 +100,7 @@ section#formHolder {
 .brand .success-msg p {
   font-size: 25px;
   font-weight: 400;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
 }
 .brand .success-msg a {
   font-size: 12px;
@@ -116,12 +111,14 @@ section#formHolder {
   color: #fff;
   border-radius: 30px;
 }
-.brand .success-msg p, .brand .success-msg a {
+.brand .success-msg p,
+.brand .success-msg a {
   transition: all 0.9s;
   transform: translateY(20px);
   opacity: 0;
 }
-.brand .success-msg p.active, .brand .success-msg a.active {
+.brand .success-msg p.active,
+.brand .success-msg a.active {
   transform: translateY(0);
   opacity: 1;
 }
@@ -171,7 +168,7 @@ section#formHolder {
   font-size: 12px;
   font-weight: 400;
   text-transform: uppercase;
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   transform: translateY(40px);
   transition: all 0.4s;
   cursor: text;
@@ -182,10 +179,10 @@ section#formHolder {
   font-size: 10px;
 }
 .form form label.fontSwitch {
-  font-family: "Raleway", sans-serif !important;
+  font-family: 'Raleway', sans-serif !important;
   font-weight: 600;
 }
-.form form input:not([type=submit]) {
+.form form input:not([type='submit']) {
   background: none;
   outline: none;
   border: none;
@@ -195,22 +192,22 @@ section#formHolder {
   border-bottom: 1px solid #eee;
   color: #444;
   font-size: 15px;
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   z-index: 1;
 }
-.form form input:not([type=submit]).hasError {
+.form form input:not([type='submit']).hasError {
   border-color: #f95959;
 }
 .form form span.error {
   color: #f95959;
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 12px;
   position: absolute;
   bottom: -20px;
   right: 0;
   display: none;
 }
-.form form input[type=password] {
+.form form input[type='password'] {
   color: #f95959;
 }
 .form form .CTA {
@@ -225,12 +222,12 @@ section#formHolder {
   border-radius: 30px;
   margin-right: 20px;
   border: none;
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 .form form .CTA a.switch {
   font-size: 13px;
   font-weight: 400;
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   color: #bbbbbb;
   text-decoration: underline;
   transition: all 0.3s;
@@ -245,12 +242,14 @@ footer {
 footer p {
   color: #777;
 }
-footer p a, footer p a:focus {
+footer p a,
+footer p a:focus {
   color: #b8b09f;
   transition: all 0.3s;
   text-decoration: none !important;
 }
-footer p a:hover, footer p a:focus:hover {
+footer p a:hover,
+footer p a:focus:hover {
   color: #f95959;
 }
 

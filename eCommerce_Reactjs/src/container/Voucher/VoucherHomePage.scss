@@ -1,29 +1,27 @@
-.voucher-container{
+.voucher-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  .voucher-banner {
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    .voucher-banner{
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-        .photo-banner{
-            width: 1200px;
-            height: 598px;
-            object-fit: cover;
-
-        }
+    .photo-banner {
+      width: 1200px;
+      height: 598px;
+      object-fit: cover;
     }
-    .voucher-list{
-        width: 1200px;
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-        
-    }
-    .box-pagination{
-        margin-top: 40px;
-    }
+  }
+  .voucher-list {
+    width: 1200px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .box-pagination {
+    margin-top: 40px;
+  }
 }

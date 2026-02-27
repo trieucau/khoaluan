@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import CommentBlog from "../../component/Blog/CommentBlog";
-import CommentFormBlog from "../../component/Blog/CommentFormBlog";
-import RightBlog from "../../component/Blog/RightBlog";
+import React, { useEffect, useState } from 'react';
+import CommentBlog from '../../component/Blog/CommentBlog';
+import CommentFormBlog from '../../component/Blog/CommentFormBlog';
+import RightBlog from '../../component/Blog/RightBlog';
 import {
   getDetailBlogByIdService,
   getAllCategoryBlogService,
   createNewcommentService,
   getAllcommentByBlogIdService,
   getFeatureBlog,
-} from "../../services/userService";
-import { Link, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import moment from "moment";
+} from '../../services/userService';
+import { Link, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import moment from 'moment';
 function DetailBlog(props) {
   const [dataSubject, setdataSubject] = useState([]);
   const [dataComment, setdataComment] = useState([]);
@@ -28,7 +28,7 @@ function DetailBlog(props) {
         loadDataBlog(id);
         loadComment(id);
       }
-      const userData = JSON.parse(localStorage.getItem("userData"));
+      const userData = JSON.parse(localStorage.getItem('userData'));
       if (userData) {
         setUser(userData);
       }
@@ -49,7 +49,7 @@ function DetailBlog(props) {
     }
   };
   let loadCategoryBlog = async () => {
-    let res = await getAllCategoryBlogService("SUBJECT");
+    let res = await getAllCategoryBlogService('SUBJECT');
     if (res && res.errCode == 0) {
       setdataSubject(res.data);
     }
@@ -68,13 +68,13 @@ function DetailBlog(props) {
         userId: user.id,
       });
       if (res && res.errCode == 0) {
-        toast.success("Đăng bình luận thành công");
+        toast.success('Đăng bình luận thành công');
         loadComment(id);
       } else {
         toast.error(res.errMessage);
       }
     } else {
-      toast.error("Hãy đăng nhập để bình luận");
+      toast.error('Hãy đăng nhập để bình luận');
     }
   };
   return (
@@ -85,13 +85,11 @@ function DetailBlog(props) {
             <div class="banner_content d-md-flex justify-content-between align-items-center">
               <div class="mb-3 mb-md-0  ">
                 <h2 className="text-black">Chi tiết bài đăng</h2>
-                <p className="text-black">
-                  Theo dõi bài đăng để nhận thông tin mới nhất
-                </p>
+                <p className="text-black">Theo dõi bài đăng để nhận thông tin mới nhất</p>
               </div>
               <div class="page_link">
-                <Link to={"/"}>Trang chủ</Link>
-                <Link to={"/blog"}>Tin tức</Link>
+                <Link to={'/'}>Trang chủ</Link>
+                <Link to={'/blog'}>Tin tức</Link>
               </div>
             </div>
           </div>
@@ -105,9 +103,9 @@ function DetailBlog(props) {
                 <div className="feature-img">
                   <img
                     style={{
-                      width: "100%",
-                      height: "514px",
-                      objectFit: "cover",
+                      width: '100%',
+                      height: '514px',
+                      objectFit: 'cover',
                     }}
                     className="img-fluid"
                     src={dataBlog.image}
@@ -119,17 +117,14 @@ function DetailBlog(props) {
                   <ul className="blog-info-link mt-3 mb-4">
                     <li>
                       <a href="#">
-                        <i className="ti-user" />{" "}
+                        <i className="ti-user" />{' '}
                         {dataBlog.userData &&
-                          dataBlog.userData.firstName +
-                            " " +
-                            dataBlog.userData.lastName}
+                          dataBlog.userData.firstName + ' ' + dataBlog.userData.lastName}
                       </a>
                     </li>
                     <li>
                       <a href="#">
-                        <i className="ti-comments" /> {dataComment.length} Bình
-                        luận
+                        <i className="ti-comments" /> {dataComment.length} Bình luận
                       </a>
                     </li>
                   </ul>
@@ -145,16 +140,12 @@ function DetailBlog(props) {
               {/* update */}
               <div className="comments-area">
                 <h4>{dataComment.length} Bình luận</h4>
-                <div
-                  className="border rounded p-3 overflow-auto"
-                  style={{ maxHeight: "500px" }}
-                >
+                <div className="border rounded p-3 overflow-auto" style={{ maxHeight: '500px' }}>
                   {dataComment &&
                     dataComment.length > 0 &&
                     dataComment.map((item, index) => {
                       if (item.user) {
-                        let name =
-                          item.user.firstName + " " + item.user.lastName;
+                        let name = item.user.firstName + ' ' + item.user.lastName;
 
                         let isMe = user && user.id === item.userId;
 

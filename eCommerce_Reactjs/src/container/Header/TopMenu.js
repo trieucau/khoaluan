@@ -1,19 +1,17 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-import "./Header.scss";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import './Header.scss';
 const TopMenu = (props) => {
   let handleLogout = () => {
-    localStorage.removeItem("userData");
-    localStorage.removeItem("token");
-    window.location.href = "/login";
+    localStorage.removeItem('userData');
+    localStorage.removeItem('token');
+    window.location.href = '/login';
   };
 
   let name =
     props.user && props.user.id
-      ? `${
-          props.user && props.user.firstName ? props.user.firstName : ""
-        } ${props.user.lastName}`
-      : "";
+      ? `${props.user && props.user.firstName ? props.user.firstName : ''} ${props.user.lastName}`
+      : '';
   return (
     <div className="top_menu">
       <div className="container">
@@ -31,9 +29,7 @@ const TopMenu = (props) => {
                   {props.user && props.user.id ? (
                     <NavLink
                       exact
-                      to={`/user/detail/${
-                        props.user && props.user.id ? props.user.id : ""
-                      }`}
+                      to={`/user/detail/${props.user && props.user.id ? props.user.id : ''}`}
                     >
                       {name}
                     </NavLink>
@@ -41,7 +37,7 @@ const TopMenu = (props) => {
                     <a href="/login">Đăng nhập</a>
                   )}
                 </li>
-                <li style={{ cursor: "pointer" }}>
+                <li style={{ cursor: 'pointer' }}>
                   {props.user && props.user.id ? (
                     <a onClick={() => handleLogout()}>Đăng xuất</a>
                   ) : (

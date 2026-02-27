@@ -1,0 +1,20 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": ["eslint:recommended", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "off",
+    "no-async-promise-executor": "off",
+    "no-undef": "off",
+    "no-redeclare": "off",
+    "no-unreachable": "off",
+    "no-prototype-builtins": "off"
+  }
+}

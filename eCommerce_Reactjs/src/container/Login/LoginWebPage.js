@@ -1,29 +1,22 @@
-import React from "react";
-import { useState } from "react";
-import { toast } from "react-toastify";
-import "./LoginWebPage.css";
-import {
-  FacebookLoginButton,
-  GoogleLoginButton,
-} from "react-social-login-buttons";
+import React from 'react';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import './LoginWebPage.css';
+import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
 import {
   handleLoginService,
   checkPhonenumberEmail,
   createNewUser,
-} from "../../services/userService";
+} from '../../services/userService';
 
-import { authentication } from "../../utils/firebase";
-import {
-  signInWithPopup,
-  FacebookAuthProvider,
-  GoogleAuthProvider,
-} from "firebase/auth";
+import { authentication } from '../../utils/firebase';
+import { signInWithPopup, FacebookAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 const LoginWebPage = () => {
   const [inputValues, setInputValues] = useState({
-    email: "",
-    password: "passwordsecrect",
-    lastName: "",
-    phonenumber: "",
+    email: '',
+    password: 'passwordsecrect',
+    lastName: '',
+    phonenumber: '',
     isOpen: false,
   });
 
@@ -32,8 +25,8 @@ const LoginWebPage = () => {
     setInputValues({ ...inputValues, [name]: value });
   };
   let handleLogin = async () => {
-    const element = document.querySelector("form");
-    element.addEventListener("submit", (event) => {
+    const element = document.querySelector('form');
+    element.addEventListener('submit', (event) => {
       event.preventDefault();
     });
     let res = await handleLoginService({
@@ -42,20 +35,20 @@ const LoginWebPage = () => {
     });
 
     if (res && res.errCode === 0) {
-      localStorage.setItem("userData", JSON.stringify(res.user));
-      localStorage.setItem("token", JSON.stringify(res.accessToken));
-      if (res.user.roleId === "R1" || res.user.roleId === "R4") {
-        window.location.href = "/admin";
+      localStorage.setItem('userData', JSON.stringify(res.user));
+      localStorage.setItem('token', JSON.stringify(res.accessToken));
+      if (res.user.roleId === 'R1' || res.user.roleId === 'R4') {
+        window.location.href = '/admin';
       } else {
-        window.location.href = "/";
+        window.location.href = '/';
       }
     } else {
       toast.error(res.errMessage);
     }
   };
   let handleLoginSocial = async (email) => {
-    const element = document.querySelector("form");
-    element.addEventListener("submit", (event) => {
+    const element = document.querySelector('form');
+    element.addEventListener('submit', (event) => {
       event.preventDefault();
     });
     let res = await handleLoginService({
@@ -64,12 +57,12 @@ const LoginWebPage = () => {
     });
 
     if (res && res.errCode === 0) {
-      localStorage.setItem("userData", JSON.stringify(res.user));
-      localStorage.setItem("token", JSON.stringify(res.accessToken));
-      if (res.user.roleId === "R1" || res.user.roleId === "R4") {
-        window.location.href = "/admin";
+      localStorage.setItem('userData', JSON.stringify(res.user));
+      localStorage.setItem('token', JSON.stringify(res.accessToken));
+      if (res.user.roleId === 'R1' || res.user.roleId === 'R4') {
+        window.location.href = '/admin';
       } else {
-        window.location.href = "/";
+        window.location.href = '/';
       }
     } else {
       toast.error(res.errMessage);
@@ -77,8 +70,8 @@ const LoginWebPage = () => {
   };
 
   let handleSaveUser = async () => {
-    const element = document.querySelector("form");
-    element.addEventListener("submit", (event) => {
+    const element = document.querySelector('form');
+    element.addEventListener('submit', (event) => {
       event.preventDefault();
     });
     let res = await checkPhonenumberEmail({
@@ -94,10 +87,10 @@ const LoginWebPage = () => {
         lastName,
         phonenumber,
         password,
-        roleId: "R2",
+        roleId: 'R2',
       });
       if (res && res.errCode === 0) {
-        toast.success("Tạo tài khoản thành công");
+        toast.success('Tạo tài khoản thành công');
         handleLogin();
       } else {
         toast.error(res.errMessage);
@@ -135,7 +128,7 @@ const LoginWebPage = () => {
     if (res.isCheck === true) {
       setInputValues({
         ...inputValues,
-        ["email"]: re.user.providerData[0].email,
+        ['email']: re.user.providerData[0].email,
       });
       handleLoginSocial(re.user.providerData[0].email);
     } else {
@@ -145,11 +138,11 @@ const LoginWebPage = () => {
           lastName: re.user.providerData[0].displayName,
           phonenumber: re.user.providerData[0].phoneNumber,
           avatar: value,
-          roleId: "R2",
+          roleId: 'R2',
           password: inputValues.password,
         });
         if (res && res.errCode === 0) {
-          toast.success("Tạo tài khoản thành công");
+          toast.success('Tạo tài khoản thành công');
           handleLoginSocial(re.user.providerData[0].email);
         } else {
           toast.error(res.errMessage);
@@ -210,14 +203,10 @@ const LoginWebPage = () => {
                       />
                     </div>
                     <div className="CTA">
-                      <input
-                        onClick={() => handleLogin()}
-                        type="submit"
-                        value="Đăng nhập"
-                      />
+                      <input onClick={() => handleLogin()} type="submit" value="Đăng nhập" />
                       <a
                         style={{
-                          cursor: "pointer",
+                          cursor: 'pointer',
                         }}
                         className="switch"
                       >
@@ -228,11 +217,11 @@ const LoginWebPage = () => {
                       text="Đăng nhập với Facebook"
                       iconSize="25px"
                       style={{
-                        width: "300px",
-                        height: "40px",
-                        fontSize: "16px",
-                        marginTop: "40px",
-                        marginBottom: "10px",
+                        width: '300px',
+                        height: '40px',
+                        fontSize: '16px',
+                        marginTop: '40px',
+                        marginBottom: '10px',
                       }}
                       onClick={() => signInwithFacebook()}
                     />
@@ -240,9 +229,9 @@ const LoginWebPage = () => {
                       text="Đăng nhập với Google"
                       iconSize="25px"
                       style={{
-                        width: "300px",
-                        height: "40px",
-                        fontSize: "16px",
+                        width: '300px',
+                        height: '40px',
+                        fontSize: '16px',
                       }}
                       onClick={() => signInwithGoogle()}
                     />
@@ -314,7 +303,7 @@ const LoginWebPage = () => {
                       />
                       <a
                         style={{
-                          cursor: "pointer",
+                          cursor: 'pointer',
                         }}
                         className="switch"
                       >

@@ -1,5 +1,5 @@
-import db from "../models/index";
-require("dotenv").config();
+import db from '../models/index';
+require('dotenv').config();
 
 let createNewReview = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -7,7 +7,7 @@ let createNewReview = (data) => {
       if (!data.content || !data.productId || !data.userId || !data.star) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         await db.Comment.create({
@@ -19,7 +19,7 @@ let createNewReview = (data) => {
         });
         resolve({
           errCode: 0,
-          errMessage: "ok",
+          errMessage: 'ok',
         });
       }
     } catch (error) {
@@ -33,7 +33,7 @@ let getAllReviewByProductId = (id) => {
       if (!id) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         let res = await db.Comment.findAll({
@@ -46,8 +46,8 @@ let getAllReviewByProductId = (id) => {
         if (res && res.length > 0) {
           for (let i = 0; i < res.length; i++) {
             res[i].image = res[i].image
-              ? new Buffer(res[i].image, "base64").toString("binary")
-              : "";
+              ? new Buffer(res[i].image, 'base64').toString('binary')
+              : '';
 
             res[i].childComment = await db.Comment.findAll({
               where: { parentId: res[i].id },
@@ -55,13 +55,10 @@ let getAllReviewByProductId = (id) => {
             res[i].user = await db.User.findOne({
               where: { id: res[i].userId },
               attributes: {
-                exclude: ["password"],
+                exclude: ['password'],
               },
             });
-            res[i].user.image = new Buffer(
-              res[i].user.image,
-              "base64",
-            ).toString("binary");
+            res[i].user.image = new Buffer(res[i].user.image, 'base64').toString('binary');
           }
         }
 
@@ -81,7 +78,7 @@ let ReplyReview = (data) => {
       if (!data.content || !data.productId || !data.userId || !data.parentId) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         await db.Comment.create({
@@ -92,7 +89,7 @@ let ReplyReview = (data) => {
         });
         resolve({
           errCode: 0,
-          errMessage: "ok",
+          errMessage: 'ok',
         });
       }
     } catch (error) {
@@ -106,7 +103,7 @@ let deleteReview = (data) => {
       if (!data.id) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         let review = await db.Comment.findOne({
@@ -118,7 +115,7 @@ let deleteReview = (data) => {
           });
           resolve({
             errCode: 0,
-            errMessage: "ok",
+            errMessage: 'ok',
           });
         }
       }
@@ -133,7 +130,7 @@ let createNewComment = (data) => {
       if (!data.content || !data.blogId || !data.userId) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         await db.Comment.create({
@@ -144,7 +141,7 @@ let createNewComment = (data) => {
         });
         resolve({
           errCode: 0,
-          errMessage: "ok",
+          errMessage: 'ok',
         });
       }
     } catch (error) {
@@ -156,28 +153,26 @@ let getAllCommentByBlogId = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
-        console.log("check 12", id);
+        console.log('check 12', id);
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         let res = await db.Comment.findAll({
           where: {
             blogId: id,
           },
-          order: [["createdAt", "ASC"]],
+          order: [['createdAt', 'ASC']],
           raw: true,
         });
 
         for (let i = 0; i < res.length; i++) {
           // comment image
           if (res[i].image) {
-            res[i].image = Buffer.from(res[i].image, "base64").toString(
-              "binary",
-            );
+            res[i].image = Buffer.from(res[i].image, 'base64').toString('binary');
           } else {
-            res[i].image = "";
+            res[i].image = '';
           }
 
           // child comment
@@ -188,16 +183,13 @@ let getAllCommentByBlogId = (id) => {
           // user
           res[i].user = await db.User.findOne({
             where: { id: res[i].userId },
-            attributes: { exclude: ["password"] },
+            attributes: { exclude: ['password'] },
           });
 
           if (res[i].user && res[i].user.image) {
-            res[i].user.image = Buffer.from(
-              res[i].user.image,
-              "base64",
-            ).toString("binary");
+            res[i].user.image = Buffer.from(res[i].user.image, 'base64').toString('binary');
           } else if (res[i].user) {
-            res[i].user.image = "";
+            res[i].user.image = '';
           }
         }
 
@@ -217,7 +209,7 @@ let ReplyComment = (data) => {
       if (!data.content || !data.blogId || !data.userId || !data.parentId) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         await db.Comment.create({
@@ -228,7 +220,7 @@ let ReplyComment = (data) => {
         });
         resolve({
           errCode: 0,
-          errMessage: "ok",
+          errMessage: 'ok',
         });
       }
     } catch (error) {
@@ -242,7 +234,7 @@ let deleteComment = (data) => {
       if (!data.id) {
         resolve({
           errCode: 1,
-          errMessage: "Missing required parameter !",
+          errMessage: 'Missing required parameter !',
         });
       } else {
         let comment = await db.Comment.findOne({
@@ -254,7 +246,7 @@ let deleteComment = (data) => {
           });
           resolve({
             errCode: 0,
-            errMessage: "ok",
+            errMessage: 'ok',
           });
         }
       }

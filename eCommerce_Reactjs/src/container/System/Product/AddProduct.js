@@ -1,62 +1,62 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
-import { useFetchAllcode } from "../../customize/fetch";
-import CommonUtils from "../../../utils/CommonUtils";
-import localization from "moment/locale/vi";
-import moment from "moment";
-import "./AddProduct.scss";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import { CreateNewProduct } from "../../../services/userService";
-import MarkdownIt from "markdown-it";
-import MdEditor from "react-markdown-editor-lite";
-import "react-markdown-editor-lite/lib/index.css";
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import { useFetchAllcode } from '../../customize/fetch';
+import CommonUtils from '../../../utils/CommonUtils';
+import localization from 'moment/locale/vi';
+import moment from 'moment';
+import './AddProduct.scss';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+import { CreateNewProduct } from '../../../services/userService';
+import MarkdownIt from 'markdown-it';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
 const AddProduct = (props) => {
   const mdParser = new MarkdownIt();
-  const { data: dataBrand } = useFetchAllcode("BRAND");
-  const { data: dataCategory } = useFetchAllcode("CATEGORY");
-  const { data: dataSize } = useFetchAllcode("SIZE");
+  const { data: dataBrand } = useFetchAllcode('BRAND');
+  const { data: dataCategory } = useFetchAllcode('CATEGORY');
+  const { data: dataSize } = useFetchAllcode('SIZE');
   const [inputValues, setInputValues] = useState({
-    brandId: "",
-    categoryId: "",
-    name: "",
-    shortdescription: "",
-    description: "",
-    madeby: "",
-    material: "",
-    width: "",
-    height: "",
-    sizeId: "",
-    originalPrice: "",
-    discountPrice: "",
-    image: "",
-    imageReview: "",
+    brandId: '',
+    categoryId: '',
+    name: '',
+    shortdescription: '',
+    description: '',
+    madeby: '',
+    material: '',
+    width: '',
+    height: '',
+    sizeId: '',
+    originalPrice: '',
+    discountPrice: '',
+    image: '',
+    imageReview: '',
     isOpen: false,
-    nameDetail: "",
-    contentHTML: "",
-    contentMarkdown: "",
-    weight: "",
+    nameDetail: '',
+    contentHTML: '',
+    contentMarkdown: '',
+    weight: '',
   });
 
   if (
     dataBrand &&
     dataBrand.length > 0 &&
-    inputValues.brandId === "" &&
+    inputValues.brandId === '' &&
     dataCategory &&
     dataCategory.length > 0 &&
-    inputValues.categoryId === "" &&
+    inputValues.categoryId === '' &&
     dataSize &&
     dataSize.length > 0 &&
-    inputValues.sizeId === ""
+    inputValues.sizeId === ''
   ) {
     setInputValues({
       ...inputValues,
-      ["brandId"]: dataBrand[0].code,
-      ["categoryId"]: dataCategory[0].code,
-      ["sizeId"]: dataSize[0].code,
+      ['brandId']: dataBrand[0].code,
+      ['categoryId']: dataCategory[0].code,
+      ['sizeId']: dataSize[0].code,
     });
   }
   const handleOnChange = (event) => {
@@ -68,21 +68,21 @@ const AddProduct = (props) => {
     let data = event.target.files;
     let file = data[0];
     if (file?.size > 31312281) {
-      toast.error("Dung lượng file bé hơn 30mb");
+      toast.error('Dung lượng file bé hơn 30mb');
     } else {
       let base64 = await CommonUtils.getBase64(file);
       let objectUrl = URL.createObjectURL(file);
       setInputValues({
         ...inputValues,
-        ["image"]: base64,
-        ["imageReview"]: objectUrl,
+        ['image']: base64,
+        ['imageReview']: objectUrl,
       });
     }
   };
   let openPreviewImage = () => {
     if (!inputValues.imageReview) return;
 
-    setInputValues({ ...inputValues, ["isOpen"]: true });
+    setInputValues({ ...inputValues, ['isOpen']: true });
   };
   let handleSaveProduct = async () => {
     console.log(inputValues.sizeId);
@@ -106,27 +106,27 @@ const AddProduct = (props) => {
       weight: inputValues.weight,
     });
     if (res && res.errCode === 0) {
-      toast.success("Tạo mới sản phẩm thành công!");
+      toast.success('Tạo mới sản phẩm thành công!');
       setInputValues({
         ...inputValues,
-        ["name"]: "",
-        ["shortdescription"]: "",
-        ["categoryId"]: "",
-        ["madeby"]: "",
-        ["material"]: "",
-        ["brandId"]: "",
-        ["height"]: "",
-        ["width"]: "",
-        ["sizeId"]: "",
+        ['name']: '',
+        ['shortdescription']: '',
+        ['categoryId']: '',
+        ['madeby']: '',
+        ['material']: '',
+        ['brandId']: '',
+        ['height']: '',
+        ['width']: '',
+        ['sizeId']: '',
 
-        ["originalPrice"]: "",
-        ["discountPrice"]: "",
-        ["image"]: "",
-        ["imageReview"]: "",
-        ["nameDetail"]: "",
-        ["contentHTML"]: "",
-        ["contenMarkdown"]: "",
-        ["weight"]: "",
+        ['originalPrice']: '',
+        ['discountPrice']: '',
+        ['image']: '',
+        ['imageReview']: '',
+        ['nameDetail']: '',
+        ['contentHTML']: '',
+        ['contenMarkdown']: '',
+        ['weight']: '',
       });
     } else {
       toast.error(res.errMessage);
@@ -135,8 +135,8 @@ const AddProduct = (props) => {
   let handleEditorChange = ({ html, text }) => {
     setInputValues({
       ...inputValues,
-      ["contentMarkdown"]: text,
-      ["contentHTML"]: html,
+      ['contentMarkdown']: text,
+      ['contentHTML']: html,
     });
   };
   return (
@@ -230,7 +230,7 @@ const AddProduct = (props) => {
             <div className="form-group">
               <label htmlFor="inputAddress">Mô tả sản phẩm</label>
               <MdEditor
-                style={{ height: "400px" }}
+                style={{ height: '400px' }}
                 renderHTML={(text) => mdParser.render(text)}
                 onChange={handleEditorChange}
                 value={inputValues.contentMarkdown}
@@ -348,10 +348,10 @@ const AddProduct = (props) => {
                 <br></br>
                 <label
                   style={{
-                    backgroundColor: "#eee",
-                    borderRadius: "5px",
-                    padding: "6px",
-                    cursor: "pointer",
+                    backgroundColor: '#eee',
+                    borderRadius: '5px',
+                    padding: '6px',
+                    cursor: 'pointer',
                   }}
                   className="label-upload"
                   htmlFor="previewImg"
@@ -368,11 +368,7 @@ const AddProduct = (props) => {
               </div>
             </div>
 
-            <button
-              onClick={() => handleSaveProduct()}
-              type="button"
-              className="btn btn-primary"
-            >
+            <button onClick={() => handleSaveProduct()} type="button" className="btn btn-primary">
               Lưu thông tin
             </button>
           </form>
@@ -381,9 +377,7 @@ const AddProduct = (props) => {
       {inputValues.isOpen === true && (
         <Lightbox
           mainSrc={inputValues.imageReview}
-          onCloseRequest={() =>
-            setInputValues({ ...inputValues, ["isOpen"]: false })
-          }
+          onCloseRequest={() => setInputValues({ ...inputValues, ['isOpen']: false })}
         />
       )}
     </div>

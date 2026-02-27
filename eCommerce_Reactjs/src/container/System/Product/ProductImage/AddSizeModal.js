@@ -1,13 +1,13 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import CommonUtils from "../../../../utils/CommonUtils";
-import moment from "moment";
-import { toast } from "react-toastify";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import { useFetchAllcode } from "../../../customize/fetch";
-import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from "reactstrap";
-import { getProductDetailSizeByIdService } from "../../../../services/userService";
+import React from 'react';
+import { useEffect, useState } from 'react';
+import CommonUtils from '../../../../utils/CommonUtils';
+import moment from 'moment';
+import { toast } from 'react-toastify';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+import { useFetchAllcode } from '../../../customize/fetch';
+import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from 'reactstrap';
+import { getProductDetailSizeByIdService } from '../../../../services/userService';
 import {
   BrowserRouter as Router,
   Switch,
@@ -15,24 +15,24 @@ import {
   Link,
   Redirect,
   useParams,
-} from "react-router-dom";
+} from 'react-router-dom';
 
 const AddSizeModal = (props) => {
-  const { data: dataSize } = useFetchAllcode("SIZE");
+  const { data: dataSize } = useFetchAllcode('SIZE');
   const [inputValues, setInputValues] = useState({
-    sizeId: "",
-    width: "",
-    height: "",
+    sizeId: '',
+    width: '',
+    height: '',
     isActionUpdate: false,
-    id: "",
-    weight: "",
+    id: '',
+    weight: '',
   });
   const handleOnChange = (event) => {
     const { name, value } = event.target;
     setInputValues({ ...inputValues, [name]: value });
   };
-  if (dataSize && dataSize.length > 0 && inputValues.sizeId === "") {
-    setInputValues({ ...inputValues, ["sizeId"]: dataSize[0].code });
+  if (dataSize && dataSize.length > 0 && inputValues.sizeId === '') {
+    setInputValues({ ...inputValues, ['sizeId']: dataSize[0].code });
   }
   useEffect(() => {
     let id = props.productSizeId;
@@ -43,11 +43,11 @@ const AddSizeModal = (props) => {
         if (res && res.errCode === 0) {
           setInputValues({
             ...inputValues,
-            ["isActionUpdate"]: true,
-            ["sizeId"]: res.data.sizeId,
-            ["width"]: res.data.width,
-            ["height"]: res.data.height,
-            ["weight"]: res.data.weight,
+            ['isActionUpdate']: true,
+            ['sizeId']: res.data.sizeId,
+            ['width']: res.data.width,
+            ['height']: res.data.height,
+            ['weight']: res.data.weight,
           });
         }
       };
@@ -66,32 +66,27 @@ const AddSizeModal = (props) => {
     });
     setInputValues({
       ...inputValues,
-      ["sizeId"]: "",
-      ["width"]: "",
-      ["height"]: "",
-      ["weight"]: "",
-      ["isActionUpdate"]: false,
+      ['sizeId']: '',
+      ['width']: '',
+      ['height']: '',
+      ['weight']: '',
+      ['isActionUpdate']: false,
     });
   };
   let handleCloseModal = () => {
     props.closeModal();
     setInputValues({
       ...inputValues,
-      ["sizeId"]: "",
-      ["width"]: "",
-      ["height"]: "",
-      ["weight"]: "",
-      ["isActionUpdate"]: false,
+      ['sizeId']: '',
+      ['width']: '',
+      ['height']: '',
+      ['weight']: '',
+      ['isActionUpdate']: false,
     });
   };
   return (
     <div className="">
-      <Modal
-        isOpen={props.isOpenModal}
-        className={"booking-modal-container"}
-        size="md"
-        centered
-      >
+      <Modal isOpen={props.isOpenModal} className={'booking-modal-container'} size="md" centered>
         <div className="modal-header">
           <h5 className="modal-title">Thêm kích thước chi tiết sản phẩm</h5>
           <button
@@ -160,7 +155,7 @@ const AddSizeModal = (props) => {
         <ModalFooter>
           <Button color="primary" onClick={handleSaveInfor}>
             Lưu thông tin
-          </Button>{" "}
+          </Button>{' '}
           <Button onClick={handleCloseModal}>Hủy</Button>
         </ModalFooter>
       </Modal>

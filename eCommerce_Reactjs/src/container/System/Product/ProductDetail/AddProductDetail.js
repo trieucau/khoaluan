@@ -1,33 +1,33 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
-import CommonUtils from "../../../../utils/CommonUtils";
-import "../AddProduct.scss";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import { useFetchAllcode } from "../../../customize/fetch";
-import { CreateNewProductDetailService } from "../../../../services/userService";
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import CommonUtils from '../../../../utils/CommonUtils';
+import '../AddProduct.scss';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+import { useFetchAllcode } from '../../../customize/fetch';
+import { CreateNewProductDetailService } from '../../../../services/userService';
 const AddProductDetail = (props) => {
-  const { data: dataSize } = useFetchAllcode("SIZE");
+  const { data: dataSize } = useFetchAllcode('SIZE');
   const { id } = useParams();
   const [inputValues, setInputValues] = useState({
-    width: "",
-    height: "",
-    sizeId: "",
-    originalPrice: "",
-    discountPrice: "",
-    image: "",
-    imageReview: "",
+    width: '',
+    height: '',
+    sizeId: '',
+    originalPrice: '',
+    discountPrice: '',
+    image: '',
+    imageReview: '',
     isOpen: false,
-    nameDetail: "",
-    description: "",
-    weight: "",
+    nameDetail: '',
+    description: '',
+    weight: '',
   });
 
-  if (dataSize && dataSize.length > 0 && inputValues.sizeId === "") {
-    setInputValues({ ...inputValues, ["sizeId"]: dataSize[0].code });
+  if (dataSize && dataSize.length > 0 && inputValues.sizeId === '') {
+    setInputValues({ ...inputValues, ['sizeId']: dataSize[0].code });
   }
   const handleOnChange = (event) => {
     const { name, value } = event.target;
@@ -38,21 +38,21 @@ const AddProductDetail = (props) => {
     let data = event.target.files;
     let file = data[0];
     if (file?.size > 31312281) {
-      toast.error("Dung lượng file bé hơn 30mb");
+      toast.error('Dung lượng file bé hơn 30mb');
     } else {
       let base64 = await CommonUtils.getBase64(file);
       let objectUrl = URL.createObjectURL(file);
       setInputValues({
         ...inputValues,
-        ["image"]: base64,
-        ["imageReview"]: objectUrl,
+        ['image']: base64,
+        ['imageReview']: objectUrl,
       });
     }
   };
   let openPreviewImage = () => {
     if (!inputValues.imageReview) return;
 
-    setInputValues({ ...inputValues, ["isOpen"]: true });
+    setInputValues({ ...inputValues, ['isOpen']: true });
   };
   let handleSaveProductDetail = async () => {
     let res = await CreateNewProductDetailService({
@@ -69,21 +69,21 @@ const AddProductDetail = (props) => {
       weight: inputValues.weight,
     });
     if (res && res.errCode === 0) {
-      toast.success("Tạo mới loại sản phẩm thành công!");
+      toast.success('Tạo mới loại sản phẩm thành công!');
       setInputValues({
         ...inputValues,
 
-        ["width"]: "",
-        ["height"]: "",
-        ["description"]: "",
-        ["sizeId"]: "",
+        ['width']: '',
+        ['height']: '',
+        ['description']: '',
+        ['sizeId']: '',
 
-        ["originalPrice"]: "",
-        ["discountPrice"]: "",
-        ["image"]: "",
-        ["imageReview"]: "",
-        ["nameDetail"]: "",
-        ["weight"]: "",
+        ['originalPrice']: '',
+        ['discountPrice']: '',
+        ['image']: '',
+        ['imageReview']: '',
+        ['nameDetail']: '',
+        ['weight']: '',
       });
     } else {
       toast.error(res.errMessage);
@@ -211,10 +211,10 @@ const AddProductDetail = (props) => {
                 <br></br>
                 <label
                   style={{
-                    backgroundColor: "#eee",
-                    borderRadius: "5px",
-                    padding: "6px",
-                    cursor: "pointer",
+                    backgroundColor: '#eee',
+                    borderRadius: '5px',
+                    padding: '6px',
+                    cursor: 'pointer',
                   }}
                   className="label-upload"
                   htmlFor="previewImg"
@@ -244,9 +244,7 @@ const AddProductDetail = (props) => {
       {inputValues.isOpen === true && (
         <Lightbox
           mainSrc={inputValues.imageReview}
-          onCloseRequest={() =>
-            setInputValues({ ...inputValues, ["isOpen"]: false })
-          }
+          onCloseRequest={() => setInputValues({ ...inputValues, ['isOpen']: false })}
         />
       )}
     </div>

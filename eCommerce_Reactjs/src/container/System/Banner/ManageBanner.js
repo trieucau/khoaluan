@@ -1,17 +1,14 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import {
-  getAllBanner,
-  deleteBannerService,
-} from "../../../services/userService";
-import moment from "moment";
-import { toast } from "react-toastify";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import "./AddBanner.scss";
-import { PAGINATION } from "../../../utils/constant";
-import ReactPaginate from "react-paginate";
-import CommonUtils from "../../../utils/CommonUtils";
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { getAllBanner, deleteBannerService } from '../../../services/userService';
+import moment from 'moment';
+import { toast } from 'react-toastify';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+import './AddBanner.scss';
+import { PAGINATION } from '../../../utils/constant';
+import ReactPaginate from 'react-paginate';
+import CommonUtils from '../../../utils/CommonUtils';
 import {
   BrowserRouter as Router,
   Switch,
@@ -19,16 +16,16 @@ import {
   Link,
   Redirect,
   useParams,
-} from "react-router-dom";
-import FormSearch from "../../../component/Search/FormSearch";
+} from 'react-router-dom';
+import FormSearch from '../../../component/Search/FormSearch';
 
 const ManageBanner = () => {
-  const [keyword, setkeyword] = useState("");
+  const [keyword, setkeyword] = useState('');
   const [dataBanner, setdataBanner] = useState([]);
-  const [imgPreview, setimgPreview] = useState("");
+  const [imgPreview, setimgPreview] = useState('');
   const [isOpen, setisOpen] = useState(false);
-  const [count, setCount] = useState("");
-  const [numberPage, setnumberPage] = useState("");
+  const [count, setCount] = useState('');
+  const [numberPage, setnumberPage] = useState('');
   useEffect(() => {
     loadBanner(keyword);
   }, []);
@@ -55,7 +52,7 @@ const ManageBanner = () => {
       },
     });
     if (response && response.errCode === 0) {
-      toast.success("Xóa băng rôn thành công !");
+      toast.success('Xóa băng rôn thành công !');
       let arrData = await getAllBanner({
         limit: PAGINATION.pagerow,
         offset: numberPage * PAGINATION.pagerow,
@@ -66,7 +63,7 @@ const ManageBanner = () => {
         setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
       }
     } else {
-      toast.error("Xóa băng rôn thất bại");
+      toast.error('Xóa băng rôn thất bại');
     }
   };
   let handleChangePage = async (number) => {
@@ -85,28 +82,24 @@ const ManageBanner = () => {
     setkeyword(keyword);
   };
   let handleOnchangeSearch = (keyword) => {
-    if (keyword === "") {
+    if (keyword === '') {
       loadBanner(keyword);
       setkeyword(keyword);
     }
   };
   let handleOnClickExport = async () => {
     let res = await getAllBanner({
-      limit: "",
-      offset: "",
-      keyword: "",
+      limit: '',
+      offset: '',
+      keyword: '',
     });
 
     if (res && res.errCode == 0) {
       res.data.forEach((element) => {
-        element.image = "";
+        element.image = '';
       });
 
-      await CommonUtils.exportExcel(
-        res.data,
-        "Danh sách băng rôn",
-        "ListBanner",
-      );
+      await CommonUtils.exportExcel(res.data, 'Danh sách băng rôn', 'ListBanner');
     }
   };
   return (
@@ -122,14 +115,14 @@ const ManageBanner = () => {
           <div className="row">
             <div className="col-4">
               <FormSearch
-                title={"tên băng rôn"}
+                title={'tên băng rôn'}
                 handleOnchange={handleOnchangeSearch}
                 handleSearch={handleSearchBanner}
               />
             </div>
             <div className="col-8">
               <button
-                style={{ float: "right" }}
+                style={{ float: 'right' }}
                 onClick={() => handleOnClickExport()}
                 className="btn btn-success"
               >
@@ -140,7 +133,7 @@ const ManageBanner = () => {
           <div className="table-responsive">
             <table
               className="table table-bordered"
-              style={{ border: "1" }}
+              style={{ border: '1' }}
               width="100%"
               cellspacing="0"
             >
@@ -161,22 +154,22 @@ const ManageBanner = () => {
                       <tr key={index}>
                         <td>{index + 1}</td>
                         <td>{item.name}</td>
-                        <td style={{ width: "30%" }}>
+                        <td style={{ width: '30%' }}>
                           <div
                             onClick={() => openPreviewImage(item.image)}
                             className="box-img-preview"
                             style={{
                               backgroundImage: `url(${item.image})`,
-                              width: "100%",
+                              width: '100%',
                             }}
                           ></div>
                         </td>
-                        <td style={{ width: "20%" }}>
+                        <td style={{ width: '20%' }}>
                           <Link to={`/admin/edit-banner/${item.id}`}>Edit</Link>
                           &nbsp; &nbsp;
                           <span
                             onClick={() => handleDeleteBanner(item.id)}
-                            style={{ color: "#0E6DFE", cursor: "pointer" }}
+                            style={{ color: '#0E6DFE', cursor: 'pointer' }}
                           >
                             Delete
                           </span>
@@ -189,29 +182,24 @@ const ManageBanner = () => {
           </div>
         </div>
         <ReactPaginate
-          previousLabel={"Quay lại"}
-          nextLabel={"Tiếp"}
-          breakLabel={"..."}
+          previousLabel={'Quay lại'}
+          nextLabel={'Tiếp'}
+          breakLabel={'...'}
           pageCount={count}
           marginPagesDisplayed={3}
-          containerClassName={"pagination justify-content-center"}
-          pageClassName={"page-item"}
-          pageLinkClassName={"page-link"}
-          previousLinkClassName={"page-link"}
-          nextClassName={"page-item"}
-          nextLinkClassName={"page-link"}
-          breakLinkClassName={"page-link"}
-          breakClassName={"page-item"}
-          activeClassName={"active"}
+          containerClassName={'pagination justify-content-center'}
+          pageClassName={'page-item'}
+          pageLinkClassName={'page-link'}
+          previousLinkClassName={'page-link'}
+          nextClassName={'page-item'}
+          nextLinkClassName={'page-link'}
+          breakLinkClassName={'page-link'}
+          breakClassName={'page-item'}
+          activeClassName={'active'}
           onPageChange={handleChangePage}
         />
       </div>
-      {isOpen === true && (
-        <Lightbox
-          mainSrc={imgPreview}
-          onCloseRequest={() => setisOpen(false)}
-        />
-      )}
+      {isOpen === true && <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />}
     </div>
   );
 };

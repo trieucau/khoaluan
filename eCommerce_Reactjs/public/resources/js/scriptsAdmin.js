@@ -1,144 +1,179 @@
 /*!
-    * Start Bootstrap - SB Admin v7.0.4 (https://startbootstrap.com/template/sb-admin)
-    * Copyright 2013-2021 Start Bootstrap
-    * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-sb-admin/blob/master/LICENSE)
-    */
-// 
+ * Start Bootstrap - SB Admin v7.0.4 (https://startbootstrap.com/template/sb-admin)
+ * Copyright 2013-2021 Start Bootstrap
+ * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-sb-admin/blob/master/LICENSE)
+ */
+//
 // Scripts
-// 
+//
 
-window.addEventListener('DOMContentLoaded', event => {
-
-    // Toggle the side navigation
-    const sidebarToggle = document.body.querySelector('#sidebarToggle');
-    if (sidebarToggle) {
-        // Uncomment Below to persist sidebar toggle between refreshes
-        // if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
-        //     document.body.classList.toggle('sb-sidenav-toggled');
-        // }
-        sidebarToggle.addEventListener('click', event => {
-            event.preventDefault();
-            document.body.classList.toggle('sb-sidenav-toggled');
-            localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
-        });
-    }
-
+window.addEventListener('DOMContentLoaded', (event) => {
+  // Toggle the side navigation
+  const sidebarToggle = document.body.querySelector('#sidebarToggle');
+  if (sidebarToggle) {
+    // Uncomment Below to persist sidebar toggle between refreshes
+    // if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
+    //     document.body.classList.toggle('sb-sidenav-toggled');
+    // }
+    sidebarToggle.addEventListener('click', (event) => {
+      event.preventDefault();
+      document.body.classList.toggle('sb-sidenav-toggled');
+      localStorage.setItem(
+        'sb|sidebar-toggle',
+        document.body.classList.contains('sb-sidenav-toggled')
+      );
+    });
+  }
 });
 /*global $, document, window, setTimeout, navigator, console, location*/
 /*global $, document, window, setTimeout, navigator, console, location*/
 $(document).ready(function () {
+  'use strict';
 
-    'use strict';
+  var usernameError = true,
+    emailError = true,
+    passwordError = true,
+    passConfirm = true;
 
-    var usernameError = true,
-        emailError = true,
-        passwordError = true,
-        passConfirm = true;
+  // Detect browser for css purpose
+  if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+    $('.form form label').addClass('fontSwitch');
+  }
 
-    // Detect browser for css purpose
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-        $('.form form label').addClass('fontSwitch');
+  // Label effect
+  $('input').focus(function () {
+    $(this).siblings('label').addClass('active');
+  });
+
+  // Form validation
+  $('input').blur(function () {
+    // User Name
+    if ($(this).hasClass('name')) {
+      if ($(this).val().length === 0) {
+        $(this)
+          .siblings('span.error')
+          .text('Please type your full name')
+          .fadeIn()
+          .parent('.form-group')
+          .addClass('hasError');
+        usernameError = true;
+      } else if ($(this).val().length > 1 && $(this).val().length <= 6) {
+        $(this)
+          .siblings('span.error')
+          .text('Please type at least 6 characters')
+          .fadeIn()
+          .parent('.form-group')
+          .addClass('hasError');
+        usernameError = true;
+      } else {
+        $(this).siblings('.error').text('').fadeOut().parent('.form-group').removeClass('hasError');
+        usernameError = false;
+      }
+    }
+    // Email
+    if ($(this).hasClass('email')) {
+      if ($(this).val().length == '') {
+        $(this)
+          .siblings('span.error')
+          .text('Please type your email address')
+          .fadeIn()
+          .parent('.form-group')
+          .addClass('hasError');
+        emailError = true;
+      } else {
+        $(this).siblings('.error').text('').fadeOut().parent('.form-group').removeClass('hasError');
+        emailError = false;
+      }
     }
 
-    // Label effect
-    $('input').focus(function () {
+    // PassWord
+    if ($(this).hasClass('pass')) {
+      if ($(this).val().length < 6) {
+        $(this)
+          .siblings('span.error')
+          .text('Please type at least 6 charcters')
+          .fadeIn()
+          .parent('.form-group')
+          .addClass('hasError');
+        passwordError = true;
+      } else {
+        $(this).siblings('.error').text('').fadeOut().parent('.form-group').removeClass('hasError');
+        passwordError = false;
+      }
+    }
 
-        $(this).siblings('label').addClass('active');
-    });
+    // PassWord confirmation
+    if ($('.pass').val() !== $('.passConfirm').val()) {
+      $('.passConfirm')
+        .siblings('.error')
+        .text("Passwords don't match")
+        .fadeIn()
+        .parent('.form-group')
+        .addClass('hasError');
+      passConfirm = false;
+    } else {
+      $('.passConfirm')
+        .siblings('.error')
+        .text('')
+        .fadeOut()
+        .parent('.form-group')
+        .removeClass('hasError');
+      passConfirm = false;
+    }
 
-    // Form validation
-    $('input').blur(function () {
+    // label effect
+    if ($(this).val().length > 0) {
+      $(this).siblings('label').addClass('active');
+    } else {
+      $(this).siblings('label').removeClass('active');
+    }
+  });
 
-        // User Name
-        if ($(this).hasClass('name')) {
-            if ($(this).val().length === 0) {
-                $(this).siblings('span.error').text('Please type your full name').fadeIn().parent('.form-group').addClass('hasError');
-                usernameError = true;
-            } else if ($(this).val().length > 1 && $(this).val().length <= 6) {
-                $(this).siblings('span.error').text('Please type at least 6 characters').fadeIn().parent('.form-group').addClass('hasError');
-                usernameError = true;
-            } else {
-                $(this).siblings('.error').text('').fadeOut().parent('.form-group').removeClass('hasError');
-                usernameError = false;
-            }
-        }
-        // Email
-        if ($(this).hasClass('email')) {
-            if ($(this).val().length == '') {
-                $(this).siblings('span.error').text('Please type your email address').fadeIn().parent('.form-group').addClass('hasError');
-                emailError = true;
-            } else {
-                $(this).siblings('.error').text('').fadeOut().parent('.form-group').removeClass('hasError');
-                emailError = false;
-            }
-        }
+  // form switch
+  $('a.switch').click(function (e) {
+    console.log($(this));
+    $(this).addClass('active');
+    e.preventDefault();
 
-        // PassWord
-        if ($(this).hasClass('pass')) {
-            if ($(this).val().length < 6) {
-                $(this).siblings('span.error').text('Please type at least 6 charcters').fadeIn().parent('.form-group').addClass('hasError');
-                passwordError = true;
-            } else {
-                $(this).siblings('.error').text('').fadeOut().parent('.form-group').removeClass('hasError');
-                passwordError = false;
-            }
-        }
+    if ($('a.switch').hasClass('active')) {
+      $(this)
+        .parents('.form-peice')
+        .addClass('switched')
+        .siblings('.form-peice')
+        .removeClass('switched');
+    } else {
+      $(this)
+        .parents('.form-peice')
+        .removeClass('switched')
+        .siblings('.form-peice')
+        .addClass('switched');
+    }
+  });
 
-        // PassWord confirmation
-        if ($('.pass').val() !== $('.passConfirm').val()) {
-            $('.passConfirm').siblings('.error').text('Passwords don\'t match').fadeIn().parent('.form-group').addClass('hasError');
-            passConfirm = false;
-        } else {
-            $('.passConfirm').siblings('.error').text('').fadeOut().parent('.form-group').removeClass('hasError');
-            passConfirm = false;
-        }
+  // Form submit
+  $('form.signup-form').submit(function (event) {
+    event.preventDefault();
 
-        // label effect
-        if ($(this).val().length > 0) {
-            $(this).siblings('label').addClass('active');
-        } else {
-            $(this).siblings('label').removeClass('active');
-        }
-    });
+    if (
+      usernameError == true ||
+      emailError == true ||
+      passwordError == true ||
+      passConfirm == true
+    ) {
+      $('.name, .email, .pass, .passConfirm').blur();
+    } else {
+      // $('.signup, .login').addClass('switched');
+      // setTimeout(function () { $('.signup, .login').hide(); }, 700);
+      // setTimeout(function () { $('.brand').addClass('active'); }, 300);
+      // setTimeout(function () { $('.heading').addClass('active'); }, 600);
+      // setTimeout(function () { $('.success-msg p').addClass('active'); }, 900);
+      // setTimeout(function () { $('.success-msg a').addClass('active'); }, 1050);
+      // setTimeout(function () { $('.form').hide(); }, 700);
+    }
+  });
 
-
-    // form switch
-    $('a.switch').click(function (e) {
-        console.log($(this))
-        $(this).addClass('active');
-        e.preventDefault();
-
-        if ($('a.switch').hasClass('active')) {
-            $(this).parents('.form-peice').addClass('switched').siblings('.form-peice').removeClass('switched');
-        } else {
-            $(this).parents('.form-peice').removeClass('switched').siblings('.form-peice').addClass('switched');
-        }
-    });
-
-
-    // Form submit
-    $('form.signup-form').submit(function (event) {
-        event.preventDefault();
-
-        if (usernameError == true || emailError == true || passwordError == true || passConfirm == true) {
-            $('.name, .email, .pass, .passConfirm').blur();
-        } else {
-           // $('.signup, .login').addClass('switched');
-
-            // setTimeout(function () { $('.signup, .login').hide(); }, 700);
-            // setTimeout(function () { $('.brand').addClass('active'); }, 300);
-            // setTimeout(function () { $('.heading').addClass('active'); }, 600);
-            // setTimeout(function () { $('.success-msg p').addClass('active'); }, 900);
-            // setTimeout(function () { $('.success-msg a').addClass('active'); }, 1050);
-            // setTimeout(function () { $('.form').hide(); }, 700);
-        }
-    });
-
-    // Reload page
-    $('a.profile').on('click', function () {
-        window.location.reload(true);
-    });
-
-
+  // Reload page
+  $('a.profile').on('click', function () {
+    window.location.reload(true);
+  });
 });
-

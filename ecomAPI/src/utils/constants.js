@@ -1,3 +1,3 @@
 export const EXCHANGE_RATES = {
-    USD: 24300
-}
+  USD: 24300,
+};

@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import socketIOClient from "socket.io-client";
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import socketIOClient from 'socket.io-client';
 
-import { getItemCartStart } from "../../action/ShopCartAction";
-import { listRoomOfUser } from "../../services/userService";
-import TopMenu from "./TopMenu";
-import "./Header.scss";
+import { getItemCartStart } from '../../action/ShopCartAction';
+import { listRoomOfUser } from '../../services/userService';
+import TopMenu from './TopMenu';
+import './Header.scss';
 
 const Header = () => {
   const [quantityMessage, setQuantityMessage] = useState(0);
@@ -21,11 +21,11 @@ const Header = () => {
 
   // danh sách menu chính
   const navItems = [
-    { path: "/", label: "Trang chủ", exact: true },
-    { path: "/shop", label: "Cửa hàng" },
-    { path: "/blog", label: "Tin tức" },
-    { path: "/voucher", label: "Giảm giá" },
-    { path: "/about", label: "Giới thiệu" },
+    { path: '/', label: 'Trang chủ', exact: true },
+    { path: '/shop', label: 'Cửa hàng' },
+    { path: '/blog', label: 'Tin tức' },
+    { path: '/voucher', label: 'Giảm giá' },
+    { path: '/about', label: 'Giới thiệu' },
   ];
 
   // lấy danh sách phòng chat + đếm tin nhắn chưa đọc
@@ -33,8 +33,7 @@ const Header = () => {
     const res = await listRoomOfUser(userId);
     if (res?.errCode === 0 && res.data?.[0]?.messageData?.length > 0) {
       const count = res.data[0].messageData.reduce(
-        (acc, item) =>
-          acc + (item.unRead === 1 && item.userId !== userId ? 1 : 0),
+        (acc, item) => acc + (item.unRead === 1 && item.userId !== userId ? 1 : 0),
         0
       );
       setQuantityMessage(count);
@@ -42,7 +41,7 @@ const Header = () => {
   };
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("userData"));
+    const userData = JSON.parse(localStorage.getItem('userData'));
     setUser(userData);
 
     if (userData) {
@@ -50,13 +49,9 @@ const Header = () => {
 
       socketRef.current = socketIOClient.connect(host);
 
-      socketRef.current.on("getId", (data) => setId(data));
-      socketRef.current.on("sendDataServer", () =>
-        fetchListRoom(userData.id)
-      );
-      socketRef.current.on("loadRoomServer", () =>
-        fetchListRoom(userData.id)
-      );
+      socketRef.current.on('getId', (data) => setId(data));
+      socketRef.current.on('sendDataServer', () => fetchListRoom(userData.id));
+      socketRef.current.on('loadRoomServer', () => fetchListRoom(userData.id));
 
       fetchListRoom(userData.id);
 
@@ -69,14 +64,14 @@ const Header = () => {
   // sticky header khi scroll
   useEffect(() => {
     const handleScroll = () => {
-      const header = document.querySelector(".main_menu");
+      const header = document.querySelector('.main_menu');
       if (header) {
-        header.classList.toggle("sticky", window.scrollY > 0);
+        header.classList.toggle('sticky', window.scrollY > 0);
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
@@ -88,7 +83,11 @@ const Header = () => {
           <nav className="navbar navbar-expand-lg navbar-light w-100">
             {/* logo */}
             <NavLink to="/" className="navbar-brand logo_h">
-              <img src="/resources/img/logo.png" alt="Logo" style={{ width: "170px", height: "auto" }} />
+              <img
+                src="/resources/img/logo.png"
+                alt="Logo"
+                style={{ width: '170px', height: 'auto' }}
+              />
             </NavLink>
 
             {/* nút toggle cho mobile */}
@@ -107,10 +106,7 @@ const Header = () => {
             </button>
 
             {/* nav links */}
-            <div
-              className="collapse navbar-collapse offset w-100"
-              id="navbarSupportedContent"
-            >
+            <div className="collapse navbar-collapse offset w-100" id="navbarSupportedContent">
               <div className="row w-100 mr-0">
                 <div className="col-lg-9 pr-0">
                   <ul className="nav navbar-nav center_nav pull-right">
@@ -121,7 +117,7 @@ const Header = () => {
                           to={item.path}
                           className="nav-link"
                           activeClassName="selected"
-                          activeStyle={{ color: "#71cd14" }}
+                          activeStyle={{ color: '#71cd14' }}
                         >
                           {item.label}
                         </NavLink>
@@ -139,9 +135,7 @@ const Header = () => {
                         <i className="fa-brands fa-facebook-messenger"></i>
                       </Link>
                       {quantityMessage > 0 && (
-                        <span className="box-message-quantity">
-                          {quantityMessage}
-                        </span>
+                        <span className="box-message-quantity">{quantityMessage}</span>
                       )}
                     </li>
 
@@ -151,18 +145,13 @@ const Header = () => {
                         <i className="ti-shopping-cart" />
                       </Link>
                       {dataCart?.length > 0 && (
-                        <span className="box-quantity-cart">
-                          {dataCart.length}
-                        </span>
+                        <span className="box-quantity-cart">{dataCart.length}</span>
                       )}
                     </li>
 
                     {/* user */}
                     <li className="nav-item">
-                      <Link
-                        to={`/user/detail/${user?.id || ""}`}
-                        className="icons"
-                      >
+                      <Link to={`/user/detail/${user?.id || ''}`} className="icons">
                         <i className="ti-user" aria-hidden="true" />
                       </Link>
                     </li>

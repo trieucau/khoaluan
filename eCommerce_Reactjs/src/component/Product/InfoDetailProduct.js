@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import { addItemCartStart } from "../../action/ShopCartAction";
-import "./InfoDetailProduct.scss";
-import CommonUtils from "../../utils/CommonUtils";
+import React, { useEffect, useState } from 'react';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { addItemCartStart } from '../../action/ShopCartAction';
+import './InfoDetailProduct.scss';
+import CommonUtils from '../../utils/CommonUtils';
 function InfoDetailProduct(props) {
   let { dataProduct } = props;
   let [arrDetail, setarrDetail] = useState([]);
   const [productDetail, setproductDetail] = useState([]);
   const [isOpen, setisOpen] = useState(false);
-  const [imgPreview, setimgPreview] = useState("");
-  const [activeLinkId, setactiveLinkId] = useState("");
-  const [quantity, setquantity] = useState("");
+  const [imgPreview, setimgPreview] = useState('');
+  const [activeLinkId, setactiveLinkId] = useState('');
+  const [quantity, setquantity] = useState('');
   const [quantityProduct, setquantityProduct] = useState(1);
   useEffect(() => {
     let { productDetail } = dataProduct ? dataProduct : [];
@@ -35,13 +35,9 @@ function InfoDetailProduct(props) {
       productDetail[event.target.value] &&
       productDetail[event.target.value].productDetailSize.length > 0
     ) {
-      setactiveLinkId(
-        productDetail[event.target.value].productDetailSize[0].id,
-      );
+      setactiveLinkId(productDetail[event.target.value].productDetailSize[0].id);
       setquantity(productDetail[event.target.value].productDetailSize[0].stock);
-      props.sendDataFromInforDetail(
-        productDetail[event.target.value].productDetailSize[0],
-      );
+      props.sendDataFromInforDetail(productDetail[event.target.value].productDetailSize[0]);
     }
   };
   let openPreviewImage = (url) => {
@@ -61,21 +57,17 @@ function InfoDetailProduct(props) {
           userId: props.userId,
           productdetailsizeId: activeLinkId,
           quantity: quantityProduct,
-        }),
+        })
       );
     } else {
-      toast.error("Đăng nhập để thêm vào giỏ hàng");
+      toast.error('Đăng nhập để thêm vào giỏ hàng');
     }
   };
   return (
     <div className="row s_product_inner">
       <div className="col-lg-6">
         <div className="s_product_img">
-          <div
-            id="carouselExampleIndicators"
-            className="carousel slide"
-            data-ride="carousel"
-          >
+          <div id="carouselExampleIndicators" className="carousel slide" data-ride="carousel">
             <div>
               <ol className="carousel-indicators">
                 {arrDetail &&
@@ -89,12 +81,7 @@ function InfoDetailProduct(props) {
                           data-slide-to={index}
                           className="active"
                         >
-                          <img
-                            height="60px"
-                            className="w-100"
-                            src={item.image}
-                            alt=""
-                          />
+                          <img height="60px" className="w-100" src={item.image} alt="" />
                         </li>
                       );
                     } else {
@@ -104,12 +91,7 @@ function InfoDetailProduct(props) {
                           data-slide-to={index}
                           className=""
                         >
-                          <img
-                            height="60px"
-                            className="w-100"
-                            src={item.image}
-                            alt=""
-                          />
+                          <img height="60px" className="w-100" src={item.image} alt="" />
                         </li>
                       );
                     }
@@ -125,28 +107,20 @@ function InfoDetailProduct(props) {
                     return (
                       <div
                         onClick={() => openPreviewImage(item.image)}
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: 'pointer' }}
                         className="carousel-item active"
                       >
-                        <img
-                          className="d-block w-100"
-                          src={item.image}
-                          alt="Ảnh bị lỗi"
-                        />
+                        <img className="d-block w-100" src={item.image} alt="Ảnh bị lỗi" />
                       </div>
                     );
                   } else {
                     return (
                       <div
                         onClick={() => openPreviewImage(item.image)}
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: 'pointer' }}
                         className="carousel-item "
                       >
-                        <img
-                          className="d-block w-100"
-                          src={item.image}
-                          alt="Ảnh bị lỗi"
-                        />
+                        <img className="d-block w-100" src={item.image} alt="Ảnh bị lỗi" />
                       </div>
                     );
                   }
@@ -162,23 +136,20 @@ function InfoDetailProduct(props) {
           <ul className="list">
             <li>
               <a className="active" href="#">
-                <span>Loại</span> :{" "}
-                {dataProduct && dataProduct.categoryData
-                  ? dataProduct.categoryData.value
-                  : ""}
+                <span>Loại</span> :{' '}
+                {dataProduct && dataProduct.categoryData ? dataProduct.categoryData.value : ''}
               </a>
             </li>
             <li>
               <a href="#">
-                {" "}
-                <span>Trạng thái</span> :{" "}
-                {quantity > 0 ? "Còn hàng" : "Hết hàng"}
+                {' '}
+                <span>Trạng thái</span> : {quantity > 0 ? 'Còn hàng' : 'Hết hàng'}
               </a>
             </li>
             <li>
               <div className="box-size">
                 <a href="#">
-                  {" "}
+                  {' '}
                   <span>Size</span>
                 </a>
                 {arrDetail &&
@@ -190,9 +161,7 @@ function InfoDetailProduct(props) {
                         onClick={() => handleClickBoxSize(item)}
                         key={index}
                         className={
-                          item.id === activeLinkId
-                            ? "product-size active"
-                            : "product-size"
+                          item.id === activeLinkId ? 'product-size active' : 'product-size'
                         }
                       >
                         {item.sizeData.value}
@@ -206,7 +175,7 @@ function InfoDetailProduct(props) {
             </li>
           </ul>
           <p>{arrDetail.description}</p>
-          <div style={{ display: "flex" }}>
+          <div style={{ display: 'flex' }}>
             <div className="product_count">
               <label htmlFor="qty">Số lượng</label>
               {/* <input type="text" name="qty" id="sst" maxLength={12} defaultValue={1} title="Quantity:" className="input-text qty" /> */}
@@ -220,10 +189,10 @@ function InfoDetailProduct(props) {
             <div className="form-group">
               <label
                 style={{
-                  fontSize: "14px",
-                  color: "#797979",
+                  fontSize: '14px',
+                  color: '#797979',
                   fontFamily: '"Roboto",sans-serif',
-                  marginLeft: "16px",
+                  marginLeft: '16px',
                 }}
                 htmlFor="type"
               >
@@ -234,9 +203,9 @@ function InfoDetailProduct(props) {
                 className="sorting"
                 name="type"
                 style={{
-                  outline: "none",
-                  border: "1px solid #eee",
-                  marginLeft: "16px",
+                  outline: 'none',
+                  border: '1px solid #eee',
+                  marginLeft: '16px',
                 }}
               >
                 {dataProduct &&
@@ -263,12 +232,7 @@ function InfoDetailProduct(props) {
           </div>
         </div>
       </div>
-      {isOpen === true && (
-        <Lightbox
-          mainSrc={imgPreview}
-          onCloseRequest={() => setisOpen(false)}
-        />
-      )}
+      {isOpen === true && <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />}
     </div>
   );
 }

@@ -1,11 +1,11 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import CommonUtils from "../../../../utils/CommonUtils";
-import moment from "moment";
-import { toast } from "react-toastify";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from "reactstrap";
+import React from 'react';
+import { useEffect, useState } from 'react';
+import CommonUtils from '../../../../utils/CommonUtils';
+import moment from 'moment';
+import { toast } from 'react-toastify';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from 'reactstrap';
 import {
   BrowserRouter as Router,
   Switch,
@@ -13,32 +13,32 @@ import {
   Link,
   Redirect,
   useParams,
-} from "react-router-dom";
-import { getProductDetailImageByIdService } from "../../../../services/userService";
+} from 'react-router-dom';
+import { getProductDetailImageByIdService } from '../../../../services/userService';
 
 const AddImageModal = (props) => {
   const [inputValues, setInputValues] = useState({
-    image: "",
-    imageReview: "",
-    caption: "",
+    image: '',
+    imageReview: '',
+    caption: '',
     isOpen: false,
     isActionUpdate: false,
-    id: "",
+    id: '',
   });
 
   useEffect(() => {
     let id = props.productImageId;
-    console.log("check id", id);
+    console.log('check id', id);
     if (id) {
       let fetchProductImage = async () => {
         let res = await getProductDetailImageByIdService(id);
         if (res && res.errCode === 0) {
           setInputValues({
             ...inputValues,
-            ["isActionUpdate"]: true,
-            ["caption"]: res.data.caption,
-            ["image"]: res.data.image,
-            ["imageReview"]: res.data.image,
+            ['isActionUpdate']: true,
+            ['caption']: res.data.caption,
+            ['image']: res.data.image,
+            ['imageReview']: res.data.image,
           });
         }
       };
@@ -55,21 +55,21 @@ const AddImageModal = (props) => {
     let data = event.target.files;
     let file = data[0];
     if (file?.size > 31312281) {
-      toast.error("Dung lượng file bé hơn 30mb");
+      toast.error('Dung lượng file bé hơn 30mb');
     } else {
       let base64 = await CommonUtils.getBase64(file);
       let objectUrl = URL.createObjectURL(file);
       setInputValues({
         ...inputValues,
-        ["image"]: base64,
-        ["imageReview"]: objectUrl,
+        ['image']: base64,
+        ['imageReview']: objectUrl,
       });
     }
   };
   let openPreviewImage = () => {
     if (!inputValues.imageReview) return;
 
-    setInputValues({ ...inputValues, ["isOpen"]: true });
+    setInputValues({ ...inputValues, ['isOpen']: true });
   };
   let HandleSendDataFromModal = () => {
     props.sendDataFromModal({
@@ -80,30 +80,25 @@ const AddImageModal = (props) => {
     });
     setInputValues({
       ...inputValues,
-      ["image"]: "",
-      ["imageReview"]: "",
-      ["caption"]: "",
-      ["isActionUpdate"]: false,
+      ['image']: '',
+      ['imageReview']: '',
+      ['caption']: '',
+      ['isActionUpdate']: false,
     });
   };
   let handleCloseModal = () => {
     props.closeModal();
     setInputValues({
       ...inputValues,
-      ["image"]: "",
-      ["imageReview"]: "",
-      ["caption"]: "",
-      ["isActionUpdate"]: false,
+      ['image']: '',
+      ['imageReview']: '',
+      ['caption']: '',
+      ['isActionUpdate']: false,
     });
   };
   return (
     <div className="">
-      <Modal
-        isOpen={props.isOpenModal}
-        className={"booking-modal-container"}
-        size="md"
-        centered
-      >
+      <Modal isOpen={props.isOpenModal} className={'booking-modal-container'} size="md" centered>
         <div className="modal-header">
           <h5 className="modal-title">Thêm hình ảnh chi tiết sản phẩm</h5>
           <button
@@ -158,9 +153,7 @@ const AddImageModal = (props) => {
       {inputValues.isOpen === true && (
         <Lightbox
           mainSrc={inputValues.imageReview}
-          onCloseRequest={() =>
-            setInputValues({ ...inputValues, ["isOpen"]: false })
-          }
+          onCloseRequest={() => setInputValues({ ...inputValues, ['isOpen']: false })}
         />
       )}
     </div>

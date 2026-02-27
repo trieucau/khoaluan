@@ -1,27 +1,27 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React from 'react';
+import { useEffect, useState } from 'react';
 import {
   createNewBannerService,
   getDetailBannerByIdService,
   updateBannerService,
-} from "../../../services/userService";
-import CommonUtils from "../../../utils/CommonUtils";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
-import "./AddBanner.scss";
-import moment from "moment";
+} from '../../../services/userService';
+import CommonUtils from '../../../utils/CommonUtils';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import './AddBanner.scss';
+import moment from 'moment';
 const AddBanner = (props) => {
   const { id } = useParams();
 
   const [inputValues, setInputValues] = useState({
-    name: "",
-    description: "",
-    image: "",
+    name: '',
+    description: '',
+    image: '',
     isActionADD: true,
-    imageReview: "",
+    imageReview: '',
     isOpen: false,
   });
   useEffect(() => {
@@ -38,11 +38,11 @@ const AddBanner = (props) => {
   let setStateBanner = (data) => {
     setInputValues({
       ...inputValues,
-      ["name"]: data.name,
-      ["description"]: data.description,
-      ["image"]: data.image,
-      ["imageReview"]: data.image,
-      ["isActionADD"]: false,
+      ['name']: data.name,
+      ['description']: data.description,
+      ['image']: data.image,
+      ['imageReview']: data.image,
+      ['isActionADD']: false,
     });
   };
   const handleOnChange = (event) => {
@@ -53,22 +53,22 @@ const AddBanner = (props) => {
     let data = event.target.files;
     let file = data[0];
     if (file?.size > 31312281) {
-      toast.error("Dung lượng file bé hơn 30mb");
+      toast.error('Dung lượng file bé hơn 30mb');
     } else {
       let base64 = await CommonUtils.getBase64(file);
       let objectUrl = URL.createObjectURL(file);
       console.log(base64);
       setInputValues({
         ...inputValues,
-        ["image"]: base64,
-        ["imageReview"]: objectUrl,
+        ['image']: base64,
+        ['imageReview']: objectUrl,
       });
     }
   };
   let openPreviewImage = () => {
     if (!inputValues.imageReview) return;
 
-    setInputValues({ ...inputValues, ["isOpen"]: true });
+    setInputValues({ ...inputValues, ['isOpen']: true });
   };
   let handleSaveBanner = async () => {
     if (inputValues.isActionADD === true) {
@@ -78,13 +78,13 @@ const AddBanner = (props) => {
         image: inputValues.image,
       });
       if (res && res.errCode === 0) {
-        toast.success("Tạo mới băng rôn thành công !");
+        toast.success('Tạo mới băng rôn thành công !');
         setInputValues({
           ...inputValues,
-          ["name"]: "",
-          ["image"]: "",
-          ["description"]: "",
-          ["imageReview"]: "",
+          ['name']: '',
+          ['image']: '',
+          ['description']: '',
+          ['imageReview']: '',
         });
       } else {
         toast.error(res.errMessage);
@@ -97,7 +97,7 @@ const AddBanner = (props) => {
         id: id,
       });
       if (res && res.errCode === 0) {
-        toast.success("Cập nhật băng rôn thành công !");
+        toast.success('Cập nhật băng rôn thành công !');
       } else {
         toast.error(res.errMessage);
       }
@@ -110,9 +110,7 @@ const AddBanner = (props) => {
       <div className="card mb-4">
         <div className="card-header">
           <i className="fas fa-table me-1" />
-          {inputValues.isActionADD === true
-            ? "Thêm mới băng rôn"
-            : "Cập nhật thông tin băng rôn"}
+          {inputValues.isActionADD === true ? 'Thêm mới băng rôn' : 'Cập nhật thông tin băng rôn'}
         </div>
         <div className="card-body">
           <form>
@@ -158,11 +156,7 @@ const AddBanner = (props) => {
                 ></textarea>
               </div>
             </div>
-            <button
-              onClick={() => handleSaveBanner()}
-              type="button"
-              className="btn btn-primary"
-            >
+            <button onClick={() => handleSaveBanner()} type="button" className="btn btn-primary">
               Lưu thông tin
             </button>
           </form>
@@ -171,9 +165,7 @@ const AddBanner = (props) => {
       {inputValues.isOpen === true && (
         <Lightbox
           mainSrc={inputValues.imageReview}
-          onCloseRequest={() =>
-            setInputValues({ ...inputValues, ["isOpen"]: false })
-          }
+          onCloseRequest={() => setInputValues({ ...inputValues, ['isOpen']: false })}
         />
       )}
     </div>
