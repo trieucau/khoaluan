@@ -209,12 +209,7 @@ function OrderHomePage(props) {
   return (
     <>
       <div className="wrap-order">
-        <div className="wrap-heading-order">
-          <NavLink to="/" className="navbar-brand logo_h">
-            <img src="/resources/img/logo.png" alt="" />
-          </NavLink>
-          <span>Thanh Toán</span>
-        </div>
+        <div className="wrap-heading-order">{/* <span>Hóa đơn thanh toán</span> */}</div>
         <div className="wrap-address-order">
           <div className="border-top-address-order"></div>
           <div className="wrap-content-address">

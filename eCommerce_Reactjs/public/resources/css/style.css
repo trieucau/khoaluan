@@ -55,7 +55,7 @@ ul {
   margin-bottom: 40px;
 }
 .section_gap {
-  padding: 120px 0px;
+  padding: 50px 0px;
 }
 @media (max-width: 991px) {
   .section_gap {
@@ -63,19 +63,19 @@ ul {
   }
 }
 .section_gap_bottom_custom {
-  padding-bottom: 70px;
+  padding-bottom: 50px;
 }
 @media (max-width: 991px) {
   .section_gap_bottom_custom {
-    padding-bottom: 30px;
+    padding-bottom: 40px;
   }
 }
 .section_gap_top {
-  padding-top: 120px;
+  padding-top: 80px;
 }
 @media (max-width: 1224px) {
   .section_gap_top {
-    padding-top: 80px;
+    padding-top: 60px;
   }
 }
 .main_title {
