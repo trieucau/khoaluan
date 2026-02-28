@@ -35,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       isPaymentOnlien: DataTypes.INTEGER,
       shipperId: DataTypes.INTEGER,
       image: DataTypes.BLOB('long'),
+      statusReason: DataTypes.TEXT,
     },
     {
       sequelize,

@@ -430,6 +430,27 @@ const getAllReceipt = (data) => {
 const createNewReceiptDetailService = (data) => {
   return axios.post(`/api/create-new-detail-receipt`, data);
 };
+//======================SHIPPER & TRACKING==========================//
+const getOrdersAvailableForShipper = () => {
+  return axios.get(`/api/orders-available-for-shipper`);
+};
+const shipperTakeOrder = (orderId) => {
+  return axios.post(`/api/shipper-take-order`, { orderId });
+};
+const shipperUpdateOrderStatus = (data) => {
+  return axios.put(`/api/shipper-update-order-status`, data);
+};
+const getAllOrdersByShipper = (params) => {
+  return axios.get(
+    `/api/get-all-order-by-shipper?shipperId=${params.shipperId}&status=${params.status || ''}`
+  );
+};
+const getOrderShipperLocation = (orderId) => {
+  return axios.get(`/api/order-shipper-location?orderId=${orderId}`);
+};
+const getAdminShippersOnMap = () => {
+  return axios.get(`/api/admin-shippers-on-map`);
+};
 //======================THIRTY SERVICE==========================//
 const getExchangeRate = () => {
   return axios.get(`https://tygia.com/json.php?ran=0&gold=0&bank=VIETCOM&date=now`);
@@ -559,4 +580,10 @@ export {
   paymentOrderVnpayService,
   confirmOrderVnpay,
   paymentOrderVnpaySuccessService,
+  getOrdersAvailableForShipper,
+  shipperTakeOrder,
+  shipperUpdateOrderStatus,
+  getAllOrdersByShipper,
+  getOrderShipperLocation,
+  getAdminShippersOnMap,
 };

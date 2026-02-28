@@ -39,6 +39,8 @@ const LoginWebPage = () => {
       localStorage.setItem('token', JSON.stringify(res.accessToken));
       if (res.user.roleId === 'R1' || res.user.roleId === 'R4') {
         window.location.href = '/admin';
+      } else if (res.user.roleId === 'R3') {
+        window.location.href = '/shipper';
       } else {
         window.location.href = '/';
       }

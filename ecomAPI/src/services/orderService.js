@@ -170,6 +170,13 @@ let getDetailOrderById = (id) => {
           nest: true,
         });
         order.userData = user;
+        if (order.shipperId) {
+          order.shipperData = await db.User.findOne({
+            where: { id: order.shipperId },
+            attributes: { exclude: ['password', 'image'] },
+            raw: true,
+          });
+        }
         for (let i = 0; i < orderDetail.length; i++) {
           orderDetail[i].productDetailSize = await db.ProductDetailSize.findOne({
             where: { id: orderDetail[i].productId },
@@ -371,11 +378,188 @@ let getAllOrdersByShipper = (data) => {
         errCode: 0,
         data: res,
       });
-
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let getOrdersAvailableForShipper = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const orders = await db.OrderProduct.findAll({
+        where: { statusId: 'S3', shipperId: null },
+        include: [
+          { model: db.TypeShip, as: 'typeShipData' },
+          { model: db.Voucher, as: 'voucherData' },
+          { model: db.Allcode, as: 'statusOrderData' },
+        ],
+        order: [['createdAt', 'DESC']],
+        raw: true,
+        nest: true,
+      });
+      for (let i = 0; i < orders.length; i++) {
+        const addressUser = await db.AddressUser.findOne({
+          where: { id: orders[i].addressUserId },
+        });
+        if (addressUser) {
+          orders[i].addressUser = addressUser;
+          const user = await db.User.findOne({
+            where: { id: addressUser.userId },
+            attributes: { exclude: ['password', 'image'] },
+          });
+          orders[i].userData = user;
+        }
+      }
+      resolve({ errCode: 0, data: orders });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let shipperTakeOrder = (orderId, shipperId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!orderId || !shipperId) {
+        return resolve({ errCode: 1, errMessage: 'Missing required parameter!' });
+      }
+      const order = await db.OrderProduct.findOne({
+        where: { id: orderId },
+        raw: false,
+      });
+      if (!order) {
+        return resolve({ errCode: 2, errMessage: 'Order not found!' });
+      }
+      if (order.statusId !== 'S3' || order.shipperId != null) {
+        return resolve({ errCode: 3, errMessage: 'Order is not available for taking!' });
+      }
+      order.shipperId = shipperId;
+      order.statusId = 'S4';
+      await order.save();
+      resolve({ errCode: 0, errMessage: 'ok' });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let shipperUpdateOrderStatus = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { orderId, shipperId, statusId, image, statusReason } = data;
+      if (!orderId || !shipperId || !statusId) {
+        return resolve({ errCode: 1, errMessage: 'Missing required parameter!' });
+      }
+      const order = await db.OrderProduct.findOne({
+        where: { id: orderId },
+        raw: false,
+      });
+      if (!order) {
+        return resolve({ errCode: 2, errMessage: 'Order not found!' });
+      }
+      if (order.shipperId !== shipperId) {
+        return resolve({ errCode: 3, errMessage: 'Not your order!' });
+      }
+      const allowed = [['S4', 'S5'], ['S5', 'S6'], ['S5', 'S7'], ['S5', 'S8'], ['S4', 'S7'], ['S4', 'S8']];
+      const allowedTransition = allowed.some(([from, to]) => order.statusId === from && statusId === to);
+      if (!allowedTransition) {
+        return resolve({ errCode: 4, errMessage: 'Invalid status transition!' });
+      }
+      if ((statusId === 'S6' && !image) || (statusId === 'S7' || statusId === 'S8') && !statusReason) {
+        return resolve({
+          errCode: 5,
+          errMessage: statusId === 'S6' ? 'Image required for delivery confirmation!' : 'Reason required for cancel/fail!',
+        });
+      }
+      order.statusId = statusId;
+      if (image) order.image = image;
+      if (statusReason) order.statusReason = statusReason;
+      await order.save();
+      if (statusId === 'S7' || statusId === 'S8') {
+        const orderDetail = await db.OrderDetail.findAll({ where: { orderId } });
+        for (let i = 0; i < orderDetail.length; i++) {
+          const pds = await db.ProductDetailSize.findOne({
+            where: { id: orderDetail[i].productId },
+            raw: false,
+          });
+          if (pds) {
+            pds.stock = (pds.stock || 0) + orderDetail[i].quantity;
+            await pds.save();
+          }
+        }
+      }
+      resolve({ errCode: 0, errMessage: 'ok' });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let getOrderShipperLocation = (orderId, userId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!orderId || !userId) {
+        return resolve({ errCode: 1, errMessage: 'Missing required parameter!' });
+      }
+      const order = await db.OrderProduct.findOne({
+        where: { id: orderId },
+        raw: true,
+      });
+      if (!order) {
+        return resolve({ errCode: 2, errMessage: 'Order not found!' });
+      }
+      const addressUser = await db.AddressUser.findOne({
+        where: { id: order.addressUserId },
+      });
+      if (!addressUser || addressUser.userId !== userId) {
+        return resolve({ errCode: 3, errMessage: 'Not authorized to view this order!' });
+      }
+      if (!order.shipperId) {
+        return resolve({ errCode: 0, data: { lat: null, lng: null, shipperId: null } });
+      }
+      const location = await db.ShipperLocation.findOne({
+        where: { shipperId: order.shipperId },
+      });
       resolve({
         errCode: 0,
-        data: addressUser,
+        data: {
+          lat: location?.lat,
+          lng: location?.lng,
+          shipperId: order.shipperId,
+        },
       });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+let getAdminShippersOnMap = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const orders = await db.OrderProduct.findAll({
+        where: { statusId: { [Op.in]: ['S4', 'S5'] } },
+        attributes: ['id', 'shipperId', 'statusId'],
+        raw: true,
+      });
+      const shipperIds = [...new Set(orders.map((o) => o.shipperId).filter(Boolean))];
+      const list = [];
+      for (const sid of shipperIds) {
+        const user = await db.User.findOne({
+          where: { id: sid },
+          attributes: ['id', 'firstName', 'lastName', 'phonenumber'],
+          raw: true,
+        });
+        const location = await db.ShipperLocation.findOne({
+          where: { shipperId: sid },
+          raw: true,
+        });
+        const orderIds = orders.filter((o) => o.shipperId === sid).map((o) => o.id);
+        list.push({
+          shipperId: sid,
+          shipper: user,
+          lat: location?.lat,
+          lng: location?.lng,
+          orderIds,
+        });
+      }
+      resolve({ errCode: 0, data: list });
     } catch (error) {
       reject(error);
     }
@@ -793,6 +977,11 @@ module.exports = {
   paymentOrderSuccess: paymentOrderSuccess,
   confirmOrder: confirmOrder,
   getAllOrdersByShipper: getAllOrdersByShipper,
+  getOrdersAvailableForShipper: getOrdersAvailableForShipper,
+  shipperTakeOrder: shipperTakeOrder,
+  shipperUpdateOrderStatus: shipperUpdateOrderStatus,
+  getOrderShipperLocation: getOrderShipperLocation,
+  getAdminShippersOnMap: getAdminShippersOnMap,
   paymentOrderVnpay: paymentOrderVnpay,
   confirmOrderVnpay: confirmOrderVnpay,
   paymentOrderVnpaySuccess: paymentOrderVnpaySuccess,

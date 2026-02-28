@@ -156,6 +156,59 @@ let updateImageOrder = async (req, res) => {
     });
   }
 };
+let getOrdersAvailableForShipper = async (req, res) => {
+  try {
+    let data = await orderService.getOrdersAvailableForShipper();
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({ errCode: -1, errMessage: 'Error from server' });
+  }
+};
+let shipperTakeOrder = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    const shipperId = req.user.id;
+    let data = await orderService.shipperTakeOrder(orderId, shipperId);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({ errCode: -1, errMessage: 'Error from server' });
+  }
+};
+let shipperUpdateOrderStatus = async (req, res) => {
+  try {
+    const shipperId = req.user.id;
+    const data = await orderService.shipperUpdateOrderStatus({
+      ...req.body,
+      shipperId,
+    });
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({ errCode: -1, errMessage: 'Error from server' });
+  }
+};
+let getOrderShipperLocation = async (req, res) => {
+  try {
+    const { orderId } = req.query;
+    const userId = req.user.id;
+    let data = await orderService.getOrderShipperLocation(orderId, userId);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({ errCode: -1, errMessage: 'Error from server' });
+  }
+};
+let getAdminShippersOnMap = async (req, res) => {
+  try {
+    let data = await orderService.getAdminShippersOnMap();
+    return res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    return res.status(200).json({ errCode: -1, errMessage: 'Error from server' });
+  }
+};
 module.exports = {
   createNewOrder: createNewOrder,
   getAllOrders: getAllOrders,
@@ -166,6 +219,11 @@ module.exports = {
   paymentOrderSuccess: paymentOrderSuccess,
   confirmOrder: confirmOrder,
   getAllOrdersByShipper: getAllOrdersByShipper,
+  getOrdersAvailableForShipper: getOrdersAvailableForShipper,
+  shipperTakeOrder: shipperTakeOrder,
+  shipperUpdateOrderStatus: shipperUpdateOrderStatus,
+  getOrderShipperLocation: getOrderShipperLocation,
+  getAdminShippersOnMap: getAdminShippersOnMap,
   paymentOrderVnpay: paymentOrderVnpay,
   confirmOrderVnpay: confirmOrderVnpay,
   paymentOrderVnpaySuccess: paymentOrderVnpaySuccess,

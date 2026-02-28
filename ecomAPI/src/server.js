@@ -2,11 +2,14 @@ import 'dotenv/config';
 import express from 'express';
 import bodyParser from 'body-parser';
 import { Server } from 'socket.io';
+import jwt from 'jsonwebtoken';
 import viewEngine from './config/viewEngine';
 import initwebRoutes from './route/web';
 import connectDB from './config/connectDB';
 import http from 'http';
 import { sendMessage } from './services/messageService';
+import { upsertShipperLocation } from './services/shipperLocationService';
+import db from './models/index';
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 let app = express();
@@ -44,7 +47,7 @@ const socketIo = new Server(server, {
   },
 });
 socketIo.on('connection', (socket) => {
-  console.log('New client connected' + socket.id);
+  console.log('New client connected ' + socket.id);
 
   socket.on('sendDataClient', function (data) {
     sendMessage(data);
@@ -53,6 +56,57 @@ socketIo.on('connection', (socket) => {
   socket.on('loadRoomClient', function (data) {
     socketIo.emit('loadRoomServer', { data });
   });
+
+  // Shipper gửi vị trí realtime (mỗi 3-5s khi đang giao)
+  socket.on('shipper:location', async (data) => {
+    const { shipperId, lat, lng, orderIds } = data || {};
+    if (!shipperId || lat == null || lng == null) return;
+    await upsertShipperLocation(shipperId, lat, lng);
+    const ids = Array.isArray(orderIds) ? orderIds : [];
+    ids.forEach((orderId) => {
+      socketIo.to(`order:tracking:${orderId}`).emit('order:shipper_location', {
+        orderId,
+        shipperId,
+        lat,
+        lng,
+      });
+    });
+    socketIo.to('admin:shipper_map').emit('shipper:location', { shipperId, lat, lng });
+  });
+
+  // Khách hàng join room theo dõi đơn (chỉ chủ đơn mới được join)
+  socket.on('join_order_tracking', async (data) => {
+    const { orderId, token } = data || {};
+    if (!orderId || !token) return;
+    try {
+      const accessToken = (token || '').split(' ')[1] || token;
+      const payload = jwt.verify(accessToken, process.env.JWT_SECRET);
+      const order = await db.OrderProduct.findOne({ where: { id: orderId }, raw: true });
+      if (!order) return;
+      const addressUser = await db.AddressUser.findOne({ where: { id: order.addressUserId }, raw: true });
+      if (!addressUser || addressUser.userId !== payload.sub) return;
+      socket.join(`order:tracking:${orderId}`);
+    } catch (e) {
+      // invalid token or not owner
+    }
+  });
+
+  // Admin/Saler join room bản đồ shipper
+  socket.on('join_admin_shipper_map', async (data) => {
+    const { token } = data || {};
+    if (!token) return;
+    try {
+      const accessToken = (token || '').split(' ')[1] || token;
+      const payload = jwt.verify(accessToken, process.env.JWT_SECRET);
+      const user = await db.User.findOne({ where: { id: payload.sub }, raw: true });
+      if (user && (user.roleId === 'R1' || user.roleId === 'R4')) {
+        socket.join('admin:shipper_map');
+      }
+    } catch (e) {
+        // invalid token or not admin
+      }
+    });
+
   socket.on('disconnect', () => {
     console.log('Client disconnected');
   });

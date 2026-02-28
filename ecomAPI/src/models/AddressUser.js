@@ -16,6 +16,8 @@ module.exports = (sequelize, DataTypes) => {
       shipAdress: DataTypes.STRING,
       shipEmail: DataTypes.STRING,
       shipPhonenumber: DataTypes.STRING,
+      lat: DataTypes.DECIMAL(10, 8),
+      lng: DataTypes.DECIMAL(11, 8),
     },
     {
       sequelize,

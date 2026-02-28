@@ -44,6 +44,7 @@ import DetailReceipt from './Receipt/DetailReceipt';
 import Turnover from './Statistic/Turnover';
 import Profit from './Statistic/Profit';
 import StockProduct from './Statistic/StockProduct';
+import AdminShipperMap from './ShipperMap/AdminShipperMap';
 
 // Common Layout for Admin
 const AdminLayout = ({ children }) => (
@@ -136,6 +137,9 @@ function HomePageAdmin() {
           {/* Order Management */}
           <Route path="/list-order" element={<ManageOrder />} />
           <Route path="/order-detail/:id" element={<DetailOrder />} />
+
+          {/* Shipper map */}
+          <Route path="/shipper-map" element={<AdminShipperMap />} />
 
           {/* Statistics */}
           <Route path="/turnover" element={<Turnover />} />

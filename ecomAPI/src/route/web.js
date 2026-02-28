@@ -338,7 +338,36 @@ let initwebRoutes = (app) => {
     orderController.paymentOrderVnpaySuccess
   );
   router.put('/api/confirm-order', orderController.confirmOrder);
-  router.get('/api/get-all-order-by-shipper', orderController.getAllOrdersByShipper);
+  router.get(
+    '/api/get-all-order-by-shipper',
+    middlewareControllers.verifyTokenShipper,
+    orderController.getAllOrdersByShipper
+  );
+  router.get(
+    '/api/orders-available-for-shipper',
+    middlewareControllers.verifyTokenShipper,
+    orderController.getOrdersAvailableForShipper
+  );
+  router.post(
+    '/api/shipper-take-order',
+    middlewareControllers.verifyTokenShipper,
+    orderController.shipperTakeOrder
+  );
+  router.put(
+    '/api/shipper-update-order-status',
+    middlewareControllers.verifyTokenShipper,
+    orderController.shipperUpdateOrderStatus
+  );
+  router.get(
+    '/api/order-shipper-location',
+    middlewareControllers.verifyTokenUser,
+    orderController.getOrderShipperLocation
+  );
+  router.get(
+    '/api/admin-shippers-on-map',
+    middlewareControllers.verifyTokenAdmin,
+    orderController.getAdminShippersOnMap
+  );
   router.post(
     '/api/payment-order-vnpay',
     middlewareControllers.verifyTokenUser,

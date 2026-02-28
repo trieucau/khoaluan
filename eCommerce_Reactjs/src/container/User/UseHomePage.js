@@ -6,6 +6,7 @@ import StoreVoucher from './StoreVoucher';
 import AddressUser from './AddressUser';
 import ChangePassword from '../System/User/ChangePassword';
 import OrderUser from './OrderUser';
+import OrderTracking from './OrderTracking';
 import MessagePage from '../Message/MessagePage';
 
 function UserHomePage(props) {
@@ -24,6 +25,7 @@ function UserHomePage(props) {
         <Route path="store-voucher/:id" element={<StoreVoucher id={user.id} />} />
         <Route path="address/:id" element={<AddressUser id={user.id} />} />
         <Route path="order/:id" element={<OrderUser id={user.id} />} />
+        <Route path="order-tracking/:orderId" element={<OrderTracking />} />
         <Route path="changepassword/:id" element={<ChangePassword id={user.id} />} />
       </Routes>
       <CategoryUser id={user.id} />

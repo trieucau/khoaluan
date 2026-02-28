@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-  useParams,
-} from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import './OrderUser.scss';
 import { getAllOrdersByUser, updateStatusOrderService } from '../../services/userService';
 import { concat } from 'lodash';
@@ -172,6 +165,14 @@ function OrderUser(props) {
                       <div style={{ display: 'none' }}>{(price = 0)}</div>
                     </div>
                     <div className="down">
+                      {(item.statusId === 'S4' || item.statusId === 'S5') && (
+                        <Link
+                          to={`/user/order-tracking/${item.id}`}
+                          className="btn btn-sm btn-outline-primary me-2"
+                        >
+                          Theo dõi đơn
+                        </Link>
+                      )}
                       {(item.statusId == 'S3' || item.statusId == 'S4') &&
                         item.isPaymentOnlien == 0 && (
                           <div className="btn-buy" onClick={() => handleCancelOrder(item)}>

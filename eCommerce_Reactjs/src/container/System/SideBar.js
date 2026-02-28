@@ -401,13 +401,16 @@ const SideBar = () => {
                 <Link to={'/admin/list-order'} className="nav-link">
                   Danh sách đơn hàng
                 </Link>
+                <Link to={'/admin/shipper-map'} className="nav-link">
+                  Bản đồ shipper
+                </Link>
               </nav>
             </div>
             <a
               className="nav-link collapsed"
               href="#"
               data-bs-toggle="collapse"
-              data-bs-target="#collapseOrder"
+              data-bs-target="#collapseMessage"
               aria-expanded="false"
               aria-controls="collapseLayouts"
             >
@@ -421,7 +424,7 @@ const SideBar = () => {
             </a>
             <div
               className="collapse"
-              id="collapseOrder"
+              id="collapseMessage"
               aria-labelledby="headingOne"
               data-bs-parent="#sidenavAccordion"
             >
