@@ -184,23 +184,22 @@ function OrderHomePage(props) {
             window.location.href = res.link;
           }
         } else {
+          const orderData = {
+            orderdate: Date.now(),
+            addressUserId: addressUserId,
+            isPaymentOnlien: activeTypePayment === 1 ? 1 : 0,
+            typeShipId: dataTypeShip.id,
+            voucherId: dataVoucher?.voucherId,
+            note: note,
+            userId: userId,
+            arrDataShopCart: result,
+            total:
+              dataVoucher && dataVoucher.voucherData
+                ? totalPriceDiscount(price, dataVoucher) + priceShip
+                : price + +priceShip,
+          };
           navigate('/payment/vnpay', {
-            state: {
-              orderData: {
-                orderdate: Date.now(),
-                addressUserId: addressUserId,
-                isPaymentOnlien: activeTypePayment === 1 ? 1 : 0,
-                typeShipId: dataTypeShip.id,
-                voucherId: dataVoucher.voucherId,
-                note: note,
-                userId: userId,
-                arrDataShopCart: result,
-                total:
-                  dataVoucher && dataVoucher.voucherData
-                    ? totalPriceDiscount(price, dataVoucher) + priceShip
-                    : price + +priceShip,
-              },
-            },
+            state: { orderData },
           });
         }
       }
