@@ -23,10 +23,10 @@ function HomePageShipper() {
   return (
     <ShipperLayout>
       <Routes>
-        <Route path="/shipper" element={<ShipperDashboard />} />
-        <Route path="/shipper/orders-available" element={<OrdersAvailable />} />
-        <Route path="/shipper/my-orders" element={<OrdersActive />} />
-        <Route path="/shipper/map" element={<ShipperMap />} />
+        <Route path="/" element={<ShipperDashboard />} />
+        <Route path="/orders-available" element={<OrdersAvailable />} />
+        <Route path="/my-orders" element={<OrdersActive />} />
+        <Route path="/map" element={<ShipperMap />} />
       </Routes>
     </ShipperLayout>
   );

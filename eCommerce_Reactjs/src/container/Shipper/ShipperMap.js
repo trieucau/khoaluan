@@ -90,12 +90,8 @@ const ShipperMap = () => {
   return (
     <div className="container-fluid px-4">
       <h1 className="mt-4">Bản đồ giao hàng</h1>
-      <p className="mb-2">
-        Khi bạn đang giao đơn (trạng thái S5), bật &quot;Gửi vị trí&quot; để khách hàng và admin
-        theo dõi realtime. Vị trí được gửi mỗi 5 giây.
-      </p>
       <p className="mb-3 text-muted">
-        Đơn đang giao (S5): {orderIds.length} đơn. Mã đơn:{' '}
+        #Đơn đang giao: {orderIds.length} đơn. <br /> #Mã đơn:{' '}
         {orderIds.length ? orderIds.join(', ') : '—'}
       </p>
       <div className="mb-3">
