@@ -140,7 +140,21 @@ function OrderUser() {
 
                       <div className="content-right">
                         {item.statusOrderData?.value}
-                        {item.isPaymentOnlien == 1 && ' | Đã thanh toán'}
+                        {item.isPaymentOnlien == 1 && ' | Đã thanh toán | '}
+
+                        {(item.statusId === 'S7' || item.statusId === 'S8') &&
+                          item.statusReason && (
+                            <button
+                              className="btn btn-sm btn-outline-danger p-1"
+                              data-bs-toggle="tooltip"
+                              data-bs-placement="top"
+                              title={`Chúng tôi rất tiếc vì đơn hàng chưa thể giao thành công.
+Lý do: ${item.statusReason}.
+Chúng tôi sẽ sớm liên hệ để hỗ trợ.`}
+                            >
+                              Lý do ...
+                            </button>
+                          )}
                       </div>
                     </div>
 
