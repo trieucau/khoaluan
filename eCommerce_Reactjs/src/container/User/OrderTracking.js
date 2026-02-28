@@ -98,7 +98,7 @@ const OrderTracking = () => {
 
     const center =
       deliveryCoords.lat != null ? [deliveryCoords.lat, deliveryCoords.lng] : [21.0, 105.8];
-    const map = window.L.map('order-tracking-map').setView(center, 13);
+    const map = window.L.map('order-tracking-map').setView(center, 5);
     window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap',
     }).addTo(map);
@@ -186,7 +186,7 @@ const OrderTracking = () => {
       {showMap && (
         <div
           id="order-tracking-map"
-          style={{ height: 400, width: '100%', borderRadius: 8 }}
+          style={{ height: 600, width: '100%', borderRadius: 8 }}
           className="mb-3"
         />
       )}
