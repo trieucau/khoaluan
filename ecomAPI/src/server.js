@@ -1,11 +1,13 @@
+import 'dotenv/config';
 import express from 'express';
 import bodyParser from 'body-parser';
+import { Server } from 'socket.io';
 import viewEngine from './config/viewEngine';
 import initwebRoutes from './route/web';
 import connectDB from './config/connectDB';
 import http from 'http';
 import { sendMessage } from './services/messageService';
-require('dotenv').config();
+
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 let app = express();
 
@@ -36,7 +38,7 @@ connectDB(app);
 
 const server = http.createServer(app);
 
-const socketIo = require('socket.io')(server, {
+const socketIo = new Server(server, {
   cors: {
     origin: '*',
   },
