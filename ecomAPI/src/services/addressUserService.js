@@ -150,10 +150,51 @@ let getDetailAddressUserById = (id) => {
     }
   });
 };
+
+let updateLocationAddressUser = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.id || !data.lat || !data.lng || !data.shipAdress) {
+        resolve({
+          errCode: 1,
+          errMessage: 'Missing required parameter!',
+        });
+      } else {
+        let addressUser = await db.AddressUser.findOne({
+          where: {
+            id: data.id,
+          },
+          raw: false,
+        });
+
+        if (addressUser) {
+          addressUser.shipAdress = data.shipAdress;
+          addressUser.lat = data.lat;
+          addressUser.lng = data.lng;
+
+          await addressUser.save();
+
+          resolve({
+            errCode: 0,
+            errMessage: 'Update location success',
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: 'Address user not found',
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 module.exports = {
   createNewAddressUser: createNewAddressUser,
   getAllAddressUserByUserId: getAllAddressUserByUserId,
   deleteAddressUser: deleteAddressUser,
   editAddressUser: editAddressUser,
   getDetailAddressUserById: getDetailAddressUserById,
+  updateLocationAddressUser: updateLocationAddressUser,
 };

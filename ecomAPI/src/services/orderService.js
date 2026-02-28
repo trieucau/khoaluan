@@ -458,15 +458,30 @@ let shipperUpdateOrderStatus = (data) => {
       if (order.shipperId !== shipperId) {
         return resolve({ errCode: 3, errMessage: 'Not your order!' });
       }
-      const allowed = [['S4', 'S5'], ['S5', 'S6'], ['S5', 'S7'], ['S5', 'S8'], ['S4', 'S7'], ['S4', 'S8']];
-      const allowedTransition = allowed.some(([from, to]) => order.statusId === from && statusId === to);
+      const allowed = [
+        ['S4', 'S5'],
+        ['S5', 'S6'],
+        ['S5', 'S7'],
+        ['S5', 'S8'],
+        ['S4', 'S7'],
+        ['S4', 'S8'],
+      ];
+      const allowedTransition = allowed.some(
+        ([from, to]) => order.statusId === from && statusId === to
+      );
       if (!allowedTransition) {
         return resolve({ errCode: 4, errMessage: 'Invalid status transition!' });
       }
-      if ((statusId === 'S6' && !image) || (statusId === 'S7' || statusId === 'S8') && !statusReason) {
+      if (
+        (statusId === 'S6' && !image) ||
+        ((statusId === 'S7' || statusId === 'S8') && !statusReason)
+      ) {
         return resolve({
           errCode: 5,
-          errMessage: statusId === 'S6' ? 'Image required for delivery confirmation!' : 'Reason required for cancel/fail!',
+          errMessage:
+            statusId === 'S6'
+              ? 'Image required for delivery confirmation!'
+              : 'Reason required for cancel/fail!',
         });
       }
       order.statusId = statusId;

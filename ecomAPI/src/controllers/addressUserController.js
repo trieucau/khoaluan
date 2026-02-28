@@ -60,10 +60,22 @@ let getDetailAddressUserById = async (req, res) => {
     });
   }
 };
+let updateLocationAddressUser = async (req, res) => {
+  try {
+    let data = await addressUserService.updateLocationAddressUser(req.body);
+    return res.status(200).json(data);
+  } catch (e) {
+    return res.status(500).json({
+      errCode: -1,
+      errMessage: 'Error from server',
+    });
+  }
+};
 module.exports = {
   createNewAddressUser: createNewAddressUser,
   getAllAddressUserByUserId: getAllAddressUserByUserId,
   deleteAddressUser: deleteAddressUser,
   editAddressUser: editAddressUser,
   getDetailAddressUserById: getDetailAddressUserById,
+  updateLocationAddressUser: updateLocationAddressUser,
 };

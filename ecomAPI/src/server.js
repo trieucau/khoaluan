@@ -83,7 +83,10 @@ socketIo.on('connection', (socket) => {
       const payload = jwt.verify(accessToken, process.env.JWT_SECRET);
       const order = await db.OrderProduct.findOne({ where: { id: orderId }, raw: true });
       if (!order) return;
-      const addressUser = await db.AddressUser.findOne({ where: { id: order.addressUserId }, raw: true });
+      const addressUser = await db.AddressUser.findOne({
+        where: { id: order.addressUserId },
+        raw: true,
+      });
       if (!addressUser || addressUser.userId !== payload.sub) return;
       socket.join(`order:tracking:${orderId}`);
     } catch (e) {
@@ -103,9 +106,9 @@ socketIo.on('connection', (socket) => {
         socket.join('admin:shipper_map');
       }
     } catch (e) {
-        // invalid token or not admin
-      }
-    });
+      // invalid token or not admin
+    }
+  });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');

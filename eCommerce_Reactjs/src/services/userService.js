@@ -336,6 +336,10 @@ const getAllAddressUserByUserIdService = (userId) => {
 const getDetailAddressUserByIdService = (id) => {
   return axios.get(`/api/get-detail-address-user-by-id?id=${id}`);
 };
+const updateLocationAddressUserService = (data) => {
+  return axios.put(`/api/update-location-address-user`, data);
+};
+
 //======================MESSSAGE==========================//
 const createNewRoom = (data) => {
   return axios.post(`/api/create-new-room`, data);
@@ -586,4 +590,5 @@ export {
   getAllOrdersByShipper,
   getOrderShipperLocation,
   getAdminShippersOnMap,
+  updateLocationAddressUserService,
 };

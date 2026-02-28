@@ -222,3 +222,26 @@
     }
   }
 }
+.map-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.map-container {
+  background: white;
+  width: 700px;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.map-footer {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

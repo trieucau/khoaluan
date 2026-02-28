@@ -7,6 +7,7 @@ import {
   getAllTypeShip,
   createNewOrderService,
   paymentOrderService,
+  updateLocationAddressUserService,
 } from '../../services/userService';
 import './OrderHomePage.scss';
 import AddressUsersModal from '../ShopCart/AdressUserModal';
@@ -16,6 +17,7 @@ import storeVoucherLogo from '../../../src/resources/img/storeVoucher.png';
 import ShopCartItem from '../../component/ShopCart/ShopCartItem';
 import VoucherModal from '../ShopCart/VoucherModal';
 import CommonUtils from '../../utils/CommonUtils';
+import CheckoutMap from '../Map/CheckoutMap';
 import { EXCHANGE_RATES } from '../../utils/constant';
 function OrderHomePage(props) {
   const dispatch = useDispatch();
@@ -31,6 +33,9 @@ function OrderHomePage(props) {
   let dataCart = useSelector((state) => state.shopcart.listCartItem);
   let dataVoucher = useSelector((state) => state.shopcart.dataVoucher);
   let dataTypeShip = useSelector((state) => state.shopcart.dataTypeShip);
+  const [isOpenMapModal, setIsOpenMapModal] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState('');
   const [isChangeAdress, setisChangeAdress] = useState(false);
   const [isOpenModalAddressUser, setisOpenModalAddressUser] = useState(false);
   const [isOpenModal, setisOpenModal] = useState(false);
@@ -220,6 +225,11 @@ function OrderHomePage(props) {
               </div>
               {isChangeAdress === true && (
                 <div className="content-right">
+                  <i
+                    className="fas fa-map-marked-alt"
+                    style={{ cursor: 'pointer', color: '#ee4d2d', marginLeft: '15px' }}
+                    onClick={() => setIsOpenMapModal(true)}
+                  ></i>
                   <div className="wrap-add-address">
                     <i className="fas fa-plus"></i>
                     <span onClick={() => handleOpenAddressUserModal()}>Thêm địa chỉ mới</span>
@@ -518,13 +528,64 @@ function OrderHomePage(props) {
           closeModaAddressUser={closeModaAddressUser}
         />
       </div>
-      <div
-        style={{
-          width: '100%',
-          height: '100px',
-          backgroundColor: '#f5f5f5',
-        }}
-      ></div>
+
+      {isOpenMapModal && (
+        <div className="map-modal">
+          <div className="map-container">
+            <CheckoutMap setLocation={setSelectedLocation} setAddress={setSelectedAddress} />
+
+            <div className="map-footer">
+              <p>
+                <b>Địa chỉ:</b> {selectedAddress}
+              </p>
+
+              <button
+                onClick={async () => {
+                  try {
+                    if (!selectedLocation) {
+                      toast.error('Vui lòng chọn vị trí trên bản đồ');
+                      return;
+                    }
+
+                    const currentAddress = dataAddressUser[stt];
+
+                    let res = await updateLocationAddressUserService({
+                      id: currentAddress.id,
+                      shipAdress: selectedAddress,
+                      lat: selectedLocation.lat,
+                      lng: selectedLocation.lng,
+                    });
+
+                    if (res && res.errCode === 0) {
+                      let copy = [...dataAddressUser];
+                      copy[stt] = {
+                        ...copy[stt],
+                        shipAdress: selectedAddress,
+                        lat: selectedLocation.lat,
+                        lng: selectedLocation.lng,
+                      };
+
+                      setdataAddressUser(copy);
+                      setIsOpenMapModal(false);
+
+                      toast.success('Đã cập nhật vị trí giao hàng');
+                    } else {
+                      toast.error('Cập nhật thất bại');
+                    }
+                  } catch (error) {
+                    console.error('>>>check lỗi', error);
+                    toast.error('Lỗi server');
+                  }
+                }}
+              >
+                Xác nhận
+              </button>
+
+              <button onClick={() => setIsOpenMapModal(false)}>Đóng</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

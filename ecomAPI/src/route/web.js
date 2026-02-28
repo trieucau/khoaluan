@@ -401,6 +401,11 @@ let initwebRoutes = (app) => {
     middlewareControllers.verifyTokenUser,
     addressUserController.getDetailAddressUserById
   );
+  router.put(
+    '/api/update-location-address-user',
+    middlewareControllers.verifyTokenUser,
+    addressUserController.updateLocationAddressUser
+  );
   //=================API MESSAGE============================//
   router.post(
     '/api/create-new-room',
