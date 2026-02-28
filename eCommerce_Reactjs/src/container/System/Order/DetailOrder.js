@@ -48,7 +48,10 @@ function DetailOrder(props) {
       } else {
         return price - discount.typeVoucherOfVoucherData.maxValue;
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error('Error calculating discount:', error);
+      return price;
+    }
   };
   let handleAcceptOrder = async () => {
     let res = await updateStatusOrderService({

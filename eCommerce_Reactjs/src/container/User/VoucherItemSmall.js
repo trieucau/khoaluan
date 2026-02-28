@@ -11,7 +11,9 @@ function VoucherItemSmall(props) {
     try {
       dispatch(ChooseVoucherStart(props.data));
       props.closeModalFromVoucherItem();
-    } catch (error) {}
+    } catch (error) {
+      console.error('Apply voucher error:', error);
+    }
   };
 
   return (

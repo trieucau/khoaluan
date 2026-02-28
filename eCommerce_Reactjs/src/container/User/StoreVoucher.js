@@ -17,13 +17,14 @@ function StoreVoucher(props) {
   const [dataVoucher, setdataVoucher] = useState([]);
   const [count, setCount] = useState('');
   const [numberPage, setnumberPage] = useState('');
-  function compareDates(d1, d2) {
-    var parts = d1.split('/');
-    var d1 = Number(parts[2] + parts[1] + parts[0]);
-    parts = d2.split('/');
-    var d2 = Number(parts[2] + parts[1] + parts[0]);
-    if (d1 <= d2) return true;
-    if (d1 >= d2) return false;
+  function compareDates(date1, date2) {
+    const [day1, month1, year1] = date1.split('/');
+    const [day2, month2, year2] = date2.split('/');
+
+    const d1 = new Date(year1, month1 - 1, day1);
+    const d2 = new Date(year2, month2 - 1, day2);
+
+    return d1 <= d2;
   }
   useEffect(() => {
     let id = props.id;
