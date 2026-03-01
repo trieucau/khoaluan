@@ -17,7 +17,7 @@ import storeVoucherLogo from '../../../src/resources/img/storeVoucher.png';
 import ShopCartItem from '../../component/ShopCart/ShopCartItem';
 import VoucherModal from '../ShopCart/VoucherModal';
 import CommonUtils from '../../utils/CommonUtils';
-import CheckoutMap from '../Map/CheckoutMap';
+import MapAddressModal from '../Map/MapAddressModal';
 import { EXCHANGE_RATES } from '../../utils/constant';
 function OrderHomePage(props) {
   const dispatch = useDispatch();
@@ -529,65 +529,23 @@ function OrderHomePage(props) {
           isOpenModal={isOpenModalAddressUser}
           closeModaAddressUser={closeModaAddressUser}
         />
+        <MapAddressModal
+          isOpen={isOpenMapModal}
+          onClose={() => setIsOpenMapModal(false)}
+          userId={userId}
+          currentAddress={dataAddressUser[stt]}
+          onCreateAddress={async (data) => {
+            let res = await createNewAddressUserrService(data);
+
+            if (res && res.errCode === 0) {
+              toast.success('Đã thêm địa chỉ mới');
+              await loadDataAddress(userId);
+            } else {
+              toast.error('Thêm thất bại');
+            }
+          }}
+        />
       </div>
-
-      {isOpenMapModal && (
-        <div className="map-modal">
-          <div className="map-container">
-            <CheckoutMap setLocation={setSelectedLocation} setAddress={setSelectedAddress} />
-
-            <div className="map-footer">
-              <p>
-                <b>Địa chỉ:</b> {selectedAddress}
-              </p>
-
-              <button
-                onClick={async () => {
-                  try {
-                    if (!selectedLocation) {
-                      toast.error('Vui lòng chọn vị trí trên bản đồ');
-                      return;
-                    }
-
-                    const currentAddress = dataAddressUser[stt];
-
-                    let res = await updateLocationAddressUserService({
-                      id: currentAddress.id,
-                      shipAdress: selectedAddress,
-                      lat: selectedLocation.lat,
-                      lng: selectedLocation.lng,
-                    });
-
-                    if (res && res.errCode === 0) {
-                      let copy = [...dataAddressUser];
-                      copy[stt] = {
-                        ...copy[stt],
-                        shipAdress: selectedAddress,
-                        lat: selectedLocation.lat,
-                        lng: selectedLocation.lng,
-                      };
-
-                      setdataAddressUser(copy);
-                      setIsOpenMapModal(false);
-
-                      toast.success('Đã cập nhật vị trí giao hàng');
-                    } else {
-                      toast.error('Cập nhật thất bại');
-                    }
-                  } catch (error) {
-                    console.error('>>>check lỗi', error);
-                    toast.error('Lỗi server');
-                  }
-                }}
-              >
-                Xác nhận
-              </button>
-
-              <button onClick={() => setIsOpenMapModal(false)}>Đóng</button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

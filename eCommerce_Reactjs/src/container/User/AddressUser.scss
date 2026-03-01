@@ -2,21 +2,25 @@
   border-bottom: 1px solid #efefef;
   padding-bottom: 20px;
   .content-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
     .wrap-add-address {
-      background-color: #ee4d2d;
+      background-color: #fff;
       text-transform: capitalize;
       border-radius: 2px;
       border: 1px solid #0000002b;
       box-shadow: 0 1px 1px 0 #00000008;
-      color: #fff;
-      padding: 6px 10px;
+      color: #555;
+      padding: 4px 8px;
       cursor: pointer;
 
       span {
         margin-left: 8px;
       }
       &:hover {
-        opacity: 0.8;
+        background-color: #00000005;
       }
     }
   }

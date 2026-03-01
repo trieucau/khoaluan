@@ -24,8 +24,8 @@ function LocationMarker({ setLocation, setAddress }) {
 export default function CheckoutMap({ setLocation, setAddress }) {
   return (
     <MapContainer
-      center={[13.782, 109.219]} // Quy Nhơn
-      zoom={13}
+      center={[16.047079, 108.20623]} // Trung tâm Việt Nam
+      zoom={5}
       style={{ height: '400px' }}
     >
       <TileLayer
