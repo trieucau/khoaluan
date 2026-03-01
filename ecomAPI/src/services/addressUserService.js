@@ -15,6 +15,8 @@ let createNewAddressUser = (data) => {
           shipAdress: data.shipAdress,
           shipEmail: data.shipEmail,
           shipPhonenumber: data.shipPhonenumber,
+          lat: data.lat,
+          lng: data.lng,
         });
         resolve({
           errCode: 0,

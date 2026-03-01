@@ -35,7 +35,7 @@ function DetailUserPage(props) {
     imageReview: '',
     isOpen: false,
   });
-  console.log(dataGender);
+
   if (dataGender && dataGender.length > 0 && inputValues.genderId === null) {
     setInputValues({ ...inputValues, ['genderId']: dataGender[0].code });
   }

@@ -42,6 +42,8 @@ function AddressUser(props) {
         shipEmail: data.shipEmail,
         shipPhonenumber: data.shipPhonenumber,
         userId: props.id,
+        lat: data.lat,
+        lng: data.lng,
       });
       if (res && res.errCode === 0) {
         toast.success('Thêm địa chỉ thành công !');
