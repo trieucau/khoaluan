@@ -86,8 +86,27 @@ const TrackingMap = ({ shipperLoc, deliveryCoords, pastRouteCoords }) => {
           setRemainingDistance(distanceKm);
 
           // ===== ETA =====
-          const eta = Math.ceil(route.duration / 60); // phút
-          setEtaMinutes(eta);
+          const totalMinutes = Math.ceil(route.duration / 60);
+
+          let formattedETA = '';
+
+          if (totalMinutes < 60) {
+            formattedETA = `${totalMinutes} phút`;
+          } else if (totalMinutes < 1440) {
+            // 60 * 24
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+
+            formattedETA = minutes > 0 ? `${hours} giờ ${minutes} phút` : `${hours} giờ`;
+          } else {
+            const days = Math.floor(totalMinutes / 1440);
+            const remainingMinutes = totalMinutes % 1440;
+            const hours = Math.floor(remainingMinutes / 60);
+
+            formattedETA = hours > 0 ? `${days} ngày ${hours} giờ` : `${days} ngày`;
+          }
+
+          setEtaMinutes(formattedETA);
 
           // ===== VẼ ĐƯỜNG XANH =====
           routeRef.current = L.polyline(coords, {
@@ -125,7 +144,7 @@ const TrackingMap = ({ shipperLoc, deliveryCoords, pastRouteCoords }) => {
             zIndex: 1000,
           }}
         >
-          🚚 Còn lại: {remainingDistance} km <br />⏳ ETA: {etaMinutes} phút
+          🚚 Còn lại: {remainingDistance} km <br />⏳ ETA: {etaMinutes}
         </div>
       )}
     </div>
