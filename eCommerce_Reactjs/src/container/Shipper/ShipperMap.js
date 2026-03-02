@@ -1,131 +1,103 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
+import L from 'leaflet';
 import socketIOClient from 'socket.io-client';
 import { getAllOrdersByShipper } from '../../services/userService';
 import { toast } from 'react-toastify';
+import { truckIcon, deliveryIcon } from '../Map/mapIcons';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6969';
+
+// ================= Haversine
+const getDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+// ================= Fit bounds component
+const FitBounds = ({ positions }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (positions.length > 0) {
+      const bounds = L.latLngBounds(positions);
+      map.fitBounds(bounds, { padding: [60, 60] });
+    }
+  }, [positions, map]);
+
+  return null;
+};
 
 const ShipperMap = () => {
   const socketRef = useRef(null);
   const intervalRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const markersRef = useRef([]);
-  const routeLayerRef = useRef(null);
 
   const [orderIds, setOrderIds] = useState([]);
   const [sending, setSending] = useState(false);
   const [shipperLoc, setShipperLoc] = useState(null);
   const [customers, setCustomers] = useState([]);
+  const [routeCoords, setRouteCoords] = useState([]);
 
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   const shipperId = userData?.id;
 
-  // ======================= TÍNH KHOẢNG CÁCH (HAVERSINE)
-  const getDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371;
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  };
-
-  // ======================= LOAD ĐƠN + GEO CODE NHIỀU ĐỊA CHỈ
+  // ================= LOAD ORDERS
   const fetchOrders = async () => {
     if (!shipperId) return;
-    const res = await getAllOrdersByShipper({ shipperId, status: 'working' });
+
+    const res = await getAllOrdersByShipper({
+      shipperId,
+      status: 'working',
+    });
+
     if (res?.errCode === 0 && res?.data?.length) {
       setOrderIds(res.data.map((o) => o.id));
 
-      const geoResults = [];
+      const customerCoords = res.data
+        .filter((o) => o?.addressUser?.lat && o?.addressUser?.lng)
+        .map((o) => ({
+          orderId: o.id,
+          lat: parseFloat(o.addressUser.lat),
+          lng: parseFloat(o.addressUser.lng),
+        }));
 
-      for (let o of res.data) {
-        const address = o?.addressUser?.shipAdress;
-        if (!address) continue;
-
-        const geo = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-            address + ', Vietnam'
-          )}&format=json&limit=1`
-        );
-        const arr = await geo.json();
-        if (arr && arr[0]) {
-          geoResults.push({
-            orderId: o.id,
-            lat: parseFloat(arr[0].lat),
-            lng: parseFloat(arr[0].lon),
-          });
-        }
-      }
-
-      setCustomers(geoResults);
+      setCustomers(customerCoords);
     }
   };
 
-  // ======================= SOCKET + LOAD
+  // ================= SOCKET INIT
   useEffect(() => {
     socketRef.current = socketIOClient.connect(BACKEND_URL);
     fetchOrders();
+
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      clearInterval(intervalRef.current);
       socketRef.current?.disconnect();
     };
   }, []);
 
-  // ======================= INIT MAP
-  useEffect(() => {
-    if (!window.L) return;
-    const map = window.L.map('shipper-map-container').setView([16, 108], 6);
-    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap',
-    }).addTo(map);
-    mapInstanceRef.current = map;
-    return () => map.remove();
-  }, []);
+  // ================= SORT & ROUTE
+  const sortedCustomers = useMemo(() => {
+    if (!shipperLoc) return [];
 
-  // ======================= UPDATE MAP (MULTI STOP)
-  useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!map || !shipperLoc || customers.length === 0) return;
-
-    // Clear cũ
-    markersRef.current.forEach((m) => map.removeLayer(m));
-    markersRef.current = [];
-    if (routeLayerRef.current) map.removeLayer(routeLayerRef.current);
-
-    // SORT GẦN TRƯỚC
-    const sorted = [...customers].sort((a, b) => {
-      return (
+    return [...customers].sort(
+      (a, b) =>
         getDistance(shipperLoc.lat, shipperLoc.lng, a.lat, a.lng) -
         getDistance(shipperLoc.lat, shipperLoc.lng, b.lat, b.lng)
-      );
-    });
+    );
+  }, [shipperLoc, customers]);
 
-    // Marker shipper
-    const shipperMarker = window.L.marker([shipperLoc.lat, shipperLoc.lng])
-      .bindPopup('🚚 Bạn')
-      .addTo(map);
-    markersRef.current.push(shipperMarker);
+  useEffect(() => {
+    if (!shipperLoc || sortedCustomers.length === 0) return;
 
-    // Marker khách có số thứ tự
-    sorted.forEach((c, index) => {
-      const marker = window.L.marker([c.lat, c.lng], {
-        icon: window.L.divIcon({
-          html: `<div style="background:red;color:white;border-radius:50%;width:28px;height:28px;text-align:center;line-height:28px;font-weight:bold;">${index + 1}</div>`,
-          className: '',
-        }),
-      })
-        .bindPopup(`Đơn #${c.orderId}`)
-        .addTo(map);
-
-      markersRef.current.push(marker);
-    });
-
-    // TẠO ROUTE WAYPOINT
     const waypoints = [
       `${shipperLoc.lng},${shipperLoc.lat}`,
-      ...sorted.map((c) => `${c.lng},${c.lat}`),
+      ...sortedCustomers.map((c) => `${c.lng},${c.lat}`),
     ].join(';');
 
     const url = `https://router.project-osrm.org/route/v1/driving/${waypoints}?overview=full&geometries=geojson`;
@@ -135,20 +107,12 @@ const ShipperMap = () => {
       .then((data) => {
         if (data.routes?.[0]?.geometry?.coordinates) {
           const coords = data.routes[0].geometry.coordinates.map((c) => [c[1], c[0]]);
-
-          routeLayerRef.current = window.L.polyline(coords, {
-            color: 'blue',
-            weight: 5,
-          }).addTo(map);
-
-          map.fitBounds(routeLayerRef.current.getBounds(), {
-            padding: [60, 60],
-          });
+          setRouteCoords(coords);
         }
       });
-  }, [shipperLoc, customers]);
+  }, [shipperLoc, sortedCustomers]);
 
-  // ======================= GPS
+  // ================= GPS
   const startSendingLocation = () => {
     if (!navigator.geolocation) {
       toast.error('Không hỗ trợ GPS');
@@ -161,6 +125,7 @@ const ShipperMap = () => {
       navigator.geolocation.getCurrentPosition((pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
+
         setShipperLoc({ lat, lng });
 
         socketRef.current?.emit('shipper:location', {
@@ -181,6 +146,13 @@ const ShipperMap = () => {
     clearInterval(intervalRef.current);
   };
 
+  // ================= Icon số thứ tự
+  const createNumberIcon = (number) =>
+    L.divIcon({
+      html: `<div style="background:red;color:white;border-radius:50%;width:28px;height:28px;text-align:center;line-height:28px;font-weight:bold;">${number}</div>`,
+      className: '',
+    });
+
   return (
     <div className="container-fluid px-4">
       <h1 className="mt-4">Bản đồ giao nhiều điểm</h1>
@@ -197,7 +169,40 @@ const ShipperMap = () => {
         )}
       </div>
 
-      <div id="shipper-map-container" style={{ height: 650, width: '100%', borderRadius: 8 }} />
+      <MapContainer
+        center={[16, 108]}
+        zoom={6}
+        style={{ height: 650, width: '100%', borderRadius: 8 }}
+      >
+        <TileLayer
+          attribution="© OpenStreetMap"
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        {shipperLoc && (
+          <Marker position={[shipperLoc.lat, shipperLoc.lng]} icon={truckIcon}>
+            <Popup>🚚 Shipper</Popup>
+          </Marker>
+        )}
+
+        {sortedCustomers.map((c, index) => (
+          <Marker key={c.orderId} position={[c.lat, c.lng]} icon={createNumberIcon(index + 1)}>
+            <Popup>Đơn #{c.orderId}</Popup>
+          </Marker>
+        ))}
+
+        {routeCoords.length > 0 && (
+          <>
+            <Polyline positions={routeCoords} pathOptions={{ color: 'blue', weight: 5 }} />
+            <FitBounds
+              positions={[
+                [shipperLoc?.lat, shipperLoc?.lng],
+                ...sortedCustomers.map((c) => [c.lat, c.lng]),
+              ]}
+            />
+          </>
+        )}
+      </MapContainer>
     </div>
   );
 };

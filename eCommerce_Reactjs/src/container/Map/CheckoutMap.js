@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import { useState } from 'react';
-
+import { deliveryIcon } from './mapIcons';
 function LocationMarker({ setLocation, setAddress }) {
   const [position, setPosition] = useState(null);
 
@@ -18,7 +18,7 @@ function LocationMarker({ setLocation, setAddress }) {
     },
   });
 
-  return position ? <Marker position={position} /> : null;
+  return position ? <Marker position={position} icon={deliveryIcon} /> : null;
 }
 
 export default function CheckoutMap({ setLocation, setAddress }) {
