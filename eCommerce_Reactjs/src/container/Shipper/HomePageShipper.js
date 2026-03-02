@@ -5,7 +5,7 @@ import ShipperSideBar from './ShipperSideBar';
 import ShipperDashboard from './ShipperDashboard';
 import OrdersAvailable from './OrdersAvailable';
 import OrdersActive from './OrdersActive';
-import ShipperMap from './ShipperMap';
+import ShipperMap from '../Map/ShipperMap';
 
 const ShipperLayout = ({ children }) => (
   <div className="sb-nav-fixed">

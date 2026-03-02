@@ -1,6 +1,8 @@
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { Marker, useMapEvents } from 'react-leaflet';
 import { useState } from 'react';
+import BaseMap from '../../component/Map/BaseMap';
 import { deliveryIcon } from './mapIcons';
+
 function LocationMarker({ setLocation, setAddress }) {
   const [position, setPosition] = useState(null);
 
@@ -23,16 +25,8 @@ function LocationMarker({ setLocation, setAddress }) {
 
 export default function CheckoutMap({ setLocation, setAddress }) {
   return (
-    <MapContainer
-      center={[16.047079, 108.20623]} // Trung tâm Việt Nam
-      zoom={5}
-      style={{ height: '400px' }}
-    >
-      <TileLayer
-        attribution="© OpenStreetMap"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <BaseMap center={[16.047079, 108.20623]} zoom={5} height={400}>
       <LocationMarker setLocation={setLocation} setAddress={setAddress} />
-    </MapContainer>
+    </BaseMap>
   );
 }

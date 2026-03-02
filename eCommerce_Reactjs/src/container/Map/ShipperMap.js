@@ -4,20 +4,12 @@ import L from 'leaflet';
 import socketIOClient from 'socket.io-client';
 import { getAllOrdersByShipper } from '../../services/userService';
 import { toast } from 'react-toastify';
-import { truckIcon, deliveryIcon } from '../Map/mapIcons';
+
+import { truckIcon } from '../Map/mapIcons';
+import { useOSRMRoute } from '../../hooks/useOSRMRoute';
+import { getDistance } from '../../utils/MapUtils';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6969';
-
-// ================= Haversine
-const getDistance = (lat1, lon1, lat2, lon2) => {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-};
 
 // ================= Fit bounds component
 const FitBounds = ({ positions }) => {
@@ -41,7 +33,6 @@ const ShipperMap = () => {
   const [sending, setSending] = useState(false);
   const [shipperLoc, setShipperLoc] = useState(null);
   const [customers, setCustomers] = useState([]);
-  const [routeCoords, setRouteCoords] = useState([]);
 
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   const shipperId = userData?.id;
@@ -81,7 +72,7 @@ const ShipperMap = () => {
     };
   }, []);
 
-  // ================= SORT & ROUTE
+  // ================= SORT CUSTOMER BY DISTANCE
   const sortedCustomers = useMemo(() => {
     if (!shipperLoc) return [];
 
@@ -92,25 +83,11 @@ const ShipperMap = () => {
     );
   }, [shipperLoc, customers]);
 
-  useEffect(() => {
-    if (!shipperLoc || sortedCustomers.length === 0) return;
+  // ================= ROUTE (SỬ DỤNG HOOK MỚI)
+  const waypoints =
+    shipperLoc && sortedCustomers.length > 0 ? [shipperLoc, ...sortedCustomers] : [];
 
-    const waypoints = [
-      `${shipperLoc.lng},${shipperLoc.lat}`,
-      ...sortedCustomers.map((c) => `${c.lng},${c.lat}`),
-    ].join(';');
-
-    const url = `https://router.project-osrm.org/route/v1/driving/${waypoints}?overview=full&geometries=geojson`;
-
-    fetch(url)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.routes?.[0]?.geometry?.coordinates) {
-          const coords = data.routes[0].geometry.coordinates.map((c) => [c[1], c[0]]);
-          setRouteCoords(coords);
-        }
-      });
-  }, [shipperLoc, sortedCustomers]);
+  const { routeCoords } = useOSRMRoute(waypoints);
 
   // ================= GPS
   const startSendingLocation = () => {
@@ -146,7 +123,7 @@ const ShipperMap = () => {
     clearInterval(intervalRef.current);
   };
 
-  // ================= Icon số thứ tự
+  // ================= ICON SỐ THỨ TỰ
   const createNumberIcon = (number) =>
     L.divIcon({
       html: `<div style="background:red;color:white;border-radius:50%;width:28px;height:28px;text-align:center;line-height:28px;font-weight:bold;">${number}</div>`,
@@ -194,6 +171,7 @@ const ShipperMap = () => {
         {routeCoords.length > 0 && (
           <>
             <Polyline positions={routeCoords} pathOptions={{ color: 'blue', weight: 5 }} />
+
             <FitBounds
               positions={[
                 [shipperLoc?.lat, shipperLoc?.lng],
