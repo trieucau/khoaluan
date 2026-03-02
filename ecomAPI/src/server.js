@@ -57,7 +57,7 @@ socketIo.on('connection', (socket) => {
     socketIo.emit('loadRoomServer', { data });
   });
 
-  // Shipper gửi vị trí realtime (mỗi 3-5s khi đang giao)
+  // Shipper gửi vị trí realtime (mỗi 10s khi đang giao)
   socket.on('shipper:location', async (data) => {
     const { shipperId, lat, lng, orderIds } = data || {};
     if (!shipperId || lat == null || lng == null) return;

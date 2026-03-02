@@ -3,8 +3,16 @@ import BaseMap from '../../component/Map/BaseMap';
 import { useOSRMRoute } from '../../hooks/useOSRMRoute';
 import { truckIcon, deliveryIcon } from './mapIcons';
 
+const isInVietnam = ({ lat, lng }) => {
+  return lat >= 8.18 && lat <= 23.39 && lng >= 102.14 && lng <= 109.46;
+};
+
 const TrackingMap = ({ shipperLoc, deliveryCoords }) => {
-  const waypoints = shipperLoc && deliveryCoords ? [shipperLoc, deliveryCoords] : [];
+  const isDomestic =
+    shipperLoc && deliveryCoords && isInVietnam(shipperLoc) && isInVietnam(deliveryCoords);
+
+  // Chỉ gọi OSRM khi nội địa
+  const waypoints = isDomestic ? [shipperLoc, deliveryCoords] : [];
 
   const { routeCoords, distanceKm, eta } = useOSRMRoute(waypoints);
 
@@ -17,12 +25,27 @@ const TrackingMap = ({ shipperLoc, deliveryCoords }) => {
           <Marker position={[deliveryCoords.lat, deliveryCoords.lng]} icon={deliveryIcon} />
         )}
 
-        {routeCoords.length > 0 && (
+        {/* Nội địa → route OSRM */}
+        {isDomestic && routeCoords.length > 0 && (
           <Polyline positions={routeCoords} pathOptions={{ color: 'blue' }} />
+        )}
+
+        {/* Quốc tế → vẽ đường thẳng nét đứt */}
+        {!isDomestic && shipperLoc && deliveryCoords && (
+          <Polyline
+            positions={[
+              [shipperLoc.lat, shipperLoc.lng],
+              [deliveryCoords.lat, deliveryCoords.lng],
+            ]}
+            pathOptions={{
+              color: 'red',
+              dashArray: '10 10',
+            }}
+          />
         )}
       </BaseMap>
 
-      {(distanceKm || eta) && (
+      {shipperLoc && deliveryCoords && (
         <div
           style={{
             position: 'absolute',
@@ -35,7 +58,13 @@ const TrackingMap = ({ shipperLoc, deliveryCoords }) => {
             zIndex: 1000,
           }}
         >
-          🚚 {distanceKm} km <br />⏳ {eta}
+          {isDomestic ? (
+            <>
+              🚚 {distanceKm} km <br />⏳ {eta}
+            </>
+          ) : (
+            <>✈️ Vận chuyển quốc tế</>
+          )}
         </div>
       )}
     </div>

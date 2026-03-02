@@ -7,30 +7,57 @@ export const useOSRMRoute = (waypoints) => {
   const [eta, setEta] = useState(null);
 
   useEffect(() => {
-    if (!waypoints || waypoints.length < 2) return;
+    // Nếu không đủ 2 điểm → reset toàn bộ
+    if (!waypoints || waypoints.length < 2) {
+      setRouteCoords([]);
+      setDistanceKm(null);
+      setEta(null);
+      return;
+    }
 
-    const formatted = waypoints.map((p) => `${p.lng},${p.lat}`).join(';');
+    const controller = new AbortController();
 
-    const url = `https://router.project-osrm.org/route/v1/driving/${formatted}?overview=full&geometries=geojson`;
+    const fetchRoute = async () => {
+      try {
+        const formatted = waypoints.map((p) => `${p.lng},${p.lat}`).join(';');
 
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.routes?.length) return;
+        const url = `https://router.project-osrm.org/route/v1/driving/${formatted}?overview=full&geometries=geojson`;
+
+        const res = await fetch(url, {
+          signal: controller.signal,
+        });
+
+        const data = await res.json();
+
+        if (!data.routes?.length) {
+          setRouteCoords([]);
+          setDistanceKm(null);
+          setEta(null);
+          return;
+        }
 
         const route = data.routes[0];
 
         const coords = route.geometry.coordinates.map((c) => [c[1], c[0]]);
-        setRouteCoords(coords);
 
-        // dùng utils
+        setRouteCoords(coords);
         setDistanceKm(formatDistance(route.distance));
         setEta(formatETA(route.duration));
-      })
-      .catch((err) => {
-        console.error('OSRM error:', err);
-      });
-  }, [waypoints]);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('OSRM error:', err);
+          setRouteCoords([]);
+          setDistanceKm(null);
+          setEta(null);
+        }
+      }
+    };
+
+    fetchRoute();
+
+    // Cleanup khi unmount hoặc waypoints thay đổi
+    return () => controller.abort();
+  }, [JSON.stringify(waypoints)]); // tránh re-render vô hạn
 
   return { routeCoords, distanceKm, eta };
 };

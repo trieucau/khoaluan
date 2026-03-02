@@ -115,7 +115,8 @@ const ShipperMap = () => {
     };
 
     send();
-    intervalRef.current = setInterval(send, 5000);
+    //s10 cập nhật lại
+    intervalRef.current = setInterval(send, 10000);
   };
 
   const stopSendingLocation = () => {
