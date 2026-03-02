@@ -8,8 +8,18 @@ import { toast } from 'react-toastify';
 import { truckIcon } from '../Map/mapIcons';
 import { useOSRMRoute } from '../../hooks/useOSRMRoute';
 import { getDistance } from '../../utils/MapUtils';
+import * as turf from '@turf/turf';
+import vietnamBorder from '../../data/vietnamBorder.json';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6969';
+
+// ================= KIỂM TRA CÓ THUỘC VIỆT NAM KHÔNG (Bounding Box)
+const vietnamPolygon = turf.feature(vietnamBorder.features[0].geometry);
+
+const isInVietnam = (lat, lng) => {
+  const point = turf.point([lng, lat]); // turf dùng [lng, lat]
+  return turf.booleanPointInPolygon(point, vietnamPolygon);
+};
 
 // ================= Fit bounds component
 const FitBounds = ({ positions }) => {
@@ -83,11 +93,39 @@ const ShipperMap = () => {
     );
   }, [shipperLoc, customers]);
 
-  // ================= ROUTE (SỬ DỤNG HOOK MỚI)
+  // ================= ROUTE
   const waypoints =
     shipperLoc && sortedCustomers.length > 0 ? [shipperLoc, ...sortedCustomers] : [];
 
   const { routeCoords } = useOSRMRoute(waypoints);
+
+  // ================= TÁCH ROUTE TRONG / NGOÀI VIỆT NAM
+  const { insideRoute, outsideRoute } = useMemo(() => {
+    if (!routeCoords || routeCoords.length < 2) {
+      return { insideRoute: [], outsideRoute: [] };
+    }
+
+    const inside = [];
+    const outside = [];
+
+    for (let i = 0; i < routeCoords.length - 1; i++) {
+      const current = routeCoords[i];
+      const next = routeCoords[i + 1];
+
+      const inVN = isInVietnam(current[0], current[1]) && isInVietnam(next[0], next[1]);
+
+      if (inVN) {
+        inside.push([current, next]);
+      } else {
+        outside.push([current, next]);
+      }
+    }
+
+    return {
+      insideRoute: inside,
+      outsideRoute: outside,
+    };
+  }, [routeCoords]);
 
   // ================= GPS
   const startSendingLocation = () => {
@@ -115,7 +153,6 @@ const ShipperMap = () => {
     };
 
     send();
-    //s10 cập nhật lại
     intervalRef.current = setInterval(send, 10000);
   };
 
@@ -169,17 +206,35 @@ const ShipperMap = () => {
           </Marker>
         ))}
 
-        {routeCoords.length > 0 && (
-          <>
-            <Polyline positions={routeCoords} pathOptions={{ color: 'blue', weight: 5 }} />
+        {/* Route trong Việt Nam - nét liền xanh */}
+        {insideRoute.map((segment, index) => (
+          <Polyline
+            key={`inside-${index}`}
+            positions={segment}
+            pathOptions={{ color: 'blue', weight: 5 }}
+          />
+        ))}
 
-            <FitBounds
-              positions={[
-                [shipperLoc?.lat, shipperLoc?.lng],
-                ...sortedCustomers.map((c) => [c.lat, c.lng]),
-              ]}
-            />
-          </>
+        {/* Route ngoài Việt Nam - nét đứt vàng */}
+        {outsideRoute.map((segment, index) => (
+          <Polyline
+            key={`outside-${index}`}
+            positions={segment}
+            pathOptions={{
+              color: 'yellow',
+              weight: 5,
+              dashArray: '10,10',
+            }}
+          />
+        ))}
+
+        {routeCoords.length > 0 && (
+          <FitBounds
+            positions={[
+              [shipperLoc?.lat, shipperLoc?.lng],
+              ...sortedCustomers.map((c) => [c.lat, c.lng]),
+            ]}
+          />
         )}
       </MapContainer>
     </div>
