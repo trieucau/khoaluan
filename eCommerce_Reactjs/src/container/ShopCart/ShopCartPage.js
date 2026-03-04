@@ -62,15 +62,22 @@ function ShopCartPage(props) {
     setisOpenModal(true);
   };
   let handleOpenAddressUserModal = async () => {
-    if (user && user.id) {
-      let res = await getAllAddressUserByUserIdService(user.id);
-      if (res && res.errCode === 0 && res.data.length > 0) {
-        navigate(`/order/${user.id}`);
-      } else {
-        setisOpenModalAddressUser(true);
-      }
-    } else {
+    if (!user || !user.id) {
       toast.error('Hãy đăng nhập để mua hàng');
+      return;
+    }
+
+    // ✅ Thêm đoạn kiểm tra giỏ hàng
+    if (!dataCart || dataCart.length === 0) {
+      toast.error('Giỏ hàng đang trống!');
+      return;
+    }
+
+    let res = await getAllAddressUserByUserIdService(user.id);
+    if (res && res.errCode === 0 && res.data.length > 0) {
+      navigate(`/order/${user.id}`);
+    } else {
+      setisOpenModalAddressUser(true);
     }
   };
   let totalPriceDiscount = (price, discount) => {
