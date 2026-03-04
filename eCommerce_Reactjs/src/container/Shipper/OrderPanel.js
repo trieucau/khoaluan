@@ -91,13 +91,34 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
           ? [rawDetails] // 👈 bọc object thành array
           : [];
 
-      const totalPrice =
+      const subTotal =
         details.length > 0
           ? details.reduce(
               (sum, d) => sum + (Number(d.realPrice) || 0) * (Number(d.quantity) || 1),
               0
             )
-          : null;
+          : 0;
+
+      let discount = 0;
+
+      const voucher = order?.voucherData;
+      const typeVoucher = voucher?.typeVoucherOfVoucherData; // nhớ include thêm typeVoucherData ở backend
+
+      if (voucher && typeVoucher && subTotal >= Number(typeVoucher.minValue)) {
+        if (typeVoucher.typeVoucher === 'percent') {
+          discount = (subTotal * Number(typeVoucher.value)) / 100;
+
+          if (discount > Number(typeVoucher.maxValue)) {
+            discount = Number(typeVoucher.maxValue);
+          }
+        }
+
+        if (typeVoucher.typeVoucher === 'money') {
+          discount = Number(typeVoucher.value);
+        }
+      }
+
+      const totalPrice = Math.max(0, subTotal - discount);
 
       const name = order?.addressUser?.shipName ?? order?.user?.name ?? '—';
       const phone = order?.addressUser?.shipPhonenumber ?? order?.user?.phone ?? '—';

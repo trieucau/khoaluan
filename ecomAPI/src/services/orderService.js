@@ -345,7 +345,16 @@ let getAllOrdersByShipper = (data) => {
       let objectFilter = {
         include: [
           { model: db.TypeShip, as: 'typeShipData' }, // ✅ giữ nguyên alias
-          { model: db.Voucher, as: 'voucherData' },
+          {
+            model: db.Voucher,
+            as: 'voucherData',
+            include: [
+              {
+                model: db.TypeVoucher,
+                as: 'typeVoucherOfVoucherData',
+              },
+            ],
+          },
           { model: db.Allcode, as: 'statusOrderData' },
           { model: db.OrderDetail, as: 'orderDetail' }, // ✅ THÊM MỚI: để tính totalPrice
         ],
