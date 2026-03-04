@@ -80,10 +80,20 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
             ? (distKm / 40) * 3600
             : null;
 
-      // Case A: tính totalPrice từ orderDetails (quantity * realPrice)
+      // Case A: tính totalPrice từ orderDetail (quantity * realPrice)
+      // Backend getAllOrdersByShipper chưa include OrderDetail → cần patch backend
+      // Tạm thời đọc cả 2 alias: orderDetails và orderDetail
+      const rawDetails = order?.orderDetail || order?.orderDetails || [];
+
+      const details = Array.isArray(rawDetails)
+        ? rawDetails
+        : rawDetails
+          ? [rawDetails] // 👈 bọc object thành array
+          : [];
+
       const totalPrice =
-        Array.isArray(order?.orderDetails) && order.orderDetail.length > 0
-          ? order.orderDetail.reduce(
+        details.length > 0
+          ? details.reduce(
               (sum, d) => sum + (Number(d.realPrice) || 0) * (Number(d.quantity) || 1),
               0
             )
@@ -92,8 +102,9 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
       const name = order?.addressUser?.shipName ?? order?.user?.name ?? '—';
       const phone = order?.addressUser?.shipPhonenumber ?? order?.user?.phone ?? '—';
 
-      // Phí ship theo loại ship (typeShip.price)
-      const shippingFee = order?.typeShip?.price != null ? Number(order.typeShipData.price) : null;
+      // Phí ship: backend dùng alias 'typeShipData' (as: 'typeShipData' trong include)
+      const shippingFee =
+        order?.typeShipData?.price != null ? Number(order.typeShipData.price) : null;
 
       return {
         ...order,

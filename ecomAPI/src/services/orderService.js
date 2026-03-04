@@ -344,9 +344,10 @@ let getAllOrdersByShipper = (data) => {
       console.log(data.shipperId);
       let objectFilter = {
         include: [
-          { model: db.TypeShip, as: 'typeShipData' },
+          { model: db.TypeShip, as: 'typeShipData' }, // ✅ giữ nguyên alias
           { model: db.Voucher, as: 'voucherData' },
           { model: db.Allcode, as: 'statusOrderData' },
+          { model: db.OrderDetail, as: 'orderDetail' }, // ✅ THÊM MỚI: để tính totalPrice
         ],
         order: [['createdAt', 'DESC']],
         raw: true,
@@ -354,9 +355,9 @@ let getAllOrdersByShipper = (data) => {
         where: { shipperId: data.shipperId },
       };
 
-      if (data.status && data.status == 'working')
+      if (data.status && data.status === 'working')
         objectFilter.where = { ...objectFilter.where, statusId: 'S5' };
-      if (data.status && data.status == 'done')
+      if (data.status && data.status === 'done')
         objectFilter.where = { ...objectFilter.where, statusId: 'S6' };
 
       let res = await db.OrderProduct.findAll(objectFilter);
