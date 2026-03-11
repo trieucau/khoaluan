@@ -318,7 +318,7 @@ const paymentOrderVnpayService = (data) => {
   return axios.post(`/api/payment-order-vnpay`, data);
 };
 const confirmOrderVnpay = (data) => {
-  return axios.post(`/api/vnpay_return`, data);
+  return axios.get(`/api/vnpay_return`, { params: data });
 };
 //=========================ADDRESS USER==============//
 const createNewAddressUserrService = (data) => {

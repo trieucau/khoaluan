@@ -54,7 +54,6 @@ let createNewOrder = (data) => {
               },
               raw: false,
             });
-            //  productDetailSize.stock = productDetailSize.stock - data.arrDataShopCart[i].quantity
             await productDetailSize.save();
           }
         }
@@ -149,7 +148,8 @@ let getDetailOrderById = (id) => {
           nest: true,
         });
         if (order.image) {
-          order.image = new Buffer(order.image, 'base64').toString('binary');
+          // FIX 1: new Buffer -> Buffer.from
+          order.image = Buffer.from(order.image, 'base64').toString('binary');
         }
         order.voucherData.typeVoucherOfVoucherData = await db.TypeVoucher.findOne({
           where: { id: order.voucherData.typeVoucherId },
@@ -198,7 +198,8 @@ let getDetailOrderById = (id) => {
             },
           });
           for (let j = 0; j < orderDetail[i].productImage.length; j++) {
-            orderDetail[i].productImage[j].image = new Buffer(
+            // FIX 1: new Buffer -> Buffer.from
+            orderDetail[i].productImage[j].image = Buffer.from(
               orderDetail[i].productImage[j].image,
               'base64'
             ).toString('binary');
@@ -232,7 +233,6 @@ let updateStatusOrder = (data) => {
         });
         order.statusId = data.statusId;
         await order.save();
-        // cong lai stock khi huy don
         if (
           data.statusId == 'S7' &&
           data.dataOrder.orderDetail &&
@@ -317,7 +317,8 @@ let getAllOrdersByUser = (userId) => {
                 },
               });
               for (let f = 0; f < orderDetail[k].productImage.length; f++) {
-                orderDetail[k].productImage[f].image = new Buffer(
+                // FIX 1: new Buffer -> Buffer.from
+                orderDetail[k].productImage[f].image = Buffer.from(
                   orderDetail[k].productImage[f].image,
                   'base64'
                 ).toString('binary');
@@ -341,10 +342,9 @@ let getAllOrdersByUser = (userId) => {
 let getAllOrdersByShipper = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(data.shipperId);
       let objectFilter = {
         include: [
-          { model: db.TypeShip, as: 'typeShipData' }, // ✅ giữ nguyên alias
+          { model: db.TypeShip, as: 'typeShipData' },
           {
             model: db.Voucher,
             as: 'voucherData',
@@ -356,7 +356,7 @@ let getAllOrdersByShipper = (data) => {
             ],
           },
           { model: db.Allcode, as: 'statusOrderData' },
-          { model: db.OrderDetail, as: 'orderDetail' }, // ✅ THÊM MỚI: để tính totalPrice
+          { model: db.OrderDetail, as: 'orderDetail' },
         ],
         order: [['createdAt', 'DESC']],
         raw: true,
@@ -614,8 +614,6 @@ let paymentOrder = (data) => {
           (data.result[i].realPrice / EXCHANGE_RATES.USD).toFixed(2)
         );
 
-        console.log(data.result[i].realPrice);
-        console.log(data.total);
         listItem.push({
           name:
             data.result[i].product.name +
@@ -629,7 +627,6 @@ let paymentOrder = (data) => {
           quantity: data.result[i].quantity,
         });
         totalPriceProduct += data.result[i].realPrice * data.result[i].quantity;
-        console.log(data.total - totalPriceProduct);
       }
       listItem.push({
         name: 'Phi ship + Voucher',
@@ -863,11 +860,18 @@ let paymentOrderVnpay = (req) => {
       var vnpUrl = process.env.VNP_URL;
       var returnUrl = process.env.VNP_RETURNURL;
 
-      var createDate = process.env.DATE_VNPAYMENT;
+      // FIX 2: tạo createDate động thay vì dùng biến môi trường tĩnh
+      var now = new Date();
+      var createDate =
+        now.getFullYear().toString() +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        String(now.getDate()).padStart(2, '0') +
+        String(now.getHours()).padStart(2, '0') +
+        String(now.getMinutes()).padStart(2, '0') +
+        String(now.getSeconds()).padStart(2, '0');
+
       var orderId = uuidv4();
 
-      console.log('createDate', createDate);
-      console.log('orderId', orderId);
       var amount = req.body.amount;
       var bankCode = req.body.bankCode;
 
@@ -882,7 +886,6 @@ let paymentOrderVnpay = (req) => {
       vnp_Params['vnp_Version'] = '2.1.0';
       vnp_Params['vnp_Command'] = 'pay';
       vnp_Params['vnp_TmnCode'] = tmnCode;
-      // vnp_Params['vnp_Merchant'] = ''
       vnp_Params['vnp_Locale'] = locale;
       vnp_Params['vnp_CurrCode'] = currCode;
       vnp_Params['vnp_TxnRef'] = orderId;
@@ -901,11 +904,11 @@ let paymentOrderVnpay = (req) => {
       var signData = querystring.stringify(vnp_Params, { encode: false });
 
       var hmac = crypto.createHmac('sha512', secretKey);
-      var signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex');
+      // FIX 1: new Buffer -> Buffer.from
+      var signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
       vnp_Params['vnp_SecureHash'] = signed;
 
       vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
-      console.log(vnpUrl);
       resolve({
         errCode: 200,
         link: vnpUrl,
@@ -925,15 +928,16 @@ let confirmOrderVnpay = (data) => {
       delete vnp_Params['vnp_SecureHash'];
       delete vnp_Params['vnp_SecureHashType'];
 
-      vnp_Params = sortObject(vnp_Params);
+      // FIX 3: dùng sortObject không encode key, chỉ sort theo alphabet
+      vnp_Params = sortObjectForVerify(vnp_Params);
 
-      var tmnCode = process.env.VNP_TMNCODE;
       var secretKey = process.env.VNP_HASHSECRET;
 
       var signData = querystring.stringify(vnp_Params, { encode: false });
 
       var hmac = crypto.createHmac('sha512', secretKey);
-      var signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex');
+      // FIX 1: new Buffer -> Buffer.from
+      var signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
       if (secureHash === signed) {
         resolve({
@@ -951,6 +955,8 @@ let confirmOrderVnpay = (data) => {
     }
   });
 };
+
+// Hàm sortObject dùng khi TẠO payment (encode value để ký)
 function sortObject(obj) {
   var sorted = {};
   var str = [];
@@ -966,6 +972,17 @@ function sortObject(obj) {
   }
   return sorted;
 }
+
+// FIX 3: Hàm sortObject dùng khi VERIFY callback từ VNPAY (không encode key/value)
+function sortObjectForVerify(obj) {
+  var sorted = {};
+  var keys = Object.keys(obj).sort();
+  for (var i = 0; i < keys.length; i++) {
+    sorted[keys[i]] = obj[keys[i]];
+  }
+  return sorted;
+}
+
 let updateImageOrder = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
