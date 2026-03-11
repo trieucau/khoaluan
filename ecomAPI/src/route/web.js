@@ -373,7 +373,7 @@ let initwebRoutes = (app) => {
     middlewareControllers.verifyTokenUser,
     orderController.paymentOrderVnpay
   );
-  router.post('/api/vnpay_return', orderController.confirmOrderVnpay);
+  router.get('/api/vnpay_return', orderController.confirmOrderVnpay);
   router.put('/api/update-image-order', orderController.updateImageOrder);
   //=================API ADDRESS USER ======================//
   router.post(
