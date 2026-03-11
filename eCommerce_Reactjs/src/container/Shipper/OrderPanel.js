@@ -156,7 +156,7 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
         style={{
           position: 'absolute',
           top: '50%',
-          left: open ? 'calc(40% - 18px)' : 0,
+          left: open ? 'calc(98% - 18px)' : 0,
           transform: 'translateY(-50%)',
           zIndex: 1100,
           width: 28,
@@ -186,7 +186,7 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
           top: 0,
           left: 0,
           height: '100%',
-          width: '40%',
+          width: '100%',
           background: '#fff',
           zIndex: 1050,
           boxShadow: open ? '4px 0 24px rgba(0,0,0,0.15)' : 'none',

@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'RoomMessage',
+      tableName: 'roommessages',
     }
   );
   return RoomMessage;

@@ -11,6 +11,9 @@ const sequelize = new Sequelize(
     dialect: 'mysql',
     logging: false,
     timezone: '+07:00',
+    define: {
+      freezeTableName: true, //  giúp Sequelize dùng đúng tên table
+    },
   }
 );
 
