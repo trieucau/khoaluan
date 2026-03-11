@@ -39,7 +39,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'User',
-      tableName: 'users',
       tableName: 'users', // ← thêm dòng này lúc deloy
     }
   );

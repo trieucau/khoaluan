@@ -14,6 +14,12 @@ const sequelize = new Sequelize(
     define: {
       freezeTableName: true, //  giúp Sequelize dùng đúng tên table
     },
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, // ← thêm block này
+      },
+    },
   }
 );
 
