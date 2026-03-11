@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import './OrderUser.scss';
 import { getAllOrdersByUser, updateStatusOrderService } from '../../services/userService';
 import CommonUtils from '../../utils/CommonUtils';
+import ModalCancelOrder from '../../component/ModalCancelOrder/ModalCancelOrder';
 
 function OrderUser() {
   const { id } = useParams();
@@ -11,6 +12,7 @@ function OrderUser() {
   const [DataOrder, setDataOrder] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [cancelModal, setCancelModal] = useState({ show: false, order: null });
 
   useEffect(() => {
     loadDataOrder();
@@ -29,16 +31,20 @@ function OrderUser() {
     }
   };
 
-  const handleCancelOrder = async (data) => {
+  const handleCancelOrder = async (reason) => {
     let res = await updateStatusOrderService({
-      id: data.id,
+      id: cancelModal.order.id,
       statusId: 'S7',
-      dataOrder: data,
+      dataOrder: cancelModal.order,
+      statusReason: reason,
     });
 
     if (res && res.errCode === 0) {
       toast.success('Hủy đơn hàng thành công');
+      setCancelModal({ show: false, order: null });
       loadDataOrder();
+    } else {
+      toast.error(res?.errMessage || 'Hủy đơn thất bại');
     }
   };
 
@@ -66,7 +72,6 @@ function OrderUser() {
   const filteredOrders = DataOrder.filter((order) => {
     const keyword = searchText.toLowerCase();
 
-    // Search
     const matchId = order.id?.toString().toLowerCase().includes(keyword);
     const matchShop = order.shopData?.name?.toLowerCase().includes(keyword);
     const matchProduct =
@@ -74,8 +79,6 @@ function OrderUser() {
       order.orderDetail.some((detail) => detail.product?.name?.toLowerCase().includes(keyword));
 
     const matchSearch = matchId || matchShop || matchProduct;
-
-    // Status filter
     const matchStatus = statusFilter === 'ALL' || order.statusId === statusFilter;
 
     return matchSearch && matchStatus;
@@ -132,7 +135,6 @@ function OrderUser() {
                         <span className="label-name-shop">
                           {item.shopData?.name || 'Eiser shop'}
                         </span>
-
                         <div className="order-id">
                           Mã đơn: <strong>#{item.id}</strong>
                         </div>
@@ -202,12 +204,15 @@ Chúng tôi sẽ sớm liên hệ để hỗ trợ.`}
                         </Link>
                       )}
 
-                      {(item.statusId === 'S3' || item.statusId === 'S4') &&
-                        item.isPaymentOnlien == 0 && (
-                          <div className="btn-buy" onClick={() => handleCancelOrder(item)}>
-                            Hủy đơn
-                          </div>
-                        )}
+                      {/* CHỈ cho hủy khi S3 - Chờ xác nhận */}
+                      {item.statusId === 'S3' && (
+                        <div
+                          className="btn-buy"
+                          onClick={() => setCancelModal({ show: true, order: item })}
+                        >
+                          Hủy đơn
+                        </div>
+                      )}
 
                       {item.statusId === 'S5' && (
                         <div className="btn-buy" onClick={() => handleReceivedOrder(item.id)}>
@@ -224,6 +229,13 @@ Chúng tôi sẽ sớm liên hệ để hỗ trợ.`}
           )}
         </div>
       </div>
+
+      {/* MODAL HỦY ĐƠN - tái sử dụng component chung */}
+      <ModalCancelOrder
+        show={cancelModal.show}
+        onConfirm={handleCancelOrder}
+        onClose={() => setCancelModal({ show: false, order: null })}
+      />
     </div>
   );
 }

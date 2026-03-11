@@ -232,9 +232,18 @@ let updateStatusOrder = (data) => {
           raw: false,
         });
         order.statusId = data.statusId;
+
+        // FIX 1: lưu statusReason nếu có
+        if (data.statusReason) {
+          order.statusReason = data.statusReason;
+        }
+
         await order.save();
+
+        // FIX 2: kiểm tra dataOrder tồn tại trước khi truy cập
         if (
           data.statusId == 'S7' &&
+          data.dataOrder &&
           data.dataOrder.orderDetail &&
           data.dataOrder.orderDetail.length > 0
         ) {

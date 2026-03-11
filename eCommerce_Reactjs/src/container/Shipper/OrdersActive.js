@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { getAllOrdersByShipper, shipperUpdateOrderStatus } from '../../services/userService';
 import { toast } from 'react-toastify';
 import moment from 'moment';
+import ModalCancelOrder from '../../component/ModalCancelOrder/ModalCancelOrder';
 
 const OrdersActive = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState({ show: false, orderId: null, type: null });
+  const [cancelModal, setCancelModal] = useState({ show: false, orderId: null });
   const [reason, setReason] = useState('');
   const [imageBase64, setImageBase64] = useState('');
 
@@ -47,9 +49,14 @@ const OrdersActive = () => {
     setImageBase64('');
   };
 
-  const openCancelModal = (orderId, type) => {
-    setModal({ show: true, orderId, type });
+  const openFailModal = (orderId) => {
+    setModal({ show: true, orderId, type: 'S8' });
     setReason('');
+  };
+
+  // Dùng ModalCancelOrder chung cho S7
+  const openCancelModal = (orderId) => {
+    setCancelModal({ show: true, orderId });
   };
 
   const handleCompleteWithImage = async () => {
@@ -74,7 +81,7 @@ const OrdersActive = () => {
     }
   };
 
-  const handleCancelOrFail = async () => {
+  const handleFail = async () => {
     if (!modal.orderId || !reason.trim()) {
       toast.warning('Vui lòng nhập lý do.');
       return;
@@ -82,13 +89,31 @@ const OrdersActive = () => {
     try {
       const res = await shipperUpdateOrderStatus({
         orderId: modal.orderId,
-        statusId: modal.type,
+        statusId: 'S8',
         statusReason: reason.trim(),
       });
       if (res && res.errCode === 0) {
-        toast.success(modal.type === 'S7' ? 'Đã hủy đơn.' : 'Đã cập nhật giao thất bại.');
+        toast.success('Đã cập nhật giao thất bại.');
         setModal({ show: false, orderId: null, type: null });
         setReason('');
+        load();
+      } else toast.error(res?.errMessage || 'Lỗi');
+    } catch (e) {
+      toast.error('Lỗi kết nối');
+    }
+  };
+
+  // Xử lý hủy đơn từ ModalCancelOrder chung
+  const handleCancelOrder = async (reason) => {
+    try {
+      const res = await shipperUpdateOrderStatus({
+        orderId: cancelModal.orderId,
+        statusId: 'S7',
+        statusReason: reason,
+      });
+      if (res && res.errCode === 0) {
+        toast.success('Đã hủy đơn.');
+        setCancelModal({ show: false, orderId: null });
         load();
       } else toast.error(res?.errMessage || 'Lỗi');
     } catch (e) {
@@ -152,13 +177,13 @@ const OrdersActive = () => {
                               </button>
                               <button
                                 className="btn btn-warning btn-sm me-1"
-                                onClick={() => openCancelModal(o.id, 'S7')}
+                                onClick={() => openCancelModal(o.id)}
                               >
                                 Hủy đơn
                               </button>
                               <button
                                 className="btn btn-danger btn-sm"
-                                onClick={() => openCancelModal(o.id, 'S8')}
+                                onClick={() => openFailModal(o.id)}
                               >
                                 Giao thất bại
                               </button>
@@ -176,6 +201,7 @@ const OrdersActive = () => {
         </div>
       )}
 
+      {/* MODAL XÁC NHẬN GIAO HÀNG - S6 */}
       {modal.show && modal.type === 'S6' && (
         <div className="modal d-block" style={{ background: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog">
@@ -213,12 +239,13 @@ const OrdersActive = () => {
         </div>
       )}
 
-      {modal.show && (modal.type === 'S7' || modal.type === 'S8') && (
+      {/* MODAL GIAO THẤT BẠI - S8 */}
+      {modal.show && modal.type === 'S8' && (
         <div className="modal d-block" style={{ background: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">{modal.type === 'S7' ? 'Hủy đơn' : 'Giao thất bại'}</h5>
+                <h5 className="modal-title">Giao thất bại</h5>
                 <button
                   type="button"
                   className="btn-close"
@@ -232,14 +259,14 @@ const OrdersActive = () => {
                   rows={3}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  placeholder="Nhập lý do..."
+                  placeholder="Nhập lý do giao thất bại..."
                 />
               </div>
               <div className="modal-footer">
                 <button className="btn btn-secondary" onClick={() => setModal({ show: false })}>
                   Đóng
                 </button>
-                <button className="btn btn-danger" onClick={handleCancelOrFail}>
+                <button className="btn btn-danger" onClick={handleFail}>
                   Xác nhận
                 </button>
               </div>
@@ -247,6 +274,13 @@ const OrdersActive = () => {
           </div>
         </div>
       )}
+
+      {/* MODAL HỦY ĐƠN - tái sử dụng component chung */}
+      <ModalCancelOrder
+        show={cancelModal.show}
+        onConfirm={handleCancelOrder}
+        onClose={() => setCancelModal({ show: false, orderId: null })}
+      />
     </div>
   );
 };
