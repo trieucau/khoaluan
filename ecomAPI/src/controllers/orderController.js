@@ -134,7 +134,7 @@ let paymentOrderVnpay = async (req, res) => {
 };
 let confirmOrderVnpay = async (req, res) => {
   try {
-    let data = await orderService.confirmOrderVnpay(req.body);
+    let data = await orderService.confirmOrderVnpay(req.query);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
