@@ -1,15 +1,12 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "node": true
   },
-  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module"
-  },
+  "extends": ["react-app", "react-app/jest"],
   "rules": {
     "no-unused-vars": "warn"
   },
-  "ignorePatterns": ["src/resources/", "node_modules/", "build/"]
+  "ignorePatterns": ["src/resources/", "public/resources/", "node_modules/", "build/"]
 }
