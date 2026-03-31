@@ -14,12 +14,15 @@ const sequelize = new Sequelize(
     define: {
       freezeTableName: true, //  giúp Sequelize dùng đúng tên table
     },
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false, // ← thêm block này
-      },
-    },
+    dialectOptions:
+      process.env.DB_SSL === 'true' // ← đồng bộ với 2 file kia
+        ? {
+            ssl: {
+              require: true,
+              rejectUnauthorized: false,
+            },
+          }
+        : {}, // ← không truyền gì cả khi DB_SSL != true
   }
 );
 

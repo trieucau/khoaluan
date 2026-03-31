@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { toast } from 'react-toastify';
+import { getDetailAddressUserByIdService } from '../../services/userService';
+
 const AddressUsersModal = (props) => {
   const [inputValues, setInputValues] = useState({
     shipName: '',
@@ -29,6 +31,102 @@ const AddressUsersModal = (props) => {
     };
     fetchProvinces();
   }, []);
+
+  // ================= LOAD ADDRESS DETAIL KHI EDIT =================
+  useEffect(() => {
+    const loadAddressDetail = async () => {
+      if (props.addressUserId) {
+        // ---- MODE SỬA: load dữ liệu cũ ----
+        const res = await getDetailAddressUserByIdService(props.addressUserId);
+        if (res && res.errCode === 0) {
+          const d = res.data;
+
+          const parts = (d.shipAdress || '').split(',').map((s) => s.trim());
+
+          // Phân biệt địa chỉ từ form thủ công hay từ bản đồ
+          const isFormFormat =
+            parts.length >= 4 &&
+            (parts[2].includes('Huyện') ||
+              parts[2].includes('Quận') ||
+              parts[2].includes('Thị xã'));
+
+          if (isFormFormat) {
+            // ---- Địa chỉ từ form thủ công → tách đúng 4 phần ----
+            const houseNumber = parts[0] || '';
+            const wardName = parts[1] || '';
+            const districtName = parts[2] || '';
+            const provinceName = parts[3] || '';
+
+            setInputValues({
+              shipName: d.shipName || '',
+              shipEmail: d.shipEmail || '',
+              shipPhonenumber: d.shipPhonenumber || '',
+              houseNumber: houseNumber,
+              isActionUpdate: true,
+            });
+
+            const matchedProvince = provinces.find((p) => p.name === provinceName);
+            if (matchedProvince) {
+              setSelectedProvince(matchedProvince.code);
+
+              const resP = await fetch(
+                `https://provinces.open-api.vn/api/p/${matchedProvince.code}?depth=2`
+              );
+              const dataP = await resP.json();
+              setDistricts(dataP.districts);
+
+              const matchedDistrict = dataP.districts.find((dist) => dist.name === districtName);
+              if (matchedDistrict) {
+                setSelectedDistrict(matchedDistrict.code);
+
+                const resD = await fetch(
+                  `https://provinces.open-api.vn/api/d/${matchedDistrict.code}?depth=2`
+                );
+                const dataD = await resD.json();
+                setWards(dataD.wards);
+
+                const matchedWard = dataD.wards.find((w) => w.name === wardName);
+                if (matchedWard) setSelectedWard(matchedWard.code);
+              }
+            }
+          } else {
+            // ---- Địa chỉ từ bản đồ → đổ toàn bộ vào houseNumber, reset dropdown ----
+            setInputValues({
+              shipName: d.shipName || '',
+              shipEmail: d.shipEmail || '',
+              shipPhonenumber: d.shipPhonenumber || '',
+              houseNumber: d.shipAdress || '',
+              isActionUpdate: true,
+            });
+            setSelectedProvince('');
+            setSelectedDistrict('');
+            setSelectedWard('');
+            setDistricts([]);
+            setWards([]);
+          }
+        }
+      } else {
+        // ---- MODE THÊM MỚI: reset toàn bộ form ----
+        setInputValues({
+          shipName: '',
+          shipEmail: '',
+          shipPhonenumber: '',
+          houseNumber: '',
+          isActionUpdate: false,
+        });
+        setSelectedProvince('');
+        setSelectedDistrict('');
+        setSelectedWard('');
+        setDistricts([]);
+        setWards([]);
+      }
+    };
+
+    // Chỉ chạy khi modal đang mở VÀ danh sách tỉnh đã được load xong
+    if (props.isOpenModal && provinces.length > 0) {
+      loadAddressDetail();
+    }
+  }, [props.addressUserId, props.isOpenModal, provinces]);
 
   // ================= LOAD DISTRICTS =================
   const handleProvinceChange = async (code) => {
@@ -75,13 +173,12 @@ const AddressUsersModal = (props) => {
 
       setLoadingGeo(true);
 
-      // 1. Lấy tên gốc từ API Provinces
+      // Lấy tên gốc từ state
       const pRaw = provinces.find((p) => p.code == selectedProvince)?.name || '';
       const dRaw = districts.find((d) => d.code == selectedDistrict)?.name || '';
       const wRaw = wards.find((w) => w.code == selectedWard)?.name || '';
 
-      // 2. Hàm làm sạch chuỗi: Loại bỏ "Thành phố", "Tỉnh", "Quận", "Huyện", "Phường", "Xã"
-      // Điều này giúp Nominatim tìm theo từ khóa gốc (ví dụ: "Đông Anh" thay vì "Huyện Đông Anh")
+      // Hàm làm sạch chuỗi để geocoding
       const clean = (str) => {
         if (!str) return '';
         return str
@@ -93,17 +190,9 @@ const AddressUsersModal = (props) => {
       const cleanD = clean(dRaw);
       const cleanP = clean(pRaw);
 
-      // 3. Tạo các phương án tìm kiếm (từ chi tiết đến tổng quát)
-      // Ưu tiên 1: Cấu trúc chính xác (Structured)
-      // Ưu tiên 2: Chuỗi làm sạch (Ward, District, Province)
-      // Ưu tiên 3: Chỉ District, Province (Tọa độ trung tâm huyện)
-
       const searchOptions = [
-        // Option 1: Chuỗi làm sạch (Tỉ lệ thành công cao nhất ở VN)
         `q=${encodeURIComponent(`${cleanW}, ${cleanD}, ${cleanP}, Vietnam`)}`,
-        // Option 2: Chuỗi gốc đầy đủ
         `q=${encodeURIComponent(`${wRaw}, ${dRaw}, ${pRaw}, Vietnam`)}`,
-        // Option 3: Chỉ tìm đến cấp Quận/Huyện nếu Phường quá nhỏ không có trên map
         `q=${encodeURIComponent(`${cleanD}, ${cleanP}, Vietnam`)}`,
       ];
 
@@ -112,14 +201,12 @@ const AddressUsersModal = (props) => {
       for (const query of searchOptions) {
         const res = await fetch(
           `https://nominatim.openstreetmap.org/search?${query}&format=json&limit=1`,
-          {
-            headers: { 'User-Agent': 'MyGeoApp/1.0' },
-          }
+          { headers: { 'User-Agent': 'MyGeoApp/1.0' } }
         );
         const result = await res.json();
         if (result && result.length > 0) {
           finalData = result[0];
-          break; // Dừng lại khi tìm thấy kết quả đầu tiên hợp lệ
+          break;
         }
       }
 
@@ -129,6 +216,7 @@ const AddressUsersModal = (props) => {
 
         props.sendDataFromModalAddress({
           shipName: inputValues.shipName,
+          // Lưu đúng format: "số nhà, phường, huyện, tỉnh"
           shipAdress: `${inputValues.houseNumber}, ${wRaw}, ${dRaw}, ${pRaw}`,
           shipEmail: inputValues.shipEmail,
           shipPhonenumber: inputValues.shipPhonenumber,
@@ -151,15 +239,17 @@ const AddressUsersModal = (props) => {
       setLoadingGeo(false);
     }
   };
+
   return (
     <Modal isOpen={props.isOpenModal} centered size="lg">
       <div className="modal-header">
-        <h5>Thêm địa chỉ mới</h5>
+        <h5>{props.addressUserId ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ mới'}</h5>
         <button onClick={props.closeModaAddressUser}>X</button>
       </div>
 
       <ModalBody>
         <div className="row">
+          {/* Họ tên */}
           <div className="col-6 mb-3">
             <label>Họ tên</label>
             <input
@@ -170,6 +260,7 @@ const AddressUsersModal = (props) => {
             />
           </div>
 
+          {/* SĐT */}
           <div className="col-6 mb-3">
             <label>SĐT</label>
             <input
@@ -180,6 +271,7 @@ const AddressUsersModal = (props) => {
             />
           </div>
 
+          {/* Email */}
           <div className="col-12 mb-3">
             <label>Email</label>
             <input
@@ -190,16 +282,19 @@ const AddressUsersModal = (props) => {
             />
           </div>
 
+          {/* Số nhà — CHỈ nhập số nhà / tên đường, KHÔNG bao gồm phường/huyện/tỉnh */}
           <div className="col-12 mb-3">
-            <label>Số nhà</label>
+            <label>Số nhà / Tên đường</label>
             <input
               name="houseNumber"
               className="form-control"
+              placeholder="VD: 123 Nguyễn Văn A"
               value={inputValues.houseNumber}
               onChange={handleOnChange}
             />
           </div>
 
+          {/* Tỉnh/TP */}
           <div className="col-4 mb-3">
             <label>Tỉnh/TP</label>
             <select
@@ -216,6 +311,7 @@ const AddressUsersModal = (props) => {
             </select>
           </div>
 
+          {/* Quận/Huyện */}
           <div className="col-4 mb-3">
             <label>Quận/Huyện</label>
             <select
@@ -232,6 +328,7 @@ const AddressUsersModal = (props) => {
             </select>
           </div>
 
+          {/* Phường/Xã */}
           <div className="col-4 mb-3">
             <label>Phường/Xã</label>
             <select

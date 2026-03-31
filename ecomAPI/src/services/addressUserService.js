@@ -102,9 +102,7 @@ let editAddressUser = (data) => {
         });
       } else {
         let addressUser = await db.AddressUser.findOne({
-          where: {
-            id: data.id,
-          },
+          where: { id: data.id },
           raw: false,
         });
         if (addressUser) {
@@ -112,6 +110,8 @@ let editAddressUser = (data) => {
           addressUser.shipPhonenumber = data.shipPhonenumber;
           addressUser.shipAdress = data.shipAdress;
           addressUser.shipEmail = data.shipEmail;
+          addressUser.lat = data.lat;
+          addressUser.lng = data.lng;
 
           await addressUser.save();
           resolve({
@@ -120,7 +120,7 @@ let editAddressUser = (data) => {
           });
         } else {
           resolve({
-            errCode: 0,
+            errCode: 2,
             errMessage: 'Địa chỉ người dùng không tồn tại',
           });
         }
