@@ -1,7 +1,8 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import './Header.scss';
 const TopMenu = (props) => {
+  const navigate = useNavigate();
   let handleLogout = () => {
     localStorage.removeItem('userData');
     localStorage.removeItem('token');
@@ -34,14 +35,14 @@ const TopMenu = (props) => {
                       {name}
                     </NavLink>
                   ) : (
-                    <a href="/login">Đăng nhập</a>
+                    <NavLink to="/login">Đăng nhập</NavLink>
                   )}
                 </li>
                 <li style={{ cursor: 'pointer' }}>
                   {props.user && props.user.id ? (
                     <a onClick={() => handleLogout()}>Đăng xuất</a>
                   ) : (
-                    <a href="/login">Đăng ký</a>
+                    <NavLink to="/register">Đăng ký</NavLink>
                   )}
                 </li>
                 <li>

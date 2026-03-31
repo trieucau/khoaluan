@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './LoginWebPage.css';
 import { FacebookLoginButton, GoogleLoginButton } from 'react-social-login-buttons';
@@ -12,6 +13,13 @@ import {
 import { authentication } from '../../utils/firebase';
 import { signInWithPopup, FacebookAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 const LoginWebPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isRegister, setIsRegister] = useState(location.pathname === '/register');
+
+  useEffect(() => {
+    setIsRegister(location.pathname === '/register');
+  }, [location.pathname]);
   const [inputValues, setInputValues] = useState({
     email: '',
     password: 'passwordsecrect',
@@ -182,7 +190,7 @@ const LoginWebPage = () => {
               {/* Form Box */}
               <div className="col-sm-6 form">
                 {/* Login Form */}
-                <div className="login form-peice ">
+                <div className={`login form-peice ${isRegister ? 'switched' : ''}`}>
                   <form className="login-form">
                     <div className="form-group">
                       <label htmlFor="loginemail">Địa chỉ email</label>
@@ -207,10 +215,12 @@ const LoginWebPage = () => {
                     <div className="CTA">
                       <input onClick={() => handleLogin()} type="submit" value="Đăng nhập" />
                       <a
-                        style={{
-                          cursor: 'pointer',
-                        }}
+                        style={{ cursor: 'pointer' }}
                         className="switch"
+                        onClick={() => {
+                          setIsRegister(true);
+                          navigate('/register');
+                        }}
                       >
                         Tài khoản mới
                       </a>
@@ -241,7 +251,7 @@ const LoginWebPage = () => {
                 </div>
                 {/* End Login Form */}
                 {/* Signup Form */}
-                <div className="signup form-peice switched">
+                <div className={`signup form-peice ${isRegister ? '' : 'switched'}`}>
                   <form className="signup-form">
                     <div className="form-group">
                       <label htmlFor="name">Họ và tên</label>
@@ -304,10 +314,12 @@ const LoginWebPage = () => {
                         id="submit"
                       />
                       <a
-                        style={{
-                          cursor: 'pointer',
-                        }}
+                        style={{ cursor: 'pointer' }}
                         className="switch"
+                        onClick={() => {
+                          setIsRegister(false);
+                          navigate('/login');
+                        }}
                       >
                         Tôi có tài khoản
                       </a>

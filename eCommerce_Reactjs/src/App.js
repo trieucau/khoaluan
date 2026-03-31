@@ -109,6 +109,16 @@ function App() {
           }
         />
         <Route
+          path="/register"
+          element={
+            <>
+              <Header />
+              <LoginWebPage />
+              <Footer />
+            </>
+          }
+        />
+        <Route
           path="/voucher"
           element={
             <>
