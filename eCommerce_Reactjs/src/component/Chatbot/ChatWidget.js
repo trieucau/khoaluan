@@ -27,6 +27,8 @@ const ChatBubble = ({ isOpen, onClick, hasUnread }) => (
 
 // ── Single message bubble ───────────────────────────────────
 const MessageBubble = ({ message }) => {
+  console.log('MESSAGE:', message);
+  console.log('CONTENT:', message.content);
   const isUser = message.role === 'user';
   return (
     <div className={`chat-msg ${isUser ? 'chat-msg--user' : 'chat-msg--bot'}`}>

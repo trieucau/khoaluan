@@ -1,7 +1,4 @@
-// src/hooks/useChatbot.js
-
-import { useState, useRef, useCallback } from 'react';
-
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { sendChatMessage } from '../services/chatbotService';
 
 const TOOL_LABELS = {
@@ -17,18 +14,21 @@ const useChatbot = () => {
       role: 'assistant',
       content:
         'Xin chào! Mình là trợ lý AI của shop 👋\nMình có thể giúp bạn tư vấn sản phẩm, tra đơn hàng hoặc tìm mã giảm giá. Bạn cần hỗ trợ gì?',
-
       isStreaming: false,
     },
   ]);
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const [toolStatus, setToolStatus] = useState(''); // "Đang tra cứu..."
+  const [toolStatus, setToolStatus] = useState('');
 
   const abortRef = useRef(null);
-
   const streamingIdRef = useRef(null);
+
+  // ✅ FIX 1: tránh stale state
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   const sendMessage = useCallback(
     (text) => {
@@ -36,11 +36,8 @@ const useChatbot = () => {
 
       const userMsg = {
         id: `user-${Date.now()}`,
-
         role: 'user',
-
         content: text.trim(),
-
         isStreaming: false,
       };
 
@@ -48,11 +45,8 @@ const useChatbot = () => {
 
       const assistantMsg = {
         id: assistantId,
-
         role: 'assistant',
-
         content: '',
-
         isStreaming: true,
       };
 
@@ -61,26 +55,32 @@ const useChatbot = () => {
       setMessages((prev) => [...prev, userMsg, assistantMsg]);
 
       setIsLoading(true);
-
       setToolStatus('');
 
-      // Xây history để gửi lên (bỏ welcome message + chỉ lấy role/content)
-
-      const history = [...messages, userMsg]
-
+      // ✅ FIX 2: dùng ref thay vì messages
+      const history = [...messagesRef.current, userMsg]
         .filter((m) => m.id !== 'welcome')
-
         .map((m) => ({ role: m.role, content: m.content }));
 
       abortRef.current = sendChatMessage(history, {
         onChunk: (chunk) => {
+          console.log('CHUNK RECEIVED:', chunk);
           setToolStatus('');
 
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === streamingIdRef.current ? { ...m, content: m.content + chunk } : m
-            )
-          );
+          // ✅ FIX 3: tránh mất chunk (race condition)
+          setMessages((prev) => {
+            const newMessages = [...prev];
+            const idx = newMessages.findIndex((m) => m.id === streamingIdRef.current);
+            if (idx !== -1) {
+              newMessages[idx] = {
+                ...newMessages[idx],
+                content: (newMessages[idx].content || '') + chunk,
+              };
+            } else {
+              console.log('⚠️ Không tìm thấy message để append chunk');
+            }
+            return newMessages;
+          });
         },
 
         onToolCall: (toolName) => {
@@ -89,19 +89,20 @@ const useChatbot = () => {
 
         onDone: () => {
           setIsLoading(false);
-
           setToolStatus('');
 
           setMessages((prev) =>
             prev.map((m) => (m.id === streamingIdRef.current ? { ...m, isStreaming: false } : m))
           );
 
-          streamingIdRef.current = null;
+          // ✅ FIX 4: delay reset để tránh mất chunk cuối
+          setTimeout(() => {
+            streamingIdRef.current = null;
+          }, 100);
         },
 
         onError: (errText) => {
           setIsLoading(false);
-
           setToolStatus('');
 
           setMessages((prev) =>
@@ -109,28 +110,27 @@ const useChatbot = () => {
               m.id === streamingIdRef.current
                 ? {
                     ...m,
-
                     content: errText || 'Đã xảy ra lỗi, vui lòng thử lại.',
-
                     isStreaming: false,
                   }
                 : m
             )
           );
 
-          streamingIdRef.current = null;
+          // ✅ delay giống onDone
+          setTimeout(() => {
+            streamingIdRef.current = null;
+          }, 100);
         },
       });
     },
-
-    [messages, isLoading]
+    [isLoading]
   );
 
   const stopStreaming = useCallback(() => {
     abortRef.current?.();
 
     setIsLoading(false);
-
     setToolStatus('');
 
     setMessages((prev) =>
@@ -146,12 +146,9 @@ const useChatbot = () => {
     setMessages([
       {
         id: 'welcome',
-
         role: 'assistant',
-
         content:
           'Xin chào! Mình là trợ lý AI của shop 👋\nMình có thể giúp bạn tư vấn sản phẩm, tra đơn hàng hoặc tìm mã giảm giá. Bạn cần hỗ trợ gì?',
-
         isStreaming: false,
       },
     ]);
@@ -159,15 +156,10 @@ const useChatbot = () => {
 
   return {
     messages,
-
     isLoading,
-
     toolStatus,
-
     sendMessage,
-
     stopStreaming,
-
     clearHistory,
   };
 };
