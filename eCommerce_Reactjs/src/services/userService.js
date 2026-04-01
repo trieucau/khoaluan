@@ -347,8 +347,10 @@ const createNewRoom = (data) => {
 const sendMessage = (data) => {
   return axios.post(`/api/sendMessage`, data);
 };
-const loadMessage = (roomId, userId) => {
-  return axios.get(`/api/loadMessage?roomId=${roomId}&userId=${userId}`);
+const loadMessage = (roomId, userId, limit = 10, offset = 0) => {
+  return axios.get(
+    `/api/loadMessage?roomId=${roomId}&userId=${userId}&limit=${limit}&offset=${offset}`
+  );
 };
 const listRoomOfUser = (userId) => {
   return axios.get(`/api/listRoomOfUser?userId=${userId}`);

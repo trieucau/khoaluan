@@ -29,6 +29,8 @@ let loadMessage = async (req, res) => {
     let data = await messageService.loadMessage({
       roomId: req.query.roomId,
       userId: req.user.id, // ← từ token thay vì query param
+      limit: req.query.limit,
+      offset: req.query.offset,
     });
     return res.status(200).json(data);
   } catch (error) {

@@ -50,7 +50,6 @@ function MessagePage(props) {
     setselectedRoom(roomId);
   };
   let fetchListRoom = async (userId) => {
-    console.log('fetchListRoom called', new Date().toISOString()); // thêm dòng này
     let res = await listRoomOfUser(userId);
     if (res && res.errCode === 0) {
       setdataRoom(res.data);

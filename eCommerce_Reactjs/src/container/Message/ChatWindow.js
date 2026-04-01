@@ -6,6 +6,10 @@ import moment from 'moment';
 
 const host = process.env.REACT_APP_BACKEND_URL;
 function ChatWindow(props) {
+  const LIMIT = 10;
+  const [offset, setOffset] = useState(LIMIT);
+  const [hasMore, setHasMore] = useState(true);
+  const boxChatRef = useRef(null);
   const [mess, setMess] = useState([]);
   const [userData, setuserData] = useState({});
   const [message, setMessage] = useState('');
@@ -27,10 +31,13 @@ function ChatWindow(props) {
       fetchMessage();
     }
     socketRef.current.off('sendDataServer');
-    socketRef.current.on('sendDataServer', (dataGot) => {
+    socketRef.current.on('sendDataServer', () => {
       fetchMessage();
-      let elem = document.getElementById('box-chat');
-      if (elem) elem.scrollTop = elem.scrollHeight;
+      setTimeout(() => {
+        if (boxChatRef.current) {
+          boxChatRef.current.scrollTop = boxChatRef.current.scrollHeight;
+        }
+      }, 100);
     });
     return () => {
       socketRef.current.emit('leaveRoom', props.roomId); // ← rời room khi đóng
@@ -38,11 +45,24 @@ function ChatWindow(props) {
       socketRef.current.disconnect();
     };
   }, [props.roomId]);
-  let fetchMessage = async () => {
-    let res = await loadMessage(props.roomId, props.userId);
-    if (res) {
-      setMess(res.data);
-      setuserData(res.data.userData);
+  let fetchMessage = async (loadMore = false) => {
+    let currentOffset = loadMore ? offset : 0;
+    let res = await loadMessage(props.roomId, props.userId, LIMIT, currentOffset);
+    if (res && res.data) {
+      if (loadMore) {
+        setMess((prev) => [...res.data, ...prev]);
+        setOffset((prev) => prev + LIMIT);
+      } else {
+        setMess(res.data);
+        setOffset(LIMIT);
+        // ← scroll xuống cuối sau khi load lần đầu
+        setTimeout(() => {
+          if (boxChatRef.current) {
+            boxChatRef.current.scrollTop = boxChatRef.current.scrollHeight;
+          }
+        }, 100);
+      }
+      setHasMore(res.data.length === LIMIT);
     }
   };
   let sendMessage = () => {
@@ -54,12 +74,6 @@ function ChatWindow(props) {
         userData: userData,
       };
       socketRef.current.emit('sendDataClient', msg);
-
-      /*Khi emit('sendDataClient') bên phía server sẽ nhận được sự kiện có tên 'sendDataClient' và handle như câu lệnh trong file index.js
-           socket.on("sendDataClient", function(data) { // Handle khi có sự kiện tên là sendDataClient từ phía client
-             socketIo.emit("sendDataServer", { data });// phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
-           })
-     */
       setMessage('');
     }
   };
@@ -130,10 +144,20 @@ function ChatWindow(props) {
         <div className="jspContainer" style={{ width: '701px', height: '481px' }}>
           <div className="jspPane" style={{ padding: '0px', top: '0px', width: '691px' }}>
             <ul
-              id="box-chat"
+              ref={boxChatRef} // ← dùng ref thay id
               className="ks-items"
               style={{ overflowY: 'scroll', maxHeight: '479px' }}
             >
+              {hasMore && (
+                <li style={{ textAlign: 'center', padding: '8px' }}>
+                  <button
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => fetchMessage(true)}
+                  >
+                    Tải tin nhắn cũ hơn
+                  </button>
+                </li>
+              )}
               {mess &&
                 mess.length > 0 &&
                 mess.map((item, index) => {
