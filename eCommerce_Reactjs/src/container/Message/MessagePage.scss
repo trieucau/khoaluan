@@ -33,6 +33,11 @@
 
 .ks-messenger .ks-discussions > .ks-search > .input-icon {
   width: 100%;
+  border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 .ks-messenger .ks-discussions > .ks-search .form-control {

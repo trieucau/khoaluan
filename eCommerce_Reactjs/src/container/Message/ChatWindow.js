@@ -94,35 +94,35 @@ function ChatWindow(props) {
               aria-haspopup="true"
               aria-expanded="false"
             >
-              <span className="la la-ellipsis-h ks-icon" />
+              <span className="fa fa-ellipsis-h ks-icon" />
             </button>
             <div
               className="dropdown-menu dropdown-menu-right ks-simple"
               aria-labelledby="dropdownMenuButton"
             >
               <a className="dropdown-item" href="#">
-                <span className="la la-user-plus ks-icon" />
-                <span className="ks-text">Add members</span>
+                <span className="fa fa-user-plus ks-icon" />
+                <span className="ks-text"> Add members</span>
               </a>
               <a className="dropdown-item" href="#">
-                <span className="la la-eye-slash ks-icon" />
-                <span className="ks-text">Mark as unread</span>
+                <span className="fa fa-eye-slash ks-icon" />
+                <span className="ks-text"> Mark as unread</span>
               </a>
               <a className="dropdown-item" href="#">
-                <span className="la la-bell-slash-o ks-icon" />
-                <span className="ks-text">Mute notifications</span>
+                <span className="fa fa-bell-slash-o ks-icon" />
+                <span className="ks-text"> Mute notifications</span>
               </a>
               <a className="dropdown-item" href="#">
-                <span className="la la-mail-forward ks-icon" />
-                <span className="ks-text">Forward</span>
+                <span className="fa fa-mail-forward ks-icon" />
+                <span className="ks-text"> Forward</span>
               </a>
               <a className="dropdown-item" href="#">
-                <span className="la la-ban ks-icon" />
-                <span className="ks-text">Spam</span>
+                <span className="fa fa-ban ks-icon" />
+                <span className="ks-text"> Spam</span>
               </a>
               <a className="dropdown-item" href="#">
-                <span className="la la-trash-o ks-icon" />
-                <span className="ks-text">Delete</span>
+                <span className="fa fa-trash-o ks-icon" />
+                <span className="ks-text"> Delete</span>
               </a>
             </div>
           </div>

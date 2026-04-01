@@ -29,14 +29,14 @@ const Message = () => {
       fetchListRoom();
     });
     socketRef.current.on('loadRoomServer', (dataGot) => {
-      fetchListRoom(userData.id);
+      fetchListRoom();
     });
     return () => {
       socketRef.current.disconnect();
     };
   }, []);
   let handleClickRoom = (roomId) => {
-    socketRef.current.emit('loadRoomClient');
+    socketRef.current.emit('loadRoomClient', { roomId: roomId });
     setselectedRoom(roomId);
   };
   let fetchListRoom = async () => {

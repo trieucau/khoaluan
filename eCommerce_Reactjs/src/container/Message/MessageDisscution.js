@@ -50,6 +50,9 @@ function MessageDisscution(props) {
     <div className="ks-discussions">
       <div className="ks-search">
         <div className="input-icon icon-right icon icon-lg icon-color-primary">
+          <span className="icon-addon">
+            <span className="fa fa-search" />
+          </span>
           <input
             onChange={(e) => handleOnchangeSearch(e)}
             value={textSearch}
@@ -58,9 +61,6 @@ function MessageDisscution(props) {
             className="form-control"
             placeholder="Tìm kiếm theo tên"
           />
-          <span className="icon-addon">
-            <span className="la la-search" />
-          </span>
         </div>
       </div>
       <div
