@@ -26,7 +26,10 @@ let sendMessage = async (req, res) => {
 };
 let loadMessage = async (req, res) => {
   try {
-    let data = await messageService.loadMessage(req.query);
+    let data = await messageService.loadMessage({
+      roomId: req.query.roomId,
+      userId: req.user.id, // ← từ token thay vì query param
+    });
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -38,7 +41,7 @@ let loadMessage = async (req, res) => {
 };
 let listRoomOfUser = async (req, res) => {
   try {
-    let data = await messageService.listRoomOfUser(req.query.userId);
+    let data = await messageService.listRoomOfUser(req.user.id);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
