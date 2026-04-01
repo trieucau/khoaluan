@@ -17,40 +17,42 @@ function MessagePage(props) {
     socketRef.current = socketIOClient.connect(host);
     const userData = JSON.parse(localStorage.getItem('userData'));
     setdataUser(userData);
-    let createRoom = async () => {
-      let res = await createNewRoom({
-        userId1: userData.id,
-      });
-      if (res && res.errCode) {
-        fetchListRoom(userData.id);
-      }
-    };
-    if (userData) {
-      socketRef.current.on('getId', (data) => {
-        setId(data);
-      }); // phần này đơn giản để gán id cho mỗi phiên kết nối vào page. Mục đích chính là để phân biệt đoạn nào là của mình đang chat.
-      createRoom();
-
+    if (!userData) return;
+    socketRef.current.on('getId', (data) => {
+      setId(data);
+    });
+    let initRoom = async () => {
+      await createNewRoom({ userId1: userData.id });
       fetchListRoom(userData.id);
+    };
+    initRoom();
+    socketRef.current.off('sendDataServer');
+    socketRef.current.off('loadRoomServer');
 
-      socketRef.current.on('sendDataServer', (dataGot) => {
-        fetchListRoom(userData.id);
-      });
-      socketRef.current.on('loadRoomServer', (dataGot) => {
-        fetchListRoom(userData.id);
-      });
-      return () => {
-        socketRef.current.disconnect();
-      };
-    }
+    socketRef.current.on('sendDataServer', () => {
+      fetchListRoom(userData.id);
+    });
+    socketRef.current.on('loadRoomServer', () => {
+      fetchListRoom(userData.id);
+    });
+    return () => {
+      socketRef.current.off('sendDataServer');
+      socketRef.current.off('loadRoomServer');
+      socketRef.current.disconnect();
+    };
   }, []);
   let handleClickRoom = (roomId) => {
-    socketRef.current.emit('loadRoomClient');
+    if (selectedRoom) {
+      socketRef.current.emit('leaveRoom', selectedRoom); // rời room cũ
+    }
+    socketRef.current.emit('joinRoom', roomId); // vào room mới
+    socketRef.current.emit('loadRoomClient', { roomId });
     setselectedRoom(roomId);
   };
   let fetchListRoom = async (userId) => {
+    console.log('fetchListRoom called', new Date().toISOString()); // thêm dòng này
     let res = await listRoomOfUser(userId);
-    if (res && res.errCode == 0) {
+    if (res && res.errCode === 0) {
       setdataRoom(res.data);
     }
   };

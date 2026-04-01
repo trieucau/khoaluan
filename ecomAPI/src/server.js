@@ -49,12 +49,22 @@ const socketIo = new Server(server, {
 socketIo.on('connection', (socket) => {
   console.log('New client connected ' + socket.id);
 
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId); // user vào room riêng
+    console.log(`✅ Socket ${socket.id} joined room ${roomId}`);
+    console.log(`✅ Rooms hiện tại:`, socketIo.sockets.adapter.rooms);
+  });
+  socket.on('leaveRoom', (roomId) => {
+    socket.leave(roomId); // user rời room
+    console.log(`❌ Socket ${socket.id} left room ${roomId}`);
+  });
   socket.on('sendDataClient', function (data) {
     sendMessage(data);
-    socketIo.emit('sendDataServer', { data });
+    console.log(`📨 Gửi tin nhắn vào room ${data.roomId}`); // ← kiểm tra roomId có đúng không
+    socketIo.to(data.roomId).emit('sendDataServer', { data }); // ← chỉ gửi cho room đó
   });
   socket.on('loadRoomClient', function (data) {
-    socketIo.emit('loadRoomServer', { data });
+    socketIo.to(data.roomId).emit('loadRoomServer', { data }); // ← chỉ gửi cho room đó
   });
 
   // Shipper gửi vị trí realtime (mỗi 10s khi đang giao)

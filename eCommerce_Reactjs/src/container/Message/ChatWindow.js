@@ -23,16 +23,18 @@ function ChatWindow(props) {
     }); // phần này đơn giản để gán id cho mỗi phiên kết nối vào page. Mục đích chính là để phân biệt đoạn nào là của mình đang chat.
 
     if (props.roomId) {
+      socketRef.current.emit('joinRoom', props.roomId); // ← join room khi mở chat
       fetchMessage();
     }
-
+    socketRef.current.off('sendDataServer');
     socketRef.current.on('sendDataServer', (dataGot) => {
       fetchMessage();
       let elem = document.getElementById('box-chat');
       if (elem) elem.scrollTop = elem.scrollHeight;
-    }); // mỗi khi có tin nhắn thì mess sẽ được render thêm
-
+    });
     return () => {
+      socketRef.current.emit('leaveRoom', props.roomId); // ← rời room khi đóng
+      socketRef.current.off('sendDataServer');
       socketRef.current.disconnect();
     };
   }, [props.roomId]);
