@@ -22,7 +22,7 @@ import PaymentSuccess from './container/User/PaymentSuccess';
 import VnpayPaymentPage from './container/Order/VnpayPaymentPage';
 import VnpayPaymentSuccess from './container/Order/VnpayPaymentSuccess';
 import HomePageShipper from './container/Shipper/HomePageShipper';
-
+import ChatWidget from './component/Chatbot/ChatWidget';
 function App() {
   return (
     <Router>
@@ -216,6 +216,7 @@ function App() {
           }
         />
       </Routes>
+      <ChatWidget />
     </Router>
   );
 }

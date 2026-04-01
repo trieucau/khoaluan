@@ -15,6 +15,7 @@ import statisticController from '../controllers/statisticController';
 import middlewareControllers from '../middlewares/jwtVerify';
 import supplierController from '../controllers/supplierController';
 import receiptController from '../controllers/receiptController';
+import chatbotController from '../controllers/chatbotController';
 let router = express.Router();
 
 let initwebRoutes = (app) => {
@@ -528,6 +529,8 @@ let initwebRoutes = (app) => {
     middlewareControllers.verifyTokenAdmin,
     receiptController.createNewReceiptDetail
   );
+  //==================API CHATBOT============================//
+  router.post('/api/chatbot', middlewareControllers.verifyTokenUser, chatbotController.chat);
   return app.use('/', router);
 };
 
