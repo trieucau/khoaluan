@@ -148,7 +148,7 @@ let getDetailOrderById = (id) => {
           nest: true,
         });
         if (order.image) {
-          // FIX 1: new Buffer -> Buffer.from
+          // FIX 1: Buffer.from -> Buffer.from
           order.image = Buffer.from(order.image, 'base64').toString('binary');
         }
         order.voucherData.typeVoucherOfVoucherData = await db.TypeVoucher.findOne({
@@ -198,7 +198,7 @@ let getDetailOrderById = (id) => {
             },
           });
           for (let j = 0; j < orderDetail[i].productImage.length; j++) {
-            // FIX 1: new Buffer -> Buffer.from
+            // FIX 1: Buffer.from -> Buffer.from
             orderDetail[i].productImage[j].image = Buffer.from(
               orderDetail[i].productImage[j].image,
               'base64'
@@ -326,7 +326,7 @@ let getAllOrdersByUser = (userId) => {
                 },
               });
               for (let f = 0; f < orderDetail[k].productImage.length; f++) {
-                // FIX 1: new Buffer -> Buffer.from
+                // FIX 1: Buffer.from -> Buffer.from
                 orderDetail[k].productImage[f].image = Buffer.from(
                   orderDetail[k].productImage[f].image,
                   'base64'
@@ -913,7 +913,7 @@ let paymentOrderVnpay = (req) => {
       var signData = querystring.stringify(vnp_Params, { encode: false });
 
       var hmac = crypto.createHmac('sha512', secretKey);
-      // FIX 1: new Buffer -> Buffer.from
+      // FIX 1: Buffer.from -> Buffer.from
       var signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
       vnp_Params['vnp_SecureHash'] = signed;
 
@@ -945,7 +945,7 @@ let confirmOrderVnpay = (data) => {
       var signData = querystring.stringify(vnp_Params, { encode: false });
 
       var hmac = crypto.createHmac('sha512', secretKey);
-      // FIX 1: new Buffer -> Buffer.from
+      // FIX 1: Buffer.from -> Buffer.from
       var signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
       if (secureHash === signed) {

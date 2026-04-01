@@ -150,7 +150,7 @@ let getAllShopCartByUserId = (id) => {
           });
           if (res[i].productDetailImage && res[i].productDetailImage.length > 0) {
             for (let j = 0; j < res[i].productDetailImage.length; j++) {
-              res[i].productDetailImage[j].image = new Buffer(
+              res[i].productDetailImage[j].image = Buffer.from(
                 res[i].productDetailImage[j].image,
                 'base64'
               ).toString('binary');

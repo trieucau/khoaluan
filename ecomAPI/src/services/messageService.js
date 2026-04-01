@@ -10,30 +10,17 @@ let createNewRoom = (data) => {
         });
       } else {
         let userAdmin = await db.User.findOne({
-          where: { email: 'chat@gmail.com' },
+          where: { roleId: 'R1', statusId: 'S1' },
         });
-        let room = await db.RoomMessage.findOne({
-          where: { userOne: data.userId1 },
-        });
-        if (room) {
-          resolve({
-            errCode: 2,
-            errMessage: 'Da Co Phong',
-          });
-        } else {
-          if (userAdmin) {
-            let res = await db.RoomMessage.create({
-              userOne: data.userId1,
-              userTwo: userAdmin.id,
-            });
-            if (res) {
-              resolve({
-                errCode: 0,
-                errMessage: 'ok',
-              });
-            }
-          }
+        if (!userAdmin) {
+          resolve({ errCode: 3, errMessage: 'Không tìm thấy admin chat' });
+          return;
         }
+        let [room, created] = await db.RoomMessage.findOrCreate({
+          where: { userOne: data.userId1 },
+          defaults: { userOne: data.userId1, userTwo: userAdmin.id },
+        });
+        resolve({ errCode: 0, data: room, created: created });
       }
     } catch (error) {
       reject(error);
@@ -101,7 +88,7 @@ let loadMessage = (data) => {
             where: { id: message[i].userId },
           });
           if (message[i].userData.image) {
-            message[i].userData.image = new Buffer(message[i].userData.image, 'base64').toString(
+            message[i].userData.image = Buffer.from(message[i].userData.image, 'base64').toString(
               'binary'
             );
           }
@@ -138,7 +125,7 @@ let listRoomOfUser = (userId) => {
             where: { id: room[i].userOne },
           });
           if (room[i].userOneData.image) {
-            room[i].userOneData.image = new Buffer(room[i].userOneData.image, 'base64').toString(
+            room[i].userOneData.image = Buffer.from(room[i].userOneData.image, 'base64').toString(
               'binary'
             );
           }
@@ -146,7 +133,7 @@ let listRoomOfUser = (userId) => {
             where: { id: room[i].userTwo },
           });
           if (room[i].userTwoData.image) {
-            room[i].userTwoData.image = new Buffer(room[i].userTwoData.image, 'base64').toString(
+            room[i].userTwoData.image = Buffer.from(room[i].userTwoData.image, 'base64').toString(
               'binary'
             );
           }
@@ -164,7 +151,8 @@ let listRoomOfUser = (userId) => {
 let listRoomOfAdmin = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      let user = await db.User.findOne({ where: { email: 'chat@gmail.com' } });
+      let user = await db.User.findOne({ where: { roleId: 'R1', statusId: 'S1' } });
+      console.log('Admin chat:', user?.id, user?.email);
       if (user) {
         let room = await db.RoomMessage.findAll({
           where: { userTwo: user.id },
@@ -177,7 +165,7 @@ let listRoomOfAdmin = () => {
             where: { id: room[i].userOne },
           });
           if (room[i].userOneData.image) {
-            room[i].userOneData.image = new Buffer(room[i].userOneData.image, 'base64').toString(
+            room[i].userOneData.image = Buffer.from(room[i].userOneData.image, 'base64').toString(
               'binary'
             );
           }
@@ -185,7 +173,7 @@ let listRoomOfAdmin = () => {
             where: { id: room[i].userTwo },
           });
           if (room[i].userTwoData.image) {
-            room[i].userTwoData.image = new Buffer(room[i].userTwoData.image, 'base64').toString(
+            room[i].userTwoData.image = Buffer.from(room[i].userTwoData.image, 'base64').toString(
               'binary'
             );
           }
@@ -194,6 +182,10 @@ let listRoomOfAdmin = () => {
           errCode: 0,
           data: room,
         });
+      }
+      if (!user) {
+        resolve({ errCode: 3, errMessage: 'Không tìm thấy admin chat' });
+        return;
       }
     } catch (error) {
       reject(error);

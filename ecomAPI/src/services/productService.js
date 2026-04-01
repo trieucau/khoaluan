@@ -141,7 +141,7 @@ let getAllProductAdmin = (data) => {
             raw: true,
           });
           for (let k = 0; k < res.rows[i].productDetail[j].productImage.length > 0; k++) {
-            res.rows[i].productDetail[j].productImage[k].image = new Buffer(
+            res.rows[i].productDetail[j].productImage[k].image = Buffer.from(
               res.rows[i].productDetail[j].productImage[k].image,
               'base64'
             ).toString('binary');
@@ -220,7 +220,7 @@ let getAllProductUser = (data) => {
             raw: true,
           });
           for (let k = 0; k < res.rows[i].productDetail[j].productImage.length > 0; k++) {
-            res.rows[i].productDetail[j].productImage[k].image = new Buffer(
+            res.rows[i].productDetail[j].productImage[k].image = Buffer.from(
               res.rows[i].productDetail[j].productImage[k].image,
               'base64'
             ).toString('binary');
@@ -364,7 +364,7 @@ let getDetailProductById = (id) => {
             nest: true,
           });
           for (let j = 0; j < res.productDetail[i].productImage.length; j++) {
-            res.productDetail[i].productImage[j].image = new Buffer(
+            res.productDetail[i].productImage[j].image = Buffer.from(
               res.productDetail[i].productImage[j].image,
               'base64'
             ).toString('binary');
@@ -467,7 +467,7 @@ let getAllProductDetailById = (data) => {
               productdetail.rows[i].productImageData.length > 0
             ) {
               for (let j = 0; j < productdetail.rows[i].productImageData.length > 0; j++) {
-                productdetail.rows[i].productImageData[j].image = new Buffer(
+                productdetail.rows[i].productImageData[j].image = Buffer.from(
                   productdetail.rows[i].productImageData[j].image,
                   'base64'
                 ).toString('binary');
@@ -502,7 +502,7 @@ let getAllProductDetailImageById = (data) => {
         });
         if (productImage.rows && productImage.rows.length > 0) {
           productImage.rows.map(
-            (item) => (item.image = new Buffer(item.image, 'base64').toString('binary'))
+            (item) => (item.image = Buffer.from(item.image, 'base64').toString('binary'))
           );
         }
 
@@ -657,7 +657,7 @@ let getDetailProductImageById = (id) => {
           where: { id: id },
         });
         if (productdetailImage) {
-          productdetailImage.image = new Buffer(productdetailImage.image, 'base64').toString(
+          productdetailImage.image = Buffer.from(productdetailImage.image, 'base64').toString(
             'binary'
           );
         }
@@ -1004,7 +1004,7 @@ let getProductFeature = (limit) => {
             raw: true,
           });
           for (let k = 0; k < res[i].productDetail[j].productImage.length > 0; k++) {
-            res[i].productDetail[j].productImage[k].image = new Buffer(
+            res[i].productDetail[j].productImage[k].image = Buffer.from(
               res[i].productDetail[j].productImage[k].image,
               'base64'
             ).toString('binary');
@@ -1063,7 +1063,7 @@ let getProductNew = (limit) => {
             raw: true,
           });
           for (let k = 0; k < res[i].productDetail[j].productImage.length > 0; k++) {
-            res[i].productDetail[j].productImage[k].image = new Buffer(
+            res[i].productDetail[j].productImage[k].image = Buffer.from(
               res[i].productDetail[j].productImage[k].image,
               'base64'
             ).toString('binary');
@@ -1154,7 +1154,7 @@ let getProductShopCart = (data) => {
                 raw: true,
               });
               for (let k = 0; k < productArr[g].productDetail[j].productImage.length > 0; k++) {
-                productArr[g].productDetail[j].productImage[k].image = new Buffer(
+                productArr[g].productDetail[j].productImage[k].image = Buffer.from(
                   productArr[g].productDetail[j].productImage[k].image,
                   'base64'
                 ).toString('binary');
@@ -1238,7 +1238,7 @@ let getProductRecommend = (data) => {
                 raw: true,
               });
               for (let k = 0; k < productArr[g].productDetail[j].productImage.length > 0; k++) {
-                productArr[g].productDetail[j].productImage[k].image = new Buffer(
+                productArr[g].productDetail[j].productImage[k].image = Buffer.from(
                   productArr[g].productDetail[j].productImage[k].image,
                   'base64'
                 ).toString('binary');

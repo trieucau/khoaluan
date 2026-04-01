@@ -306,7 +306,7 @@ let getDetailUserById = (userid) => {
           nest: true,
         });
         if (res.image) {
-          res.image = new Buffer(res.image, 'base64').toString('binary');
+          res.image = Buffer.from(res.image, 'base64').toString('binary');
         }
         resolve({
           errCode: 0,

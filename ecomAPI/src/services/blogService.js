@@ -68,7 +68,7 @@ let getDetailBlogById = (id) => {
         res.userData = await db.User.findOne({ where: { id: res.userId } });
 
         if (res && res.image) {
-          res.image = new Buffer(res.image, 'base64').toString('binary');
+          res.image = Buffer.from(res.image, 'base64').toString('binary');
         }
         resolve({
           errCode: 0,
@@ -113,7 +113,7 @@ let getAllBlog = (data) => {
       let res = await db.Blog.findAndCountAll(objectFilter);
       if (res.rows && res.rows.length > 0) {
         for (let i = 0; i < res.rows.length; i++) {
-          res.rows[i].image = new Buffer(res.rows[i].image, 'base64').toString('binary');
+          res.rows[i].image = Buffer.from(res.rows[i].image, 'base64').toString('binary');
           res.rows[i].userData = await db.User.findOne({
             where: { id: res.rows[i].userId },
           });
@@ -219,7 +219,7 @@ let getFeatureBlog = (data) => {
       });
       if (res && res.length > 0) {
         for (let i = 0; i < res.length; i++) {
-          res[i].image = new Buffer(res[i].image, 'base64').toString('binary');
+          res[i].image = Buffer.from(res[i].image, 'base64').toString('binary');
           res[i].userData = await db.User.findOne({
             where: { id: res[i].userId },
           });
@@ -257,7 +257,7 @@ let getNewBlog = (data) => {
       });
       if (res && res.length > 0) {
         for (let i = 0; i < res.length; i++) {
-          res[i].image = new Buffer(res[i].image, 'base64').toString('binary');
+          res[i].image = Buffer.from(res[i].image, 'base64').toString('binary');
           res[i].userData = await db.User.findOne({
             where: { id: res[i].userId },
           });
