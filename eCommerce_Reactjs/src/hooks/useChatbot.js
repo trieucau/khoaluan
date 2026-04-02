@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { sendChatMessage } from '../services/chatbotService';
 
 const TOOL_LABELS = {
-  getOrdersByUser: '🔍 Đang tra cứu đơn hàng...',
+  getMyOrders: '🔍 Đang tra cứu đơn hàng...',
   searchProducts: '🛍️ Đang tìm sản phẩm...',
   getAvailableVouchers: '🎟️ Đang lấy danh sách voucher...',
 };
