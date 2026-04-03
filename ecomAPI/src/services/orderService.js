@@ -406,7 +406,7 @@ let getOrdersAvailableForShipper = () => {
   return new Promise(async (resolve, reject) => {
     try {
       const orders = await db.OrderProduct.findAll({
-        where: { statusId: 'S3', shipperId: null },
+        where: { statusId: 'S4', shipperId: null },
         include: [
           { model: db.TypeShip, as: 'typeShipData' },
           { model: db.Voucher, as: 'voucherData' },
@@ -448,11 +448,11 @@ let shipperTakeOrder = (orderId, shipperId) => {
       if (!order) {
         return resolve({ errCode: 2, errMessage: 'Order not found!' });
       }
-      if (order.statusId !== 'S3' || order.shipperId != null) {
+      if (order.statusId !== 'S4' || order.shipperId != null) {
         return resolve({ errCode: 3, errMessage: 'Order is not available for taking!' });
       }
       order.shipperId = shipperId;
-      order.statusId = 'S4';
+      order.statusId = 'S5';
       await order.save();
       resolve({ errCode: 0, errMessage: 'ok' });
     } catch (error) {

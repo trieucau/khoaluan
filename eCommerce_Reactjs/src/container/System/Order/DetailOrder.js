@@ -317,18 +317,8 @@ function DetailOrder(props) {
                     Xác nhận đơn
                   </a>
                 )}
-                {DataOrder && DataOrder.statusId == 'S4' && (
-                  <a onClick={() => handleSendProduct()} className="main_btn">
-                    Gửi hàng
-                  </a>
-                )}
-                {DataOrder && DataOrder.statusId == 'S5' && (
-                  <a onClick={() => handleSuccessShip()} className="main_btn">
-                    Đã giao hàng
-                  </a>
-                )}
               </div>
-              {DataOrder && DataOrder.statusId == 'S3' && DataOrder.isPaymentOnlien == 0 && (
+              {DataOrder && DataOrder.statusId == 'S3' && DataOrder.isPaymentOnlien === 0 && (
                 <a
                   onClick={() => handleCancelOrder(DataOrder)}
                   style={{

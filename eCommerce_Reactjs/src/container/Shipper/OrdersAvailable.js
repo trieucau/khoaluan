@@ -25,7 +25,8 @@ const OrdersAvailable = () => {
 
   const handleTake = async (orderId) => {
     try {
-      const res = await shipperTakeOrder(orderId);
+      const shipperId = JSON.parse(localStorage.getItem('userInfo'))?.id;
+      const res = await shipperTakeOrder(orderId, shipperId);
       if (res && res.errCode === 0) {
         toast.success('Đã nhận đơn!');
         load();
@@ -40,7 +41,7 @@ const OrdersAvailable = () => {
   return (
     <div className="container-fluid px-4">
       <h1 className="mt-4">Đơn có thể nhận</h1>
-      <p className="mb-4">Các đơn đang chờ shipper (S3). Bấm &quot;Nhận đơn&quot; để giao.</p>
+      <p className="mb-4">Các đơn đang chờ shipper (S4). Bấm &quot;Nhận đơn&quot; để giao.</p>
       {loading ? (
         <p>Đang tải...</p>
       ) : (
