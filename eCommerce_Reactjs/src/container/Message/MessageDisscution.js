@@ -47,12 +47,10 @@ function MessageDisscution(props) {
   let roomList = [];
   handleSearchRoom(roomList);
   return (
-    <div className="ks-discussions">
-      <div className="ks-search">
-        <div className="input-icon icon-right icon icon-lg icon-color-primary">
-          <span className="icon-addon">
-            <span className="fa fa-search" />
-          </span>
+    <div className="col-md-3 border-right">
+      <div className="d-flex flex-column align-items-center text-center">
+        <div className="ks-search d-flex">
+          <span className="fa fa-search" />
           <input
             onChange={(e) => handleOnchangeSearch(e)}
             value={textSearch}
@@ -62,75 +60,51 @@ function MessageDisscution(props) {
             placeholder="Tìm kiếm theo tên"
           />
         </div>
+
+        <div className="ks-body">
+          {roomList &&
+            roomList.length > 0 &&
+            roomList.map((item, index) => {
+              let userData = {};
+              count = 0;
+              props.isAdmin === true
+                ? (userData = item.userOneData)
+                : (userData = item.userTwoData);
+              item.messageData.forEach((element) => {
+                if (element.unRead === 1 && element.userId !== props.userId) count = count + 1;
+              });
+              return (
+                <div>
+                  <div onClick={() => handleClickRoom(item.id)} key={index} className="ks-item">
+                    <div className="ks-avatar">
+                      <img src={userData.image} width={36} height={36} />
+                      <span className="badge badge-pill badge-danger ks-badge ks-notify">
+                        {count && count > 0 ? count : ''}
+                      </span>
+                    </div>
+                    <div className="ks-body">
+                      <div className="ks-name"> {userData.firstName + ' ' + userData.lastName}</div>
+                    </div>
+                  </div>
+                  <div className="ks-message">
+                    {item.messageData && item.messageData.length > 0
+                      ? item.messageData[item.messageData.length - 1].text
+                      : 'Chưa có tin nhắn'}
+                  </div>
+                </div>
+              );
+            })}
+        </div>
       </div>
-      <div
-        className="ks-body ks-scrollable jspScrollable"
-        data-auto-height
-        style={{
-          height: '400px',
-          overflowY: 'auto',
-          padding: '0px',
-          width: '339px',
-        }}
-        tabIndex={0}
-      >
-        <div className="jspContainer" style={{ width: '339px', height: '550px' }}>
-          <div className="jspPane" style={{ padding: '0px', top: '0px', width: '329px' }}>
-            <ul className="ks-items">
-              {roomList &&
-                roomList.length > 0 &&
-                roomList.map((item, index) => {
-                  let userData = {};
-                  count = 0;
-                  props.isAdmin === true
-                    ? (userData = item.userOneData)
-                    : (userData = item.userTwoData);
-                  item.messageData.forEach((element) => {
-                    if (element.unRead === 1 && element.userId !== props.userId) count = count + 1;
-                  });
-                  return (
-                    <li onClick={() => handleClickRoom(item.id)} key={index} className="ks-item">
-                      <a href="#">
-                        <span className="ks-avatar">
-                          <img src={userData.image} width={36} height={36} />
-                          <span className="badge badge-pill badge-danger ks-badge ks-notify">
-                            {count && count > 0 ? count : ''}
-                          </span>
-                        </span>
-                        <div className="ks-body">
-                          <div className="ks-name">
-                            {userData.firstName + ' ' + userData.lastName}
-                            <span className="ks-datetime">
-                              {item.messageData && item.messageData.length > 0
-                                ? moment(
-                                    item.messageData[item.messageData.length - 1].createdAt
-                                  ).fromNow()
-                                : ''}
-                            </span>
-                          </div>
-                          <div className="ks-message">
-                            {item.messageData && item.messageData.length > 0
-                              ? item.messageData[item.messageData.length - 1].text
-                              : 'Chưa có tin nhắn'}
-                          </div>
-                        </div>
-                      </a>
-                    </li>
-                  );
-                })}
-            </ul>
-          </div>
-          <div className="jspVerticalBar">
-            <div className="jspCap jspCapTop" />
-            <div className="jspTrack" style={{ height: '550px' }}>
-              <div className="jspDrag" style={{ height: '261px' }}>
-                <div className="jspDragTop" />
-                <div className="jspDragBottom" />
-              </div>
-            </div>
-            <div className="jspCap jspCapBottom" />
+      <div className="jspVerticalBar">
+        <div className="jspCap jspCapTop" />
+        <div className="jspTrack">
+          <div className="jspDrag">
+            <div className="jspDragTop" />
+            <div className="jspDragBottom" />
           </div>
         </div>
+        <div className="jspCap jspCapBottom" />
       </div>
     </div>
   );

@@ -252,6 +252,9 @@
   }
 }
 @media (max-width: 767px) {
+  .container-mobile {
+    display: block !important;
+  }
   .home_banner_area {
     min-height: 500px;
   }
@@ -347,6 +350,9 @@
 @media (max-width: 600px) {
 }
 @media (max-width: 575px) {
+  .container-mobile {
+    display: block !important;
+  }
   .top_menu {
     display: none;
   }

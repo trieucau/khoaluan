@@ -78,144 +78,141 @@ function ChatWindow(props) {
     }
   };
   return (
-    <div className="ks-messages ks-messenger__messages">
-      <div className="ks-header">
-        <div className="ks-description">
-          <div className="ks-name">Chat name</div>
-          <div className="ks-amount">2 members</div>
-        </div>
-        <div className="ks-controls">
-          <div className="dropdown">
-            <button
-              className="btn btn-primary-outline ks-light ks-no-text ks-no-arrow"
-              type="button"
-              id="dropdownMenuButton"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              <span className="fa fa-ellipsis-h ks-icon" />
-            </button>
-            <div
-              className="dropdown-menu dropdown-menu-right ks-simple"
-              aria-labelledby="dropdownMenuButton"
-            >
-              <a className="dropdown-item" href="#">
-                <span className="fa fa-user-plus ks-icon" />
-                <span className="ks-text"> Add members</span>
-              </a>
-              <a className="dropdown-item" href="#">
-                <span className="fa fa-eye-slash ks-icon" />
-                <span className="ks-text"> Mark as unread</span>
-              </a>
-              <a className="dropdown-item" href="#">
-                <span className="fa fa-bell-slash-o ks-icon" />
-                <span className="ks-text"> Mute notifications</span>
-              </a>
-              <a className="dropdown-item" href="#">
-                <span className="fa fa-mail-forward ks-icon" />
-                <span className="ks-text"> Forward</span>
-              </a>
-              <a className="dropdown-item" href="#">
-                <span className="fa fa-ban ks-icon" />
-                <span className="ks-text"> Spam</span>
-              </a>
-              <a className="dropdown-item" href="#">
-                <span className="fa fa-trash-o ks-icon" />
-                <span className="ks-text"> Delete</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        className="ks-body ks-scrollable jspScrollable"
-        data-auto-height
-        data-reduce-height=".ks-footer"
-        data-fix-height={32}
-        style={{
-          height: '480px',
-          overflow: 'hidden',
-          padding: '0px',
-          width: '701px',
-        }}
-        tabIndex={0}
-      >
-        <div className="jspContainer" style={{ width: '701px', height: '481px' }}>
-          <div className="jspPane" style={{ padding: '0px', top: '0px', width: '691px' }}>
-            <ul
-              ref={boxChatRef} // ← dùng ref thay id
-              className="ks-items"
-              style={{ overflowY: 'scroll', maxHeight: '479px' }}
-            >
-              {hasMore && (
-                <li style={{ textAlign: 'center', padding: '8px' }}>
-                  <button
-                    className="btn btn-sm btn-outline-secondary"
-                    onClick={() => fetchMessage(true)}
-                  >
-                    Tải tin nhắn cũ hơn
-                  </button>
-                </li>
-              )}
-              {mess &&
-                mess.length > 0 &&
-                mess.map((item, index) => {
-                  if (item.userData) {
-                    return (
-                      <li
-                        key={index}
-                        className={
-                          item.userData.id == user.id ? 'ks-item ks-from' : 'ks-item ks-self'
-                        }
-                      >
-                        <span className="ks-avatar ks-offline">
-                          <img
-                            src={item.userData.image}
-                            width={36}
-                            height={36}
-                            className="rounded-circle"
-                          />
-                        </span>
-                        <div className="ks-body">
-                          <div className="ks-header">
-                            <span className="ks-name">
-                              {item.userData.firstName + ' ' + item.userData.lastName}
-                            </span>
-                            <span className="ks-datetime">{moment(item.createdAt).fromNow()}</span>
-                          </div>
-                          <div className="ks-message">{item.text}</div>
-                        </div>
-                      </li>
-                    );
-                  }
-                })}
-            </ul>
-          </div>
-          <div className="jspVerticalBar">
-            <div className="jspCap jspCapTop" />
-            <div className="jspTrack" style={{ height: '481px' }}>
-              <div className="jspDrag" style={{ height: '206px' }}>
-                <div className="jspDragTop" />
-                <div className="jspDragBottom" />
+    <div className="ks-messages ks-messenger__messages col-md-9 border-right">
+      <div className="p-3 py-5">
+        <div className="d-flex justify-content-between">
+          <span className="ks-name">Chat name | 2 members</span>
+          <div className="ks-controls">
+            <div className="dropdown">
+              <button
+                className="btn btn-primary-outline ks-light ks-no-text ks-no-arrow"
+                type="button"
+                id="dropdownMenuButton"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <span className="fa fa-ellipsis-h ks-icon" />
+              </button>
+              <div
+                className="dropdown-menu dropdown-menu-right ks-simple"
+                aria-labelledby="dropdownMenuButton"
+              >
+                <a className="dropdown-item" href="#">
+                  <span className="fa fa-user-plus ks-icon" />
+                  <span className="ks-text"> Add members</span>
+                </a>
+                <a className="dropdown-item" href="#">
+                  <span className="fa fa-eye-slash ks-icon" />
+                  <span className="ks-text"> Mark as unread</span>
+                </a>
+                <a className="dropdown-item" href="#">
+                  <span className="fa fa-bell-slash-o ks-icon" />
+                  <span className="ks-text"> Mute notifications</span>
+                </a>
+                <a className="dropdown-item" href="#">
+                  <span className="fa fa-mail-forward ks-icon" />
+                  <span className="ks-text"> Forward</span>
+                </a>
+                <a className="dropdown-item" href="#">
+                  <span className="fa fa-ban ks-icon" />
+                  <span className="ks-text"> Spam</span>
+                </a>
+                <a className="dropdown-item" href="#">
+                  <span className="fa fa-trash-o ks-icon" />
+                  <span className="ks-text"> Delete</span>
+                </a>
               </div>
             </div>
-            <div className="jspCap jspCapBottom" />
           </div>
         </div>
-      </div>
-      <div className="ks-footer">
-        <textarea
-          onChange={(e) => setMessage(e.target.value)}
-          value={message}
-          className="form-control"
-          placeholder="Type something..."
-          defaultValue={''}
-        />
-        <div className="ks-controls">
-          <button onClick={() => sendMessage()} className="btn btn-primary">
-            Send
-          </button>
+
+        <div
+          className="ks-body ks-scrollable jspScrollable"
+          data-auto-height
+          data-reduce-height=".ks-footer"
+          data-fix-height={32}
+          style={{
+            overflow: 'hidden',
+            padding: '0px',
+          }}
+          tabIndex={0}
+        >
+          <div className="jspContainer">
+            <div className="jspPane" style={{ padding: '0px', top: '0px' }}>
+              <ul
+                ref={boxChatRef} // ← dùng ref thay id
+                className="ks-items"
+                style={{ overflowY: 'scroll', maxHeight: '479px' }}
+              >
+                {hasMore && (
+                  <li style={{ textAlign: 'center', padding: '8px' }}>
+                    <button
+                      className="btn btn-sm btn-outline-secondary"
+                      onClick={() => fetchMessage(true)}
+                    >
+                      Tải tin nhắn cũ hơn
+                    </button>
+                  </li>
+                )}
+                {mess &&
+                  mess.length > 0 &&
+                  mess.map((item, index) => {
+                    if (item.userData) {
+                      return (
+                        <li
+                          key={index}
+                          className={
+                            item.userData.id == user.id ? 'ks-item ks-from' : 'ks-item ks-self'
+                          }
+                        >
+                          <span className="ks-avatar ks-offline">
+                            <img
+                              src={item.userData.image}
+                              width={36}
+                              height={36}
+                              className="rounded-circle"
+                            />
+                          </span>
+                          <div className="ks-body">
+                            <div className="ks-header">
+                              <span className="ks-name">
+                                {item.userData.firstName + ' ' + item.userData.lastName}
+                              </span>
+                            </div>
+                            <div className="ks-message">{item.text}</div>
+                            <span className="ks-name">{moment(item.createdAt).fromNow()}</span>
+                          </div>
+                        </li>
+                      );
+                    }
+                  })}
+              </ul>
+            </div>
+            <div className="jspVerticalBar">
+              <div className="jspCap jspCapTop" />
+              <div className="jspTrack">
+                <div className="jspDrag">
+                  <div className="jspDragTop" />
+                  <div className="jspDragBottom" />
+                </div>
+              </div>
+              <div className="jspCap jspCapBottom" />
+            </div>
+          </div>
+        </div>
+        <div className="ks-footer">
+          <textarea
+            onChange={(e) => setMessage(e.target.value)}
+            value={message}
+            placeholder="Type something..."
+            defaultValue={''}
+          />
+          <div className="ks-controls">
+            <button onClick={() => sendMessage()} className="btn btn-primary">
+              Send
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -56,25 +56,15 @@ function MessagePage(props) {
     }
   };
   return (
-    <div className="container">
-      <div className="ks-page-content">
-        <div className="ks-page-content-body">
-          <div className="ks-messenger">
-            <MessageDisscution
-              userId={dataUser.id}
-              isAdmin={false}
-              handleClickRoom={handleClickRoom}
-              data={dataRoom}
-            />
-            {selectedRoom ? (
-              <ChatWindow userId={dataUser.id} roomId={selectedRoom} />
-            ) : (
-              <div>
-                <span className="title">Chưa chọn phòng</span>
-              </div>
-            )}
-          </div>
-        </div>
+    <div className="container rounded bg-white mt-5 mb-5">
+      <div className="row">
+        <MessageDisscution
+          userId={dataUser.id}
+          isAdmin={false}
+          handleClickRoom={handleClickRoom}
+          data={dataRoom}
+        />
+        {selectedRoom ? <ChatWindow userId={dataUser.id} roomId={selectedRoom} /> : ''}
       </div>
     </div>
   );

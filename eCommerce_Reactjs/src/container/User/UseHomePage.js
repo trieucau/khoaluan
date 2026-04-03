@@ -18,7 +18,11 @@ function UserHomePage(props) {
   }, []);
 
   return (
-    <div style={{ display: 'flex' }} className="container rounded bg-white mt-5 mb-5">
+    <div
+      style={{ display: 'flex' }}
+      className="container rounded bg-white mt-5 mb-5 container-mobile"
+    >
+      <CategoryUser id={user.id} />
       <Routes>
         <Route path="messenger" element={<MessagePage />} />
         <Route path="detail/:id" element={<DetailUserPage />} />
@@ -28,7 +32,6 @@ function UserHomePage(props) {
         <Route path="order-tracking/:orderId" element={<OrderTracking />} />
         <Route path="changepassword/:id" element={<ChangePassword id={user.id} />} />
       </Routes>
-      <CategoryUser id={user.id} />
     </div>
   );
 }
