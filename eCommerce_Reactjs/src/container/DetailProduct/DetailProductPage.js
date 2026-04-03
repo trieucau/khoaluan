@@ -51,8 +51,8 @@ function DetailProductPage(props) {
           <div className="container">
             <div className="banner_content d-md-flex justify-content-between align-items-center">
               <div className="mb-3 mb-md-0">
-                <h2>Chi tiết sản phẩm</h2>
-                <p>Thông số chi tiết về sản phẩm</p>
+                <p className="banner_title">Chi tiết sản phẩm</p>
+                <p className="banner_subtitle">Thông số chi tiết về sản phẩm</p>
               </div>
               <div className="page_link">
                 <Link to={'/'}>Trang chủ</Link>
