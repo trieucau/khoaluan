@@ -96,16 +96,6 @@ function MessageDisscution(props) {
             })}
         </div>
       </div>
-      <div className="jspVerticalBar">
-        <div className="jspCap jspCapTop" />
-        <div className="jspTrack">
-          <div className="jspDrag">
-            <div className="jspDragTop" />
-            <div className="jspDragBottom" />
-          </div>
-        </div>
-        <div className="jspCap jspCapBottom" />
-      </div>
     </div>
   );
 }

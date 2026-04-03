@@ -209,7 +209,7 @@ function ChatWindow(props) {
             defaultValue={''}
           />
           <div className="ks-controls">
-            <button onClick={() => sendMessage()} className="btn btn-primary">
+            <button onClick={() => sendMessage()} className="main_btn">
               Send
             </button>
           </div>
