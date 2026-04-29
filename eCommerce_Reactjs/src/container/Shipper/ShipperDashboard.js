@@ -53,8 +53,9 @@ const ShipperDashboard = () => {
 
   const QUICK = [
     { to: '/shipper/orders-available', icon: '📋', title: 'Đơn có thể nhận', desc: 'Xem và nhận các đơn đang chờ shipper.', color: 'blue' },
-    { to: '/shipper/my-orders', icon: '📦', title: 'Đơn của tôi', desc: 'Quản lý đơn đã nhận: bắt đầu giao, hoàn thành, hủy.', color: 'cyan' },
-    { to: '/shipper/map', icon: '🗺️', title: 'Bản đồ giao hàng', desc: 'Bật GPS và theo dõi tuyến đường realtime.', color: 'green' },
+    { to: '/shipper/my-orders',        icon: '📦', title: 'Đơn của tôi',      desc: 'Quản lý đơn đã nhận: bắt đầu giao, hoàn thành, hủy.', color: 'cyan' },
+    { to: '/shipper/stats',            icon: '📊', title: 'Thống kê',          desc: 'Xem tỉ lệ giao hàng, biểu đồ và hiệu suất cá nhân.', color: 'green' },
+    { to: '/shipper/map',              icon: '🗺️', title: 'Bản đồ giao hàng', desc: 'Bật GPS và theo dõi tuyến đường realtime.', color: 'amber' },
   ];
 
   return (
