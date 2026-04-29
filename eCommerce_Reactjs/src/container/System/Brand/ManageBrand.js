@@ -1,174 +1,75 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import { useFetchAllcode } from '../../customize/fetch';
+import React, { useEffect, useState } from 'react';
 import { DeleteAllcodeService, getListAllCodeService } from '../../../services/userService';
-import moment from 'moment';
 import { toast } from 'react-toastify';
 import { PAGINATION } from '../../../utils/constant';
-import ReactPaginate from 'react-paginate';
-import FormSearch from '../../../component/Search/FormSearch';
 import CommonUtils from '../../../utils/CommonUtils';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { SkeletonRows, EmptyState, AdminPagination, SearchBar, PageHeader } from '../AdminShared';
 
 const ManageBrand = () => {
-  const [keyword, setkeyword] = useState('');
-  const [dataBrand, setdataBrand] = useState([]);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
-  useEffect(() => {
+  const [data, setData] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [keyword, setKeyword] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async (kw = '', offset = 0) => {
+    setLoading(true);
     try {
-      fetchData(keyword);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-  let fetchData = async (keyword) => {
-    let arrData = await getListAllCodeService({
-      type: 'BRAND',
-      limit: PAGINATION.pagerow,
-      offset: 0,
-      keyword: keyword,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataBrand(arrData.data);
-      setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-    }
+      const res = await getListAllCodeService({ type: 'BRAND', limit: PAGINATION.pagerow, offset, keyword: kw });
+      if (res?.errCode === 0) { setData(res.data); setCount(Math.ceil(res.count / PAGINATION.pagerow)); }
+    } finally { setLoading(false); }
   };
-  let handleDeleteBrand = async (event, id) => {
-    event.preventDefault();
-    let res = await DeleteAllcodeService(id);
-    if (res && res.errCode === 0) {
-      toast.success('Xóa nhãn hàng thành công');
-      let arrData = await getListAllCodeService({
-        type: 'BRAND',
-        limit: PAGINATION.pagerow,
-        offset: numberPage * PAGINATION.pagerow,
-        keyword: keyword,
-      });
-      if (arrData && arrData.errCode === 0) {
-        setdataBrand(arrData.data);
-        setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-      }
-    } else toast.error('Xóa nhãn hàng thất bại');
+
+  useEffect(() => { fetchData(); }, []);
+
+  const handleDelete = async (e, id) => {
+    e.preventDefault();
+    if (!window.confirm('Xóa nhãn hàng này?')) return;
+    const res = await DeleteAllcodeService(id);
+    if (res?.errCode === 0) { toast.success('Xóa thành công'); fetchData(keyword, page * PAGINATION.pagerow); }
+    else toast.error('Xóa thất bại');
   };
-  let handleChangePage = async (number) => {
-    setnumberPage(number.selected);
-    let arrData = await getListAllCodeService({
-      type: 'BRAND',
-      limit: PAGINATION.pagerow,
-      offset: number.selected * PAGINATION.pagerow,
-      keyword: keyword,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataBrand(arrData.data);
-    }
+
+  const handleExport = async () => {
+    const res = await getListAllCodeService({ type: 'BRAND', limit: '', offset: '', keyword: '' });
+    if (res?.errCode === 0) await CommonUtils.exportExcel(res.data, 'Danh sách nhãn hàng', 'ListBrand');
   };
-  let handleSearchBrand = (keyword) => {
-    fetchData(keyword);
-    setkeyword(keyword);
-  };
-  let handleOnchangeSearch = (keyword) => {
-    if (keyword === '') {
-      fetchData(keyword);
-      setkeyword(keyword);
-    }
-  };
-  let handleOnClickExport = async () => {
-    let res = await getListAllCodeService({
-      type: 'BRAND',
-      limit: '',
-      offset: '',
-      keyword: '',
-    });
-    if (res && res.errCode == 0) {
-      await CommonUtils.exportExcel(res.data, 'Danh sách nhãn hàng', 'ListBrand');
-    }
-  };
+
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý nhãn hàng</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Danh sách nhãn hàng sản phẩm
-        </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-4">
-              <FormSearch
-                title={'tên nhãn hàng'}
-                handleOnchange={handleOnchangeSearch}
-                handleSearch={handleSearchBrand}
-              />
-            </div>
-            <div className="col-8">
-              <button
-                style={{ float: 'right' }}
-                onClick={() => handleOnClickExport()}
-                className="btn btn-success"
-              >
-                Xuất excel <i class="fa-solid fa-file-excel"></i>
-              </button>
-            </div>
-          </div>
-          <div className="table-responsive">
-            <table
-              className="table table-bordered"
-              style={{ border: '1' }}
-              width="100%"
-              cellspacing="0"
-            >
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên</th>
-                  <th>mã code</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {dataBrand &&
-                  dataBrand.length > 0 &&
-                  dataBrand.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item.value}</td>
-                        <td>{item.code}</td>
-                        <td>
-                          <Link to={`/admin/edit-Brand/${item.id}`}>Edit</Link>
-                          &nbsp; &nbsp;
-                          <a href="#" onClick={(event) => handleDeleteBrand(event, item.id)}>
-                            Delete
-                          </a>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <ReactPaginate
-        previousLabel={'Quay lại'}
-        nextLabel={'Tiếp'}
-        breakLabel={'...'}
-        pageCount={count}
-        marginPagesDisplayed={3}
-        containerClassName={'pagination justify-content-center'}
-        pageClassName={'page-item'}
-        pageLinkClassName={'page-link'}
-        previousLinkClassName={'page-link'}
-        nextClassName={'page-item'}
-        nextLinkClassName={'page-link'}
-        breakLinkClassName={'page-link'}
-        breakClassName={'page-item'}
-        activeClassName={'active'}
-        onPageChange={handleChangePage}
+    <div className="ap-page">
+      <PageHeader title="©️ Quản lý nhãn hàng" subtitle="Danh sách thương hiệu sản phẩm"
+        actions={<>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <Link to="/admin/add-brand" className="ap-btn ap-btn-primary">+ Thêm nhãn hàng</Link>
+        </>}
       />
+      <div className="ap-card">
+        <SearchBar value={keyword} onChange={setKeyword} onSearch={(kw) => { setKeyword(kw); fetchData(kw); }} placeholder="Tìm theo tên nhãn hàng..." />
+        <div className="ap-table-wrap">
+          <table className="ap-table">
+            <thead><tr><th>#</th><th>Tên nhãn hàng</th><th>Mã code</th><th style={{ textAlign: 'center' }}>Thao tác</th></tr></thead>
+            <tbody>
+              {loading ? <SkeletonRows cols={4} /> : data.length === 0 ? <EmptyState icon="©️" title="Không có nhãn hàng nào" /> :
+                data.map((item, idx) => (
+                  <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
+                    <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
+                    <td style={{ fontWeight: 600 }}>{item.value}</td>
+                    <td><span className="ap-badge ap-badge-purple">{item.code}</span></td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                        <Link to={`/admin/edit-brand/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️ Sửa</Link>
+                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={e => handleDelete(e, item.id)}>🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <AdminPagination count={count} onPageChange={({ selected }) => { setPage(selected); fetchData(keyword, selected * PAGINATION.pagerow); }} />
+      </div>
     </div>
   );
 };

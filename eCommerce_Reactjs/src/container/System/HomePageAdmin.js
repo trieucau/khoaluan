@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
+import '../../css/admin.css';
 
-// Import all pages
 import Footer from './Footer';
 import Header from './Header';
 import SideBar from './SideBar';
@@ -46,111 +46,75 @@ import Profit from './Statistic/Profit';
 import StockProduct from './Statistic/StockProduct';
 import AdminShipperMap from './ShipperMap/AdminShipperMap';
 
-// Common Layout for Admin
-const AdminLayout = ({ children }) => (
-  <div className="sb-nav-fixed">
-    <Header />
-    <div id="layoutSidenav">
-      <SideBar />
-      <div id="layoutSidenav_content">
-        <main>{children}</main>
-        <Footer />
-      </div>
-    </div>
-  </div>
-);
-
 function HomePageAdmin() {
   return (
-    <AdminLayout>
-      <Routes>
-        <Route>
-          {/* Home */}
-          <Route path="/" element={<Home />} />
-
-          {/* User Management */}
-          <Route path="/list-user" element={<ManageUser />} />
-          <Route path="/add-user" element={<Adduser />} />
-          <Route path="/edit-user/:id" element={<Adduser />} />
-          <Route path="/infor/:id" element={<Information />} />
-          <Route path="/change-password/:id" element={<ChangePassword />} />
-
-          {/* Category Management */}
-          <Route path="/list-category" element={<ManageCategory />} />
-          <Route path="/add-category" element={<AddCategory />} />
-          <Route path="/edit-category/:id" element={<AddCategory />} />
-
-          {/* Brand Management */}
-          <Route path="/list-brand" element={<ManageBrand />} />
-          <Route path="/add-brand" element={<AddBrand />} />
-          <Route path="/edit-brand/:id" element={<AddBrand />} />
-
-          {/* Product Management */}
-          <Route path="/list-product" element={<ManageProduct />} />
-          <Route path="/add-product" element={<AddProduct />} />
-          <Route path="/edit-product/:id" element={<EditProduct />} />
-
-          {/* Product Details */}
-          <Route path="/list-product-detail/:id" element={<ManageProductDetail />} />
-          <Route path="/list-product-detail-image/:id" element={<ManageProductImage />} />
-          <Route path="/add-product-detail/:id" element={<AddProductDetail />} />
-          <Route path="/update-product-detail/:id" element={<EditProductDetail />} />
-
-          {/* Banner Management */}
-          <Route path="/list-banner" element={<ManageBanner />} />
-          <Route path="/add-banner" element={<AddBanner />} />
-          <Route path="/edit-banner/:id" element={<AddBanner />} />
-
-          {/* Blog Management */}
-          <Route path="/list-blog" element={<ManageBlog />} />
-          <Route path="/add-blog" element={<AddBlog />} />
-          <Route path="/edit-blog/:id" element={<AddBlog />} />
-
-          {/* Subject Management */}
-          <Route path="/list-subject" element={<ManageSubject />} />
-          <Route path="/add-subject" element={<AddSubject />} />
-          <Route path="/edit-subject/:id" element={<AddSubject />} />
-
-          {/* Type Ship Management */}
-          <Route path="/list-typeship" element={<ManageTypeShip />} />
-          <Route path="/add-typeship" element={<AddTypeShip />} />
-          <Route path="/edit-typeship/:id" element={<AddTypeShip />} />
-
-          {/* Voucher Management */}
-          <Route path="/list-typevoucher" element={<ManageTypeVoucher />} />
-          <Route path="/add-typevoucher" element={<AddTypeVoucher />} />
-          <Route path="/edit-typevoucher/:id" element={<AddTypeVoucher />} />
-          <Route path="/list-voucher" element={<ManageVoucher />} />
-          <Route path="/add-voucher" element={<AddVoucher />} />
-          <Route path="/edit-voucher/:id" element={<AddVoucher />} />
-
-          {/* Supplier Management */}
-          <Route path="/list-supplier" element={<ManageSupplier />} />
-          <Route path="/add-supplier" element={<AddSupplier />} />
-          <Route path="/edit-supplier/:id" element={<AddSupplier />} />
-
-          {/* Receipt Management */}
-          <Route path="/list-receipt" element={<ManageReceipt />} />
-          <Route path="/add-receipt" element={<AddReceipt />} />
-          <Route path="/detail-receipt/:id" element={<DetailReceipt />} />
-
-          {/* Order Management */}
-          <Route path="/list-order" element={<ManageOrder />} />
-          <Route path="/order-detail/:id" element={<DetailOrder />} />
-
-          {/* Shipper map */}
-          <Route path="/shipper-map" element={<AdminShipperMap />} />
-
-          {/* Statistics */}
-          <Route path="/turnover" element={<Turnover />} />
-          <Route path="/profit" element={<Profit />} />
-          <Route path="/stock-product" element={<StockProduct />} />
-
-          {/* Chat */}
-          <Route path="/chat" element={<Message />} />
-        </Route>
-      </Routes>
-    </AdminLayout>
+    <div className="admin-portal">
+      <div className="ap-layout">
+        <div className="ap-header-wrap">
+          <Header />
+        </div>
+        <div className="ap-sidebar-wrap">
+          <SideBar />
+        </div>
+        <main className="ap-main">
+          <Routes>
+            <Route>
+              <Route path="/" element={<Home />} />
+              <Route path="/list-user" element={<ManageUser />} />
+              <Route path="/add-user" element={<Adduser />} />
+              <Route path="/edit-user/:id" element={<Adduser />} />
+              <Route path="/infor/:id" element={<Information />} />
+              <Route path="/change-password/:id" element={<ChangePassword />} />
+              <Route path="/list-category" element={<ManageCategory />} />
+              <Route path="/add-category" element={<AddCategory />} />
+              <Route path="/edit-category/:id" element={<AddCategory />} />
+              <Route path="/list-brand" element={<ManageBrand />} />
+              <Route path="/add-brand" element={<AddBrand />} />
+              <Route path="/edit-brand/:id" element={<AddBrand />} />
+              <Route path="/list-product" element={<ManageProduct />} />
+              <Route path="/add-product" element={<AddProduct />} />
+              <Route path="/edit-product/:id" element={<EditProduct />} />
+              <Route path="/list-product-detail/:id" element={<ManageProductDetail />} />
+              <Route path="/list-product-detail-image/:id" element={<ManageProductImage />} />
+              <Route path="/add-product-detail/:id" element={<AddProductDetail />} />
+              <Route path="/update-product-detail/:id" element={<EditProductDetail />} />
+              <Route path="/list-banner" element={<ManageBanner />} />
+              <Route path="/add-banner" element={<AddBanner />} />
+              <Route path="/edit-banner/:id" element={<AddBanner />} />
+              <Route path="/list-blog" element={<ManageBlog />} />
+              <Route path="/add-blog" element={<AddBlog />} />
+              <Route path="/edit-blog/:id" element={<AddBlog />} />
+              <Route path="/list-subject" element={<ManageSubject />} />
+              <Route path="/add-subject" element={<AddSubject />} />
+              <Route path="/edit-subject/:id" element={<AddSubject />} />
+              <Route path="/list-typeship" element={<ManageTypeShip />} />
+              <Route path="/add-typeship" element={<AddTypeShip />} />
+              <Route path="/edit-typeship/:id" element={<AddTypeShip />} />
+              <Route path="/list-typevoucher" element={<ManageTypeVoucher />} />
+              <Route path="/add-typevoucher" element={<AddTypeVoucher />} />
+              <Route path="/edit-typevoucher/:id" element={<AddTypeVoucher />} />
+              <Route path="/list-voucher" element={<ManageVoucher />} />
+              <Route path="/add-voucher" element={<AddVoucher />} />
+              <Route path="/edit-voucher/:id" element={<AddVoucher />} />
+              <Route path="/list-supplier" element={<ManageSupplier />} />
+              <Route path="/add-supplier" element={<AddSupplier />} />
+              <Route path="/edit-supplier/:id" element={<AddSupplier />} />
+              <Route path="/list-receipt" element={<ManageReceipt />} />
+              <Route path="/add-receipt" element={<AddReceipt />} />
+              <Route path="/detail-receipt/:id" element={<DetailReceipt />} />
+              <Route path="/list-order" element={<ManageOrder />} />
+              <Route path="/order-detail/:id" element={<DetailOrder />} />
+              <Route path="/shipper-map" element={<AdminShipperMap />} />
+              <Route path="/turnover" element={<Turnover />} />
+              <Route path="/profit" element={<Profit />} />
+              <Route path="/stock-product" element={<StockProduct />} />
+              <Route path="/chat" element={<Message />} />
+            </Route>
+          </Routes>
+          <Footer />
+        </main>
+      </div>
+    </div>
   );
 }
 

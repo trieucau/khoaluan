@@ -1,181 +1,108 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
+import { useParams, Link } from 'react-router-dom';
 import { useFetchAllcode } from '../../customize/fetch';
-import './AddProduct.scss';
 import MarkdownIt from 'markdown-it';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
 import { getDetailProductByIdService, UpdateProductService } from '../../../services/userService';
-const EditProduct = (props) => {
-  const mdParser = new MarkdownIt();
+
+const mdParser = new MarkdownIt();
+
+const EditProduct = () => {
   const { id } = useParams();
   const { data: dataBrand } = useFetchAllcode('BRAND');
   const { data: dataCategory } = useFetchAllcode('CATEGORY');
-
-  const [inputValues, setInputValues] = useState({
-    brandId: '',
-    categoryId: '',
-    name: '',
-    contentHTML: '',
-    contentMarkdown: '',
-    madeby: '',
-    material: '',
-  });
+  const [loading, setLoading] = useState(false);
+  const [values, setValues] = useState({ brandId: '', categoryId: '', name: '', contentHTML: '', contentMarkdown: '', madeby: '', material: '' });
 
   useEffect(() => {
-    let fetchProduct = async () => {
-      let res = await getDetailProductByIdService(id);
-      if (res && res.errCode === 0) {
-        setStateProduct(res.data);
+    getDetailProductByIdService(id).then(res => {
+      if (res?.errCode === 0) {
+        const d = res.data;
+        setValues({ brandId: d.brandId, categoryId: d.categoryId, name: d.name, contentHTML: d.contentHTML, contentMarkdown: d.contentMarkdown, madeby: d.madeby, material: d.material });
       }
-    };
-    fetchProduct();
-  }, []);
-  let setStateProduct = (data) => {
-    setInputValues({
-      ...inputValues,
-      ['brandId']: data.brandId,
-      ['categoryId']: data.categoryId,
-      ['name']: data.name,
-      ['contentMarkdown']: data.contentMarkdown,
-      ['contentHTML']: data.contentHTML,
-      ['madeby']: data.madeby,
-      ['material']: data.material,
     });
-  };
-  const handleOnChange = (event) => {
-    const { name, value } = event.target;
-    setInputValues({ ...inputValues, [name]: value });
-  };
-  let handleSaveProduct = async () => {
-    let res = await UpdateProductService({
-      name: inputValues.name,
-      material: inputValues.material,
-      madeby: inputValues.madeby,
-      brandId: inputValues.brandId,
-      categoryId: inputValues.categoryId,
-      contentHTML: inputValues.contentHTML,
-      contentMarkdown: inputValues.contentMarkdown,
-      id: id,
-    });
-    if (res && res.errCode === 0) {
-      toast.success('Cập nhật sản phẩm thành công !');
-    } else {
-      toast.error(res.errMessage);
-    }
-  };
-  let handleEditorChange = ({ html, text }) => {
-    setInputValues({
-      ...inputValues,
-      ['contentMarkdown']: text,
-      ['contentHTML']: html,
-    });
-  };
-  return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý sản phẩm</h1>
+  }, [id]);
 
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Cập nhật sản phẩm
+  const handleChange = (e) => setValues(v => ({ ...v, [e.target.name]: e.target.value }));
+
+  const handleSave = async () => {
+    if (!values.name) { toast.error('Vui lòng nhập tên sản phẩm'); return; }
+    setLoading(true);
+    try {
+      const res = await UpdateProductService({ ...values, id });
+      if (res?.errCode === 0) toast.success('Cập nhật sản phẩm thành công');
+      else toast.error(res?.errMessage || 'Thao tác thất bại');
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <div className="ap-page-title">✏️ Cập nhật sản phẩm</div>
+            <div className="ap-page-subtitle">Chỉnh sửa thông tin sản phẩm #{id}</div>
+          </div>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <Link to={`/admin/list-product-detail/${id}`} className="ap-btn ap-btn-ghost">🧩 Quản lý phân loại</Link>
+            <Link to="/admin/list-product" className="ap-btn ap-btn-ghost">← Quay lại</Link>
+          </div>
         </div>
-        <div className="card-body">
-          <form>
-            <div className="form-row">
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Tên sản phẩm</label>
-                <input
-                  type="text"
-                  value={inputValues.name}
-                  name="name"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Chất liệu</label>
-                <input
-                  type="text"
-                  value={inputValues.material}
-                  name="material"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Được làm bởi</label>
-                <input
-                  type="text"
-                  value={inputValues.madeby}
-                  name="madeby"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
+      </div>
+
+      <div className="ap-card">
+        <div className="ap-card-header"><span className="ap-card-title">🛍️ Thông tin cơ bản</span></div>
+        <div className="ap-card-body">
+          <div className="ap-form-row">
+            <div className="ap-form-group" style={{ flex: 2 }}>
+              <label className="ap-label">Tên sản phẩm *</label>
+              <input className="ap-input" name="name" value={values.name} onChange={handleChange} placeholder="Nhập tên sản phẩm..." />
             </div>
-            <div className="form-group">
-              <label htmlFor="inputAddress">Mô tả sản phẩm</label>
+            <div className="ap-form-group">
+              <label className="ap-label">Chất liệu</label>
+              <input className="ap-input" name="material" value={values.material} onChange={handleChange} placeholder="VD: Cotton, Polyester..." />
+            </div>
+            <div className="ap-form-group">
+              <label className="ap-label">Xuất xứ</label>
+              <input className="ap-input" name="madeby" value={values.madeby} onChange={handleChange} placeholder="VD: Việt Nam, Trung Quốc..." />
+            </div>
+          </div>
+
+          <div className="ap-form-row">
+            <div className="ap-form-group">
+              <label className="ap-label">Danh mục sản phẩm</label>
+              <select className="ap-select" name="categoryId" value={values.categoryId} onChange={handleChange}>
+                {dataCategory?.map(c => <option key={c.code} value={c.code}>{c.value}</option>)}
+              </select>
+            </div>
+            <div className="ap-form-group">
+              <label className="ap-label">Nhãn hàng</label>
+              <select className="ap-select" name="brandId" value={values.brandId} onChange={handleChange}>
+                {dataBrand?.map(b => <option key={b.code} value={b.code}>{b.value}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="ap-form-group">
+            <label className="ap-label">Mô tả sản phẩm (Markdown)</label>
+            <div style={{ borderRadius: 'var(--ap-radius-sm)', overflow: 'hidden', border: '1px solid var(--ap-border)' }}>
               <MdEditor
                 style={{ height: '400px' }}
-                renderHTML={(text) => mdParser.render(text)}
-                onChange={handleEditorChange}
-                value={inputValues.contentMarkdown}
+                renderHTML={text => mdParser.render(text)}
+                onChange={({ html, text }) => setValues(v => ({ ...v, contentMarkdown: text, contentHTML: html }))}
+                value={values.contentMarkdown}
               />
             </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
-                <label htmlFor="inputEmail4">Danh mục sản phẩm</label>
-                <select
-                  value={inputValues.categoryId}
-                  name="categoryId"
-                  onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
-                >
-                  {dataCategory &&
-                    dataCategory.length > 0 &&
-                    dataCategory.map((item, index) => {
-                      return (
-                        <option key={index} value={item.code}>
-                          {item.value}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputPassword4">Nhãn hàng</label>
-                <select
-                  value={inputValues.brandId}
-                  name="brandId"
-                  onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
-                >
-                  {dataBrand &&
-                    dataBrand.length > 0 &&
-                    dataBrand.map((item, index) => {
-                      return (
-                        <option key={index} value={item.code}>
-                          {item.value}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
-            </div>
+          </div>
 
-            <button onClick={() => handleSaveProduct()} type="button" className="btn btn-primary">
-              Lưu thông tin
+          <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+            <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
+              {loading ? '⏳ Đang cập nhật...' : '💾 Lưu thay đổi'}
             </button>
-          </form>
+            <Link to="/admin/list-product" className="ap-btn ap-btn-ghost">Hủy</Link>
+          </div>
         </div>
       </div>
     </div>

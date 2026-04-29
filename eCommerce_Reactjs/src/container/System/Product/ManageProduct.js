@@ -1,227 +1,173 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import {
-  getAllProductAdmin,
-  handleBanProductService,
-  handleActiveProductService,
-} from '../../../services/userService';
-import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { getAllProductAdmin, handleBanProductService, handleActiveProductService } from '../../../services/userService';
 import { toast } from 'react-toastify';
 import { PAGINATION } from '../../../utils/constant';
 import ReactPaginate from 'react-paginate';
 import CommonUtils from '../../../utils/CommonUtils';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
-import FormSearch from '../../../component/Search/FormSearch';
+import { Link } from 'react-router-dom';
+
+const STATUS_CFG = {
+  S1: { label: 'Đang bán', cls: 'ap-badge-green' },
+  S2: { label: 'Đã ẩn', cls: 'ap-badge-red' },
+};
+
+const SkeletonRows = () => (
+  <>
+    {[1,2,3,4,5].map(i => (
+      <tr key={i}>
+        {[...Array(8)].map((_, j) => (
+          <td key={j} style={{ padding: '13px 14px' }}>
+            <div className="ap-skeleton ap-skeleton-text" style={{ width: j===1 ? '80%' : '55%' }} />
+          </td>
+        ))}
+      </tr>
+    ))}
+  </>
+);
+
 const ManageProduct = () => {
-  const [dataProduct, setdataProduct] = useState([]);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
-  const [keyword, setkeyword] = useState('');
-  useEffect(() => {
-    let fetchProduct = async () => {
-      await loadProduct(keyword);
-    };
-    fetchProduct();
-  }, []);
-  let loadProduct = async (keyword) => {
-    let arrData = await getAllProductAdmin({
-      sortName: '',
-      sortPrice: '',
-      categoryId: 'ALL',
-      brandId: 'ALL',
-      limit: PAGINATION.pagerow,
-      offset: 0,
-      keyword: keyword,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataProduct(arrData.data);
-      setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-    }
+  const [dataProduct, setDataProduct] = useState([]);
+  const [count, setCount] = useState(0);
+  const [numberPage, setNumberPage] = useState(0);
+  const [keyword, setKeyword] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const loadProduct = async (kw = '', offset = 0) => {
+    setLoading(true);
+    try {
+      const res = await getAllProductAdmin({ sortName:'', sortPrice:'', categoryId:'ALL', brandId:'ALL', limit: PAGINATION.pagerow, offset, keyword: kw });
+      if (res?.errCode === 0) { setDataProduct(res.data); setCount(Math.ceil(res.count / PAGINATION.pagerow)); }
+    } catch {}
+    finally { setLoading(false); }
   };
-  let handleBanProduct = async (id) => {
-    let data = await handleBanProductService({
-      id: id,
-    });
-    if (data && data.errCode === 0) {
-      toast.success('Ẩn sản phẩm thành công!');
-      let arrData = await getAllProductAdmin({
-        sortName: '',
-        sortPrice: '',
-        categoryId: 'ALL',
-        brandId: 'ALL',
-        keyword: '',
-        limit: PAGINATION.pagerow,
-        offset: numberPage * PAGINATION.pagerow,
-      });
-      if (arrData && arrData.errCode === 0) {
-        setdataProduct(arrData.data);
-        setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-      }
-    } else {
-      toast.error('Ẩn sản phẩm thất bại!');
-    }
+
+  useEffect(() => { loadProduct(); }, []);
+
+  const handleBan = async (id) => {
+    const res = await handleBanProductService({ id });
+    if (res?.errCode === 0) { toast.success('Đã ẩn sản phẩm'); loadProduct(keyword, numberPage * PAGINATION.pagerow); }
+    else toast.error('Thao tác thất bại');
   };
-  let handleActiveProduct = async (id) => {
-    let data = await handleActiveProductService({
-      id: id,
-    });
-    if (data && data.errCode === 0) {
-      toast.success('Hiện sản phẩm thành công!');
-      loadProduct('');
-    } else {
-      toast.error('Hiện sản phẩm thất bại!');
-    }
+
+  const handleActive = async (id) => {
+    const res = await handleActiveProductService({ id });
+    if (res?.errCode === 0) { toast.success('Đã hiện sản phẩm'); loadProduct(keyword, numberPage * PAGINATION.pagerow); }
+    else toast.error('Thao tác thất bại');
   };
-  let handleChangePage = async (number) => {
-    setnumberPage(number.selected);
-    let arrData = await getAllProductAdmin({
-      limit: PAGINATION.pagerow,
-      offset: number.selected * PAGINATION.pagerow,
-      sortName: '',
-      sortPrice: '',
-      categoryId: 'ALL',
-      brandId: 'ALL',
-      keyword: keyword,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataProduct(arrData.data);
-    }
+
+  const handlePageChange = ({ selected }) => {
+    setNumberPage(selected);
+    loadProduct(keyword, selected * PAGINATION.pagerow);
   };
-  let handleSearchProduct = (keyword) => {
-    loadProduct(keyword);
-    setkeyword(keyword);
+
+  const handleExport = async () => {
+    const res = await getAllProductAdmin({ sortName:'', sortPrice:'', categoryId:'ALL', brandId:'ALL', keyword:'', limit:'', offset:'' });
+    if (res?.errCode === 0) await CommonUtils.exportExcel(res.data, 'Danh sách sản phẩm', 'ListProduct');
   };
-  let handleOnchangeSearch = (keyword) => {
-    if (keyword === '') {
-      loadProduct(keyword);
-      setkeyword(keyword);
-    }
-  };
-  let handleOnClickExport = async () => {
-    let res = await getAllProductAdmin({
-      sortName: '',
-      sortPrice: '',
-      categoryId: 'ALL',
-      brandId: 'ALL',
-      keyword: '',
-      limit: '',
-      offset: '',
-    });
-    if (res && res.errCode == 0) {
-      await CommonUtils.exportExcel(res.data, 'Danh sách sản phẩm', 'ListProduct');
-    }
-  };
+
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý sản phẩm</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Danh sách sản phẩm
-        </div>
-
-        <div className="card-body">
-          <div className="row">
-            <div className="col-4">
-              <FormSearch
-                title={'tên sản phẩm'}
-                handleOnchange={handleOnchangeSearch}
-                handleSearch={handleSearchProduct}
-              />{' '}
-            </div>
-            <div className="col-8">
-              <button
-                style={{ float: 'right' }}
-                onClick={() => handleOnClickExport()}
-                className="btn btn-success"
-              >
-                Xuất excel <i class="fa-solid fa-file-excel"></i>
-              </button>
-            </div>
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <div className="ap-page-title">🛍️ Quản lý sản phẩm</div>
+            <div className="ap-page-subtitle">Danh sách toàn bộ sản phẩm trong hệ thống</div>
           </div>
-          <div className="table-responsive">
-            <table
-              className="table table-bordered"
-              style={{ border: '1' }}
-              width="100%"
-              cellspacing="0"
-            >
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên sản phẩm</th>
-                  <th>Danh mục</th>
-                  <th>Nhãn hàng</th>
-                  <th>Chất liệu</th>
-                  <th>Được làm bởi</th>
-                  <th>Lượt xem</th>
-                  <th>Trạng thái</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {dataProduct &&
-                  dataProduct.length > 0 &&
-                  dataProduct.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item.name}</td>
-                        <td>{item.categoryData.value}</td>
-                        <td>{item.brandData.value}</td>
-                        <td>{item.material}</td>
-                        <td>{item.madeby}</td>
-                        <td>{item.view ? item.view : 0}</td>
-                        <td>{item.statusData.value}</td>
-                        <td style={{ width: '12%' }}>
-                          <Link to={`/admin/list-product-detail/${item.id}`}>View</Link>
-                          &nbsp; &nbsp;
-                          <Link to={`/admin/edit-product/${item.id}`}>Edit</Link>
-                          &nbsp; &nbsp;
-                          {item.statusData.code === 'S1' ? (
-                            <span
-                              onClick={() => handleBanProduct(item.id)}
-                              style={{ color: '#0E6DFE', cursor: 'pointer' }}
-                            >
-                              Ban
-                            </span>
-                          ) : (
-                            <span
-                              onClick={() => handleActiveProduct(item.id)}
-                              style={{ color: '#0E6DFE', cursor: 'pointer' }}
-                            >
-                              Active
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
+          <div style={{ display:'flex', gap:10 }}>
+            <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+            <Link to="/admin/add-product" className="ap-btn ap-btn-primary">+ Thêm sản phẩm</Link>
           </div>
         </div>
       </div>
-      <ReactPaginate
-        previousLabel={'Quay lại'}
-        nextLabel={'Tiếp'}
-        breakLabel={'...'}
-        pageCount={count}
-        marginPagesDisplayed={3}
-        containerClassName={'pagination justify-content-center'}
-        pageClassName={'page-item'}
-        pageLinkClassName={'page-link'}
-        previousLinkClassName={'page-link'}
-        nextClassName={'page-item'}
-        nextLinkClassName={'page-link'}
-        breakLinkClassName={'page-link'}
-        breakClassName={'page-item'}
-        activeClassName={'active'}
-        onPageChange={handleChangePage}
-      />
+
+      <div className="ap-card">
+        <div className="ap-toolbar">
+          <div className="ap-search-bar">
+            <span style={{ color:'var(--ap-text-dim)' }}>🔍</span>
+            <input
+              value={keyword}
+              onChange={e => setKeyword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && loadProduct(keyword)}
+              placeholder="Tìm theo tên sản phẩm..."
+            />
+            {keyword && <button onClick={() => { setKeyword(''); loadProduct(''); }} style={{ background:'none', border:'none', color:'var(--ap-text-dim)', cursor:'pointer', fontSize:16 }}>×</button>}
+          </div>
+          <button className="ap-btn ap-btn-primary ap-btn-sm" onClick={() => loadProduct(keyword)}>Tìm kiếm</button>
+        </div>
+
+        <div className="ap-table-wrap">
+          <table className="ap-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Nhãn hàng</th>
+                <th>Chất liệu</th><th>Lượt xem</th><th>Trạng thái</th>
+                <th style={{ textAlign:'center' }}>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? <SkeletonRows /> : dataProduct.length === 0 ? (
+                <tr><td colSpan={8} style={{ padding:0, border:'none' }}>
+                  <div className="ap-empty">
+                    <div className="ap-empty-icon">🛍️</div>
+                    <div className="ap-empty-title">Không tìm thấy sản phẩm</div>
+                    <div className="ap-empty-desc">Thử thay đổi từ khóa tìm kiếm</div>
+                  </div>
+                </td></tr>
+              ) : dataProduct.map((item, idx) => {
+                const sc = STATUS_CFG[item.statusData?.code] || { label: item.statusData?.value, cls: 'ap-badge-gray' };
+                const isActive = item.statusData?.code === 'S1';
+                return (
+                  <tr key={item.id} className="ap-row-enter" style={{ animationDelay:`${idx*30}ms` }}>
+                    <td style={{ color:'var(--ap-text-dim)', fontWeight:600, fontSize:13 }}>{idx+1}</td>
+                    <td>
+                      <div style={{ fontWeight:600, fontSize:13, color:'var(--ap-text)' }}>{item.name}</div>
+                      <div style={{ fontSize:11, color:'var(--ap-text-dim)', marginTop:2 }}>ID: {item.id}</div>
+                    </td>
+                    <td>
+                      <span className="ap-badge ap-badge-indigo">{item.categoryData?.value}</span>
+                    </td>
+                    <td style={{ fontSize:13, color:'var(--ap-text-muted)' }}>{item.brandData?.value}</td>
+                    <td style={{ fontSize:12, color:'var(--ap-text-muted)' }}>{item.material || '—'}</td>
+                    <td>
+                      <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+                        <span style={{ fontSize:13, fontWeight:600 }}>{item.view || 0}</span>
+                        <span style={{ fontSize:11, color:'var(--ap-text-dim)' }}>lượt</span>
+                      </div>
+                    </td>
+                    <td><span className={`ap-badge ${sc.cls}`}>{sc.label}</span></td>
+                    <td>
+                      <div style={{ display:'flex', gap:5, justifyContent:'center', flexWrap:'wrap' }}>
+                        <Link to={`/admin/list-product-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">📋 Chi tiết</Link>
+                        <Link to={`/admin/edit-product/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️</Link>
+                        {isActive
+                          ? <button className="ap-btn ap-btn-warning ap-btn-sm" onClick={() => handleBan(item.id)}>🚫 Ẩn</button>
+                          : <button className="ap-btn ap-btn-success ap-btn-sm" onClick={() => handleActive(item.id)}>✅ Hiện</button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {!loading && count > 1 && (
+          <div style={{ padding:'14px 20px', borderTop:'1px solid var(--ap-border)', display:'flex', justifyContent:'center' }}>
+            <ReactPaginate
+              previousLabel="← Trước" nextLabel="Sau →" breakLabel="..."
+              pageCount={count} marginPagesDisplayed={2}
+              containerClassName="ap-pagination" pageClassName="ap-page-item" pageLinkClassName="ap-page-link"
+              previousClassName="ap-page-item" previousLinkClassName="ap-page-link"
+              nextClassName="ap-page-item" nextLinkClassName="ap-page-link"
+              breakClassName="ap-page-item" breakLinkClassName="ap-page-link"
+              activeClassName="ap-page-active" onPageChange={handlePageChange}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
+
 export default ManageProduct;

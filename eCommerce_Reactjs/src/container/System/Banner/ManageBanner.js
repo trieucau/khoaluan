@@ -1,205 +1,92 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getAllBanner, deleteBannerService } from '../../../services/userService';
-import moment from 'moment';
 import { toast } from 'react-toastify';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
-import './AddBanner.scss';
 import { PAGINATION } from '../../../utils/constant';
-import ReactPaginate from 'react-paginate';
 import CommonUtils from '../../../utils/CommonUtils';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-  useParams,
-} from 'react-router-dom';
-import FormSearch from '../../../component/Search/FormSearch';
+import { Link } from 'react-router-dom';
+import { SkeletonRows, EmptyState, AdminPagination, SearchBar, PageHeader } from '../AdminShared';
 
 const ManageBanner = () => {
-  const [keyword, setkeyword] = useState('');
-  const [dataBanner, setdataBanner] = useState([]);
-  const [imgPreview, setimgPreview] = useState('');
-  const [isOpen, setisOpen] = useState(false);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
-  useEffect(() => {
-    loadBanner(keyword);
-  }, []);
-  let loadBanner = async (keyword) => {
-    let arrData = await getAllBanner({
-      limit: PAGINATION.pagerow,
-      offset: 0,
-      keyword: keyword,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataBanner(arrData.data);
-      setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
+  const [data, setData] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [keyword, setKeyword] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [lightboxImg, setLightboxImg] = useState('');
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const fetchData = async (kw = '', offset = 0) => {
+    setLoading(true);
+    try {
+      const res = await getAllBanner({ limit: PAGINATION.pagerow, offset, keyword: kw });
+      if (res?.errCode === 0) { setData(res.data); setCount(Math.ceil(res.count / PAGINATION.pagerow)); }
+    } finally { setLoading(false); }
+  };
+
+  useEffect(() => { fetchData(); }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Xóa banner này?')) return;
+    const res = await deleteBannerService({ data: { id } });
+    if (res?.errCode === 0) { toast.success('Xóa banner thành công'); fetchData(keyword, page * PAGINATION.pagerow); }
+    else toast.error('Xóa banner thất bại');
+  };
+
+  const handleExport = async () => {
+    const res = await getAllBanner({ limit: '', offset: '', keyword: '' });
+    if (res?.errCode === 0) {
+      res.data.forEach(el => { el.image = ''; });
+      await CommonUtils.exportExcel(res.data, 'Danh sách banner', 'ListBanner');
     }
   };
 
-  let openPreviewImage = (url) => {
-    setimgPreview(url);
-    setisOpen(true);
-  };
-  let handleDeleteBanner = async (id) => {
-    let response = await deleteBannerService({
-      data: {
-        id: id,
-      },
-    });
-    if (response && response.errCode === 0) {
-      toast.success('Xóa băng rôn thành công !');
-      let arrData = await getAllBanner({
-        limit: PAGINATION.pagerow,
-        offset: numberPage * PAGINATION.pagerow,
-        keyword: keyword,
-      });
-      if (arrData && arrData.errCode === 0) {
-        setdataBanner(arrData.data);
-        setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-      }
-    } else {
-      toast.error('Xóa băng rôn thất bại');
-    }
-  };
-  let handleChangePage = async (number) => {
-    setnumberPage(number.selected);
-    let arrData = await getAllBanner({
-      limit: PAGINATION.pagerow,
-      offset: number.selected * PAGINATION.pagerow,
-      keyword: keyword,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataBanner(arrData.data);
-    }
-  };
-  let handleSearchBanner = (keyword) => {
-    loadBanner(keyword);
-    setkeyword(keyword);
-  };
-  let handleOnchangeSearch = (keyword) => {
-    if (keyword === '') {
-      loadBanner(keyword);
-      setkeyword(keyword);
-    }
-  };
-  let handleOnClickExport = async () => {
-    let res = await getAllBanner({
-      limit: '',
-      offset: '',
-      keyword: '',
-    });
-
-    if (res && res.errCode == 0) {
-      res.data.forEach((element) => {
-        element.image = '';
-      });
-
-      await CommonUtils.exportExcel(res.data, 'Danh sách băng rôn', 'ListBanner');
-    }
-  };
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý băng rôn</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Danh sách băng rôn
+    <div className="ap-page">
+      <PageHeader title="🖼️ Quản lý Banner" subtitle="Danh sách hình ảnh quảng cáo trang chủ"
+        actions={<>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <Link to="/admin/add-banner" className="ap-btn ap-btn-primary">+ Thêm banner</Link>
+        </>}
+      />
+      <div className="ap-card">
+        <SearchBar value={keyword} onChange={setKeyword} onSearch={(kw) => { setKeyword(kw); fetchData(kw); }} placeholder="Tìm theo tên banner..." />
+        <div className="ap-table-wrap">
+          <table className="ap-table">
+            <thead><tr><th>#</th><th>Tên banner</th><th>Hình ảnh preview</th><th style={{ textAlign: 'center' }}>Thao tác</th></tr></thead>
+            <tbody>
+              {loading ? <SkeletonRows cols={4} /> : data.length === 0 ? <EmptyState icon="🖼️" title="Không có banner nào" /> :
+                data.map((item, idx) => (
+                  <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
+                    <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
+                    <td style={{ fontWeight: 600 }}>{item.name}</td>
+                    <td>
+                      {item.image && (
+                        <img
+                          src={item.image} alt={item.name}
+                          onClick={() => { setLightboxImg(item.image); setLightboxOpen(true); }}
+                          style={{ width: 120, height: 60, objectFit: 'cover', borderRadius: 8, cursor: 'zoom-in', border: '1px solid var(--ap-border)', transition: 'transform 0.2s' }}
+                          onMouseEnter={e => e.target.style.transform = 'scale(1.06)'}
+                          onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+                        />
+                      )}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                        <Link to={`/admin/edit-banner/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️ Sửa</Link>
+                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}>🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
         </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-4">
-              <FormSearch
-                title={'tên băng rôn'}
-                handleOnchange={handleOnchangeSearch}
-                handleSearch={handleSearchBanner}
-              />
-            </div>
-            <div className="col-8">
-              <button
-                style={{ float: 'right' }}
-                onClick={() => handleOnClickExport()}
-                className="btn btn-success"
-              >
-                Xuất excel <i class="fa-solid fa-file-excel"></i>
-              </button>
-            </div>
-          </div>
-          <div className="table-responsive">
-            <table
-              className="table table-bordered"
-              style={{ border: '1' }}
-              width="100%"
-              cellspacing="0"
-            >
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên băng rôn</th>
-                  <th>Hình ảnh</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {dataBanner &&
-                  dataBanner.length > 0 &&
-                  dataBanner.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item.name}</td>
-                        <td style={{ width: '30%' }}>
-                          <div
-                            onClick={() => openPreviewImage(item.image)}
-                            className="box-img-preview"
-                            style={{
-                              backgroundImage: `url(${item.image})`,
-                              width: '100%',
-                            }}
-                          ></div>
-                        </td>
-                        <td style={{ width: '20%' }}>
-                          <Link to={`/admin/edit-banner/${item.id}`}>Edit</Link>
-                          &nbsp; &nbsp;
-                          <span
-                            onClick={() => handleDeleteBanner(item.id)}
-                            style={{ color: '#0E6DFE', cursor: 'pointer' }}
-                          >
-                            Delete
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <ReactPaginate
-          previousLabel={'Quay lại'}
-          nextLabel={'Tiếp'}
-          breakLabel={'...'}
-          pageCount={count}
-          marginPagesDisplayed={3}
-          containerClassName={'pagination justify-content-center'}
-          pageClassName={'page-item'}
-          pageLinkClassName={'page-link'}
-          previousLinkClassName={'page-link'}
-          nextClassName={'page-item'}
-          nextLinkClassName={'page-link'}
-          breakLinkClassName={'page-link'}
-          breakClassName={'page-item'}
-          activeClassName={'active'}
-          onPageChange={handleChangePage}
-        />
+        <AdminPagination count={count} onPageChange={({ selected }) => { setPage(selected); fetchData(keyword, selected * PAGINATION.pagerow); }} />
       </div>
-      {isOpen === true && <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />}
+      {lightboxOpen && <Lightbox slides={[{ src: lightboxImg }]} open={lightboxOpen} close={() => setLightboxOpen(false)} />}
     </div>
   );
 };

@@ -1,167 +1,103 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import {
-  createNewTypeVoucherService,
-  getDetailTypeVoucherByIdService,
-  updateTypeVoucherService,
-} from '../../../services/userService';
-
+import React, { useEffect, useState } from 'react';
+import { createNewTypeVoucherService, getDetailTypeVoucherByIdService, updateTypeVoucherService } from '../../../services/userService';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
+import { useParams, Link } from 'react-router-dom';
 import { useFetchAllcode } from '../../customize/fetch';
-import moment from 'moment';
-const AddTypeVoucher = (props) => {
-  const { data: dataTypeVoucher } = useFetchAllcode('DISCOUNT');
-  const [isActionADD, setisActionADD] = useState(true);
+import CommonUtils from '../../../utils/CommonUtils';
 
+const AddTypeVoucher = () => {
+  const { data: dataTypeVoucher } = useFetchAllcode('DISCOUNT');
+  const [isAdd, setIsAdd] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
-  const [inputValues, setInputValues] = useState({
-    typeVoucher: '',
-    value: '',
-    maxValue: '',
-    minValue: '',
-  });
-  if (dataTypeVoucher && dataTypeVoucher.length > 0 && inputValues.typeVoucher === '') {
-    setInputValues({
-      ...inputValues,
-      ['typeVoucher']: dataTypeVoucher[0].code,
-    });
-  }
+  const [values, setValues] = useState({ typeVoucher: '', value: '', maxValue: '', minValue: '' });
+
+  useEffect(() => {
+    if (dataTypeVoucher?.length > 0 && !values.typeVoucher) {
+      setValues(v => ({ ...v, typeVoucher: dataTypeVoucher[0].code }));
+    }
+  }, [dataTypeVoucher]);
 
   useEffect(() => {
     if (id) {
-      let fetchDetailTypeShip = async () => {
-        setisActionADD(false);
-        let typevoucher = await getDetailTypeVoucherByIdService(id);
-        if (typevoucher && typevoucher.errCode === 0) {
-          setInputValues({
-            ...inputValues,
-            ['typeVoucher']: typevoucher.data.typeVoucher,
-            ['value']: typevoucher.data.value,
-            ['maxValue']: typevoucher.data.maxValue,
-            ['minValue']: typevoucher.data.minValue,
-          });
-        }
-      };
-      fetchDetailTypeShip();
+      setIsAdd(false);
+      getDetailTypeVoucherByIdService(id).then(res => {
+        if (res?.errCode === 0) setValues({ typeVoucher: res.data.typeVoucher, value: res.data.value, maxValue: res.data.maxValue, minValue: res.data.minValue });
+      });
     }
-  }, []);
+  }, [id]);
 
-  const handleOnChange = (event) => {
-    const { name, value } = event.target;
-    setInputValues({ ...inputValues, [name]: value });
+  const handleSave = async () => {
+    if (!values.value || !values.minValue || !values.maxValue) { toast.error('Vui lòng điền đầy đủ thông tin'); return; }
+    setLoading(true);
+    try {
+      const res = isAdd
+        ? await createNewTypeVoucherService({ typeVoucher: values.typeVoucher, value: values.value, maxValue: values.maxValue, minValue: values.minValue })
+        : await updateTypeVoucherService({ typeVoucher: values.typeVoucher, value: values.value, maxValue: values.maxValue, minValue: values.minValue, id });
+      if (res?.errCode === 0) {
+        toast.success(isAdd ? 'Thêm loại voucher thành công' : 'Cập nhật thành công');
+        if (isAdd) setValues({ typeVoucher: dataTypeVoucher?.[0]?.code || '', value: '', maxValue: '', minValue: '' });
+      } else if (res?.errCode === 2) toast.error(res.errMessage);
+      else toast.error('Thao tác thất bại');
+    } finally { setLoading(false); }
   };
-  let handleSaveTypeVoucher = async () => {
-    if (isActionADD === true) {
-      let res = await createNewTypeVoucherService({
-        typeVoucher: inputValues.typeVoucher,
-        value: inputValues.value,
-        maxValue: inputValues.maxValue,
-        minValue: inputValues.minValue,
-      });
-      if (res && res.errCode === 0) {
-        toast.success('Thêm loại voucher thành công');
-        setInputValues({
-          ...inputValues,
-          ['typeVoucher']: '',
-          ['value']: '',
-          ['maxValue']: '',
-          ['minValue']: '',
-        });
-      } else if (res && res.errCode === 2) {
-        toast.error(res.errMessage);
-      } else toast.error('Thêm loại voucher thất bại');
-    } else {
-      let res = await updateTypeVoucherService({
-        typeVoucher: inputValues.typeVoucher,
-        value: inputValues.value,
-        maxValue: inputValues.maxValue,
-        minValue: inputValues.minValue,
-        id: id,
-      });
-      if (res && res.errCode === 0) {
-        toast.success('Cập nhật loại voucher thành công');
-      } else if (res && res.errCode === 2) {
-        toast.error(res.errMessage);
-      } else toast.error('Cập nhật loại voucher thất bại');
-    }
-  };
+
+  const isPercent = values.typeVoucher === 'percent';
 
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý loại voucher</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          {isActionADD === true ? 'Thêm mới loại voucher' : 'Cập nhật thông tin loại voucher'}
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <div className="ap-page-title">{isAdd ? '🎫 Thêm loại khuyến mãi' : '✏️ Cập nhật loại KM'}</div>
+            <div className="ap-page-subtitle">Cấu hình loại giảm giá và điều kiện áp dụng</div>
+          </div>
+          <Link to="/admin/list-typevoucher" className="ap-btn ap-btn-ghost">← Quay lại</Link>
         </div>
-        <div className="card-body">
-          <form>
-            <div className="form-row">
-              <div className="form-group col-md-6">
-                <label htmlFor="inputEmail4">Loại voucher</label>
-                <select
-                  value={inputValues.typeVoucher}
-                  name="typeVoucher"
-                  onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
-                >
-                  {dataTypeVoucher &&
-                    dataTypeVoucher.length > 0 &&
-                    dataTypeVoucher.map((item, index) => {
-                      return (
-                        <option key={index} value={item.code}>
-                          {item.value}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputPassword4">Giá trị</label>
-                <input
-                  type="text"
-                  value={inputValues.value}
-                  name="value"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputEmail4">Giá trị tối thiểu</label>
-                <input
-                  type="number"
-                  value={inputValues.minValue}
-                  name="minValue"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputPassword4">Giá trị tối đa</label>
-                <input
-                  type="number"
-                  value={inputValues.maxValue}
-                  name="maxValue"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
+      </div>
+
+      <div className="ap-card" style={{ maxWidth: 680 }}>
+        <div className="ap-card-header"><span className="ap-card-title">🎫 Thông tin loại khuyến mãi</span></div>
+        <div className="ap-card-body">
+          <div className="ap-form-row">
+            <div className="ap-form-group">
+              <label className="ap-label">Hình thức giảm giá *</label>
+              <select className="ap-select" value={values.typeVoucher} onChange={e => setValues(v => ({ ...v, typeVoucher: e.target.value }))}>
+                {dataTypeVoucher?.map(t => <option key={t.code} value={t.code}>{t.value}</option>)}
+              </select>
             </div>
-            <button
-              type="button"
-              onClick={() => handleSaveTypeVoucher()}
-              className="btn btn-primary"
-            >
-              Lưu thông tin
+            <div className="ap-form-group">
+              <label className="ap-label">Giá trị giảm * {isPercent ? '(%)' : '(VNĐ)'}</label>
+              <input className="ap-input" type="number" min="0" value={values.value}
+                onChange={e => setValues(v => ({ ...v, value: e.target.value }))}
+                placeholder={isPercent ? 'VD: 20 (= 20%)' : 'VD: 50000'} />
+              {values.value && isPercent && (
+                <div style={{ fontSize: 12, color: '#a5b4fc', marginTop: 4 }}>Giảm {values.value}% trên tổng đơn hàng</div>
+              )}
+            </div>
+          </div>
+
+          <div className="ap-form-row">
+            <div className="ap-form-group">
+              <label className="ap-label">Đơn hàng tối thiểu (VNĐ) *</label>
+              <input className="ap-input" type="number" min="0" value={values.minValue}
+                onChange={e => setValues(v => ({ ...v, minValue: e.target.value }))} placeholder="VD: 200000" />
+              {values.minValue && <div style={{ fontSize: 12, color: '#6ee7b7', marginTop: 4 }}>≥ {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(values.minValue)}</div>}
+            </div>
+            <div className="ap-form-group">
+              <label className="ap-label">Giảm tối đa (VNĐ) *</label>
+              <input className="ap-input" type="number" min="0" value={values.maxValue}
+                onChange={e => setValues(v => ({ ...v, maxValue: e.target.value }))} placeholder="VD: 100000" />
+              {values.maxValue && <div style={{ fontSize: 12, color: '#fca5a5', marginTop: 4 }}>≤ {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(values.maxValue)}</div>}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+            <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
+              {loading ? '⏳ Đang lưu...' : '💾 Lưu thông tin'}
             </button>
-          </form>
+            <Link to="/admin/list-typevoucher" className="ap-btn ap-btn-ghost">Hủy</Link>
+          </div>
         </div>
       </div>
     </div>

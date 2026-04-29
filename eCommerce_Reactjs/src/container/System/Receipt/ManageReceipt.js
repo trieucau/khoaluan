@@ -1,135 +1,77 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import { deleteReceiptService, getAllReceipt } from '../../../services/userService';
+import React, { useEffect, useState } from 'react';
+import { getAllReceipt } from '../../../services/userService';
 import moment from 'moment';
-import { toast } from 'react-toastify';
 import { PAGINATION } from '../../../utils/constant';
-import ReactPaginate from 'react-paginate';
 import CommonUtils from '../../../utils/CommonUtils';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { SkeletonRows, EmptyState, AdminPagination, PageHeader } from '../AdminShared';
 
 const ManageReceipt = () => {
-  const [dataReceipt, setdataReceipt] = useState([]);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
-  useEffect(() => {
+  const [data, setData] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async (offset = 0) => {
+    setLoading(true);
     try {
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-  let fetchData = async () => {
-    let arrData = await getAllReceipt({
-      limit: PAGINATION.pagerow,
-      offset: 0,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataReceipt(arrData.data);
-      setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-    }
+      const res = await getAllReceipt({ limit: PAGINATION.pagerow, offset });
+      if (res?.errCode === 0) { setData(res.data); setCount(Math.ceil(res.count / PAGINATION.pagerow)); }
+    } finally { setLoading(false); }
   };
 
-  let handleChangePage = async (number) => {
-    setnumberPage(number.selected);
-    let arrData = await getAllReceipt({
-      limit: PAGINATION.pagerow,
-      offset: number.selected * PAGINATION.pagerow,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataReceipt(arrData.data);
-    }
+  useEffect(() => { fetchData(); }, []);
+
+  const handleExport = async () => {
+    const res = await getAllReceipt({ limit: '', offset: '' });
+    if (res?.errCode === 0) await CommonUtils.exportExcel(res.data, 'Danh sách nhập hàng', 'ListReceipt');
   };
 
-  let handleOnClickExport = async () => {
-    let res = await getAllReceipt({
-      limit: '',
-      offset: '',
-    });
-    if (res && res.errCode == 0) {
-      await CommonUtils.exportExcel(res.data, 'Danh sách nhập hàng', 'ListReceipt');
-    }
-  };
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý nhập hàng</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Danh sách nhập hàng
-        </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-12">
-              <button
-                style={{ float: 'right' }}
-                onClick={() => handleOnClickExport()}
-                className="btn btn-success mb-2"
-              >
-                Xuất excel <i class="fa-solid fa-file-excel"></i>
-              </button>
-            </div>
-          </div>
-          <div className="table-responsive">
-            <table
-              className="table table-bordered"
-              style={{ border: '1' }}
-              width="100%"
-              cellspacing="0"
-            >
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Ngày nhập hàng</th>
-                  <th>Tên nhà cung cấp</th>
-                  <th>Số điện thoại</th>
-                  <th>Tên nhân viên</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {dataReceipt &&
-                  dataReceipt.length > 0 &&
-                  dataReceipt.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{moment.utc(item.createdAt).local().format('DD/MM/YYYY HH:mm:ss')}</td>
-                        <td>{item.supplierData.name}</td>
-                        <td>{item.supplierData.phonenumber}</td>
-                        <td>{item.userData.firstName + ' ' + item.userData.lastName}</td>
-
-                        <td>
-                          <Link to={`/admin/detail-receipt/${item.id}`}>view</Link>
-                          &nbsp; &nbsp;
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <ReactPaginate
-        previousLabel={'Quay lại'}
-        nextLabel={'Tiếp'}
-        breakLabel={'...'}
-        pageCount={count}
-        marginPagesDisplayed={3}
-        containerClassName={'pagination justify-content-center'}
-        pageClassName={'page-item'}
-        pageLinkClassName={'page-link'}
-        previousLinkClassName={'page-link'}
-        nextClassName={'page-item'}
-        nextLinkClassName={'page-link'}
-        breakLinkClassName={'page-link'}
-        breakClassName={'page-item'}
-        activeClassName={'active'}
-        onPageChange={handleChangePage}
+    <div className="ap-page">
+      <PageHeader title="📦 Quản lý nhập hàng" subtitle="Lịch sử phiếu nhập hàng từ nhà cung cấp"
+        actions={<>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <Link to="/admin/add-receipt" className="ap-btn ap-btn-primary">+ Tạo phiếu nhập</Link>
+        </>}
       />
+      <div className="ap-card">
+        <div className="ap-table-wrap">
+          <table className="ap-table">
+            <thead>
+              <tr><th>#</th><th>Ngày nhập</th><th>Nhà cung cấp</th><th>SĐT NCC</th><th>Nhân viên</th><th style={{ textAlign: 'center' }}>Thao tác</th></tr>
+            </thead>
+            <tbody>
+              {loading ? <SkeletonRows cols={6} /> : data.length === 0 ? <EmptyState icon="📦" title="Không có phiếu nhập nào" /> :
+                data.map((item, idx) => (
+                  <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
+                    <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
+                    <td style={{ fontSize: 12, color: 'var(--ap-text-muted)', whiteSpace: 'nowrap' }}>
+                      {moment.utc(item.createdAt).local().format('DD/MM/YYYY HH:mm')}
+                    </td>
+                    <td>
+                      <div style={{ fontWeight: 600, fontSize: 13 }}>{item.supplierData?.name}</div>
+                    </td>
+                    <td style={{ fontSize: 13 }}>{item.supplierData?.phonenumber}</td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div className="ap-avatar" style={{ width: 28, height: 28, fontSize: 11 }}>
+                          {item.userData?.firstName?.[0]?.toUpperCase() || '?'}
+                        </div>
+                        <span style={{ fontSize: 13 }}>{item.userData?.firstName} {item.userData?.lastName}</span>
+                      </div>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      <Link to={`/admin/detail-receipt/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">🔍 Xem chi tiết</Link>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <AdminPagination count={count} onPageChange={({ selected }) => { setPage(selected); fetchData(selected * PAGINATION.pagerow); }} />
+      </div>
     </div>
   );
 };

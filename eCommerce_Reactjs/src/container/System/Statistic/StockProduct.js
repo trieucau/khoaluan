@@ -1,135 +1,71 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getStatisticStockProduct } from '../../../services/userService';
-import moment from 'moment';
-import { toast } from 'react-toastify';
 import { PAGINATION } from '../../../utils/constant';
-import ReactPaginate from 'react-paginate';
 import CommonUtils from '../../../utils/CommonUtils';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
+import { SkeletonRows, EmptyState, AdminPagination, PageHeader } from '../AdminShared';
+
 const StockProduct = () => {
-  const [dataStockProduct, setdataStockProduct] = useState([]);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
+  const [data, setData] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadStockProduct();
-  }, []);
-  let loadStockProduct = () => {
+  const loadData = async (offset = 0) => {
+    setLoading(true);
     try {
-      let fetchData = async () => {
-        let arrData = await getStatisticStockProduct({
-          limit: PAGINATION.pagerow,
-          offset: 0,
-        });
-        if (arrData && arrData.errCode === 0) {
-          setdataStockProduct(arrData.data);
-          setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-        }
-      };
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
+      const res = await getStatisticStockProduct({ limit: PAGINATION.pagerow, offset });
+      if (res?.errCode === 0) { setData(res.data); setCount(Math.ceil(res.count / PAGINATION.pagerow)); }
+    } finally { setLoading(false); }
   };
 
-  let handleChangePage = async (number) => {
-    setnumberPage(number.selected);
-    let arrData = await getStatisticStockProduct({
-      limit: PAGINATION.pagerow,
-      offset: number.selected * PAGINATION.pagerow,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataStockProduct(arrData.data);
-    }
+  useEffect(() => { loadData(); }, []);
+
+  const handleExport = async () => {
+    const res = await getStatisticStockProduct({ limit: '', offset: '' });
+    if (res?.errCode === 0) await CommonUtils.exportExcel(res.data, 'Sản phẩm tồn kho', 'ListStock');
   };
-  let handleOnClickExport = async () => {
-    let res = await getStatisticStockProduct({
-      limit: '',
-      offset: '',
-    });
-    if (res && res.errCode == 0) {
-      await CommonUtils.exportExcel(res.data, 'Danh sách sản phẩm tồn kho', 'ListOrder');
-    }
+
+  const stockBadge = (qty) => {
+    if (qty === 0) return <span className="ap-badge ap-badge-red">Hết hàng</span>;
+    if (qty < 10) return <span className="ap-badge ap-badge-amber">Sắp hết ({qty})</span>;
+    return <span className="ap-badge ap-badge-green">{qty}</span>;
   };
+
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý sản phẩm tồn kho</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Danh sách sản phẩm tồn kho
-        </div>
-
-        <div className="card-body">
-          <div className="row">
-            <div className="col-12 mb-2">
-              <button
-                style={{ float: 'right' }}
-                onClick={() => handleOnClickExport()}
-                className="btn btn-success"
-              >
-                Xuất excel <i class="fa-solid fa-file-excel"></i>
-              </button>
-            </div>
-          </div>
-          <div className="table-responsive">
-            <table
-              className="table table-bordered"
-              style={{ border: '1' }}
-              width="100%"
-              cellspacing="0"
-            >
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên sản phẩm</th>
-                  <th>Danh mục</th>
-                  <th>nhãn hàng</th>
-                  <th>Chất liệu</th>
-                  <th>Số lượng tồn</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {dataStockProduct &&
-                  dataStockProduct.length > 0 &&
-                  dataStockProduct.map((item, index) => {
-                    let name = `${item.productdData.name} - ${item.productDetaildData.nameDetail} - ${item.sizeData.value}`;
-                    return (
-                      <tr key={index}>
-                        <td>{index}</td>
-                        <td>{name}</td>
-                        <td>{item.productdData.categoryData.value}</td>
-                        <td>{item.productdData.brandData.value}</td>
-                        <td>{item.productdData.material}</td>
-                        <td>{item.stock}</td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <ReactPaginate
-        previousLabel={'Quay lại'}
-        nextLabel={'Tiếp'}
-        breakLabel={'...'}
-        pageCount={count}
-        marginPagesDisplayed={3}
-        containerClassName={'pagination justify-content-center'}
-        pageClassName={'page-item'}
-        pageLinkClassName={'page-link'}
-        previousLinkClassName={'page-link'}
-        nextClassName={'page-item'}
-        nextLinkClassName={'page-link'}
-        breakLinkClassName={'page-link'}
-        breakClassName={'page-item'}
-        activeClassName={'active'}
-        onPageChange={handleChangePage}
+    <div className="ap-page">
+      <PageHeader title="📦 Tồn kho sản phẩm" subtitle="Theo dõi số lượng hàng tồn theo từng size"
+        actions={<button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>}
       />
+      <div className="ap-card">
+        <div className="ap-table-wrap">
+          <table className="ap-table">
+            <thead>
+              <tr><th>#</th><th>Sản phẩm — Phân loại — Size</th><th>Danh mục</th><th>Nhãn hàng</th><th>Chất liệu</th><th style={{ textAlign: 'center' }}>Tồn kho</th></tr>
+            </thead>
+            <tbody>
+              {loading ? <SkeletonRows cols={6} /> : data.length === 0 ? <EmptyState icon="📦" title="Không có dữ liệu tồn kho" /> :
+                data.map((item, idx) => {
+                  const name = `${item.productdData?.name} — ${item.productDetaildData?.nameDetail} — ${item.sizeData?.value}`;
+                  return (
+                    <tr key={idx} className="ap-row-enter" style={{ animationDelay: `${idx * 20}ms` }}>
+                      <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
+                      <td>
+                        <div style={{ fontWeight: 600, fontSize: 13 }}>{item.productdData?.name}</div>
+                        <div style={{ fontSize: 11, color: 'var(--ap-text-muted)' }}>{item.productDetaildData?.nameDetail} · {item.sizeData?.value}</div>
+                      </td>
+                      <td><span className="ap-badge ap-badge-cyan">{item.productdData?.categoryData?.value}</span></td>
+                      <td><span className="ap-badge ap-badge-indigo">{item.productdData?.brandData?.value}</span></td>
+                      <td style={{ fontSize: 12, color: 'var(--ap-text-muted)' }}>{item.productdData?.material}</td>
+                      <td style={{ textAlign: 'center' }}>{stockBadge(item.stock)}</td>
+                    </tr>
+                  );
+                })
+              }
+            </tbody>
+          </table>
+        </div>
+        <AdminPagination count={count} onPageChange={({ selected }) => { setPage(selected); loadData(selected * PAGINATION.pagerow); }} />
+      </div>
     </div>
   );
 };

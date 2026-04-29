@@ -1,281 +1,139 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createNewUser, getDetailUserById, UpdateUserService } from '../../../services/userService';
 import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
+import { useParams, Link } from 'react-router-dom';
 import { useFetchAllcode } from '../../customize/fetch';
-import localization from 'moment/locale/vi';
 import moment from 'moment';
-const Adduser = (props) => {
-  const [birthday, setbirthday] = useState(new Date());
 
-  const [isActionADD, setisActionADD] = useState(true);
-  const [isChangeDate, setisChangeDate] = useState(false);
+const Adduser = () => {
+  const [birthday, setBirthday] = useState(new Date());
+  const [isAdd, setIsAdd] = useState(true);
+  const [isChangeDate, setIsChangeDate] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
-
-  const [inputValues, setInputValues] = useState({
-    email: '',
-    password: '',
-    firstName: '',
-    lastName: '',
-    address: '',
-    phonenumber: '',
-    genderId: '',
-    roleId: '',
-    id: '',
-    dob: '',
-  });
-
-  let setStateUser = (data) => {
-    setInputValues({
-      ...inputValues,
-      ['firstName']: data.firstName,
-      ['lastName']: data.lastName,
-      ['address']: data.address,
-      ['phonenumber']: data.phonenumber,
-      ['genderId']: data.genderId,
-      ['roleId']: data.roleId,
-      ['email']: data.email,
-      ['id']: data.id,
-      ['dob']: data.dob,
-    });
-    setbirthday(
-      moment
-        .unix(+data.dob / 1000)
-        .locale('vi')
-        .toDate()
-    );
-  };
-  useEffect(() => {
-    if (id) {
-      let fetchUser = async () => {
-        setisActionADD(false);
-        let user = await getDetailUserById(id);
-        if (user && user.errCode === 0) {
-          setStateUser(user.data);
-        }
-      };
-      fetchUser();
-    }
-  }, []);
-  const handleOnChange = (event) => {
-    const { name, value } = event.target;
-    setInputValues({ ...inputValues, [name]: value });
-  };
-
   const { data: dataGender } = useFetchAllcode('GENDER');
   const { data: dataRole } = useFetchAllcode('ROLE');
 
-  if (
-    dataGender &&
-    dataGender.length > 0 &&
-    inputValues.genderId === '' &&
-    dataRole &&
-    dataRole.length > 0 &&
-    inputValues.roleId === ''
-  ) {
-    console.log(dataRole);
-    setInputValues({
-      ...inputValues,
-      ['genderId']: dataGender[0].code,
-      ['roleId']: dataRole[0].code,
-    });
-  }
+  const [values, setValues] = useState({
+    email: '', password: '', firstName: '', lastName: '',
+    address: '', phonenumber: '', genderId: '', roleId: '', id: '', dob: '',
+  });
 
-  let handleOnChangeDatePicker = (date) => {
-    setbirthday(date);
-    setisChangeDate(true);
-  };
-  let handleSaveUser = async () => {
-    if (isActionADD === true) {
-      let res = await createNewUser({
-        email: inputValues.email,
-        password: inputValues.password,
-        firstName: inputValues.firstName,
-        lastName: inputValues.lastName,
-        address: inputValues.address,
-        roleId: inputValues.roleId,
-        genderId: inputValues.genderId,
-        phonenumber: inputValues.phonenumber,
-
-        dob: new Date(birthday).getTime(),
-      });
-      if (res && res.errCode === 0) {
-        toast.success('Thêm mới người dùng thành công');
-        setInputValues({
-          ...inputValues,
-          ['firstName']: '',
-          ['lastName']: '',
-          ['address']: '',
-          ['phonenumber']: '',
-          ['genderId']: '',
-          ['roleId']: '',
-          ['email']: '',
-        });
-        setbirthday('');
-      } else {
-        toast.error(res.errMessage);
-      }
-    } else {
-      let res = await UpdateUserService({
-        id: inputValues.id,
-        firstName: inputValues.firstName,
-        lastName: inputValues.lastName,
-        address: inputValues.address,
-        roleId: inputValues.roleId,
-        genderId: inputValues.genderId,
-        phonenumber: inputValues.phonenumber,
-        dob: isChangeDate === false ? inputValues.dob : new Date(birthday).getTime(),
-      });
-      if (res && res.errCode === 0) {
-        toast.success('Cập nhật người dùng thành công');
-      } else {
-        toast.error(res.errMessage);
-      }
+  useEffect(() => {
+    if (dataGender?.length > 0 && dataRole?.length > 0 && values.genderId === '') {
+      setValues(v => ({ ...v, genderId: dataGender[0].code, roleId: dataRole[0].code }));
     }
+  }, [dataGender, dataRole]);
+
+  useEffect(() => {
+    if (id) {
+      setIsAdd(false);
+      getDetailUserById(id).then(res => {
+        if (res?.errCode === 0) {
+          const d = res.data;
+          setValues({ email: d.email, password: '', firstName: d.firstName, lastName: d.lastName, address: d.address, phonenumber: d.phonenumber, genderId: d.genderId, roleId: d.roleId, id: d.id, dob: d.dob });
+          setBirthday(moment.unix(+d.dob / 1000).toDate());
+        }
+      });
+    }
+  }, [id]);
+
+  const handleChange = (e) => setValues(v => ({ ...v, [e.target.name]: e.target.value }));
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const res = isAdd
+        ? await createNewUser({ email: values.email, password: values.password, firstName: values.firstName, lastName: values.lastName, address: values.address, roleId: values.roleId, genderId: values.genderId, phonenumber: values.phonenumber, dob: new Date(birthday).getTime() })
+        : await UpdateUserService({ id: values.id, firstName: values.firstName, lastName: values.lastName, address: values.address, roleId: values.roleId, genderId: values.genderId, phonenumber: values.phonenumber, dob: isChangeDate ? new Date(birthday).getTime() : values.dob });
+      if (res?.errCode === 0) {
+        toast.success(isAdd ? 'Thêm người dùng thành công' : 'Cập nhật thành công');
+        if (isAdd) setValues({ email: '', password: '', firstName: '', lastName: '', address: '', phonenumber: '', genderId: dataGender?.[0]?.code || '', roleId: dataRole?.[0]?.code || '', id: '', dob: '' });
+      } else toast.error(res?.errMessage || 'Thao tác thất bại');
+    } finally { setLoading(false); }
   };
 
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý người dùng</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          {isActionADD === true ? 'Thêm mới người dùng' : 'Cập nhật thông tin người dùng'}
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <div className="ap-page-title">{isAdd ? '➕ Thêm người dùng' : '✏️ Cập nhật người dùng'}</div>
+            <div className="ap-page-subtitle">{isAdd ? 'Tạo tài khoản người dùng mới' : `Chỉnh sửa thông tin người dùng`}</div>
+          </div>
+          <Link to="/admin/list-user" className="ap-btn ap-btn-ghost">← Quay lại</Link>
         </div>
-        <div className="card-body">
-          <form>
-            <div className="form-row">
-              <div className="form-group col-md-6">
-                <label htmlFor="inputEmail4">Email</label>
-                <input
-                  type="email"
-                  value={inputValues.email}
-                  disabled={isActionADD === true ? false : true}
-                  name="email"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputPassword4">Password</label>
-                <input
-                  type="password"
-                  disabled={isActionADD === true ? false : true}
-                  name="password"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
-            </div>
-            <div className="form-row">
-              <div className="form-group col-4">
-                <label htmlFor="inputEmail4">Họ</label>
-                <input
-                  type="text"
-                  value={inputValues.firstName}
-                  name="firstName"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-4">
-                <label htmlFor="inputEmail4">Tên</label>
-                <input
-                  type="text"
-                  value={inputValues.lastName}
-                  name="lastName"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-4">
-                <label htmlFor="inputEmail4">Số điện thoại</label>
-                <input
-                  type="text"
-                  value={inputValues.phonenumber}
-                  name="phonenumber"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-            </div>
+      </div>
 
-            <div className="form-group">
-              <label htmlFor="inputAddress">Địa chỉ</label>
-              <input
-                type="text"
-                value={inputValues.address}
-                name="address"
-                onChange={(event) => handleOnChange(event)}
-                className="form-control"
-                id="inputAddress"
-              />
+      <div className="ap-card" style={{ maxWidth: 760 }}>
+        <div className="ap-card-header"><span className="ap-card-title">👤 Thông tin tài khoản</span></div>
+        <div className="ap-card-body">
+          {isAdd && (
+            <div className="ap-form-row">
+              <div className="ap-form-group">
+                <label className="ap-label">Email *</label>
+                <input className="ap-input" type="email" name="email" value={values.email} onChange={handleChange} placeholder="user@example.com" />
+              </div>
+              <div className="ap-form-group">
+                <label className="ap-label">Mật khẩu *</label>
+                <input className="ap-input" type="password" name="password" onChange={handleChange} placeholder="••••••••" />
+              </div>
             </div>
-
-            <div className="form-row">
-              <div className="form-group col-md-4">
-                <label htmlFor="inputCity">Ngày sinh</label>
+          )}
+          <div className="ap-form-row">
+            <div className="ap-form-group">
+              <label className="ap-label">Họ *</label>
+              <input className="ap-input" name="firstName" value={values.firstName} onChange={handleChange} placeholder="Nguyễn" />
+            </div>
+            <div className="ap-form-group">
+              <label className="ap-label">Tên *</label>
+              <input className="ap-input" name="lastName" value={values.lastName} onChange={handleChange} placeholder="Văn A" />
+            </div>
+          </div>
+          <div className="ap-form-row">
+            <div className="ap-form-group">
+              <label className="ap-label">Số điện thoại</label>
+              <input className="ap-input" name="phonenumber" value={values.phonenumber} onChange={handleChange} placeholder="0912 345 678" />
+            </div>
+            <div className="ap-form-group">
+              <label className="ap-label">Ngày sinh</label>
+              <div className="ap-datepicker-wrap" style={{ display: 'block' }}>
                 <DatePicker
-                  className="form-control"
-                  onChange={handleOnChangeDatePicker}
+                  className="ap-input"
                   selected={birthday}
+                  onChange={(d) => { setBirthday(d); setIsChangeDate(true); }}
+                  dateFormat="dd/MM/yyyy"
+                  placeholderText="Chọn ngày sinh"
                 />
               </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputState">Giới tính</label>
-                <select
-                  value={inputValues.genderId}
-                  name="genderId"
-                  onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
-                >
-                  {dataGender &&
-                    dataGender.length > 0 &&
-                    dataGender.map((item, index) => {
-                      return (
-                        <option key={index} value={item.code}>
-                          {item.value}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputZip">Quyền</label>
-                <select
-                  value={inputValues.roleId}
-                  name="roleId"
-                  onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
-                >
-                  {dataRole &&
-                    dataRole.length > 0 &&
-                    dataRole.map((item, index) => {
-                      return (
-                        <option key={index} value={item.code}>
-                          {item.value}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
             </div>
-
-            <button type="button" onClick={() => handleSaveUser()} className="btn btn-primary">
-              Lưu thông tin
+          </div>
+          <div className="ap-form-group">
+            <label className="ap-label">Địa chỉ</label>
+            <input className="ap-input" name="address" value={values.address} onChange={handleChange} placeholder="123 Đường ABC, Quận 1, TP.HCM" />
+          </div>
+          <div className="ap-form-row">
+            <div className="ap-form-group">
+              <label className="ap-label">Giới tính</label>
+              <select className="ap-select" name="genderId" value={values.genderId} onChange={handleChange}>
+                {dataGender?.map(g => <option key={g.code} value={g.code}>{g.value}</option>)}
+              </select>
+            </div>
+            <div className="ap-form-group">
+              <label className="ap-label">Vai trò</label>
+              <select className="ap-select" name="roleId" value={values.roleId} onChange={handleChange}>
+                {dataRole?.map(r => <option key={r.code} value={r.code}>{r.value}</option>)}
+              </select>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+            <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
+              {loading ? '⏳ Đang lưu...' : '💾 Lưu thông tin'}
             </button>
-          </form>
+            <Link to="/admin/list-user" className="ap-btn ap-btn-ghost">Hủy</Link>
+          </div>
         </div>
       </div>
     </div>

@@ -1,161 +1,85 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import { useFetchAllcode } from '../../customize/fetch';
+import React, { useEffect, useState } from 'react';
 import { deleteTypeVoucherService, getAllTypeVoucher } from '../../../services/userService';
-import moment from 'moment';
 import { toast } from 'react-toastify';
 import { PAGINATION } from '../../../utils/constant';
-import ReactPaginate from 'react-paginate';
 import CommonUtils from '../../../utils/CommonUtils';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
-const ManageTypeShip = () => {
-  const [dataTypeVoucher, setdataTypeVoucher] = useState([]);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
-  useEffect(() => {
+import { Link } from 'react-router-dom';
+import { SkeletonRows, EmptyState, AdminPagination, PageHeader } from '../AdminShared';
+
+const ManageTypeVoucher = () => {
+  const [data, setData] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async (offset = 0) => {
+    setLoading(true);
     try {
-      let fetchData = async () => {
-        let arrData = await getAllTypeVoucher({
-          limit: PAGINATION.pagerow,
-          offset: 0,
-        });
-        if (arrData && arrData.errCode === 0) {
-          setdataTypeVoucher(arrData.data);
-          setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-        }
-      };
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-  let handleDeleteTypeVoucher = async (id) => {
-    let res = await deleteTypeVoucherService({
-      data: {
-        id: id,
-      },
-    });
-    if (res && res.errCode === 0) {
-      toast.success('Xóa loại voucher thành công');
-      let arrData = await getAllTypeVoucher({
-        limit: PAGINATION.pagerow,
-        offset: numberPage * PAGINATION.pagerow,
-      });
-      if (arrData && arrData.errCode === 0) {
-        setdataTypeVoucher(arrData.data);
-        setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-      }
-    } else toast.error('Xóa loại voucher thất bại');
+      const res = await getAllTypeVoucher({ limit: PAGINATION.pagerow, offset });
+      if (res?.errCode === 0) { setData(res.data); setCount(Math.ceil(res.count / PAGINATION.pagerow)); }
+    } finally { setLoading(false); }
   };
-  let handleChangePage = async (number) => {
-    setnumberPage(number.selected);
-    let arrData = await getAllTypeVoucher({
-      limit: PAGINATION.pagerow,
-      offset: number.selected * PAGINATION.pagerow,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataTypeVoucher(arrData.data);
-    }
+
+  useEffect(() => { fetchData(); }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Xóa loại voucher này?')) return;
+    const res = await deleteTypeVoucherService({ data: { id } });
+    if (res?.errCode === 0) { toast.success('Xóa thành công'); fetchData(page * PAGINATION.pagerow); }
+    else toast.error('Xóa thất bại');
   };
-  let handleOnClickExport = async () => {
-    let res = await getAllTypeVoucher({
-      limit: '',
-      offset: '',
-    });
-    if (res && res.errCode == 0) {
-      await CommonUtils.exportExcel(res.data, 'Danh sách loại voucher', 'ListTypeVoucher');
-    }
+
+  const handleExport = async () => {
+    const res = await getAllTypeVoucher({ limit: '', offset: '' });
+    if (res?.errCode === 0) await CommonUtils.exportExcel(res.data, 'Danh sách loại voucher', 'ListTypeVoucher');
   };
+
+  const fmtVal = (item) => item.typeVoucher === 'percent'
+    ? <span style={{ color: '#a5b4fc', fontWeight: 700 }}>{item.value}%</span>
+    : <span style={{ color: '#fbbf24', fontWeight: 700 }}>{CommonUtils.formatter.format(item.value)}</span>;
+
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý loại voucher</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Danh sách loại voucher
-        </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-12 mb-2">
-              <button
-                style={{ float: 'right' }}
-                onClick={() => handleOnClickExport()}
-                className="btn btn-success"
-              >
-                Xuất excel <i class="fa-solid fa-file-excel"></i>
-              </button>
-            </div>
-          </div>
-          <div className="table-responsive">
-            <table
-              className="table table-bordered"
-              style={{ border: '1' }}
-              width="100%"
-              cellspacing="0"
-            >
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Loại voucher</th>
-                  <th>Giá trị</th>
-                  <th>Giá trị tối thiểu</th>
-                  <th>Giá trị tối đa</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {dataTypeVoucher &&
-                  dataTypeVoucher.length > 0 &&
-                  dataTypeVoucher.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item.typeVoucherData.value}</td>
-                        <td>
-                          {item.typeVoucher == 'percent'
-                            ? item.value + '%'
-                            : CommonUtils.formatter.format(item.value)}
-                        </td>
-                        <td>{CommonUtils.formatter.format(item.minValue)}</td>
-                        <td>{CommonUtils.formatter.format(item.maxValue)}</td>
-                        <td>
-                          <Link to={`/admin/edit-typevoucher/${item.id}`}>Edit</Link>
-                          &nbsp; &nbsp;
-                          <span
-                            onClick={() => handleDeleteTypeVoucher(item.id)}
-                            style={{ color: '#0E6DFE', cursor: 'pointer' }}
-                          >
-                            Delete
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <ReactPaginate
-        previousLabel={'Quay lại'}
-        nextLabel={'Tiếp'}
-        breakLabel={'...'}
-        pageCount={count}
-        marginPagesDisplayed={3}
-        containerClassName={'pagination justify-content-center'}
-        pageClassName={'page-item'}
-        pageLinkClassName={'page-link'}
-        previousLinkClassName={'page-link'}
-        nextClassName={'page-item'}
-        nextLinkClassName={'page-link'}
-        breakLinkClassName={'page-link'}
-        breakClassName={'page-item'}
-        activeClassName={'active'}
-        onPageChange={handleChangePage}
+    <div className="ap-page">
+      <PageHeader title="🎫 Quản lý loại khuyến mãi" subtitle="Cấu hình các loại voucher giảm giá"
+        actions={<>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <Link to="/admin/add-typevoucher" className="ap-btn ap-btn-primary">+ Thêm loại KM</Link>
+        </>}
       />
+      <div className="ap-card">
+        <div className="ap-table-wrap">
+          <table className="ap-table">
+            <thead>
+              <tr><th>#</th><th>Loại voucher</th><th>Giá trị</th><th>Đơn tối thiểu</th><th>Giảm tối đa</th><th style={{ textAlign: 'center' }}>Thao tác</th></tr>
+            </thead>
+            <tbody>
+              {loading ? <SkeletonRows cols={6} /> : data.length === 0 ? <EmptyState icon="🎫" title="Không có loại khuyến mãi" /> :
+                data.map((item, idx) => (
+                  <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
+                    <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
+                    <td>
+                      <span className={`ap-badge ${item.typeVoucher === 'percent' ? 'ap-badge-indigo' : 'ap-badge-amber'}`}>
+                        {item.typeVoucherData?.value}
+                      </span>
+                    </td>
+                    <td>{fmtVal(item)}</td>
+                    <td style={{ fontSize: 13, color: 'var(--ap-text-muted)' }}>{CommonUtils.formatter.format(item.minValue)}</td>
+                    <td style={{ fontSize: 13, color: 'var(--ap-text-muted)' }}>{CommonUtils.formatter.format(item.maxValue)}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                        <Link to={`/admin/edit-typevoucher/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️ Sửa</Link>
+                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}>🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <AdminPagination count={count} onPageChange={({ selected }) => { setPage(selected); fetchData(selected * PAGINATION.pagerow); }} />
+      </div>
     </div>
   );
 };
-export default ManageTypeShip;
+export default ManageTypeVoucher;

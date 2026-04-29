@@ -1,71 +1,107 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
+const ROUTE_LABELS = {
+  '/admin': 'Trang chủ',
+  '/admin/list-user': 'Danh sách người dùng',
+  '/admin/add-user': 'Thêm người dùng',
+  '/admin/list-order': 'Danh sách đơn hàng',
+  '/admin/list-product': 'Danh sách sản phẩm',
+  '/admin/add-product': 'Thêm sản phẩm',
+  '/admin/list-category': 'Danh sách danh mục',
+  '/admin/list-brand': 'Danh sách nhãn hàng',
+  '/admin/list-banner': 'Danh sách banner',
+  '/admin/list-blog': 'Danh sách bài đăng',
+  '/admin/list-supplier': 'Nhà cung cấp',
+  '/admin/list-receipt': 'Nhập hàng',
+  '/admin/list-typeship': 'Loại giao hàng',
+  '/admin/list-voucher': 'Mã khuyến mãi',
+  '/admin/turnover': 'Doanh thu',
+  '/admin/profit': 'Lợi nhuận',
+  '/admin/stock-product': 'Tồn kho',
+  '/admin/chat': 'Tin nhắn',
+  '/admin/shipper-map': 'Bản đồ Shipper',
+};
+
 const Header = () => {
   const [user, setUser] = useState({});
-  let handleLogout = () => {
-    localStorage.removeItem('userData');
-    localStorage.removeItem('token');
-    window.location.href = '/login';
-  };
+  const [open, setOpen] = useState(false);
+  const dropRef = useRef(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    setUser(userData);
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    setUser(userData || {});
   }, []);
 
+  useEffect(() => {
+    const handler = (e) => {
+      if (dropRef.current && !dropRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('userData');
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase() || 'A';
+  const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Admin';
+  const pageLabel = ROUTE_LABELS[location.pathname] || 'Quản trị';
+
   return (
-    <nav className="sb-topnav navbar navbar-expand navbar-dark bg-green">
-      {/* Navbar Brand*/}
-      <NavLink to="/admin" className="navbar-brand logo_h">
-        <img src="/resources/img/logo.png" alt="Logo" style={{ width: '170px', height: 'auto' }} />
-      </NavLink>
-      {/* Sidebar Toggle*/}
-      <button
-        className="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0"
-        id="sidebarToggle"
-        href="#!"
-        onClick={() => document.body.classList.toggle('sb-sidenav-toggled')}
-      >
-        <i className="fas fa-bars" />
-      </button>
-      {/* Navbar Search*/}
-      <form className="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0"></form>
-      {/* Navbar*/}
-      <ul className="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-        <li className="nav-item dropdown">
-          <a
-            className="nav-link dropdown-toggle"
-            id="navbarDropdown"
-            href="#"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i className="fas fa-user fa-fw" />
-          </a>
-          <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li>
-              <Link to={`/admin/infor/${user.id}`} className="dropdown-item">
-                {user.firstName} {user.lastName}
+    <nav className="ap-header-bar">
+      <Link className="ap-logo" to="/admin">
+        <div className="ap-logo-icon">⚙️</div>
+        <span className="ap-logo-text">AdminHub</span>
+      </Link>
+
+      <div className="ap-header-center">
+        <div className="ap-breadcrumb">
+          <Link to="/admin">Trang chủ</Link>
+          {location.pathname !== '/admin' && (
+            <>
+              <span className="ap-breadcrumb-sep">›</span>
+              <span className="ap-breadcrumb-cur">{pageLabel}</span>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="ap-header-right">
+        <div ref={dropRef} style={{ position: 'relative' }}>
+          <div className="ap-user-btn" onClick={() => setOpen((v) => !v)}>
+            <div className="ap-avatar">{initials}</div>
+            <span className="ap-user-name">{fullName}</span>
+            <div className="ap-online-dot" />
+          </div>
+
+          {open && (
+            <div className="ap-dropdown">
+              <div className="ap-dropdown-item" style={{ cursor: 'default', fontSize: 11, opacity: 0.6 }}>
+                <span>👤</span><span>{user.roleId === 'R1' ? 'Super Admin' : 'Nhân viên'}</span>
+              </div>
+              <div className="ap-dropdown-divider" />
+              <Link to={`/admin/infor/${user.id}`} className="ap-dropdown-item" onClick={() => setOpen(false)}>
+                <span>📋</span><span>Thông tin cá nhân</span>
               </Link>
-            </li>
-            <li>
-              <Link to={`/admin/change-password/${user.id}`} className="dropdown-item">
-                Đổi mật khẩu
+              <Link to={`/admin/change-password/${user.id}`} className="ap-dropdown-item" onClick={() => setOpen(false)}>
+                <span>🔑</span><span>Đổi mật khẩu</span>
               </Link>
-            </li>
-            <li>
-              <hr className="dropdown-divider" />
-            </li>
-            <li>
-              <a className="dropdown-item" onClick={() => handleLogout()}>
-                Đăng xuất
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
+              <div className="ap-dropdown-divider" />
+              <div className="ap-dropdown-item" onClick={handleLogout} style={{ color: '#fca5a5' }}>
+                <span>🚪</span><span>Đăng xuất</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </nav>
   );
 };
+
 export default Header;

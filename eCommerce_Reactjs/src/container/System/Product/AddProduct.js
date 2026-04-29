@@ -1,385 +1,206 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
+import { Link } from 'react-router-dom';
 import { useFetchAllcode } from '../../customize/fetch';
 import CommonUtils from '../../../utils/CommonUtils';
-import localization from 'moment/locale/vi';
-import moment from 'moment';
-import './AddProduct.scss';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import { CreateNewProduct } from '../../../services/userService';
 import MarkdownIt from 'markdown-it';
 import MdEditor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
-const AddProduct = (props) => {
-  const mdParser = new MarkdownIt();
+
+const mdParser = new MarkdownIt();
+
+const INITIAL = { brandId:'', categoryId:'', sizeId:'', name:'', material:'', madeby:'', contentHTML:'', contentMarkdown:'', nameDetail:'', width:'', height:'', weight:'', originalPrice:'', discountPrice:'', description:'', image:'', imageReview:'' };
+
+const AddProduct = () => {
   const { data: dataBrand } = useFetchAllcode('BRAND');
   const { data: dataCategory } = useFetchAllcode('CATEGORY');
   const { data: dataSize } = useFetchAllcode('SIZE');
-  const [inputValues, setInputValues] = useState({
-    brandId: '',
-    categoryId: '',
-    name: '',
-    shortdescription: '',
-    description: '',
-    madeby: '',
-    material: '',
-    width: '',
-    height: '',
-    sizeId: '',
-    originalPrice: '',
-    discountPrice: '',
-    image: '',
-    imageReview: '',
-    isOpen: false,
-    nameDetail: '',
-    contentHTML: '',
-    contentMarkdown: '',
-    weight: '',
-  });
+  const [values, setValues] = useState(INITIAL);
+  const [loading, setLoading] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  if (
-    dataBrand &&
-    dataBrand.length > 0 &&
-    inputValues.brandId === '' &&
-    dataCategory &&
-    dataCategory.length > 0 &&
-    inputValues.categoryId === '' &&
-    dataSize &&
-    dataSize.length > 0 &&
-    inputValues.sizeId === ''
-  ) {
-    setInputValues({
-      ...inputValues,
-      ['brandId']: dataBrand[0].code,
-      ['categoryId']: dataCategory[0].code,
-      ['sizeId']: dataSize[0].code,
-    });
-  }
-  const handleOnChange = (event) => {
-    const { name, value } = event.target;
-    setInputValues({ ...inputValues, [name]: value });
-  };
-
-  let handleOnChangeImage = async (event) => {
-    let data = event.target.files;
-    let file = data[0];
-    if (file?.size > 31312281) {
-      toast.error('Dung lượng file bé hơn 30mb');
-    } else {
-      let base64 = await CommonUtils.getBase64(file);
-      let objectUrl = URL.createObjectURL(file);
-      setInputValues({
-        ...inputValues,
-        ['image']: base64,
-        ['imageReview']: objectUrl,
-      });
+  useEffect(() => {
+    if (dataBrand?.length && dataCategory?.length && dataSize?.length && !values.brandId) {
+      setValues(v => ({ ...v, brandId: dataBrand[0].code, categoryId: dataCategory[0].code, sizeId: dataSize[0].code }));
     }
-  };
-  let openPreviewImage = () => {
-    if (!inputValues.imageReview) return;
+  }, [dataBrand, dataCategory, dataSize]);
 
-    setInputValues({ ...inputValues, ['isOpen']: true });
-  };
-  let handleSaveProduct = async () => {
-    console.log(inputValues.sizeId);
-    let res = await CreateNewProduct({
-      name: inputValues.name,
-      description: inputValues.description,
-      categoryId: inputValues.categoryId,
-      madeby: inputValues.madeby,
-      material: inputValues.material,
-      brandId: inputValues.brandId,
-      width: inputValues.width,
-      height: inputValues.height,
-      sizeId: inputValues.sizeId,
+  const set = (name, val) => setValues(v => ({ ...v, [name]: val }));
+  const handleChange = e => set(e.target.name, e.target.value);
 
-      originalPrice: inputValues.originalPrice,
-      discountPrice: inputValues.discountPrice,
-      image: inputValues.image,
-      nameDetail: inputValues.nameDetail,
-      contentMarkdown: inputValues.contentMarkdown,
-      contentHTML: inputValues.contentHTML,
-      weight: inputValues.weight,
-    });
-    if (res && res.errCode === 0) {
-      toast.success('Tạo mới sản phẩm thành công!');
-      setInputValues({
-        ...inputValues,
-        ['name']: '',
-        ['shortdescription']: '',
-        ['categoryId']: '',
-        ['madeby']: '',
-        ['material']: '',
-        ['brandId']: '',
-        ['height']: '',
-        ['width']: '',
-        ['sizeId']: '',
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 31312281) { toast.error('Dung lượng file phải < 30MB'); return; }
+    const base64 = await CommonUtils.getBase64(file);
+    setValues(v => ({ ...v, image: base64, imageReview: URL.createObjectURL(file) }));
+  };
 
-        ['originalPrice']: '',
-        ['discountPrice']: '',
-        ['image']: '',
-        ['imageReview']: '',
-        ['nameDetail']: '',
-        ['contentHTML']: '',
-        ['contenMarkdown']: '',
-        ['weight']: '',
-      });
-    } else {
-      toast.error(res.errMessage);
-    }
+  const discountPct = values.originalPrice && values.discountPrice
+    ? Math.round((1 - values.discountPrice / values.originalPrice) * 100) : 0;
+
+  const handleSave = async () => {
+    if (!values.name || !values.nameDetail) { toast.error('Vui lòng nhập tên sản phẩm và loại sản phẩm'); return; }
+    setLoading(true);
+    try {
+      const res = await CreateNewProduct({ name: values.name, description: values.description, categoryId: values.categoryId, madeby: values.madeby, material: values.material, brandId: values.brandId, width: values.width, height: values.height, sizeId: values.sizeId, originalPrice: values.originalPrice, discountPrice: values.discountPrice, image: values.image, nameDetail: values.nameDetail, contentMarkdown: values.contentMarkdown, contentHTML: values.contentHTML, weight: values.weight });
+      if (res?.errCode === 0) {
+        toast.success('Tạo mới sản phẩm thành công!');
+        setValues(v => ({ ...INITIAL, brandId: v.brandId, categoryId: v.categoryId, sizeId: v.sizeId }));
+      } else toast.error(res?.errMessage || 'Thao tác thất bại');
+    } finally { setLoading(false); }
   };
-  let handleEditorChange = ({ html, text }) => {
-    setInputValues({
-      ...inputValues,
-      ['contentMarkdown']: text,
-      ['contentHTML']: html,
-    });
-  };
+
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý sản phẩm</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Thêm mới sản phẩm
-        </div>
-        <div className="card-body">
-          <form>
-            <div className="form-row">
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Tên sản phẩm</label>
-                <input
-                  type="text"
-                  value={inputValues.name}
-                  name="name"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Chất liệu</label>
-                <input
-                  type="text"
-                  value={inputValues.material}
-                  name="material"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Được làm bởi</label>
-                <input
-                  type="text"
-                  value={inputValues.madeby}
-                  name="madeby"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
-            </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
-                <label htmlFor="inputEmail4">Danh mục sản phẩm</label>
-                <select
-                  value={inputValues.categoryId}
-                  name="categoryId"
-                  onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
-                >
-                  {dataCategory &&
-                    dataCategory.length > 0 &&
-                    dataCategory.map((item, index) => {
-                      return (
-                        <option key={index} value={item.code}>
-                          {item.value}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputPassword4">Nhãn hàng</label>
-                <select
-                  value={inputValues.brandId}
-                  name="brandId"
-                  onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
-                >
-                  {dataBrand &&
-                    dataBrand.length > 0 &&
-                    dataBrand.map((item, index) => {
-                      return (
-                        <option key={index} value={item.code}>
-                          {item.value}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
-            </div>
-            <div className="form-group">
-              <label htmlFor="inputAddress">Mô tả sản phẩm</label>
-              <MdEditor
-                style={{ height: '400px' }}
-                renderHTML={(text) => mdParser.render(text)}
-                onChange={handleEditorChange}
-                value={inputValues.contentMarkdown}
-              />
-            </div>
-
-            <div className="form-row">
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Tên loại sản phẩm</label>
-                <input
-                  type="text"
-                  value={inputValues.nameDetail}
-                  name="nameDetail"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Chiều rộng</label>
-                <input
-                  type="text"
-                  value={inputValues.width}
-                  name="width"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">chiều dài</label>
-                <input
-                  type="text"
-                  value={inputValues.height}
-                  name="height"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Giá gốc</label>
-                <input
-                  type="number"
-                  value={inputValues.originalPrice}
-                  name="originalPrice"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Giá khuyến mãi</label>
-                <input
-                  type="number"
-                  value={inputValues.discountPrice}
-                  name="discountPrice"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Khối lượng</label>
-                <input
-                  type="text"
-                  value={inputValues.weight}
-                  name="weight"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-            </div>
-            <div className="form-group">
-              <label htmlFor="inputAddress">Mô tả chi tiết</label>
-              <textarea
-                rows="4"
-                value={inputValues.description}
-                name="description"
-                onChange={(event) => handleOnChange(event)}
-                className="form-control"
-              ></textarea>
-            </div>
-            <div className="form-row">
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Kích thước</label>
-                <select
-                  value={inputValues.sizeId}
-                  name="sizeId"
-                  onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
-                >
-                  {dataSize &&
-                    dataSize.length > 0 &&
-                    dataSize.map((item, index) => {
-                      return (
-                        <option key={index} value={item.code}>
-                          {item.value}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Chọn hình ảnh</label>
-                <input
-                  type="file"
-                  id="previewImg"
-                  accept=".jpg,.png"
-                  hidden
-                  onChange={(event) => handleOnChangeImage(event)}
-                />
-                <br></br>
-                <label
-                  style={{
-                    backgroundColor: '#eee',
-                    borderRadius: '5px',
-                    padding: '6px',
-                    cursor: 'pointer',
-                  }}
-                  className="label-upload"
-                  htmlFor="previewImg"
-                >
-                  Tải ảnh <i className="fas fa-upload"></i>
-                </label>
-                <div
-                  style={{
-                    backgroundImage: `url(${inputValues.imageReview})`,
-                  }}
-                  onClick={() => openPreviewImage()}
-                  className="box-image"
-                ></div>
-              </div>
-            </div>
-
-            <button onClick={() => handleSaveProduct()} type="button" className="btn btn-primary">
-              Lưu thông tin
-            </button>
-          </form>
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <div className="ap-page-title">🛍️ Thêm sản phẩm mới</div>
+            <div className="ap-page-subtitle">Tạo sản phẩm với đầy đủ thông tin, phân loại và hình ảnh</div>
+          </div>
+          <Link to="/admin/list-product" className="ap-btn ap-btn-ghost">← Danh sách sản phẩm</Link>
         </div>
       </div>
-      {inputValues.isOpen === true && (
-        <Lightbox
-          mainSrc={inputValues.imageReview}
-          onCloseRequest={() => setInputValues({ ...inputValues, ['isOpen']: false })}
-        />
-      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20 }}>
+        {/* Left column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Basic info */}
+          <div className="ap-card">
+            <div className="ap-card-header"><span className="ap-card-title">📋 Thông tin cơ bản</span></div>
+            <div className="ap-card-body">
+              <div className="ap-form-row">
+                <div className="ap-form-group" style={{ flex: 2 }}>
+                  <label className="ap-label">Tên sản phẩm *</label>
+                  <input className="ap-input" name="name" value={values.name} onChange={handleChange} placeholder="VD: Áo Thun Nam Premium..." />
+                </div>
+                <div className="ap-form-group">
+                  <label className="ap-label">Danh mục</label>
+                  <select className="ap-select" name="categoryId" value={values.categoryId} onChange={handleChange}>
+                    {dataCategory?.map(c => <option key={c.code} value={c.code}>{c.value}</option>)}
+                  </select>
+                </div>
+                <div className="ap-form-group">
+                  <label className="ap-label">Nhãn hàng</label>
+                  <select className="ap-select" name="brandId" value={values.brandId} onChange={handleChange}>
+                    {dataBrand?.map(b => <option key={b.code} value={b.code}>{b.value}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="ap-form-row">
+                <div className="ap-form-group">
+                  <label className="ap-label">Chất liệu</label>
+                  <input className="ap-input" name="material" value={values.material} onChange={handleChange} placeholder="VD: Cotton 100%..." />
+                </div>
+                <div className="ap-form-group">
+                  <label className="ap-label">Xuất xứ</label>
+                  <input className="ap-input" name="madeby" value={values.madeby} onChange={handleChange} placeholder="VD: Việt Nam..." />
+                </div>
+              </div>
+              <div className="ap-form-group">
+                <label className="ap-label">Mô tả ngắn</label>
+                <textarea className="ap-input" rows={3} name="description" value={values.description} onChange={handleChange} placeholder="Mô tả nhanh sản phẩm..." style={{ resize: 'vertical' }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Markdown description */}
+          <div className="ap-card">
+            <div className="ap-card-header"><span className="ap-card-title">📝 Mô tả chi tiết (Markdown)</span></div>
+            <div className="ap-card-body" style={{ padding: 0 }}>
+              <div style={{ borderRadius: 'var(--ap-radius-sm)', overflow: 'hidden' }}>
+                <MdEditor style={{ height: 360 }} renderHTML={t => mdParser.render(t)}
+                  onChange={({ html, text }) => setValues(v => ({ ...v, contentMarkdown: text, contentHTML: html }))}
+                  value={values.contentMarkdown} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Variant */}
+          <div className="ap-card">
+            <div className="ap-card-header"><span className="ap-card-title">🧩 Phân loại sản phẩm</span></div>
+            <div className="ap-card-body">
+              <div className="ap-form-group">
+                <label className="ap-label">Tên loại *</label>
+                <input className="ap-input" name="nameDetail" value={values.nameDetail} onChange={handleChange} placeholder="VD: Màu đen, Size M..." />
+              </div>
+              <div className="ap-form-group">
+                <label className="ap-label">Kích thước mặc định</label>
+                <select className="ap-select" name="sizeId" value={values.sizeId} onChange={handleChange}>
+                  {dataSize?.map(s => <option key={s.code} value={s.code}>{s.value}</option>)}
+                </select>
+              </div>
+              <div className="ap-form-row">
+                <div className="ap-form-group">
+                  <label className="ap-label">Giá gốc (VNĐ)</label>
+                  <input className="ap-input" type="number" name="originalPrice" value={values.originalPrice} onChange={handleChange} placeholder="150000" />
+                </div>
+                <div className="ap-form-group">
+                  <label className="ap-label">Giá KM (VNĐ)</label>
+                  <input className="ap-input" type="number" name="discountPrice" value={values.discountPrice} onChange={handleChange} placeholder="120000" />
+                </div>
+              </div>
+              {discountPct > 0 && (
+                <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#6ee7b7' }}>
+                  🏷️ Giảm <strong>{discountPct}%</strong> — tiết kiệm {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(values.originalPrice - values.discountPrice)}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Dimensions */}
+          <div className="ap-card">
+            <div className="ap-card-header"><span className="ap-card-title">📐 Kích thước & trọng lượng</span></div>
+            <div className="ap-card-body">
+              <div className="ap-form-row">
+                <div className="ap-form-group">
+                  <label className="ap-label">Rộng (cm)</label>
+                  <input className="ap-input" name="width" value={values.width} onChange={handleChange} placeholder="30" />
+                </div>
+                <div className="ap-form-group">
+                  <label className="ap-label">Dài (cm)</label>
+                  <input className="ap-input" name="height" value={values.height} onChange={handleChange} placeholder="40" />
+                </div>
+              </div>
+              <div className="ap-form-group">
+                <label className="ap-label">Khối lượng (g)</label>
+                <input className="ap-input" name="weight" value={values.weight} onChange={handleChange} placeholder="200" />
+              </div>
+            </div>
+          </div>
+
+          {/* Image */}
+          <div className="ap-card">
+            <div className="ap-card-header"><span className="ap-card-title">🖼️ Hình ảnh sản phẩm</span></div>
+            <div className="ap-card-body">
+              <input type="file" id="prodImg" accept=".jpg,.png,.webp" hidden onChange={handleImageChange} />
+              <label htmlFor="prodImg" className="ap-btn ap-btn-ghost" style={{ width: '100%', justifyContent: 'center', cursor: 'pointer' }}>
+                📤 Chọn ảnh (JPG/PNG/WEBP ≤ 30MB)
+              </label>
+              {values.imageReview && (
+                <div style={{ marginTop: 10, textAlign: 'center' }}>
+                  <img src={values.imageReview} alt="preview" onClick={() => setLightboxOpen(true)}
+                    style={{ maxWidth: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 'var(--ap-radius-sm)', cursor: 'zoom-in', border: '1px solid var(--ap-border)' }} />
+                  <div style={{ fontSize: 11, color: 'var(--ap-text-dim)', marginTop: 4 }}>Click để phóng to</div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading} style={{ width: '100%', justifyContent: 'center', padding: '13px 0', fontSize: 15 }}>
+            {loading ? '⏳ Đang tạo sản phẩm...' : '🚀 Tạo sản phẩm'}
+          </button>
+        </div>
+      </div>
+
+      {lightboxOpen && <Lightbox slides={[{ src: values.imageReview }]} open={lightboxOpen} close={() => setLightboxOpen(false)} />}
     </div>
   );
 };

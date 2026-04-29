@@ -1,164 +1,79 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import {
-  getAllProductDetailByIdService,
-  DeleteProductDetailService,
-} from '../../../../services/userService';
-import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { getAllProductDetailByIdService, DeleteProductDetailService } from '../../../../services/userService';
 import { toast } from 'react-toastify';
 import { PAGINATION } from '../../../../utils/constant';
-import ReactPaginate from 'react-paginate';
 import CommonUtils from '../../../../utils/CommonUtils';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-  useParams,
-} from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { SkeletonRows, EmptyState, AdminPagination, PageHeader } from '../../AdminShared';
 
 const ManageProductDetail = () => {
   const { id } = useParams();
-  const [dataProductDetail, setdataProductDetail] = useState([]);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
-  useEffect(() => {
-    let fetchProductDetail = async () => {
-      await loadProductDetail();
-    };
-    fetchProductDetail();
-  }, []);
-  let loadProductDetail = async () => {
-    let arrData = await getAllProductDetailByIdService({
-      id: id,
-      limit: PAGINATION.pagerow,
-      offset: 0,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataProductDetail(arrData.data);
-      setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-    }
-  };
-  let handleDeleteProductDetail = async (productdetailId) => {
-    let response = await DeleteProductDetailService({
-      data: {
-        id: productdetailId,
-      },
-    });
-    if (response && response.errCode === 0) {
-      toast.success('Xóa chi tiết sản phẩm thành công !');
+  const [data, setData] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-      let arrData = await getAllProductDetailByIdService({
-        id: id,
-        limit: PAGINATION.pagerow,
-        offset: numberPage * PAGINATION.pagerow,
-      });
-      if (arrData && arrData.errCode === 0) {
-        setdataProductDetail(arrData.data);
-        setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-      }
-    } else {
-      toast.error('Xóa sản phẩm thất bại');
-    }
+  const loadData = async (offset = 0) => {
+    setLoading(true);
+    try {
+      const res = await getAllProductDetailByIdService({ id, limit: PAGINATION.pagerow, offset });
+      if (res?.errCode === 0) { setData(res.data); setCount(Math.ceil(res.count / PAGINATION.pagerow)); }
+    } finally { setLoading(false); }
   };
-  let handleChangePage = async (number) => {
-    setnumberPage(number.selected);
-    let arrData = await getAllProductDetailByIdService({
-      id: id,
-      limit: PAGINATION.pagerow,
-      offset: number.selected * PAGINATION.pagerow,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataProductDetail(arrData.data);
-    }
+
+  useEffect(() => { loadData(); }, []);
+
+  const handleDelete = async (detailId) => {
+    if (!window.confirm('Xóa chi tiết sản phẩm này?')) return;
+    const res = await DeleteProductDetailService({ data: { id: detailId } });
+    if (res?.errCode === 0) { toast.success('Xóa thành công'); loadData(page * PAGINATION.pagerow); }
+    else toast.error('Xóa thất bại');
   };
+
+  const discount = (orig, disc) => {
+    const pct = Math.round((1 - disc / orig) * 100);
+    return pct > 0 ? <span className="ap-badge ap-badge-green" style={{ marginLeft: 6 }}>-{pct}%</span> : null;
+  };
+
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý chi tiết sản phẩm</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Danh sách chi tiết sản phẩm
-          <div className="float-right">
-            <Link to={`/admin/add-product-detail/${id}`}>
-              <i
-                style={{
-                  fontSize: '35px',
-                  cursor: 'pointer',
-                  color: '#0D6EFD',
-                }}
-                className="fas fa-plus-square"
-              ></i>
-            </Link>
-          </div>
-        </div>
-        <div className="card-body">
-          <div className="table-responsive">
-            <table
-              className="table table-bordered"
-              style={{ border: '1' }}
-              width="100%"
-              cellspacing="0"
-            >
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên loại sản phẩm</th>
-                  <th>Giá gốc</th>
-                  <th>Giá khuyến mãi</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {dataProductDetail &&
-                  dataProductDetail.length > 0 &&
-                  dataProductDetail.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item.nameDetail}</td>
-                        <td>{CommonUtils.formatter.format(item.originalPrice)}</td>
-                        <td>{CommonUtils.formatter.format(item.discountPrice)}</td>
-                        <td>
-                          <Link to={`/admin/list-product-detail-image/${item.id}`}>View</Link>
-                          &nbsp; &nbsp;
-                          <Link to={`/admin/update-product-detail/${item.id}`}>Edit</Link>
-                          &nbsp; &nbsp;
-                          <span
-                            onClick={() => handleDeleteProductDetail(item.id)}
-                            style={{ color: '#0E6DFE', cursor: 'pointer' }}
-                          >
-                            Delete
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <ReactPaginate
-        previousLabel={'Quay lại'}
-        nextLabel={'Tiếp'}
-        breakLabel={'...'}
-        pageCount={count}
-        marginPagesDisplayed={3}
-        containerClassName={'pagination justify-content-center'}
-        pageClassName={'page-item'}
-        pageLinkClassName={'page-link'}
-        previousLinkClassName={'page-link'}
-        nextClassName={'page-item'}
-        nextLinkClassName={'page-link'}
-        breakLinkClassName={'page-link'}
-        breakClassName={'page-item'}
-        activeClassName={'active'}
-        onPageChange={handleChangePage}
+    <div className="ap-page">
+      <PageHeader
+        title="🧩 Chi tiết sản phẩm"
+        subtitle={`Quản lý các loại phân loại cho sản phẩm #${id}`}
+        actions={<Link to={`/admin/add-product-detail/${id}`} className="ap-btn ap-btn-primary">+ Thêm phân loại</Link>}
       />
+      <div className="ap-card">
+        <div className="ap-table-wrap">
+          <table className="ap-table">
+            <thead>
+              <tr><th>#</th><th>Tên loại</th><th>Giá gốc</th><th>Giá khuyến mãi</th><th style={{ textAlign: 'center' }}>Thao tác</th></tr>
+            </thead>
+            <tbody>
+              {loading ? <SkeletonRows cols={5} /> : data.length === 0 ? <EmptyState icon="🧩" title="Chưa có phân loại nào" desc="Nhấn '+ Thêm phân loại' để bắt đầu" /> :
+                data.map((item, idx) => (
+                  <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
+                    <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
+                    <td style={{ fontWeight: 600 }}>{item.nameDetail}</td>
+                    <td style={{ color: 'var(--ap-text-muted)', fontSize: 13 }}>{CommonUtils.formatter.format(item.originalPrice)}</td>
+                    <td>
+                      <span style={{ color: '#fbbf24', fontWeight: 700 }}>{CommonUtils.formatter.format(item.discountPrice)}</span>
+                      {discount(item.originalPrice, item.discountPrice)}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                        <Link to={`/admin/list-product-detail-image/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">🖼️ Ảnh</Link>
+                        <Link to={`/admin/update-product-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️</Link>
+                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}>🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <AdminPagination count={count} onPageChange={({ selected }) => { setPage(selected); loadData(selected * PAGINATION.pagerow); }} />
+      </div>
     </div>
   );
 };

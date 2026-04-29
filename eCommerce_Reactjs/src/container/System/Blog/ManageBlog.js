@@ -1,209 +1,97 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getAllBlog, deleteBlogService } from '../../../services/userService';
-import moment from 'moment';
 import { toast } from 'react-toastify';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
-import '../Banner/AddBanner.scss';
 import { PAGINATION } from '../../../utils/constant';
-import ReactPaginate from 'react-paginate';
 import CommonUtils from '../../../utils/CommonUtils';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-  useParams,
-} from 'react-router-dom';
-import FormSearch from '../../../component/Search/FormSearch';
+import { Link } from 'react-router-dom';
+import { SkeletonRows, EmptyState, AdminPagination, SearchBar, PageHeader } from '../AdminShared';
 
 const ManageBlog = () => {
-  const [dataBlog, setdataBlog] = useState([]);
-  const [imgPreview, setimgPreview] = useState('');
-  const [isOpen, setisOpen] = useState(false);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
-  const [keyword, setkeyword] = useState('');
-  useEffect(() => {
-    loadBlog(keyword);
-  }, []);
-  let loadBlog = async (keyword) => {
-    let arrData = await getAllBlog({
-      subjectId: '',
-      limit: PAGINATION.pagerow,
-      offset: 0,
-      keyword: keyword,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataBlog(arrData.data);
-      setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-    }
+  const [data, setData] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [keyword, setKeyword] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [lightboxImg, setLightboxImg] = useState('');
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const fetchData = async (kw = '', offset = 0) => {
+    setLoading(true);
+    try {
+      const res = await getAllBlog({ subjectId: '', limit: PAGINATION.pagerow, offset, keyword: kw });
+      if (res?.errCode === 0) { setData(res.data); setCount(Math.ceil(res.count / PAGINATION.pagerow)); }
+    } finally { setLoading(false); }
   };
 
-  let openPreviewImage = (url) => {
-    setimgPreview(url);
-    setisOpen(true);
+  useEffect(() => { fetchData(); }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Xóa bài đăng này?')) return;
+    const res = await deleteBlogService({ data: { id } });
+    if (res?.errCode === 0) { toast.success('Xóa thành công'); fetchData(keyword, page * PAGINATION.pagerow); }
+    else toast.error('Xóa thất bại');
   };
-  let handleDeleteBlog = async (id) => {
-    let response = await deleteBlogService({
-      data: {
-        id: id,
-      },
-    });
-    if (response && response.errCode === 0) {
-      toast.success('Xóa bài đăng thành công thành công !');
-      let arrData = await getAllBlog({
-        subjectId: '',
-        limit: PAGINATION.pagerow,
-        offset: numberPage * PAGINATION.pagerow,
-        keyword: keyword,
-      });
-      if (arrData && arrData.errCode === 0) {
-        setdataBlog(arrData.data);
-        setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-      }
-    } else {
-      toast.error('Xóa bài đăng thất bại');
-    }
-  };
-  let handleChangePage = async (number) => {
-    setnumberPage(number.selected);
-    let arrData = await getAllBlog({
-      subjectId: '',
-      limit: PAGINATION.pagerow,
-      offset: number.selected * PAGINATION.pagerow,
-      keyword: keyword,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataBlog(arrData.data);
-    }
-  };
-  let handleSearchBlog = (keyword) => {
-    loadBlog(keyword);
-    setkeyword(keyword);
-  };
-  let handleOnchangeSearch = (keyword) => {
-    if (keyword === '') {
-      loadBlog(keyword);
-      setkeyword(keyword);
-    }
-  };
-  let handleOnClickExport = async () => {
-    let res = await getAllBlog({
-      subjectId: '',
-      limit: '',
-      offset: '',
-      keyword: '',
-    });
-    if (res && res.errCode == 0) {
-      res.data.forEach((element) => {
-        element.image = '';
-      });
+
+  const handleExport = async () => {
+    const res = await getAllBlog({ subjectId: '', limit: '', offset: '', keyword: '' });
+    if (res?.errCode === 0) {
+      res.data.forEach(el => { el.image = ''; });
       await CommonUtils.exportExcel(res.data, 'Danh sách bài viết', 'ListBlog');
     }
   };
+
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý bài đăng</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Danh sách bài đăng
+    <div className="ap-page">
+      <PageHeader title="✍️ Quản lý bài đăng" subtitle="Danh sách bài viết blog"
+        actions={<>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <Link to="/admin/add-blog" className="ap-btn ap-btn-primary">+ Thêm bài đăng</Link>
+        </>}
+      />
+      <div className="ap-card">
+        <SearchBar value={keyword} onChange={setKeyword} onSearch={(kw) => { setKeyword(kw); fetchData(kw); }} placeholder="Tìm theo tiêu đề bài đăng..." />
+        <div className="ap-table-wrap">
+          <table className="ap-table">
+            <thead><tr><th>#</th><th>Tiêu đề bài viết</th><th>Chủ đề</th><th>Hình ảnh</th><th style={{ textAlign: 'center' }}>Thao tác</th></tr></thead>
+            <tbody>
+              {loading ? <SkeletonRows cols={5} /> : data.length === 0 ? <EmptyState icon="✍️" title="Không có bài đăng nào" /> :
+                data.map((item, idx) => (
+                  <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
+                    <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
+                    <td style={{ fontWeight: 600, maxWidth: 280 }}>
+                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
+                    </td>
+                    <td><span className="ap-badge ap-badge-cyan">{item.subjectData?.value}</span></td>
+                    <td>
+                      {item.image && (
+                        <img
+                          src={item.image} alt={item.title}
+                          onClick={() => { setLightboxImg(item.image); setLightboxOpen(true); }}
+                          style={{ width: 64, height: 48, objectFit: 'cover', borderRadius: 6, cursor: 'pointer', border: '1px solid var(--ap-border)', transition: 'transform 0.2s' }}
+                          onMouseEnter={e => e.target.style.transform = 'scale(1.08)'}
+                          onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+                        />
+                      )}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                        <Link to={`/admin/edit-blog/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️ Sửa</Link>
+                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}>🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
         </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-4">
-              <FormSearch
-                title={'tiêu đề'}
-                handleOnchange={handleOnchangeSearch}
-                handleSearch={handleSearchBlog}
-              />
-            </div>
-            <div className="col-8">
-              <button
-                style={{ float: 'right' }}
-                onClick={() => handleOnClickExport()}
-                className="btn btn-success"
-              >
-                Xuất excel <i class="fa-solid fa-file-excel"></i>
-              </button>
-            </div>
-          </div>
-          <div className="table-responsive">
-            <table
-              className="table table-bordered"
-              style={{ border: '1' }}
-              width="100%"
-              cellspacing="0"
-            >
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Tên bài đăng</th>
-                  <th>Chủ đề</th>
-                  <th>Hình ảnh</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {dataBlog &&
-                  dataBlog.length > 0 &&
-                  dataBlog.map((item, index) => {
-                    return (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item.title}</td>
-                        <td>{item.subjectData.value}</td>
-                        <td style={{ width: '30%' }}>
-                          <div
-                            onClick={() => openPreviewImage(item.image)}
-                            className="box-img-preview"
-                            style={{
-                              backgroundImage: `url(${item.image})`,
-                              width: '100%',
-                            }}
-                          ></div>
-                        </td>
-                        <td style={{ width: '20%' }}>
-                          <Link to={`/admin/edit-blog/${item.id}`}>Edit</Link>
-                          &nbsp; &nbsp;
-                          <span
-                            onClick={() => handleDeleteBlog(item.id)}
-                            style={{ color: '#0E6DFE', cursor: 'pointer' }}
-                          >
-                            Delete
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <ReactPaginate
-          previousLabel={'Quay lại'}
-          nextLabel={'Tiếp'}
-          breakLabel={'...'}
-          pageCount={count}
-          marginPagesDisplayed={3}
-          containerClassName={'pagination justify-content-center'}
-          pageClassName={'page-item'}
-          pageLinkClassName={'page-link'}
-          previousLinkClassName={'page-link'}
-          nextClassName={'page-item'}
-          nextLinkClassName={'page-link'}
-          breakLinkClassName={'page-link'}
-          breakClassName={'page-item'}
-          activeClassName={'active'}
-          onPageChange={handleChangePage}
-        />
+        <AdminPagination count={count} onPageChange={({ selected }) => { setPage(selected); fetchData(keyword, selected * PAGINATION.pagerow); }} />
       </div>
-      {isOpen === true && <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />}
+      {lightboxOpen && (
+        <Lightbox slides={[{ src: lightboxImg }]} open={lightboxOpen} close={() => setLightboxOpen(false)} />
+      )}
     </div>
   );
 };

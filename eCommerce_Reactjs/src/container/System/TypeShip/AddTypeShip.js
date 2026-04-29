@@ -1,115 +1,75 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import {
-  createNewTypeShipService,
-  getDetailTypeShipByIdService,
-  updateTypeShipService,
-} from '../../../services/userService';
-
+import React, { useEffect, useState } from 'react';
+import { createNewTypeShipService, getDetailTypeShipByIdService, updateTypeShipService } from '../../../services/userService';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
+import { useParams, Link } from 'react-router-dom';
 
-import moment from 'moment';
-const AddTypeShip = (props) => {
-  const [isActionADD, setisActionADD] = useState(true);
-
+const AddTypeShip = () => {
+  const [isAdd, setIsAdd] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [values, setValues] = useState({ type: '', price: '' });
   const { id } = useParams();
 
-  const [inputValues, setInputValues] = useState({
-    type: '',
-    price: '',
-  });
   useEffect(() => {
     if (id) {
-      let fetchDetailTypeShip = async () => {
-        setisActionADD(false);
-        let typeship = await getDetailTypeShipByIdService(id);
-        if (typeship && typeship.errCode === 0) {
-          setInputValues({
-            ...inputValues,
-            ['type']: typeship.data.type,
-            ['price']: typeship.data.price,
-          });
-        }
-      };
-      fetchDetailTypeShip();
+      setIsAdd(false);
+      getDetailTypeShipByIdService(id).then(res => {
+        if (res?.errCode === 0) setValues({ type: res.data.type, price: res.data.price });
+      });
     }
-  }, []);
+  }, [id]);
 
-  const handleOnChange = (event) => {
-    const { name, value } = event.target;
-    setInputValues({ ...inputValues, [name]: value });
-  };
-  let handleSaveTypeShip = async () => {
-    if (isActionADD === true) {
-      let res = await createNewTypeShipService({
-        type: inputValues.type,
-        price: inputValues.price,
-      });
-      if (res && res.errCode === 0) {
-        toast.success('Thêm loại ship thành công');
-        setInputValues({
-          ...inputValues,
-          ['type']: '',
-          ['price']: '',
-        });
-      } else if (res && res.errCode === 2) {
-        toast.error(res.errMessage);
-      } else toast.error('Thêm loại ship thất bại');
-    } else {
-      let res = await updateTypeShipService({
-        type: inputValues.type,
-        price: inputValues.price,
-        id: id,
-      });
-      if (res && res.errCode === 0) {
-        toast.success('Cập nhật loại ship thành công');
-      } else if (res && res.errCode === 2) {
-        toast.error(res.errMessage);
-      } else toast.error('Cập nhật loại ship thất bại');
-    }
+  const handleChange = (e) => setValues(v => ({ ...v, [e.target.name]: e.target.value }));
+
+  const handleSave = async () => {
+    if (!values.type || !values.price) { toast.error('Vui lòng điền đầy đủ thông tin'); return; }
+    setLoading(true);
+    try {
+      const res = isAdd
+        ? await createNewTypeShipService({ type: values.type, price: values.price })
+        : await updateTypeShipService({ type: values.type, price: values.price, id });
+      if (res?.errCode === 0) {
+        toast.success(isAdd ? 'Thêm loại ship thành công' : 'Cập nhật thành công');
+        if (isAdd) setValues({ type: '', price: '' });
+      } else if (res?.errCode === 2) toast.error(res.errMessage);
+      else toast.error('Thao tác thất bại');
+    } finally { setLoading(false); }
   };
 
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý loại ship</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          {isActionADD === true ? 'Thêm mới loại ship' : 'Cập nhật thông tin loại ship'}
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <div className="ap-page-title">{isAdd ? '➕ Thêm loại giao hàng' : '✏️ Cập nhật loại giao hàng'}</div>
+            <div className="ap-page-subtitle">Cấu hình hình thức vận chuyển và phí ship</div>
+          </div>
+          <Link to="/admin/list-typeship" className="ap-btn ap-btn-ghost">← Quay lại</Link>
         </div>
-        <div className="card-body">
-          <form>
-            <div className="form-row">
-              <div className="form-group col-md-6">
-                <label htmlFor="inputEmail4">Tên loại ship</label>
-                <input
-                  type="text"
-                  value={inputValues.type}
-                  name="type"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputPassword4">Giá tiền</label>
-                <input
-                  type="text"
-                  value={inputValues.price}
-                  name="price"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
+      </div>
+      <div className="ap-card" style={{ maxWidth: 560 }}>
+        <div className="ap-card-header"><span className="ap-card-title">🚚 Thông tin loại giao hàng</span></div>
+        <div className="ap-card-body">
+          <div className="ap-form-row">
+            <div className="ap-form-group">
+              <label className="ap-label">Tên loại giao hàng *</label>
+              <input className="ap-input" name="type" value={values.type} onChange={handleChange} placeholder="VD: Giao nhanh, Giao tiêu chuẩn..." />
             </div>
-            <button type="button" onClick={() => handleSaveTypeShip()} className="btn btn-primary">
-              Lưu thông tin
+            <div className="ap-form-group">
+              <label className="ap-label">Phí vận chuyển (VNĐ) *</label>
+              <input className="ap-input" type="number" name="price" value={values.price} onChange={handleChange} placeholder="VD: 30000" />
+              {values.price && (
+                <div style={{ fontSize: 12, color: '#6ee7b7', marginTop: 4 }}>
+                  ≈ {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(values.price)}
+                </div>
+              )}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+            <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
+              {loading ? '⏳ Đang lưu...' : '💾 Lưu thông tin'}
             </button>
-          </form>
+            <Link to="/admin/list-typeship" className="ap-btn ap-btn-ghost">Hủy</Link>
+          </div>
         </div>
       </div>
     </div>

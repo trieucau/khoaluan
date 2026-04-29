@@ -1,165 +1,103 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import { useFetchAllcode } from '../../customize/fetch';
+import React, { useEffect, useState } from 'react';
 import { deleteVoucherService, getAllVoucher } from '../../../services/userService';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 import { PAGINATION } from '../../../utils/constant';
-import ReactPaginate from 'react-paginate';
 import CommonUtils from '../../../utils/CommonUtils';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { SkeletonRows, EmptyState, AdminPagination, PageHeader } from '../AdminShared';
+
 const ManageVoucher = () => {
-  const [dataVoucher, setdataVoucher] = useState([]);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
-  useEffect(() => {
+  const [data, setData] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async (offset = 0) => {
+    setLoading(true);
     try {
-      let fetchData = async () => {
-        let arrData = await getAllVoucher({
-          limit: PAGINATION.pagerow,
-          offset: 0,
-        });
-        if (arrData && arrData.errCode === 0) {
-          setdataVoucher(arrData.data);
-          setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-        }
-      };
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
-  let handleDeleteVoucher = async (id) => {
-    let res = await deleteVoucherService({
-      data: {
-        id: id,
-      },
-    });
-    if (res && res.errCode === 0) {
-      toast.success('Xóa mã voucher thành công');
-      let arrData = await getAllVoucher({
-        limit: PAGINATION.pagerow,
-        offset: numberPage * PAGINATION.pagerow,
-      });
-      if (arrData && arrData.errCode === 0) {
-        setdataVoucher(arrData.data);
-        setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
-      }
-    } else toast.error('Xóa mã voucher thất bại');
+      const res = await getAllVoucher({ limit: PAGINATION.pagerow, offset });
+      if (res?.errCode === 0) { setData(res.data); setCount(Math.ceil(res.count / PAGINATION.pagerow)); }
+    } finally { setLoading(false); }
   };
-  let handleChangePage = async (number) => {
-    setnumberPage(number.selected);
-    let arrData = await getAllVoucher({
-      limit: PAGINATION.pagerow,
-      offset: number.selected * PAGINATION.pagerow,
-    });
-    if (arrData && arrData.errCode === 0) {
-      setdataVoucher(arrData.data);
-    }
+
+  useEffect(() => { fetchData(); }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Xóa mã voucher này?')) return;
+    const res = await deleteVoucherService({ data: { id } });
+    if (res?.errCode === 0) { toast.success('Xóa voucher thành công'); fetchData(page * PAGINATION.pagerow); }
+    else toast.error('Xóa voucher thất bại');
   };
-  let handleOnClickExport = async () => {
-    let res = await getAllVoucher({
-      limit: '',
-      offset: '',
-    });
-    if (res && res.errCode == 0) {
-      res.data.forEach((item) => {
+
+  const handleExport = async () => {
+    const res = await getAllVoucher({ limit: '', offset: '' });
+    if (res?.errCode === 0) {
+      res.data.forEach(item => {
         item.fromDate = moment.unix(item.fromDate / 1000).format('DD/MM/YYYY');
         item.toDate = moment.unix(item.toDate / 1000).format('DD/MM/YYYY');
       });
       await CommonUtils.exportExcel(res.data, 'Danh sách voucher', 'ListVoucher');
     }
   };
+
+  const isExpired = (toDate) => moment.unix(toDate / 1000).isBefore(moment());
+
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý mã voucher</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Danh sách mã voucher
-        </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-12 mb-2">
-              <button
-                style={{ float: 'right' }}
-                onClick={() => handleOnClickExport()}
-                className="btn btn-success"
-              >
-                Xuất excel <i class="fa-solid fa-file-excel"></i>
-              </button>
-            </div>
-          </div>
-          <div className="table-responsive">
-            <table
-              className="table table-bordered"
-              style={{ border: '1' }}
-              width="100%"
-              cellspacing="0"
-            >
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Mã voucher</th>
-                  <th>Loại voucher</th>
-                  <th>Số lượng</th>
-                  <th>Đã sử dụng</th>
-                  <th>Ngày bắt đầu</th>
-                  <th>Ngày kết thúc</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {dataVoucher &&
-                  dataVoucher.length > 0 &&
-                  dataVoucher.map((item, index) => {
-                    let name = `${item.typeVoucherOfVoucherData.value} ${item.typeVoucherOfVoucherData.typeVoucherData.value}`;
-                    return (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item.codeVoucher}</td>
-                        <td>{name}</td>
-                        <td>{item.amount}</td>
-                        <td>{item.usedAmount}</td>
-                        <td>{moment.unix(item.fromDate / 1000).format('DD/MM/YYYY')}</td>
-                        <td>{moment.unix(item.toDate / 1000).format('DD/MM/YYYY')}</td>
-                        <td>
-                          <Link to={`/admin/edit-voucher/${item.id}`}>Edit</Link>
-                          &nbsp; &nbsp;
-                          <span
-                            onClick={() => handleDeleteVoucher(item.id)}
-                            style={{ color: '#0E6DFE', cursor: 'pointer' }}
-                          >
-                            Delete
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <ReactPaginate
-        previousLabel={'Quay lại'}
-        nextLabel={'Tiếp'}
-        breakLabel={'...'}
-        pageCount={count}
-        marginPagesDisplayed={3}
-        containerClassName={'pagination justify-content-center'}
-        pageClassName={'page-item'}
-        pageLinkClassName={'page-link'}
-        previousLinkClassName={'page-link'}
-        nextClassName={'page-item'}
-        nextLinkClassName={'page-link'}
-        breakLinkClassName={'page-link'}
-        breakClassName={'page-item'}
-        activeClassName={'active'}
-        onPageChange={handleChangePage}
+    <div className="ap-page">
+      <PageHeader title="🏷️ Quản lý mã Voucher" subtitle="Danh sách mã giảm giá và khuyến mãi"
+        actions={<>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <Link to="/admin/add-voucher" className="ap-btn ap-btn-primary">+ Thêm voucher</Link>
+        </>}
       />
+      <div className="ap-card">
+        <div className="ap-table-wrap">
+          <table className="ap-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Mã Voucher</th><th>Loại khuyến mãi</th>
+                <th>Số lượng</th><th>Đã dùng</th><th>Từ ngày</th><th>Đến ngày</th><th>Trạng thái</th>
+                <th style={{ textAlign: 'center' }}>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? <SkeletonRows cols={9} /> : data.length === 0 ? <EmptyState icon="🏷️" title="Không có voucher nào" /> :
+                data.map((item, idx) => {
+                  const expired = isExpired(item.toDate);
+                  const used = item.usedAmount >= item.amount;
+                  const status = expired ? { label: 'Hết hạn', cls: 'ap-badge-red' } : used ? { label: 'Hết lượt', cls: 'ap-badge-amber' } : { label: 'Đang dùng', cls: 'ap-badge-green' };
+                  return (
+                    <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
+                      <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
+                      <td>
+                        <span style={{ fontFamily: 'monospace', fontWeight: 700, color: '#a5b4fc', fontSize: 13, background: 'rgba(99,102,241,0.1)', padding: '3px 8px', borderRadius: 5 }}>
+                          {item.codeVoucher}
+                        </span>
+                      </td>
+                      <td style={{ fontSize: 13 }}>{item.typeVoucherOfVoucherData?.value} {item.typeVoucherOfVoucherData?.typeVoucherData?.value}</td>
+                      <td style={{ fontWeight: 600 }}>{item.amount}</td>
+                      <td>
+                        <span style={{ color: item.usedAmount >= item.amount ? '#fca5a5' : '#6ee7b7', fontWeight: 600 }}>{item.usedAmount}</span>
+                      </td>
+                      <td style={{ fontSize: 12, color: 'var(--ap-text-muted)' }}>{moment.unix(item.fromDate / 1000).format('DD/MM/YYYY')}</td>
+                      <td style={{ fontSize: 12, color: expired ? '#fca5a5' : 'var(--ap-text-muted)' }}>{moment.unix(item.toDate / 1000).format('DD/MM/YYYY')}</td>
+                      <td><span className={`ap-badge ${status.cls}`}>{status.label}</span></td>
+                      <td>
+                        <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+                          <Link to={`/admin/edit-voucher/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️ Sửa</Link>
+                          <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}>🗑️</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              }
+            </tbody>
+          </table>
+        </div>
+        <AdminPagination count={count} onPageChange={({ selected }) => { setPage(selected); fetchData(selected * PAGINATION.pagerow); }} />
+      </div>
     </div>
   );
 };

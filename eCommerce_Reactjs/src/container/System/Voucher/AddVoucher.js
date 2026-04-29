@@ -1,219 +1,123 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
-import {
-  getSelectTypeVoucher,
-  createNewVoucherService,
-  getDetailVoucherByIdService,
-  updateVoucherService,
-} from '../../../services/userService';
+import { useParams, Link } from 'react-router-dom';
+import { getSelectTypeVoucher, createNewVoucherService, getDetailVoucherByIdService, updateVoucherService } from '../../../services/userService';
 import moment from 'moment';
-const AddVoucher = (props) => {
-  const [dataTypeVoucher, setdataTypeVoucher] = useState([]);
 
+const AddVoucher = () => {
+  const [typeVouchers, setTypeVouchers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isAdd, setIsAdd] = useState(true);
   const { id } = useParams();
-  const [inputValues, setInputValues] = useState({
-    fromDate: new Date(),
-    toDate: new Date(),
-    typeVoucherId: '',
-    amount: '',
-    codeVoucher: '',
-    isChangeFromDate: false,
-    isChangeToDate: false,
-    isActionADD: true,
-    fromDateUpdate: '',
-    toDateUpdate: '',
+  const [values, setValues] = useState({
+    fromDate: new Date(), toDate: new Date(),
+    typeVoucherId: '', amount: '', codeVoucher: '',
+    isChangeFromDate: false, isChangeToDate: false,
+    fromDateUpdate: '', toDateUpdate: '',
   });
-  if (dataTypeVoucher && dataTypeVoucher.length > 0 && inputValues.typeVoucherId === '') {
-    setInputValues({
-      ...inputValues,
-      ['typeVoucherId']: dataTypeVoucher[0].id,
-    });
-  }
+
   useEffect(() => {
-    let fetchTypeVoucher = async () => {
-      let typevoucher = await getSelectTypeVoucher();
-      if (typevoucher && typevoucher.errCode === 0) {
-        setdataTypeVoucher(typevoucher.data);
+    getSelectTypeVoucher().then(res => {
+      if (res?.errCode === 0) {
+        setTypeVouchers(res.data);
+        if (!id) setValues(v => ({ ...v, typeVoucherId: res.data[0]?.id || '' }));
       }
-    };
-    fetchTypeVoucher();
+    });
     if (id) {
-      let fetchVoucher = async () => {
-        let voucher = await getDetailVoucherByIdService(id);
-        if (voucher && voucher.errCode === 0) {
-          setStateVoucher(voucher.data);
+      setIsAdd(false);
+      getDetailVoucherByIdService(id).then(res => {
+        if (res?.errCode === 0) {
+          const d = res.data;
+          setValues(v => ({
+            ...v,
+            fromDate: moment.unix(+d.fromDate / 1000).toDate(),
+            toDate: moment.unix(+d.toDate / 1000).toDate(),
+            typeVoucherId: d.typeVoucherId, amount: d.amount,
+            codeVoucher: d.codeVoucher, fromDateUpdate: d.fromDate, toDateUpdate: d.toDate,
+          }));
         }
-      };
-      fetchVoucher();
-    }
-  }, []);
-  let setStateVoucher = (data) => {
-    console.log(data.toDate);
-    setInputValues({
-      ...inputValues,
-      ['fromDate']: moment
-        .unix(+data.fromDate / 1000)
-        .locale('vi')
-        .toDate(),
-      ['toDate']: moment
-        .unix(+data.toDate / 1000)
-        .locale('vi')
-        .toDate(),
-      ['typeVoucherId']: data.typeVoucherId,
-      ['amount']: data.amount,
-      ['codeVoucher']: data.codeVoucher,
-      ['isActionADD']: false,
-      ['fromDateUpdate']: data.fromDate,
-      ['toDateUpdate']: data.toDate,
-    });
-  };
-  const handleOnChange = (event) => {
-    const { name, value } = event.target;
-    setInputValues({ ...inputValues, [name]: value });
-  };
-  let handleOnChangeDatePickerFromDate = (date) => {
-    setInputValues({
-      ...inputValues,
-      ['fromDate']: date,
-      ['isChangeFromDate']: true,
-    });
-  };
-  let handleOnChangeDatePickerToDate = (date) => {
-    setInputValues({
-      ...inputValues,
-      ['toDate']: date,
-      ['isChangeToDate']: true,
-    });
-  };
-  let handleSaveInforVoucher = async () => {
-    if (inputValues.isActionADD === true) {
-      let response = await createNewVoucherService({
-        fromDate: new Date(inputValues.fromDate).getTime(),
-        toDate: new Date(inputValues.toDate).getTime(),
-        typeVoucherId: inputValues.typeVoucherId,
-        amount: inputValues.amount,
-        codeVoucher: inputValues.codeVoucher,
       });
-      if (response && response.errCode === 0) {
-        toast.success('Tạo mã voucher thành công !');
-        setInputValues({
-          ...inputValues,
-          ['fromDate']: '',
-          ['toDate']: '',
-          ['typeVoucherId']: '',
-          ['amount']: '',
-          ['codeVoucher']: '',
-        });
-      } else {
-        toast.error(response.errMessage);
-      }
-    } else {
-      let response = await updateVoucherService({
-        toDate:
-          inputValues.isChangeToDate === false
-            ? inputValues.toDateUpdate
-            : new Date(inputValues.toDate).getTime(),
-        fromDate:
-          inputValues.isChangeFromDate === false
-            ? inputValues.fromDateUpdate
-            : new Date(inputValues.fromDate).getTime(),
+    }
+  }, [id]);
 
-        typeVoucherId: inputValues.typeVoucherId,
-        amount: inputValues.amount,
-        codeVoucher: inputValues.codeVoucher,
-        id: id,
-      });
-      if (response && response.errCode === 0) {
-        toast.success('Cập nhật voucher thành công !');
-      } else toast.error(response.errMessage);
-    }
+  const handleSave = async () => {
+    if (!values.codeVoucher || !values.amount) { toast.error('Vui lòng điền đầy đủ thông tin'); return; }
+    setLoading(true);
+    try {
+      const res = isAdd
+        ? await createNewVoucherService({ fromDate: new Date(values.fromDate).getTime(), toDate: new Date(values.toDate).getTime(), typeVoucherId: values.typeVoucherId, amount: values.amount, codeVoucher: values.codeVoucher })
+        : await updateVoucherService({ id, typeVoucherId: values.typeVoucherId, amount: values.amount, codeVoucher: values.codeVoucher, fromDate: values.isChangeFromDate ? new Date(values.fromDate).getTime() : values.fromDateUpdate, toDate: values.isChangeToDate ? new Date(values.toDate).getTime() : values.toDateUpdate });
+      if (res?.errCode === 0) {
+        toast.success(isAdd ? 'Tạo voucher thành công' : 'Cập nhật thành công');
+        if (isAdd) setValues(v => ({ ...v, codeVoucher: '', amount: '', fromDate: new Date(), toDate: new Date() }));
+      } else toast.error(res?.errMessage || 'Thao tác thất bại');
+    } finally { setLoading(false); }
   };
+
+  const isExpired = values.toDate && moment(values.toDate).isBefore(moment());
+
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý mã voucher</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          {inputValues.isActionADD === true
-            ? 'Thêm mới mã voucherr'
-            : 'Cập nhật thông tin mã voucher'}
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <div className="ap-page-title">{isAdd ? '🏷️ Tạo mã Voucher' : '✏️ Cập nhật Voucher'}</div>
+            <div className="ap-page-subtitle">Cấu hình mã giảm giá cho khách hàng</div>
+          </div>
+          <Link to="/admin/list-voucher" className="ap-btn ap-btn-ghost">← Quay lại</Link>
         </div>
-        <div className="card-body">
-          <form>
-            <div className="form-row">
-              <div className="form-group col-md-6">
-                <label htmlFor="inputEmail4">Ngày bắt đầu</label>
-                <DatePicker
-                  className="form-control"
-                  onChange={handleOnChangeDatePickerFromDate}
-                  selected={inputValues.fromDate}
-                />
-              </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputPassword4">Ngày kết thúc</label>
-                <DatePicker
-                  className="form-control"
-                  onChange={handleOnChangeDatePickerToDate}
-                  selected={inputValues.toDate}
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Loại voucher</label>
-                <select
-                  value={inputValues.typeVoucherId}
-                  name="typeVoucherId"
-                  onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
-                >
-                  {dataTypeVoucher &&
-                    dataTypeVoucher.length > 0 &&
-                    dataTypeVoucher.map((item, index) => {
-                      let name = `${item.value} ${item.typeVoucherData.value}`;
-                      return (
-                        <option key={index} value={item.id}>
-                          {name}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Số lượng mã</label>
-                <input
-                  type="number"
-                  value={inputValues.amount}
-                  name="amount"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Mã voucher</label>
-                <input
-                  type="text"
-                  value={inputValues.codeVoucher}
-                  name="codeVoucher"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
+      </div>
+
+      <div className="ap-card" style={{ maxWidth: 720 }}>
+        <div className="ap-card-header"><span className="ap-card-title">🏷️ Thông tin voucher</span></div>
+        <div className="ap-card-body">
+          <div className="ap-form-row">
+            <div className="ap-form-group">
+              <label className="ap-label">Mã Voucher *</label>
+              <input className="ap-input" value={values.codeVoucher} onChange={e => setValues(v => ({ ...v, codeVoucher: e.target.value }))}
+                placeholder="VD: SUMMER2025" style={{ textTransform: 'uppercase', fontFamily: 'monospace', letterSpacing: 2 }} />
+            </div>
+            <div className="ap-form-group">
+              <label className="ap-label">Số lượng mã *</label>
+              <input className="ap-input" type="number" min="1" value={values.amount} onChange={e => setValues(v => ({ ...v, amount: e.target.value }))} placeholder="VD: 100" />
+            </div>
+          </div>
+
+          <div className="ap-form-group">
+            <label className="ap-label">Loại khuyến mãi *</label>
+            <select className="ap-select" value={values.typeVoucherId} onChange={e => setValues(v => ({ ...v, typeVoucherId: e.target.value }))}>
+              {typeVouchers.map(tv => (
+                <option key={tv.id} value={tv.id}>{tv.value} {tv.typeVoucherData?.value}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="ap-form-row">
+            <div className="ap-form-group">
+              <label className="ap-label">Ngày bắt đầu *</label>
+              <div className="ap-datepicker-wrap" style={{ display: 'block' }}>
+                <DatePicker className="ap-input" selected={values.fromDate} dateFormat="dd/MM/yyyy"
+                  onChange={d => setValues(v => ({ ...v, fromDate: d, isChangeFromDate: true }))} />
               </div>
             </div>
-            <button
-              onClick={() => handleSaveInforVoucher()}
-              type="button"
-              className="btn btn-primary"
-            >
-              Lưu thông tin
+            <div className="ap-form-group">
+              <label className="ap-label">Ngày kết thúc *</label>
+              <div className="ap-datepicker-wrap" style={{ display: 'block' }}>
+                <DatePicker className="ap-input" selected={values.toDate} dateFormat="dd/MM/yyyy"
+                  onChange={d => setValues(v => ({ ...v, toDate: d, isChangeToDate: true }))} minDate={values.fromDate} />
+              </div>
+              {isExpired && <div style={{ fontSize: 12, color: '#fca5a5', marginTop: 4 }}>⚠️ Ngày kết thúc đã qua</div>}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+            <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
+              {loading ? '⏳ Đang lưu...' : '💾 Lưu thông tin'}
             </button>
-          </form>
+            <Link to="/admin/list-voucher" className="ap-btn ap-btn-ghost">Hủy</Link>
+          </div>
         </div>
       </div>
     </div>

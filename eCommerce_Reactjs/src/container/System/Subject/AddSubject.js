@@ -1,116 +1,70 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import {
-  createAllCodeService,
-  getDetailAllcodeById,
-  UpdateAllcodeService,
-} from '../../../services/userService';
-
+import React, { useEffect, useState } from 'react';
+import { createAllCodeService, getDetailAllcodeById, UpdateAllcodeService } from '../../../services/userService';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
+import { useParams, Link } from 'react-router-dom';
 
-import moment from 'moment';
-const AddSubject = (props) => {
-  const [isActionADD, setisActionADD] = useState(true);
-
+const AddSubject = () => {
+  const [isAdd, setIsAdd] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [values, setValues] = useState({ value: '', code: '' });
   const { id } = useParams();
 
-  const [inputValues, setInputValues] = useState({
-    value: '',
-    code: '',
-  });
   useEffect(() => {
     if (id) {
-      let fetchDetailSubject = async () => {
-        setisActionADD(false);
-        let allcode = await getDetailAllcodeById(id);
-        if (allcode && allcode.errCode === 0) {
-          setInputValues({
-            ...inputValues,
-            ['value']: allcode.data.value,
-            ['code']: allcode.data.code,
-          });
-        }
-      };
-      fetchDetailSubject();
+      setIsAdd(false);
+      getDetailAllcodeById(id).then(res => {
+        if (res?.errCode === 0) setValues({ value: res.data.value, code: res.data.code });
+      });
     }
-  }, []);
+  }, [id]);
 
-  const handleOnChange = (event) => {
-    const { name, value } = event.target;
-    setInputValues({ ...inputValues, [name]: value });
-  };
-  let handleSaveSubject = async () => {
-    if (isActionADD === true) {
-      let res = await createAllCodeService({
-        value: inputValues.value,
-        code: inputValues.code,
-        type: 'SUBJECT',
-      });
-      if (res && res.errCode === 0) {
-        toast.success('Thêm chủ đề thành công');
-        setInputValues({
-          ...inputValues,
-          ['value']: '',
-          ['code']: '',
-        });
-      } else if (res && res.errCode === 2) {
-        toast.error(res.errMessage);
-      } else toast.error('Thêm chủ đề thất bại');
-    } else {
-      let res = await UpdateAllcodeService({
-        value: inputValues.value,
-        code: inputValues.code,
-        id: id,
-      });
-      if (res && res.errCode === 0) {
-        toast.success('Cập nhật chủ đề thành công');
-      } else if (res && res.errCode === 2) {
-        toast.error(res.errMessage);
-      } else toast.error('Cập nhật chủ đề thất bại');
-    }
+  const handleChange = (e) => setValues(v => ({ ...v, [e.target.name]: e.target.value }));
+
+  const handleSave = async () => {
+    if (!values.value || !values.code) { toast.error('Vui lòng điền đầy đủ thông tin'); return; }
+    setLoading(true);
+    try {
+      const res = isAdd
+        ? await createAllCodeService({ value: values.value, code: values.code, type: 'SUBJECT' })
+        : await UpdateAllcodeService({ value: values.value, code: values.code, id });
+      if (res?.errCode === 0) {
+        toast.success(isAdd ? 'Thêm chủ đề thành công' : 'Cập nhật thành công');
+        if (isAdd) setValues({ value: '', code: '' });
+      } else if (res?.errCode === 2) toast.error(res.errMessage);
+      else toast.error('Thao tác thất bại');
+    } finally { setLoading(false); }
   };
 
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý chủ đề</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          {isActionADD === true ? 'Thêm mới chủ đề' : 'Cập nhật thông tin chủ đề'}
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <div className="ap-page-title">{isAdd ? '➕ Thêm chủ đề' : '✏️ Cập nhật chủ đề'}</div>
+            <div className="ap-page-subtitle">{isAdd ? 'Tạo chủ đề blog mới' : 'Chỉnh sửa thông tin chủ đề'}</div>
+          </div>
+          <Link to="/admin/list-subject" className="ap-btn ap-btn-ghost">← Quay lại</Link>
         </div>
-        <div className="card-body">
-          <form>
-            <div className="form-row">
-              <div className="form-group col-md-6">
-                <label htmlFor="inputEmail4">Tên chủ đề</label>
-                <input
-                  type="text"
-                  value={inputValues.value}
-                  name="value"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
-                />
-              </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputPassword4">Mã code</label>
-                <input
-                  type="text"
-                  value={inputValues.code}
-                  name="code"
-                  onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
-                />
-              </div>
+      </div>
+      <div className="ap-card" style={{ maxWidth: 600 }}>
+        <div className="ap-card-header"><span className="ap-card-title">📚 Thông tin chủ đề</span></div>
+        <div className="ap-card-body">
+          <div className="ap-form-row">
+            <div className="ap-form-group">
+              <label className="ap-label">Tên chủ đề *</label>
+              <input className="ap-input" name="value" value={values.value} onChange={handleChange} placeholder="VD: Thời trang, Sức khoẻ..." />
             </div>
-            <button type="button" onClick={() => handleSaveSubject()} className="btn btn-primary">
-              Lưu thông tin
+            <div className="ap-form-group">
+              <label className="ap-label">Mã code *</label>
+              <input className="ap-input" name="code" value={values.code} onChange={handleChange} placeholder="VD: THOITRANG..." />
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+            <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
+              {loading ? '⏳ Đang lưu...' : '💾 Lưu thông tin'}
             </button>
-          </form>
+            <Link to="/admin/list-subject" className="ap-btn ap-btn-ghost">Hủy</Link>
+          </div>
         </div>
       </div>
     </div>
