@@ -41,17 +41,17 @@ const NavGroup = ({ icon, label, children, defaultOpen = false, location }) => {
   );
 };
 
-const NavChild = ({ to, label, location }) => {
+const NavChild = ({ to, label, location, onClick }) => {
   const active = location.pathname === to || location.pathname.startsWith(to + '/');
   return (
-    <Link to={to} className={`ap-nav-child${active ? ' active' : ''}`}>
+    <Link to={to} className={`ap-nav-child${active ? ' active' : ''}`} onClick={onClick}>
       <span className="ap-nav-child-dot" />
       {label}
     </Link>
   );
 };
 
-const SideBar = () => {
+const SideBar = ({ onLinkClick }) => {
   const [user, setUser] = useState({});
   const location = useLocation();
 
@@ -62,11 +62,13 @@ const SideBar = () => {
 
   const isAdmin = user.roleId === 'R1';
 
+  const lc = onLinkClick || (() => {});
+
   return (
     <nav className="ap-sidebar-nav">
       <div className="ap-nav-section">
         <div className="ap-nav-label">Tổng quan</div>
-        <Link to="/admin" className={`ap-nav-link${location.pathname === '/admin' ? ' active' : ''}`}>
+        <Link to="/admin" className={`ap-nav-link${location.pathname === '/admin' ? ' active' : ''}`} onClick={lc}>
           {Icons.dashboard}<span>Trang quản trị</span>
         </Link>
       </div>
@@ -75,42 +77,42 @@ const SideBar = () => {
         <div className="ap-nav-section">
           <div className="ap-nav-label">Nội dung</div>
           <NavGroup icon={Icons.users} label="Người dùng" location={location} defaultOpen={location.pathname.includes('/user')}>
-            <NavChild to="/admin/list-user" label="Danh sách" location={location} />
-            <NavChild to="/admin/add-user" label="Thêm mới" location={location} />
+            <NavChild to="/admin/list-user" label="Danh sách" location={location} onClick={lc} />
+            <NavChild to="/admin/add-user" label="Thêm mới" location={location} onClick={lc} />
           </NavGroup>
           <NavGroup icon={Icons.category} label="Danh mục" location={location} defaultOpen={location.pathname.includes('/category')}>
-            <NavChild to="/admin/list-category" label="Danh sách" location={location} />
-            <NavChild to="/admin/add-category" label="Thêm mới" location={location} />
+            <NavChild to="/admin/list-category" label="Danh sách" location={location} onClick={lc} />
+            <NavChild to="/admin/add-category" label="Thêm mới" location={location} onClick={lc} />
           </NavGroup>
           <NavGroup icon={Icons.brand} label="Nhãn hàng" location={location} defaultOpen={location.pathname.includes('/brand')}>
-            <NavChild to="/admin/list-brand" label="Danh sách" location={location} />
-            <NavChild to="/admin/add-brand" label="Thêm mới" location={location} />
+            <NavChild to="/admin/list-brand" label="Danh sách" location={location} onClick={lc} />
+            <NavChild to="/admin/add-brand" label="Thêm mới" location={location} onClick={lc} />
           </NavGroup>
           <NavGroup icon={Icons.product} label="Sản phẩm" location={location} defaultOpen={location.pathname.includes('/product')}>
-            <NavChild to="/admin/list-product" label="Danh sách" location={location} />
-            <NavChild to="/admin/add-product" label="Thêm mới" location={location} />
+            <NavChild to="/admin/list-product" label="Danh sách" location={location} onClick={lc} />
+            <NavChild to="/admin/add-product" label="Thêm mới" location={location} onClick={lc} />
           </NavGroup>
           <NavGroup icon={Icons.banner} label="Banner" location={location} defaultOpen={location.pathname.includes('/banner')}>
-            <NavChild to="/admin/list-banner" label="Danh sách" location={location} />
-            <NavChild to="/admin/add-banner" label="Thêm mới" location={location} />
+            <NavChild to="/admin/list-banner" label="Danh sách" location={location} onClick={lc} />
+            <NavChild to="/admin/add-banner" label="Thêm mới" location={location} onClick={lc} />
           </NavGroup>
           <NavGroup icon={Icons.subject} label="Chủ đề" location={location} defaultOpen={location.pathname.includes('/subject')}>
-            <NavChild to="/admin/list-subject" label="Danh sách" location={location} />
-            <NavChild to="/admin/add-subject" label="Thêm mới" location={location} />
+            <NavChild to="/admin/list-subject" label="Danh sách" location={location} onClick={lc} />
+            <NavChild to="/admin/add-subject" label="Thêm mới" location={location} onClick={lc} />
           </NavGroup>
           <NavGroup icon={Icons.blog} label="Bài đăng" location={location} defaultOpen={location.pathname.includes('/blog')}>
-            <NavChild to="/admin/list-blog" label="Danh sách" location={location} />
-            <NavChild to="/admin/add-blog" label="Thêm mới" location={location} />
+            <NavChild to="/admin/list-blog" label="Danh sách" location={location} onClick={lc} />
+            <NavChild to="/admin/add-blog" label="Thêm mới" location={location} onClick={lc} />
           </NavGroup>
           <NavGroup icon={Icons.ship} label="Loại ship" location={location} defaultOpen={location.pathname.includes('/typeship')}>
-            <NavChild to="/admin/list-typeship" label="Danh sách" location={location} />
-            <NavChild to="/admin/add-typeship" label="Thêm mới" location={location} />
+            <NavChild to="/admin/list-typeship" label="Danh sách" location={location} onClick={lc} />
+            <NavChild to="/admin/add-typeship" label="Thêm mới" location={location} onClick={lc} />
           </NavGroup>
           <NavGroup icon={Icons.voucher} label="Voucher" location={location} defaultOpen={location.pathname.includes('/voucher')}>
-            <NavChild to="/admin/list-typevoucher" label="Loại khuyến mãi" location={location} />
-            <NavChild to="/admin/list-voucher" label="Mã khuyến mãi" location={location} />
-            <NavChild to="/admin/add-typevoucher" label="Thêm loại KM" location={location} />
-            <NavChild to="/admin/add-voucher" label="Thêm mã KM" location={location} />
+            <NavChild to="/admin/list-typevoucher" label="Loại khuyến mãi" location={location} onClick={lc} />
+            <NavChild to="/admin/list-voucher" label="Mã khuyến mãi" location={location} onClick={lc} />
+            <NavChild to="/admin/add-typevoucher" label="Thêm loại KM" location={location} onClick={lc} />
+            <NavChild to="/admin/add-voucher" label="Thêm mã KM" location={location} onClick={lc} />
           </NavGroup>
         </div>
       )}
@@ -118,18 +120,18 @@ const SideBar = () => {
       <div className="ap-nav-section">
         <div className="ap-nav-label">Vận hành</div>
         <NavGroup icon={Icons.supplier} label="Nhà cung cấp" location={location} defaultOpen={location.pathname.includes('/supplier')}>
-          <NavChild to="/admin/list-supplier" label="Danh sách" location={location} />
-          <NavChild to="/admin/add-supplier" label="Thêm mới" location={location} />
+          <NavChild to="/admin/list-supplier" label="Danh sách" location={location} onClick={lc} />
+          <NavChild to="/admin/add-supplier" label="Thêm mới" location={location} onClick={lc} />
         </NavGroup>
         <NavGroup icon={Icons.receipt} label="Nhập hàng" location={location} defaultOpen={location.pathname.includes('/receipt')}>
-          <NavChild to="/admin/list-receipt" label="Danh sách" location={location} />
-          <NavChild to="/admin/add-receipt" label="Tạo phiếu nhập" location={location} />
+          <NavChild to="/admin/list-receipt" label="Danh sách" location={location} onClick={lc} />
+          <NavChild to="/admin/add-receipt" label="Tạo phiếu nhập" location={location} onClick={lc} />
         </NavGroup>
         <NavGroup icon={Icons.order} label="Đơn hàng" location={location} defaultOpen={location.pathname.includes('/order')}>
-          <NavChild to="/admin/list-order" label="Danh sách đơn" location={location} />
-          <NavChild to="/admin/shipper-map" label="Bản đồ shipper" location={location} />
+          <NavChild to="/admin/list-order" label="Danh sách đơn" location={location} onClick={lc} />
+          <NavChild to="/admin/shipper-map" label="Bản đồ shipper" location={location} onClick={lc} />
         </NavGroup>
-        <Link to="/admin/chat" className={`ap-nav-link${location.pathname === '/admin/chat' ? ' active' : ''}`}>
+        <Link to="/admin/chat" className={`ap-nav-link${location.pathname === '/admin/chat' ? ' active' : ''}`} onClick={lc}>
           {Icons.chat}<span>Tin nhắn</span>
         </Link>
       </div>
@@ -138,9 +140,9 @@ const SideBar = () => {
         <div className="ap-nav-section">
           <div className="ap-nav-label">Báo cáo</div>
           <NavGroup icon={Icons.chart} label="Thống kê" location={location} defaultOpen={location.pathname.includes('/turnover') || location.pathname.includes('/profit') || location.pathname.includes('/stock')}>
-            <NavChild to="/admin/turnover" label="Doanh thu" location={location} />
-            <NavChild to="/admin/profit" label="Lợi nhuận" location={location} />
-            <NavChild to="/admin/stock-product" label="Tồn kho" location={location} />
+            <NavChild to="/admin/turnover" label="Doanh thu" location={location} onClick={lc} />
+            <NavChild to="/admin/profit" label="Lợi nhuận" location={location} onClick={lc} />
+            <NavChild to="/admin/stock-product" label="Tồn kho" location={location} onClick={lc} />
           </NavGroup>
         </div>
       )}

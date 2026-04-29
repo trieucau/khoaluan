@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import '../../css/admin.css';
 
@@ -47,12 +47,31 @@ import StockProduct from './Statistic/StockProduct';
 import AdminShipperMap from './ShipperMap/AdminShipperMap';
 
 function HomePageAdmin() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const openSidebar = useCallback(() => setSidebarOpen(true), []);
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+
   return (
     <div className="admin-portal">
+      {/* Mobile overlay */}
+      <div
+        className={`ap-sidebar-overlay${sidebarOpen ? ' open' : ''}`}
+        onClick={closeSidebar}
+        aria-hidden="true"
+      />
+
+      {/* Mobile sidebar drawer */}
+      <div className={`ap-sidebar-drawer${sidebarOpen ? ' open' : ''}`}>
+        <button className="ap-sidebar-close" onClick={closeSidebar} aria-label="Đóng menu">✕</button>
+        <SideBar onLinkClick={closeSidebar} />
+      </div>
+
       <div className="ap-layout">
         <div className="ap-header-wrap">
-          <Header />
+          <Header onToggleSidebar={openSidebar} />
         </div>
+        {/* Desktop sidebar */}
         <div className="ap-sidebar-wrap">
           <SideBar />
         </div>

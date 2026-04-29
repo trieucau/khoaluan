@@ -34,18 +34,19 @@ export const EmptyState = ({ icon = '📭', title = 'Không có dữ liệu', de
 );
 
 /**
- * Shared pagination component for admin pages
+ * Shared pagination component — responsive
  */
 export const AdminPagination = ({ count, onPageChange }) => {
   if (!count || count <= 1) return null;
   return (
-    <div style={{ padding: '14px 20px', borderTop: '1px solid var(--ap-border)', display: 'flex', justifyContent: 'center' }}>
+    <div style={{ padding: '12px 16px', borderTop: '1px solid var(--ap-border)', display: 'flex', justifyContent: 'center', overflowX: 'auto' }}>
       <ReactPaginate
-        previousLabel="← Trước"
-        nextLabel="Sau →"
+        previousLabel="←"
+        nextLabel="→"
         breakLabel="..."
         pageCount={count}
-        marginPagesDisplayed={2}
+        marginPagesDisplayed={1}
+        pageRangeDisplayed={3}
         containerClassName="ap-pagination"
         pageClassName="ap-page-item"
         pageLinkClassName="ap-page-link"
@@ -63,12 +64,12 @@ export const AdminPagination = ({ count, onPageChange }) => {
 };
 
 /**
- * Search toolbar for admin pages
+ * Search toolbar — mobile stacked
  */
-export const SearchBar = ({ value, onChange, onSearch, placeholder = 'Tìm kiếm...' }) => (
+export const SearchBar = ({ value, onChange, onSearch, placeholder = 'Tìm kiếm...', actions }) => (
   <div className="ap-toolbar">
-    <div className="ap-search-bar">
-      <span style={{ color: 'var(--ap-text-dim)' }}>🔍</span>
+    <div className="ap-search-bar" style={{ flex: 1 }}>
+      <span style={{ color: 'var(--ap-text-dim)', flexShrink: 0 }}>🔍</span>
       <input
         value={value}
         onChange={e => onChange(e.target.value)}
@@ -76,16 +77,21 @@ export const SearchBar = ({ value, onChange, onSearch, placeholder = 'Tìm kiế
         placeholder={placeholder}
       />
       {value && (
-        <button onClick={() => { onChange(''); onSearch(''); }}
-          style={{ background: 'none', border: 'none', color: 'var(--ap-text-dim)', cursor: 'pointer', fontSize: 16 }}>×</button>
+        <button
+          onClick={() => { onChange(''); onSearch(''); }}
+          style={{ background: 'none', border: 'none', color: 'var(--ap-text-dim)', cursor: 'pointer', fontSize: 18, padding: '0 2px', flexShrink: 0 }}
+        >×</button>
       )}
     </div>
-    <button className="ap-btn ap-btn-primary ap-btn-sm" onClick={() => onSearch(value)}>Tìm kiếm</button>
+    <button className="ap-btn ap-btn-primary ap-btn-sm" onClick={() => onSearch(value)}>
+      Tìm
+    </button>
+    {actions && <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>{actions}</div>}
   </div>
 );
 
 /**
- * Standard page header for admin list pages
+ * Standard page header — responsive
  */
 export const PageHeader = ({ title, subtitle, actions }) => (
   <div className="ap-page-header">
@@ -94,7 +100,11 @@ export const PageHeader = ({ title, subtitle, actions }) => (
         <div className="ap-page-title">{title}</div>
         {subtitle && <div className="ap-page-subtitle">{subtitle}</div>}
       </div>
-      {actions && <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>{actions}</div>}
+      {actions && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          {actions}
+        </div>
+      )}
     </div>
   </div>
 );

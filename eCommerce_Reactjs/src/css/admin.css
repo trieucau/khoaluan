@@ -228,11 +228,323 @@
 .ap-sidebar-nav::-webkit-scrollbar-track, .ap-main::-webkit-scrollbar-track { background: transparent; }
 .ap-sidebar-nav::-webkit-scrollbar-thumb, .ap-main::-webkit-scrollbar-thumb { background: var(--ap-border); border-radius: 10px; }
 
-/* ---- RESPONSIVE ---- */
-@media (max-width: 900px) {
-  .ap-layout { grid-template-columns: 0 1fr; }
-  .ap-sidebar-wrap { display: none; }
-  .ap-page { padding: 16px; }
-  .ap-stats-grid { grid-template-columns: 1fr 1fr; }
-  .ap-grid-2, .ap-grid-3, .ap-form-row { grid-template-columns: 1fr; }
+/* ---- LEAFLET MAP ISOLATION ---- */
+/* Prevent Leaflet z-index (400-1000) from leaking outside the map card */
+.leaflet-container { z-index: 1 !important; }
+.leaflet-pane      { z-index: 2 !important; }
+.leaflet-tile-pane { z-index: 2 !important; }
+.leaflet-overlay-pane { z-index: 4 !important; }
+.leaflet-shadow-pane  { z-index: 5 !important; }
+.leaflet-marker-pane  { z-index: 6 !important; }
+.leaflet-tooltip-pane { z-index: 7 !important; }
+.leaflet-popup-pane   { z-index: 8 !important; }
+.leaflet-top, .leaflet-bottom { z-index: 9 !important; }
+/* The isolation:isolate wrapper in AdminShipperMap contains these */
+
+/* ============================================================
+   RESPONSIVE SYSTEM — Mobile First
+   ============================================================ */
+
+/* ---- MOBILE OVERLAY SIDEBAR ---- */
+.ap-sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 290;
+  animation: apFadeIn 0.2s ease;
 }
+.ap-sidebar-overlay.open { display: block; }
+
+/* Mobile sidebar drawer */
+.ap-sidebar-drawer {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: 280px;
+  z-index: 300;
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  will-change: transform;
+}
+.ap-sidebar-drawer.open { transform: translateX(0); }
+
+/* Hamburger button (mobile only) */
+.ap-hamburger {
+  display: none;
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  background: var(--ap-surface2);
+  border: 1px solid var(--ap-border);
+  color: var(--ap-text);
+  cursor: pointer;
+  align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: var(--ap-transition);
+}
+.ap-hamburger:hover { border-color: var(--ap-primary); color: var(--ap-primary); }
+
+/* Sidebar close button (mobile) */
+.ap-sidebar-close {
+  display: none;
+  position: absolute; top: 14px; right: 14px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--ap-surface2);
+  border: 1px solid var(--ap-border);
+  color: var(--ap-text-muted);
+  cursor: pointer;
+  align-items: center; justify-content: center;
+  font-size: 16px;
+  z-index: 10;
+  transition: var(--ap-transition);
+}
+.ap-sidebar-close:hover { color: var(--ap-danger); border-color: var(--ap-danger); }
+
+@keyframes apFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---- BREAKPOINT: Tablet (≤ 900px) ---- */
+@media (max-width: 900px) {
+  /* Layout: hide static sidebar */
+  .ap-layout { grid-template-columns: 1fr; }
+  .ap-sidebar-wrap { display: none; }
+  .ap-main { grid-column: 1; }
+
+  /* Show hamburger */
+  .ap-hamburger { display: flex; }
+
+  /* Show sidebar close btn */
+  .ap-sidebar-close { display: flex; }
+
+  /* Hide logo text on mobile, keep icon */
+  .ap-logo-text { display: none; }
+
+  /* Breadcrumb shorter */
+  .ap-header-center { padding: 0 12px; }
+  .ap-breadcrumb { font-size: 11px; }
+
+  /* Shrink user name */
+  .ap-user-name { display: none; }
+  .ap-user-btn { padding: 5px; border-radius: 50%; }
+
+  /* Page padding reduced */
+  .ap-page { padding: 14px 16px; }
+  .ap-footer { padding: 12px 16px; }
+
+  /* Stats grid → 2 cols */
+  .ap-stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ap-stat-value { font-size: 22px; }
+
+  /* All grids collapse to 1 col */
+  .ap-grid-2,
+  .ap-grid-3,
+  .ap-form-row { grid-template-columns: 1fr !important; gap: 12px; }
+
+  /* Cards */
+  .ap-card-body { padding: 14px; }
+  .ap-card-header { padding: 12px 14px; }
+
+  /* Page header */
+  .ap-page-title { font-size: 18px; }
+  .ap-page-header { margin-bottom: 16px; }
+
+  /* Toolbar wraps */
+  .ap-toolbar { gap: 8px; padding: 12px 14px; }
+  .ap-search-bar { min-width: 0; }
+
+  /* Tabs scrollable */
+  .ap-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-shrink: 0; }
+
+  /* Table: horizontal scroll */
+  .ap-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .ap-table { min-width: 600px; }
+  .ap-table th, .ap-table td { padding: 10px 10px; }
+
+  /* 2-col product add layout → 1 col */
+  [style*="grid-template-columns: 1fr 340px"],
+  [style*="grid-template-columns: 1fr 360px"],
+  [style*="grid-template-columns: 1fr 380px"],
+  [style*="grid-template-columns: 280px 1fr"],
+  [style*="grid-template-columns: 2fr 1fr"],
+  [style*="grid-template-columns: repeat(3, 1fr)"],
+  [style*="grid-template-columns: repeat(4,1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ---- BREAKPOINT: Mobile (≤ 600px) ---- */
+@media (max-width: 600px) {
+  /* Stats → single column */
+  .ap-stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ap-stat-card { padding: 14px; gap: 10px; }
+  .ap-stat-icon { width: 38px; height: 38px; font-size: 18px; }
+  .ap-stat-value { font-size: 20px; }
+  .ap-stat-label { font-size: 11px; }
+
+  /* Page */
+  .ap-page { padding: 12px; }
+
+  /* Page header stacked */
+  .ap-page-header-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .ap-page-title { font-size: 16px; }
+  .ap-page-subtitle { font-size: 12px; }
+
+  /* Buttons smaller */
+  .ap-btn { padding: 7px 12px; font-size: 12px; }
+  .ap-btn-sm { padding: 4px 10px; font-size: 11px; }
+
+  /* Table font */
+  .ap-table { font-size: 12px; min-width: 520px; }
+  .ap-table th, .ap-table td { padding: 8px 8px; }
+
+  /* Card padding */
+  .ap-card-body { padding: 12px; }
+  .ap-card-header { padding: 10px 12px; }
+  .ap-card-title { font-size: 13px; }
+
+  /* Header layout */
+  .ap-header-bar { padding: 0 14px; gap: 6px; }
+  .ap-header-center { display: none; }
+
+  /* Toolbar */
+  .ap-toolbar { flex-direction: column; align-items: stretch; padding: 10px 12px; }
+  .ap-search-bar { width: 100%; }
+
+  /* Tabs horizontal scroll */
+  .ap-tabs { gap: 2px; }
+  .ap-tab { padding: 5px 10px; font-size: 11.5px; }
+
+  /* Form */
+  .ap-form-group { margin-bottom: 14px; }
+  .ap-input { font-size: 13px; padding: 9px 12px; }
+  .ap-select { font-size: 13px; padding: 9px 12px; }
+  .ap-label { font-size: 11px; }
+
+  /* Pagination smaller */
+  .ap-page-item a, .ap-page-item span { min-width: 28px; height: 28px; font-size: 12px; }
+
+  /* Summary stat rows */
+  [style*="grid-template-columns: repeat(3, 1fr)"],
+  [style*="grid-template-columns: repeat(4,1fr)"] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+/* ---- BREAKPOINT: Extra small (≤ 400px) ---- */
+@media (max-width: 400px) {
+  .ap-stats-grid { grid-template-columns: 1fr; }
+  [style*="grid-template-columns: repeat(3, 1fr)"],
+  [style*="grid-template-columns: repeat(4,1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+  .ap-page { padding: 10px; }
+  .ap-table { min-width: 480px; }
+}
+
+/* ---- TOUCH IMPROVEMENTS ---- */
+@media (hover: none) {
+  /* Larger touch targets */
+  .ap-nav-link,
+  .ap-nav-group-header,
+  .ap-nav-child { min-height: 44px; }
+  .ap-btn { min-height: 40px; }
+  .ap-input, .ap-select { min-height: 44px; }
+  .ap-tab { min-height: 36px; }
+  .ap-dropdown-item { min-height: 44px; }
+  /* Disable hover transforms on touch */
+  .ap-stat-card:hover { transform: none; }
+}
+
+/* ---- LANDSCAPE PHONE ---- */
+@media (max-width: 900px) and (orientation: landscape) {
+  .ap-page { padding: 10px 16px; }
+  .ap-stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ============================================================
+   EXTRA MOBILE POLISH
+   ============================================================ */
+
+/* Safe area insets (iPhone notch / Dynamic Island) */
+@supports (padding: env(safe-area-inset-left)) {
+  .ap-header-bar { padding-left: max(24px, env(safe-area-inset-left)); padding-right: max(24px, env(safe-area-inset-right)); }
+  .ap-sidebar-nav { padding-bottom: env(safe-area-inset-bottom); }
+  .ap-footer { padding-bottom: max(14px, env(safe-area-inset-bottom)); }
+}
+
+/* Prevent iOS zoom on input focus (font-size >= 16px on mobile) */
+@media (max-width: 900px) {
+  .ap-input, .ap-select, .ap-select-input, .ap-textarea,
+  .react-datepicker__input-container input,
+  .ap-search-bar input { font-size: 16px !important; }
+}
+
+/* Table swipe hint on mobile */
+@media (max-width: 600px) {
+  .ap-table-wrap::after {
+    content: '← Vuốt ngang để xem thêm';
+    display: block;
+    font-size: 11px;
+    color: var(--ap-text-dim);
+    text-align: right;
+    padding: 4px 8px 8px;
+    pointer-events: none;
+  }
+}
+
+/* Remove swipe hint if table doesn't overflow */
+@media (min-width: 601px) {
+  .ap-table-wrap::after { display: none; }
+}
+
+/* Smooth transitions on mobile drawer */
+.ap-sidebar-drawer,
+.ap-sidebar-overlay {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile: action buttons in page header wrap nicely */
+@media (max-width: 600px) {
+  .ap-page-header-row > div:last-child {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .ap-page-header-row > div:last-child .ap-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* Active nav indicator shows on mobile sidebar */
+.ap-sidebar-drawer .ap-nav-link.active::before { display: block; }
+
+/* Sidebar close button position */
+.ap-sidebar-drawer .ap-sidebar-close { display: flex; }
+
+/* Scrollbar mobile hide */
+@media (max-width: 900px) {
+  .ap-table-wrap::-webkit-scrollbar { height: 3px; }
+  .ap-table-wrap::-webkit-scrollbar-thumb { background: var(--ap-border); border-radius: 10px; }
+  .ap-tabs::-webkit-scrollbar { height: 0; }
+}
+
+/* Focus ring accessibility */
+.ap-btn:focus-visible,
+.ap-nav-link:focus-visible,
+.ap-input:focus-visible {
+  outline: 2px solid var(--ap-primary);
+  outline-offset: 2px;
+}
+
+/* Dashboard chart responsive */
+@media (max-width: 600px) {
+  .ap-chart-wrap canvas { max-height: 200px !important; }
+}
+
+/* Badge wrapping on small screens */
+@media (max-width: 400px) {
+  .ap-badge { font-size: 10px; padding: 2px 6px; }
+}
+
+

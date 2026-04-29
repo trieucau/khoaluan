@@ -3,27 +3,27 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const ROUTE_LABELS = {
   '/admin': 'Trang chủ',
-  '/admin/list-user': 'Danh sách người dùng',
+  '/admin/list-user': 'Người dùng',
   '/admin/add-user': 'Thêm người dùng',
-  '/admin/list-order': 'Danh sách đơn hàng',
-  '/admin/list-product': 'Danh sách sản phẩm',
+  '/admin/list-order': 'Đơn hàng',
+  '/admin/list-product': 'Sản phẩm',
   '/admin/add-product': 'Thêm sản phẩm',
-  '/admin/list-category': 'Danh sách danh mục',
-  '/admin/list-brand': 'Danh sách nhãn hàng',
-  '/admin/list-banner': 'Danh sách banner',
-  '/admin/list-blog': 'Danh sách bài đăng',
+  '/admin/list-category': 'Danh mục',
+  '/admin/list-brand': 'Nhãn hàng',
+  '/admin/list-banner': 'Banner',
+  '/admin/list-blog': 'Blog',
   '/admin/list-supplier': 'Nhà cung cấp',
   '/admin/list-receipt': 'Nhập hàng',
-  '/admin/list-typeship': 'Loại giao hàng',
-  '/admin/list-voucher': 'Mã khuyến mãi',
+  '/admin/list-typeship': 'Loại ship',
+  '/admin/list-voucher': 'Voucher',
   '/admin/turnover': 'Doanh thu',
   '/admin/profit': 'Lợi nhuận',
   '/admin/stock-product': 'Tồn kho',
   '/admin/chat': 'Tin nhắn',
-  '/admin/shipper-map': 'Bản đồ Shipper',
+  '/admin/shipper-map': 'Bản đồ',
 };
 
-const Header = () => {
+const Header = ({ onToggleSidebar }) => {
   const [user, setUser] = useState({});
   const [open, setOpen] = useState(false);
   const dropRef = useRef(null);
@@ -55,7 +55,12 @@ const Header = () => {
 
   return (
     <nav className="ap-header-bar">
-      <Link className="ap-logo" to="/admin">
+      {/* Hamburger — mobile only */}
+      <button className="ap-hamburger" onClick={onToggleSidebar} aria-label="Mở menu">
+        ☰
+      </button>
+
+      <Link className="ap-logo" to="/admin" style={{ marginLeft: 8 }}>
         <div className="ap-logo-icon">⚙️</div>
         <span className="ap-logo-text">AdminHub</span>
       </Link>
@@ -74,12 +79,11 @@ const Header = () => {
 
       <div className="ap-header-right">
         <div ref={dropRef} style={{ position: 'relative' }}>
-          <div className="ap-user-btn" onClick={() => setOpen((v) => !v)}>
+          <div className="ap-user-btn" onClick={() => setOpen(v => !v)}>
             <div className="ap-avatar">{initials}</div>
             <span className="ap-user-name">{fullName}</span>
             <div className="ap-online-dot" />
           </div>
-
           {open && (
             <div className="ap-dropdown">
               <div className="ap-dropdown-item" style={{ cursor: 'default', fontSize: 11, opacity: 0.6 }}>
