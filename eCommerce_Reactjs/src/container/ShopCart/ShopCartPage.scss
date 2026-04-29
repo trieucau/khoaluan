@@ -281,9 +281,61 @@
   .box-shopcart-bottom {
     flex-direction: column;
     align-items: flex-start;
+    padding: 16px;
   }
-  .content-right { text-align: left; }
-  .checkout_btn_inner { justify-content: flex-start; }
-  .cart_inner .table { font-size: 13px; }
-  .cart-item-img { width: 56px; height: 70px; }
+  .content-right { text-align: left; width: 100%; }
+  .checkout_btn_inner { justify-content: flex-start; margin-top: 10px; }
+  
+  /* Chuyển table thành card layout trên mobile */
+  .cart_inner .table thead {
+    display: none; /* Ẩn header của table */
+  }
+  
+  .cart_inner .table tbody,
+  .cart_inner .table tr,
+  .cart_inner .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .cart_inner .table tr {
+    margin-bottom: 16px;
+    border-bottom: 3px solid var(--c-bg) !important;
+    padding-bottom: 16px;
+    position: relative;
+  }
+
+  .cart_inner .table td {
+    border: none !important;
+    padding: 8px 16px !important;
+    text-align: left !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Khối sản phẩm đầu tiên (Ảnh + Tên) chiếm full width */
+  .cart_inner .table td:nth-child(1) {
+    display: block;
+  }
+
+  /* Các thẻ TD khác (Giá, Số lượng, Tổng tiền) */
+  .cart_inner .table td:nth-child(2)::before { content: "Giá:"; font-weight: bold; color: var(--c-text-soft); }
+  .cart_inner .table td:nth-child(3)::before { content: "Số lượng:"; font-weight: bold; color: var(--c-text-soft); }
+  .cart_inner .table td:nth-child(4)::before { content: "Tổng tiền:"; font-weight: bold; color: var(--c-text-soft); }
+
+  /* Đưa nút xóa lên góc trên phải của mỗi thẻ */
+  .cart_inner .table td.link-delete {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    width: auto;
+    padding: 0 !important;
+    background: rgba(231, 76, 60, 0.1);
+    color: #E74C3C;
+    border-radius: 8px;
+    padding: 4px 10px !important;
+    font-size: 13px;
+    font-weight: 600;
+  }
 }

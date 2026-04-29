@@ -123,16 +123,10 @@
 /* Logout item */
 .user-sidebar__nav-item--logout a,
 .user-sidebar__nav-item--logout span {
-  color: var(--c-error);
   margin-top: 4px;
   border-top: 1px solid var(--c-border);
   border-radius: 0;
   padding-top: 14px;
-}
-
-.user-sidebar__nav-item--logout a:hover {
-  background: #fff0f0;
-  color: var(--c-error);
 }
 
 /* ── Content Area ─────────────────────────────────────────── */

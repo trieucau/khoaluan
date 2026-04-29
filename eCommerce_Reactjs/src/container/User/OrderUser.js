@@ -126,8 +126,7 @@ function OrderUser() {
               });
 
               return (
-                <div key={index}>
-                  <div className="box-list-order">
+                <div key={index} className="box-list-order">
                     {/* HEADER */}
                     <div className="content-top">
                       <div className="content-left">
@@ -143,20 +142,6 @@ function OrderUser() {
                       <div className="content-right">
                         {item.statusOrderData?.value}
                         {item.isPaymentOnlien == 1 && ' | Đã thanh toán | '}
-
-                        {(item.statusId === 'S7' || item.statusId === 'S8') &&
-                          item.statusReason && (
-                            <button
-                              className="btn btn-sm btn-outline-danger p-1"
-                              data-bs-toggle="tooltip"
-                              data-bs-placement="top"
-                              title={`Chúng tôi rất tiếc vì đơn hàng chưa thể giao thành công.
-Lý do: ${item.statusReason}.
-Chúng tôi sẽ sớm liên hệ để hỗ trợ.`}
-                            >
-                              Lý do ...
-                            </button>
-                          )}
                       </div>
                     </div>
 
@@ -178,10 +163,7 @@ Chúng tôi sẽ sớm liên hệ để hỗ trợ.`}
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* FOOTER */}
+                    ))}                  {/* FOOTER */}
                   <div className="content-bottom">
                     <div className="up">
                       <span>Tổng số tiền: </span>
@@ -195,14 +177,13 @@ Chúng tôi sẽ sớm liên hệ để hỗ trợ.`}
                     </div>
 
                     <div className="down">
-                      {(item.statusId === 'S4' || item.statusId === 'S5') && (
-                        <Link
-                          to={`/user/order-tracking/${item.id}`}
-                          className="btn btn-sm btn-outline-primary me-2"
-                        >
-                          Theo dõi đơn
-                        </Link>
-                      )}
+                      <Link
+                        to={`/user/order-tracking/${item.id}`}
+                        className="btn btn-sm btn-outline-primary me-2"
+                        style={{ padding: '6px 14px', borderRadius: '50px' }}
+                      >
+                        Theo dõi đơn
+                      </Link>
 
                       {/* CHỈ cho hủy khi S3 - Chờ xác nhận */}
                       {item.statusId === 'S3' && (

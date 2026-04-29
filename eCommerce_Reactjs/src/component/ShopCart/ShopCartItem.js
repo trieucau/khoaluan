@@ -54,16 +54,17 @@ function ShopCartItem(props) {
   return (
     <tr>
       <td>
-        <div className="media">
-          <div className="d-flex">
+        <div className="media" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="d-flex" style={{ flexShrink: 0 }}>
             <img
-              style={{ width: '147px', height: '100px', objectFit: 'cover' }}
+              className="cart-item-img"
               src={props.image}
-              alt=""
+              alt={props.name}
+              style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
             />
           </div>
           <div className="media-body">
-            <p className="text-justify">{props.name} </p>
+            <p className="cart-item-name" style={{ margin: 0 }}>{props.name} </p>
           </div>
         </div>
       </td>

@@ -1,12 +1,12 @@
 import { Marker, Polyline } from 'react-leaflet';
 import BaseMap from '../../component/Map/BaseMap';
 import { useOSRMRoute } from '../../hooks/useOSRMRoute';
-import { truckIcon, deliveryIcon } from './mapIcons';
+import { truckIcon, deliveryIcon, warehouseIcon } from './mapIcons';
 
 const isInVietnam = ({ lat, lng }) =>
   lat >= 8.18 && lat <= 23.39 && lng >= 102.14 && lng <= 109.46;
 
-const TrackingMap = ({ shipperLoc, deliveryCoords }) => {
+const TrackingMap = ({ shipperLoc, deliveryCoords, statusId }) => {
   const isDomestic =
     shipperLoc && deliveryCoords && isInVietnam(shipperLoc) && isInVietnam(deliveryCoords);
 
@@ -16,7 +16,12 @@ const TrackingMap = ({ shipperLoc, deliveryCoords }) => {
   return (
     <div style={{ position: 'relative' }}>
       <BaseMap height={420}>
-        {shipperLoc && <Marker position={[shipperLoc.lat, shipperLoc.lng]} icon={truckIcon} />}
+        {shipperLoc && (
+          <Marker 
+            position={[shipperLoc.lat, shipperLoc.lng]} 
+            icon={statusId === 'S4' ? warehouseIcon : truckIcon} 
+          />
+        )}
         {deliveryCoords && <Marker position={[deliveryCoords.lat, deliveryCoords.lng]} icon={deliveryIcon} />}
 
         {/* Nội địa → route OSRM */}

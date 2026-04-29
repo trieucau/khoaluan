@@ -119,8 +119,15 @@ const OrderTracking = () => {
       {/* Failed/Cancelled banner */}
       {isFailed && (
         <div className="ot-cancelled-banner">
-          <i className={statusCfg.icon} />
-          {order.statusId === 'S7' ? 'Đơn hàng này đã bị hủy' : 'Giao hàng thất bại'}
+          <div className="ot-cancelled-banner__header">
+            <i className={statusCfg.icon} />
+            {order.statusId === 'S7' ? 'Đơn hàng này đã bị hủy' : 'Giao hàng thất bại'}
+          </div>
+          {order.statusReason && (
+            <div className="ot-cancelled-banner__reason">
+              <strong>Lý do:</strong> {order.statusReason}
+            </div>
+          )}
         </div>
       )}
 
@@ -206,13 +213,35 @@ const OrderTracking = () => {
 
         {showMap ? (
           <div className="ot-map-wrapper">
-            <TrackingMap shipperLoc={shipperLoc} deliveryCoords={deliveryCoords} />
+            <TrackingMap 
+              shipperLoc={shipperLoc} 
+              deliveryCoords={deliveryCoords} 
+              statusId={order.statusId} 
+            />
           </div>
         ) : (
           <div className="ot-map-unavailable">
-            <i className="fa-solid fa-map" />
-            <p>Bản đồ khả dụng khi shipper đang lấy hoặc giao hàng</p>
-            <span>Trạng thái hiện tại: <strong>{statusCfg.label}</strong></span>
+            {order.statusId === 'S3' && (
+              <>
+                <i className="fa-solid fa-store" />
+                <p>Đơn hàng đang chờ Shop xác nhận</p>
+                <span>Bản đồ lộ trình sẽ xuất hiện sau khi Shop chuẩn bị xong hàng</span>
+              </>
+            )}
+            {order.statusId === 'S6' && (
+              <>
+                <i className="fa-solid fa-box-open" style={{ color: '#2ECC71' }} />
+                <p>Đơn hàng đã được giao thành công!</p>
+                <span>Cảm ơn bạn đã mua sắm tại Solana</span>
+              </>
+            )}
+            {isFailed && (
+              <>
+                <i className="fa-solid fa-ban" style={{ color: '#E74C3C' }} />
+                <p>Bản đồ theo dõi đã bị vô hiệu hóa</p>
+                <span>Giao dịch không thành công</span>
+              </>
+            )}
           </div>
         )}
       </div>

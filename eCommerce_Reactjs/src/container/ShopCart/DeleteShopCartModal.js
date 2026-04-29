@@ -1,54 +1,36 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import '../ShopCart/AddressModal.css'; // Reuse the beautiful confirm modal CSS
 
-import moment from 'moment';
-import { toast } from 'react-toastify';
+const DeleteShopCartModal = ({ isOpenModal, closeModal, handleDeleteShopCart, name }) => {
+  if (!isOpenModal) return null;
 
-import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from 'reactstrap';
-
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-  useParams,
-} from 'react-router-dom';
-
-const DeleteShopCartModal = (props) => {
-  let handleCloseModal = () => {
-    props.closeModal();
-  };
-  let handleDelete = () => {
-    props.handleDeleteShopCart();
-  };
   return (
-    <div className="">
-      <Modal isOpen={props.isOpenModal} className={'booking-modal-container'} size="md" centered>
-        <div className="modal-header">
-          <h5 className="modal-title">Bạn chắc chắn muốn bỏ sản phẩm này?</h5>
-          <button
-            onClick={handleCloseModal}
-            type="button"
-            className="btn btn-time"
-            aria-label="Close"
-          >
-            X
+    <div className="addr-modal-overlay" onClick={closeModal}>
+      <div 
+        className="addr-confirm-dialog" 
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="addr-confirm-icon">
+          <i className="fa-solid fa-trash-can" />
+        </div>
+        
+        <h3 className="addr-confirm-title">Xóa sản phẩm?</h3>
+        <p className="addr-confirm-desc">
+          Bạn có chắc chắn muốn bỏ sản phẩm <strong>{name}</strong> khỏi giỏ hàng không?
+        </p>
+
+        <div className="addr-confirm-actions">
+          <button className="addr-btn-cancel" onClick={closeModal}>
+            Hủy
+          </button>
+          <button className="addr-btn-delete-confirm" onClick={handleDeleteShopCart}>
+            <i className="fa-solid fa-trash" />
+            Đồng ý xóa
           </button>
         </div>
-        <ModalBody>
-          <div style={{ padding: '10px 20px', fontSize: '20px' }} className="row">
-            {props.name}
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={handleDelete}>
-            Thực hiện
-          </Button>{' '}
-          <Button onClick={handleCloseModal}>Hủy</Button>
-        </ModalFooter>
-      </Modal>
+      </div>
     </div>
   );
 };
+
 export default DeleteShopCartModal;

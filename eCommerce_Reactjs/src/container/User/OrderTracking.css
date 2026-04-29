@@ -186,20 +186,34 @@
 /* ── Cancelled banner ────────────────────────────────────── */
 .ot-cancelled-banner {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 6px;
   background: rgba(231, 76, 60, 0.08);
   border: 1.5px solid rgba(231, 76, 60, 0.25);
   border-radius: 16px;
-  padding: 14px 20px;
+  padding: 16px 20px;
   color: #E74C3C;
-  font-weight: 700;
-  font-size: 15px;
   margin-bottom: 20px;
 }
 
-.ot-cancelled-banner i {
+.ot-cancelled-banner__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.ot-cancelled-banner__header i {
   font-size: 20px;
+}
+
+.ot-cancelled-banner__reason {
+  font-size: 14px;
+  font-weight: 500;
+  color: #c0392b;
+  margin-left: 32px;
+  line-height: 1.5;
 }
 
 /* ── Info grid ───────────────────────────────────────────── */
