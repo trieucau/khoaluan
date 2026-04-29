@@ -206,8 +206,10 @@ const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const token = localStorage.getItem('token');
 
-  // Chỉ hiện với user đã đăng nhập
-  if (!token) return null;
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+
+  // Chỉ hiện với customer R2
+  if (!token || userData.roleId !== 'R2') return null;
 
   return (
     <div className="chat-widget">

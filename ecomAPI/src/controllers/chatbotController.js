@@ -5,6 +5,13 @@ const chat = async (req, res) => {
     const { messages } = req.body;
     const userId = req.user.id; // inject bởi verifyTokenUser middleware
 
+    if (req.user.roleId !== 'R2') {
+      return res.status(403).json({
+        errCode: 3,
+        errMessage: 'Chức năng này chỉ dành cho khách hàng',
+      });
+    }
+
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({
         errCode: 1,
