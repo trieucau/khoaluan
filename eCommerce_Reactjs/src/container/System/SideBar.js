@@ -18,7 +18,7 @@ const SideBar = () => {
               <div className="sb-nav-link-icon">
                 <i className="fas fa-tachometer-alt" />
               </div>
-              Trang chủ
+              Trang quản trị
             </Link>
 
             <div className="sb-sidenav-menu-heading">Quản lý</div>
@@ -476,7 +476,6 @@ const SideBar = () => {
             )}
           </div>
         </div>
-        <div className="sb-sidenav-footer">Trang quản trị</div>
       </nav>
     </div>
   );

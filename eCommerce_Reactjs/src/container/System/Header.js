@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 const Header = () => {
   const [user, setUser] = useState({});
   let handleLogout = () => {
@@ -14,16 +14,17 @@ const Header = () => {
   }, []);
 
   return (
-    <nav className="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <nav className="sb-topnav navbar navbar-expand navbar-dark bg-green">
       {/* Navbar Brand*/}
-      <a className="navbar-brand ps-3" href="index.html">
-        Trang quản trị
-      </a>
+      <NavLink to="/admin" className="navbar-brand logo_h">
+        <img src="/resources/img/logo.png" alt="Logo" style={{ width: '170px', height: 'auto' }} />
+      </NavLink>
       {/* Sidebar Toggle*/}
       <button
         className="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0"
         id="sidebarToggle"
         href="#!"
+        onClick={() => document.body.classList.toggle('sb-sidenav-toggled')}
       >
         <i className="fas fa-bars" />
       </button>
