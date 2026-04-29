@@ -31,12 +31,13 @@ const ShipperHeader = ({ onToggleSidebar }) => {
 
   return (
     <nav className="sp-header-bar">
-      {/* Hamburger — mobile only */}
+      {/* Hamburger */}
       <button className="sp-hamburger" onClick={onToggleSidebar} aria-label="Mở menu">☰</button>
 
       <Link className="sp-logo" to="/shipper" style={{ marginLeft: 8 }}>
         <div className="sp-logo-icon" style={{ background: 'transparent', padding: 0, overflow: 'hidden' }}>
-          <img src="/favicon.ico" alt="ShipperHub" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 6 }} />
+          <img src="/favicon.ico" alt="ShipperHub"
+            style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 6 }} />
         </div>
         <span className="sp-logo-text">ShipperHub</span>
       </Link>
@@ -48,12 +49,28 @@ const ShipperHeader = ({ onToggleSidebar }) => {
             <span className="sp-user-name">{fullName}</span>
             <div className="sp-online-dot" />
           </button>
+
           {open && (
             <div className="sp-dropdown">
-              <div className="sp-dropdown-item" style={{ cursor: 'default', opacity: 0.7, fontSize: 12 }}>
+              {/* User info */}
+              <div className="sp-dropdown-item" style={{ cursor: 'default', fontSize: 12, opacity: 0.7 }}>
                 <span>🚚</span><span>{fullName}</span>
               </div>
               <div className="sp-dropdown-divider" />
+
+              {/* Profile */}
+              <Link to="/shipper/profile" className="sp-dropdown-item" onClick={() => setOpen(false)}>
+                <span>👤</span><span>Thông tin cá nhân</span>
+              </Link>
+
+              {/* Change password */}
+              <Link to="/shipper/change-password" className="sp-dropdown-item" onClick={() => setOpen(false)}>
+                <span>🔐</span><span>Đổi mật khẩu</span>
+              </Link>
+
+              <div className="sp-dropdown-divider" />
+
+              {/* Logout */}
               <div className="sp-dropdown-item" onClick={handleLogout} style={{ color: '#fca5a5' }}>
                 <span>🚪</span><span>Đăng xuất</span>
               </div>
