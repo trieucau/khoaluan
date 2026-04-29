@@ -117,8 +117,8 @@ function Footer() {
         {/* Footer Bottom */}
         <div className="footer-bottom row mt-4">
           <p className="footer-text m-0 col-lg-12 text-center">
-            Bản quyền ©2026 Đồ án tốt nghiệp của <b>Phan Thành Triều</b> và <b>Võ Quang Tuấn Trí</b>{' '}
-            ❤️
+            Bản quyền ©{new Date().getFullYear()} Đồ án tốt nghiệp của <b>Phan Thành Triều</b> và{' '}
+            <b>Võ Quang Tuấn Trí</b> ❤️
           </p>
         </div>
       </div>

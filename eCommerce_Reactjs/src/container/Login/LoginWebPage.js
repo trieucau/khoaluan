@@ -183,7 +183,7 @@ const LoginWebPage = () => {
                   MR <span>.</span>
                 </a>
                 <div className="heading">
-                  <h2>Esier</h2>
+                  <h2>SOL</h2>
                   <p>Sự lựa chọn của bạn</p>
                 </div>
               </div>
