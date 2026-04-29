@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const ShipperHeader = () => {
+const ShipperHeader = ({ onToggleSidebar }) => {
   const [user, setUser] = useState({});
   const [open, setOpen] = useState(false);
   const dropRef = useRef(null);
@@ -12,7 +12,6 @@ const ShipperHeader = () => {
     setUser(userData);
   }, []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e) => {
       if (dropRef.current && !dropRef.current.contains(e.target)) setOpen(false);
@@ -32,40 +31,29 @@ const ShipperHeader = () => {
 
   return (
     <nav className="sp-header-bar">
-      {/* Logo */}
-      <Link className="sp-logo" to="/shipper">
+      {/* Hamburger — mobile only */}
+      <button className="sp-hamburger" onClick={onToggleSidebar} aria-label="Mở menu">☰</button>
+
+      <Link className="sp-logo" to="/shipper" style={{ marginLeft: 8 }}>
         <div className="sp-logo-icon">🚚</div>
         <span className="sp-logo-text">ShipperHub</span>
       </Link>
 
-      {/* Right controls */}
       <div className="sp-header-right">
-        {/* User button */}
         <div ref={dropRef} style={{ position: 'relative' }}>
-          <button
-            className="sp-user-btn"
-            onClick={() => setOpen((v) => !v)}
-            style={{ border: 'none' }}
-          >
+          <button className="sp-user-btn" onClick={() => setOpen(v => !v)} style={{ border: 'none' }}>
             <div className="sp-avatar">{initials}</div>
             <span className="sp-user-name">{fullName}</span>
             <div className="sp-online-dot" />
           </button>
-
           {open && (
             <div className="sp-dropdown">
               <div className="sp-dropdown-item" style={{ cursor: 'default', opacity: 0.7, fontSize: 12 }}>
-                <span>👤</span>
-                <span>{fullName}</span>
+                <span>🚚</span><span>{fullName}</span>
               </div>
               <div className="sp-dropdown-divider" />
-              <div
-                className="sp-dropdown-item"
-                onClick={handleLogout}
-                style={{ color: '#fca5a5' }}
-              >
-                <span>🚪</span>
-                <span>Đăng xuất</span>
+              <div className="sp-dropdown-item" onClick={handleLogout} style={{ color: '#fca5a5' }}>
+                <span>🚪</span><span>Đăng xuất</span>
               </div>
             </div>
           )}
