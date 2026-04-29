@@ -9,34 +9,22 @@ import moment from 'moment';
 import { truckIcon } from '../Map/mapIcons';
 import { useOSRMRoute } from '../../hooks/useOSRMRoute';
 import { getDistance } from '../../utils/MapUtils';
-import * as turf from '@turf/turf';
-import vietnamBorder from '../../data/vietnamBorder.json';
 import OrderPanel from '../Shipper/OrderPanel';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6969';
-const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving';
+const OSRM_BASE   = 'https://router.project-osrm.org/route/v1/driving';
 
-const vietnamPolygon = turf.feature(vietnamBorder.features[0].geometry);
-const isInVietnam = (lat, lng) => turf.booleanPointInPolygon(turf.point([lng, lat]), vietnamPolygon);
-
+/* ── Auto-fit map to markers ── */
 const FitBounds = ({ positions }) => {
   const map = useMap();
   useEffect(() => {
-    if (positions.length > 0) map.fitBounds(L.latLngBounds(positions), { padding: [60, 60] });
+    const valid = positions.filter(p => p && p[0] != null && p[1] != null);
+    if (valid.length > 0) map.fitBounds(L.latLngBounds(valid), { padding: [60, 60] });
   }, [positions, map]);
   return null;
 };
 
-const fetchOSRMDuration = async (fromLat, fromLng, toLat, toLng) => {
-  try {
-    const res = await fetch(`${OSRM_BASE}/${fromLng},${fromLat};${toLng},${toLat}?overview=false`);
-    const data = await res.json();
-    if (data?.routes?.[0]?.duration != null) return data.routes[0].duration;
-  } catch {}
-  return null;
-};
-
-// Numbered marker icon — gradient circle
+/* ── Numbered delivery marker ── */
 const createNumberIcon = (number) =>
   L.divIcon({
     html: `<div style="
@@ -52,31 +40,43 @@ const createNumberIcon = (number) =>
     iconAnchor: [15, 15],
   });
 
+/* ── OSRM ETA helper ── */
+const fetchOSRMDuration = async (fromLat, fromLng, toLat, toLng) => {
+  try {
+    const res  = await fetch(`${OSRM_BASE}/${fromLng},${fromLat};${toLng},${toLat}?overview=false`);
+    const data = await res.json();
+    if (data?.routes?.[0]?.duration != null) return data.routes[0].duration;
+  } catch {}
+  return null;
+};
+
+/* ── Main component ── */
 const ShipperMap = () => {
-  const socketRef = useRef(null);
+  const socketRef   = useRef(null);
   const intervalRef = useRef(null);
 
-  const [orderIds, setOrderIds] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [sending, setSending] = useState(false);
-  const [shipperLoc, setShipperLoc] = useState(null);
-  const [customers, setCustomers] = useState([]);
-  const [osrmDurations, setOsrmDurations] = useState({});
-  const [lastUpdate, setLastUpdate] = useState(null);
+  const [orderIds,     setOrderIds]     = useState([]);
+  const [orders,       setOrders]       = useState([]);
+  const [sending,      setSending]      = useState(false);
+  const [shipperLoc,   setShipperLoc]   = useState(null);
+  const [customers,    setCustomers]    = useState([]);
+  const [osrmDurations,setOsrmDurations]= useState({});
+  const [lastUpdate,   setLastUpdate]   = useState(null);
 
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  const userData  = JSON.parse(localStorage.getItem('userData') || '{}');
   const shipperId = userData?.id;
 
+  /* Fetch active orders */
   const fetchOrders = async () => {
     if (!shipperId) return;
     const res = await getAllOrdersByShipper({ shipperId, status: 'working' });
     if (res?.errCode === 0 && res?.data?.length) {
       setOrders(res.data);
-      setOrderIds(res.data.map((o) => o.id));
+      setOrderIds(res.data.map(o => o.id));
       setCustomers(
         res.data
-          .filter((o) => o?.addressUser?.lat && o?.addressUser?.lng)
-          .map((o) => ({ orderId: o.id, lat: parseFloat(o.addressUser.lat), lng: parseFloat(o.addressUser.lng) }))
+          .filter(o => o?.addressUser?.lat && o?.addressUser?.lng)
+          .map(o => ({ orderId: o.id, lat: parseFloat(o.addressUser.lat), lng: parseFloat(o.addressUser.lng) }))
       );
     }
   };
@@ -87,12 +87,13 @@ const ShipperMap = () => {
     return () => { clearInterval(intervalRef.current); socketRef.current?.disconnect(); };
   }, []);
 
+  /* Fetch ETA for each customer when shipper location updates */
   useEffect(() => {
     if (!shipperLoc || customers.length === 0) return;
     const fetchAll = async () => {
       const results = {};
       await Promise.all(
-        customers.map(async (c) => {
+        customers.map(async c => {
           results[c.orderId] = await fetchOSRMDuration(shipperLoc.lat, shipperLoc.lng, c.lat, c.lng);
         })
       );
@@ -101,34 +102,33 @@ const ShipperMap = () => {
     fetchAll();
   }, [shipperLoc, customers]);
 
+  /* Sort customers by distance from shipper */
   const sortedCustomers = useMemo(() => {
     if (!shipperLoc) return [];
-    return [...customers].sort(
-      (a, b) =>
-        getDistance(shipperLoc.lat, shipperLoc.lng, a.lat, a.lng) -
-        getDistance(shipperLoc.lat, shipperLoc.lng, b.lat, b.lng)
+    return [...customers].sort((a, b) =>
+      getDistance(shipperLoc.lat, shipperLoc.lng, a.lat, a.lng) -
+      getDistance(shipperLoc.lat, shipperLoc.lng, b.lat, b.lng)
     );
   }, [shipperLoc, customers]);
 
+  /* OSRM route (single polyline, no territory check) */
   const waypoints = shipperLoc && sortedCustomers.length > 0 ? [shipperLoc, ...sortedCustomers] : [];
   const { routeCoords } = useOSRMRoute(waypoints);
 
-  const { insideRoute, outsideRoute } = useMemo(() => {
-    if (!routeCoords || routeCoords.length < 2) return { insideRoute: [], outsideRoute: [] };
-    const inside = [], outside = [];
-    for (let i = 0; i < routeCoords.length - 1; i++) {
-      const [cur, nxt] = [routeCoords[i], routeCoords[i + 1]];
-      if (isInVietnam(cur[0], cur[1]) && isInVietnam(nxt[0], nxt[1])) inside.push([cur, nxt]);
-      else outside.push([cur, nxt]);
-    }
-    return { insideRoute: inside, outsideRoute: outside };
-  }, [routeCoords]);
+  /* FitBounds positions */
+  const fitPositions = useMemo(() => {
+    const pts = [];
+    if (shipperLoc) pts.push([shipperLoc.lat, shipperLoc.lng]);
+    sortedCustomers.forEach(c => pts.push([c.lat, c.lng]));
+    return pts;
+  }, [shipperLoc, sortedCustomers]);
 
+  /* GPS controls */
   const startSendingLocation = () => {
     if (!navigator.geolocation) { toast.error('Trình duyệt không hỗ trợ GPS'); return; }
     setSending(true);
     const send = () => {
-      navigator.geolocation.getCurrentPosition((pos) => {
+      navigator.geolocation.getCurrentPosition(pos => {
         const { latitude: lat, longitude: lng } = pos.coords;
         setShipperLoc({ lat, lng });
         setLastUpdate(moment().format('HH:mm:ss'));
@@ -147,6 +147,7 @@ const ShipperMap = () => {
 
   return (
     <div className="sp-page">
+      {/* Header */}
       <div className="sp-page-header">
         <div className="sp-page-title">🗺️ Bản đồ giao hàng</div>
         <div className="sp-page-subtitle">Theo dõi vị trí và tuyến đường giao hàng realtime</div>
@@ -186,34 +187,43 @@ const ShipperMap = () => {
         </div>
       </div>
 
-      {/* Map wrapper */}
-      <div style={{ position: 'relative', height: 620, borderRadius: 'var(--sp-radius)', overflow: 'hidden', border: '1px solid var(--sp-border)' }}>
+      {/* Map */}
+      <div style={{ position:'relative', height:540, borderRadius:'var(--sp-radius)', overflow:'hidden', border:'1px solid var(--sp-border)' }}>
         <OrderPanel orders={orders} shipperLoc={shipperLoc} osrmDurations={osrmDurations} />
 
-        <MapContainer center={[16, 108]} zoom={6} style={{ height: '100%', width: '100%' }}>
+        <MapContainer center={[16, 108]} zoom={6} style={{ height:'100%', width:'100%' }}
+          preferCanvas={true}>
           <TileLayer
             attribution="© OpenStreetMap"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maxZoom={19}
+            keepBuffer={2}
           />
+
+          {/* Shipper marker */}
           {shipperLoc && (
             <Marker position={[shipperLoc.lat, shipperLoc.lng]} icon={truckIcon}>
               <Popup>🚚 Vị trí của bạn</Popup>
             </Marker>
           )}
+
+          {/* Delivery destination markers */}
           {sortedCustomers.map((c, idx) => (
             <Marker key={c.orderId} position={[c.lat, c.lng]} icon={createNumberIcon(idx + 1)}>
               <Popup>📦 Đơn #{c.orderId}</Popup>
             </Marker>
           ))}
-          {insideRoute.map((seg, i) => (
-            <Polyline key={`in-${i}`} positions={seg} pathOptions={{ color: '#3b82f6', weight: 5, opacity: 0.85 }} />
-          ))}
-          {outsideRoute.map((seg, i) => (
-            <Polyline key={`out-${i}`} positions={seg} pathOptions={{ color: '#f59e0b', weight: 4, dashArray: '10,8', opacity: 0.7 }} />
-          ))}
-          {routeCoords.length > 0 && (
-            <FitBounds positions={[[shipperLoc?.lat, shipperLoc?.lng], ...sortedCustomers.map((c) => [c.lat, c.lng])]} />
+
+          {/* Route polyline — single unified line, no territory split */}
+          {routeCoords.length > 1 && (
+            <Polyline
+              positions={routeCoords}
+              pathOptions={{ color: '#3b82f6', weight: 5, opacity: 0.9, lineJoin: 'round', lineCap: 'round' }}
+            />
           )}
+
+          {/* Auto-fit */}
+          {fitPositions.length > 0 && <FitBounds positions={fitPositions} />}
         </MapContainer>
       </div>
     </div>

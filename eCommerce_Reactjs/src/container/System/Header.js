@@ -61,7 +61,9 @@ const Header = ({ onToggleSidebar }) => {
       </button>
 
       <Link className="ap-logo" to="/admin" style={{ marginLeft: 8 }}>
-        <div className="ap-logo-icon">⚙️</div>
+        <div className="ap-logo-icon" style={{ background: 'transparent', padding: 0, overflow: 'hidden' }}>
+          <img src="/favicon.ico" alt="AdminHub" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 6 }} />
+        </div>
         <span className="ap-logo-text">AdminHub</span>
       </Link>
 

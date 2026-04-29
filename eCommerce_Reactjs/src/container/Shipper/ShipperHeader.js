@@ -35,7 +35,9 @@ const ShipperHeader = ({ onToggleSidebar }) => {
       <button className="sp-hamburger" onClick={onToggleSidebar} aria-label="Mở menu">☰</button>
 
       <Link className="sp-logo" to="/shipper" style={{ marginLeft: 8 }}>
-        <div className="sp-logo-icon">🚚</div>
+        <div className="sp-logo-icon" style={{ background: 'transparent', padding: 0, overflow: 'hidden' }}>
+          <img src="/favicon.ico" alt="ShipperHub" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 6 }} />
+        </div>
         <span className="sp-logo-text">ShipperHub</span>
       </Link>
 
