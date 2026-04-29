@@ -240,7 +240,6 @@ let updateStatusOrder = (data) => {
 
         await order.save();
 
-        // FIX 2: kiểm tra dataOrder tồn tại trước khi truy cập
         if (
           data.statusId == 'S7' &&
           data.dataOrder &&
@@ -937,7 +936,6 @@ let confirmOrderVnpay = (data) => {
       delete vnp_Params['vnp_SecureHash'];
       delete vnp_Params['vnp_SecureHashType'];
 
-      // FIX 3: dùng sortObject không encode key, chỉ sort theo alphabet
       vnp_Params = sortObjectForVerify(vnp_Params);
 
       var secretKey = process.env.VNP_HASHSECRET;
@@ -945,7 +943,7 @@ let confirmOrderVnpay = (data) => {
       var signData = querystring.stringify(vnp_Params, { encode: false });
 
       var hmac = crypto.createHmac('sha512', secretKey);
-      // FIX 1: Buffer.from -> Buffer.from
+
       var signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
       if (secureHash === signed) {

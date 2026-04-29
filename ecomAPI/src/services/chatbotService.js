@@ -5,33 +5,7 @@ require('dotenv').config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// ╔══════════════════════════════════════════════════════════╗
-// ║              BẢNG PHÂN LOẠI AN TOÀN DB                  ║
-// ╠══════════════════════════════════════════════════════════╣
-// ║  ✅ KHAI THÁC TOÀN PHẦN (public data)                   ║
-// ║     Products, ProductDetail, ProductDetailSize (stock)   ║
-// ║     Blog, Banner, Comment(star+content), TypeShip        ║
-// ║     Voucher, TypeVoucher, Allcode                        ║
-// ║                                                          ║
-// ║  ⚠️  KHAI THÁC CÓ GIỚI HẠN (chỉ data của chính user)   ║
-// ║     Orders + OrderDetail (verify qua AddressUser.userId) ║
-// ║     ShopCart (userId đang chat)                          ║
-// ║     User profile (firstName/lastName/email — chính mình) ║
-// ║     AddressUser (chỉ địa chỉ của mình, không lấy lat/lng)║
-// ║     ShipperLocation (chỉ trả về có/không — không tọa độ)║
-// ║                                                          ║
-// ║  ❌ TUYỆT ĐỐI KHÔNG CHẠM                                ║
-// ║     User.password, User.usertoken, User.image(BLOB)      ║
-// ║     Receipt, ReceiptDetail (nội bộ nhập hàng)            ║
-// ║     Supplier.phonenumber, Supplier.email                 ║
-// ║     Statistic / doanh thu toàn shop                      ║
-// ║     VoucherUsed (lịch sử sử dụng của tất cả user)        ║
-// ║     AddressUser.lat/lng (tọa độ nhạy cảm)                ║
-// ╚══════════════════════════════════════════════════════════╝
-
-// ============================================================
 // FUNCTION DECLARATIONS — Gemini tự chọn gọi khi cần
-// ============================================================
 const functionDeclarations = [
   // ── PRODUCTS ─────────────────────────────────────────────
   {
@@ -278,10 +252,7 @@ const functionDeclarations = [
   },
 ];
 
-// ============================================================
 // FUNCTION IMPLEMENTATIONS
-// ============================================================
-
 // ── PRODUCTS ─────────────────────────────────────────────────
 const searchProducts = async ({ keyword = '', categoryCode, brandCode, limit = 5 }) => {
   try {
@@ -762,10 +733,7 @@ const getCurrentPromotions = async () => {
   }
 };
 
-// ============================================================
 // L2 IMPLEMENTATIONS
-// ============================================================
-
 // ── L2: CART CHI TIẾT ────────────────────────────────────────
 const getCartByUser = async (userId) => {
   try {

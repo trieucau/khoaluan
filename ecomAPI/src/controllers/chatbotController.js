@@ -1,8 +1,5 @@
 import chatbotService from '../services/chatbotService';
 
-// POST /api/chatbot
-// Body: { messages: [{role: 'user'|'assistant', content: string}] }
-// Header: Authorization: Bearer <token>  ← verifyTokenUser middleware tự xử lý
 const chat = async (req, res) => {
   try {
     const { messages } = req.body;

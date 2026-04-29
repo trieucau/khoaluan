@@ -2,9 +2,6 @@ const { Op } = require('sequelize');
 import db from '../models/index';
 import moment from 'moment';
 function compareDates(d1, d2) {
-  //  lon hon la false
-  //  be hon la true
-
   var parts = d1.split('/');
   var d1 = Number(parts[2] + parts[1] + parts[0]);
   parts = d2.split('/');

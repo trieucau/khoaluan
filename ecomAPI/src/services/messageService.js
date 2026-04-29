@@ -73,15 +73,14 @@ let loadMessage = (data) => {
         let limit = parseInt(data.limit) || 10;
         let offset = parseInt(data.offset) || 0;
 
-        // ✅ MỚI — lấy 20 tin mới nhất, rồi đảo lại để hiển thị đúng thứ tự
         let message = await db.Message.findAll({
           where: { roomId: data.roomId },
           limit: limit,
           offset: offset,
-          order: [['createdAt', 'DESC']], // ← lấy mới nhất trước
+          order: [['createdAt', 'DESC']],
         });
 
-        message = message.reverse(); // ← đảo lại để tin cũ ở trên, tin mới ở dưới
+        message = message.reverse();
 
         for (let i = 0; i < message.length; i++) {
           message[i].userData = await db.User.findOne({

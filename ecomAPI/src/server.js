@@ -57,10 +57,10 @@ socketIo.on('connection', (socket) => {
   });
   socket.on('sendDataClient', function (data) {
     sendMessage(data);
-    socketIo.to(data.roomId).emit('sendDataServer', { data }); // ← chỉ gửi cho room đó
+    socketIo.to(data.roomId).emit('sendDataServer', { data });
   });
   socket.on('loadRoomClient', function (data) {
-    socketIo.to(data.roomId).emit('loadRoomServer', { data }); // ← chỉ gửi cho room đó
+    socketIo.to(data.roomId).emit('loadRoomServer', { data });
   });
 
   // Shipper gửi vị trí realtime (mỗi 10s khi đang giao)
