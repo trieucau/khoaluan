@@ -8,10 +8,9 @@ import {
   getDetailUserById,
   getAllOrdersByUser,
 } from '../../services/userService';
-
 import AddressUsersModal from '../ShopCart/AdressUserModal';
 import MapAddressModal from '../Map/MapAddressModal';
-import './AddressUser.scss';
+import '../../css/user-pages.css';
 
 function AddressUser(props) {
   const [dataAddressUser, setDataAddressUser] = useState([]);
@@ -19,33 +18,25 @@ function AddressUser(props) {
   const [isOpenModalAddressUser, setIsOpenModalAddressUser] = useState(false);
   const [isOpenMapModal, setIsOpenMapModal] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
-  const [usedAddressIds, setUsedAddressIds] = useState([]); // ← THÊM
+  const [usedAddressIds, setUsedAddressIds] = useState([]);
 
-  /* ================= LOAD USER INFO ================= */
   const loadUserInfo = async () => {
-    let res = await getDetailUserById(props.id);
-    if (res && res.errCode === 0) {
-      setUserInfo(res.data);
-    }
+    const res = await getDetailUserById(props.id);
+    if (res?.errCode === 0) setUserInfo(res.data);
   };
 
-  /* ================= LOAD ADDRESS ================= */
   const loadDataAddress = async () => {
-    let res = await getAllAddressUserByUserIdService(props.id);
-    if (res && res.errCode === 0) {
-      setDataAddressUser(res.data);
-    }
+    const res = await getAllAddressUserByUserIdService(props.id);
+    if (res?.errCode === 0) setDataAddressUser(res.data);
   };
 
-  /* ================= LOAD USED ADDRESS IDS ================= */
   const loadUsedAddressIds = async () => {
-    let res = await getAllOrdersByUser(props.id);
-    if (res && res.errCode === 0) {
-      // Chỉ lấy id của địa chỉ có array order không rỗng
+    const res = await getAllOrdersByUser(props.id);
+    if (res?.errCode === 0) {
       const ids = [
         ...new Set(
           res.data
-            .filter((item) => item.order && item.order.length > 0) // ← chỉ lấy địa chỉ có đơn hàng
+            .filter((item) => item.order?.length > 0)
             .map((item) => item.id)
         ),
       ];
@@ -57,17 +48,16 @@ function AddressUser(props) {
     if (props.id) {
       loadDataAddress();
       loadUserInfo();
-      loadUsedAddressIds(); // ← THÊM
+      loadUsedAddressIds();
     }
   }, [props.id]);
 
-  /* ================= CREATE / EDIT ADDRESS ================= */
   const sendDataFromModalAddress = async (data) => {
     setIsOpenModalAddressUser(false);
     setAddressUserId('');
 
     if (!data.isActionUpdate) {
-      let res = await createNewAddressUserrService({
+      const res = await createNewAddressUserrService({
         shipName: data.shipName,
         shipAdress: data.shipAdress,
         shipEmail: data.shipEmail,
@@ -76,15 +66,10 @@ function AddressUser(props) {
         lat: data.lat,
         lng: data.lng,
       });
-
-      if (res && res.errCode === 0) {
-        toast.success('Thêm địa chỉ thành công!');
-        await loadDataAddress();
-      } else {
-        toast.error(res.errMessage);
-      }
+      if (res?.errCode === 0) { toast.success('Thêm địa chỉ thành công!'); await loadDataAddress(); }
+      else toast.error(res?.errMessage);
     } else {
-      let res = await editAddressUserService({
+      const res = await editAddressUserService({
         id: data.id,
         shipName: data.shipName,
         shipAdress: data.shipAdress,
@@ -94,37 +79,22 @@ function AddressUser(props) {
         lat: data.lat,
         lng: data.lng,
       });
-
-      if (res && res.errCode === 0) {
-        toast.success('Cập nhật địa chỉ thành công!');
-        await loadDataAddress();
-      } else {
-        toast.error(res.errMessage);
-      }
+      if (res?.errCode === 0) { toast.success('Cập nhật địa chỉ thành công!'); await loadDataAddress(); }
+      else toast.error(res?.errMessage);
     }
   };
 
-  /* ================= DELETE ================= */
   const handleDeleteAddress = async (id) => {
-    let res = await deleteAddressUserService({ data: { id } });
-
-    if (res && res.errCode === 0) {
-      toast.success('Xóa địa chỉ thành công');
-      await loadDataAddress();
-    } else {
-      toast.error('Xóa địa chỉ thất bại');
-    }
+    if (!window.confirm('Bạn có chắc muốn xóa địa chỉ này?')) return;
+    const res = await deleteAddressUserService({ data: { id } });
+    if (res?.errCode === 0) { toast.success('Đã xóa địa chỉ'); await loadDataAddress(); }
+    else toast.error('Xóa địa chỉ thất bại');
   };
 
-  /* ================= CREATE ADDRESS FROM MAP ================= */
   const handleCreateAddressFromMap = async (mapData) => {
-    if (!userInfo) {
-      toast.error('Không lấy được thông tin người dùng');
-      return;
-    }
-
-    let res = await createNewAddressUserrService({
-      shipName: userInfo.firstName + ' ' + userInfo.lastName,
+    if (!userInfo) { toast.error('Không lấy được thông tin người dùng'); return; }
+    const res = await createNewAddressUserrService({
+      shipName: `${userInfo.firstName} ${userInfo.lastName}`,
       shipPhonenumber: userInfo.phonenumber,
       shipEmail: userInfo.email,
       shipAdress: mapData.shipAdress,
@@ -132,99 +102,103 @@ function AddressUser(props) {
       lng: mapData.lng,
       userId: props.id,
     });
-
-    if (res && res.errCode === 0) {
+    if (res?.errCode === 0) {
       toast.success('Đã thêm địa chỉ mới');
       await loadDataAddress();
       setIsOpenMapModal(false);
-    } else {
-      toast.error('Thêm thất bại');
-    }
+    } else toast.error('Thêm địa chỉ thất bại');
   };
 
   return (
-    <div className="container rounded bg-white mt-5 mb-5">
-      <div className="row">
-        <div className="col-md-12 border-right border-left">
-          <div className="box-heading">
-            <div className="content-left">
-              <span>Địa chỉ của tôi</span>
-            </div>
-            <div className="content-right">
-              <i
-                className="fas fa-map-marked-alt"
-                style={{ cursor: 'pointer', color: '#ee4d2d', marginLeft: '15px' }}
+    <div className="user-page">
+      <div className="container-fluid px-0">
+        <div className="user-card">
+
+          {/* Header */}
+          <div className="address-header">
+            <h2 className="address-header__title">
+              <i className="fa-solid fa-location-dot" style={{ color: '#FF6B9D', marginRight: 10 }} />
+              Địa chỉ của tôi
+            </h2>
+            <div className="address-header__actions">
+              {/* Map button */}
+              <button
+                className="address-map-btn"
                 onClick={() => setIsOpenMapModal(true)}
-              ></i>
-              <div className="wrap-add-address">
-                <i className="fas fa-plus"></i>
-                <span
-                  onClick={() => {
-                    setAddressUserId(''); // ← reset để đảm bảo mode thêm mới
-                    setIsOpenModalAddressUser(true);
-                  }}
-                >
-                  Thêm địa chỉ mới
-                </span>
-              </div>
+              >
+                <i className="fa-solid fa-map-location-dot" />
+                Chọn từ bản đồ
+              </button>
+              {/* Manual add */}
+              <button
+                className="user-btn-primary"
+                style={{ fontSize: 13, padding: '10px 20px' }}
+                onClick={() => { setAddressUserId(''); setIsOpenModalAddressUser(true); }}
+              >
+                <i className="fa-solid fa-plus" />
+                Thêm địa chỉ mới
+              </button>
             </div>
           </div>
 
-          {dataAddressUser.map((item) => {
-            const isUsed = usedAddressIds.includes(item.id); // ← KIỂM TRA
+          {/* Address list */}
+          <div className="address-list">
+            {dataAddressUser.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#9B8EA4' }}>
+                <i className="fa-solid fa-map-pin" style={{ fontSize: 36, color: '#F0E6EE', marginBottom: 12, display: 'block' }} />
+                <p style={{ margin: 0, fontSize: 14 }}>Bạn chưa có địa chỉ nào. Hãy thêm địa chỉ mới!</p>
+              </div>
+            )}
 
-            return (
-              <div key={item.id} className="box-address-user">
-                <div className="content-left">
-                  <div className="box-label">
-                    <div className="label">
-                      <div>Họ Và Tên</div>
-                      <div>Số Điện Thoại</div>
-                      <div>Địa Chỉ</div>
+            {dataAddressUser.map((item) => {
+              const isUsed = usedAddressIds.includes(item.id);
+              return (
+                <div key={item.id} className="address-card">
+                  <div className="address-card__info">
+                    <div className="address-info-row">
+                      <span className="address-info-label">Họ và tên</span>
+                      <span className="address-info-value">{item.shipName}</span>
                     </div>
-
-                    <div className="content">
-                      <div>{item.shipName}</div>
-                      <div>{item.shipPhonenumber}</div>
-                      <div>{item.shipAdress}</div>
+                    <div className="address-info-row">
+                      <span className="address-info-label">Điện thoại</span>
+                      <span className="address-info-value">{item.shipPhonenumber}</span>
+                    </div>
+                    <div className="address-info-row">
+                      <span className="address-info-label">Email</span>
+                      <span className="address-info-value">{item.shipEmail}</span>
+                    </div>
+                    <div className="address-info-row">
+                      <span className="address-info-label">Địa chỉ</span>
+                      <span className="address-info-value">{item.shipAdress}</span>
                     </div>
                   </div>
-                </div>
 
-                <div className="content-right">
-                  {isUsed ? (
-                    // Địa chỉ đã dùng trong đơn hàng → ẩn Sửa/Xóa, hiện badge
-                    <span
-                      style={{
-                        fontSize: '12px',
-                        color: '#999',
-                        fontStyle: 'italic',
-                      }}
-                    >
-                      Đã dùng trong đơn hàng
-                    </span>
-                  ) : (
-                    // Địa chỉ chưa dùng → hiện Sửa + Xóa bình thường
-                    <>
-                      <span
-                        onClick={() => {
-                          setAddressUserId(item.id);
-                          setIsOpenModalAddressUser(true);
-                        }}
-                        className="text-underline"
-                      >
-                        Sửa
-                      </span>
-
-                      <span onClick={() => handleDeleteAddress(item.id)} className="text-underline">
-                        Xóa
-                      </span>
-                    </>
-                  )}
+                  <div className="address-card__actions">
+                    {isUsed ? (
+                      <span className="address-used-badge">Đã dùng trong đơn hàng</span>
+                    ) : (
+                      <>
+                        <button
+                          className="address-action-btn address-action-btn--edit"
+                          onClick={() => { setAddressUserId(item.id); setIsOpenModalAddressUser(true); }}
+                        >
+                          <i className="fa-solid fa-pen" style={{ marginRight: 5 }} />
+                          Sửa
+                        </button>
+                        <button
+                          className="address-action-btn address-action-btn--delete"
+                          onClick={() => handleDeleteAddress(item.id)}
+                        >
+                          <i className="fa-solid fa-trash" style={{ marginRight: 5 }} />
+                          Xóa
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -233,10 +207,7 @@ function AddressUser(props) {
         addressUserId={addressUserId}
         sendDataFromModalAddress={sendDataFromModalAddress}
         isOpenModal={isOpenModalAddressUser}
-        closeModaAddressUser={() => {
-          setIsOpenModalAddressUser(false);
-          setAddressUserId(''); // ← reset khi đóng modal
-        }}
+        closeModaAddressUser={() => { setIsOpenModalAddressUser(false); setAddressUserId(''); }}
       />
 
       {/* Modal Map */}

@@ -1,7 +1,10 @@
 import React from 'react';
 import './css/App.css';
+import './css/customer.css';
+import './css/user-pages.css';
 import Header from './container/Header/Header';
 import Footer from './container/Footer/Footer';
+import AboutPage from './container/About/AboutPage';
 import HomePage from './container/Home/HomePage';
 import ShopPage from './container/Shop/ShopPage';
 import DetailProductPage from './container/DetailProduct/DetailProductPage';
@@ -153,6 +156,7 @@ function App() {
           element={
             <>
               <Header />
+              <AboutPage />
               <Footer />
             </>
           }

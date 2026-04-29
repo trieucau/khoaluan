@@ -1,41 +1,65 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './HomeBlog.scss';
 
-function HomeBlogItem(props) {
+function HomeBlogItem({ data }) {
+  if (!data) return null;
+  const authorName = data.userData
+    ? `${data.userData.firstName || ''} ${data.userData.lastName || ''}`.trim()
+    : 'Solana';
+  const commentCount = data.commentData ? data.commentData.length : 0;
+
+  // Format date
+  const date = data.createdAt
+    ? new Date(data.createdAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    : '';
+
   return (
     <div className="col-lg-4 col-md-6">
-      <div className="single-blog">
-        <div className="thumb">
+      <div className="blog-card">
+        {/* Thumbnail */}
+        <Link to={`/blog-detail/${data.id}`} className="blog-card__thumb">
           <img
-            style={{
-              width: '350px',
-              height: '243px',
-              objectFit: 'cover',
-              cursor: 'pointer',
-            }}
-            className="img-fluid"
-            src={props.data.image}
-            alt=""
+            src={data.image}
+            alt={data.title}
+            loading="lazy"
           />
-        </div>
-        <div className="short_details">
-          <div className="meta-top d-flex">
-            <a>{props.data.userData.firstName + ' ' + props.data.userData.lastName}</a>
-            <a>
-              <i className="ti-comments-smiley" />
-              {props.data.commentData.length} Bình luận
-            </a>
+          <div className="blog-card__overlay" />
+        </Link>
+
+        {/* Content */}
+        <div className="blog-card__body">
+          {/* Meta */}
+          <div className="blog-card__meta">
+            <span className="blog-card__author">
+              <i className="fa-solid fa-user-pen" />
+              {authorName}
+            </span>
+            {date && (
+              <span className="blog-card__date">
+                <i className="fa-regular fa-calendar" />
+                {date}
+              </span>
+            )}
+            <span className="blog-card__comment">
+              <i className="fa-regular fa-comment" />
+              {commentCount}
+            </span>
           </div>
-          <Link className="d-block" to={`/blog-detail/${props.data.id}`}>
-            <h4>{props.data.title}</h4>
+
+          {/* Title */}
+          <Link to={`/blog-detail/${data.id}`}>
+            <h4 className="blog-card__title">{data.title}</h4>
           </Link>
-          <div className="text-wrap">
-            <p>{props.data.description}</p>
-          </div>
-          <a className="blog_btn">
-            Xem thêm
-            <span className="ml-2 ti-arrow-right" />
-          </a>
+
+          {/* Description */}
+          <p className="blog-card__desc">{data.description}</p>
+
+          {/* Read more */}
+          <Link to={`/blog-detail/${data.id}`} className="blog-card__cta">
+            Đọc thêm
+            <i className="fa-solid fa-arrow-right" />
+          </Link>
         </div>
       </div>
     </div>

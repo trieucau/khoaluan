@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './ReviewProduct.scss';
+import './InfoDetailProduct.scss';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import CommonUtils from '../../utils/CommonUtils';

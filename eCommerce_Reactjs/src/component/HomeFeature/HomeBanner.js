@@ -3,11 +3,10 @@ import './HomeBanner.scss';
 import { Link } from 'react-router-dom';
 
 function HomeBanner({ image, name, title, subtitle }) {
-  // Nếu không truyền image thì lấy ảnh mặc định trong public/img/
   const bannerImage = image ? image : '/resources/img/banner1.jpg';
 
   return (
-    <section className="home_banner_area mb-40">
+    <section className="home_banner_area">
       <div
         className="box-banner"
         style={{
@@ -16,27 +15,18 @@ function HomeBanner({ image, name, title, subtitle }) {
           backgroundPosition: 'center',
         }}
       >
-        <div className="banner_inner d-flex align-items-center">
+        <div className="banner_inner">
           <div className="container">
-            <div className="banner_content row">
-              <div className="col-lg-12 text-center">
-                {/* sub heading */}
-                <p className="sub text-uppercase">{name || 'NEW COLLECTION'}</p>
-
-                {/* main heading */}
-                <h2>
-                  <span>{title || 'Show'}</span> Your <br />
-                  Personal <span>Style</span>
-                </h2>
-
-                {/* subtitle */}
-                <h4>{subtitle || 'Hãy đến với cửa hàng chúng tôi'}</h4>
-
-                {/* button */}
-                <Link className="main_btn mt-40" to="/shop">
-                  Đến cửa hàng ngay
-                </Link>
-              </div>
+            <div className="banner_content text-center">
+              <p className="sub">{name || 'Bộ sưu tập mới'}</p>
+              <h2>
+                {title || 'Phong cách'} <span>Riêng Của Bạn</span>
+              </h2>
+              <h4>{subtitle || 'Khám phá những thiết kế độc quyền tại Solana'}</h4>
+              <Link className="main_btn" to="/shop">
+                Khám phá ngay
+                <i className="fa-solid fa-arrow-right" style={{ marginLeft: '8px' }} />
+              </Link>
             </div>
           </div>
         </div>

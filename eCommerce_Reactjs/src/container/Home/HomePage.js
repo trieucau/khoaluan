@@ -14,12 +14,18 @@ import {
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import useScrollReveal from '../../hooks/useScrollReveal';
+
 function HomePage(props) {
   const [dataProductFeature, setDataProductFeature] = useState([]);
   const [dataNewProductFeature, setNewProductFeature] = useState([]);
   const [dataNewBlog, setdataNewBlog] = useState([]);
   const [dataBanner, setdataBanner] = useState([]);
   const [dataProductRecommend, setdataProductRecommend] = useState([]);
+
+  // Trigger scroll animations
+  useScrollReveal();
+
   let settings = {
     dots: false,
     Infinity: false,
@@ -86,7 +92,7 @@ function HomePage(props) {
         {dataBanner &&
           dataBanner.length > 0 &&
           dataBanner.map((item, index) => {
-            return <HomeBanner image={item.image} name={item.name}></HomeBanner>;
+            return <HomeBanner key={item.id || index} image={item.image} name={item.name} />;
           })}
       </Slider>
 

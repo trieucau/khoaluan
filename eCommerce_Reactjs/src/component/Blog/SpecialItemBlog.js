@@ -2,25 +2,21 @@ import moment from 'moment';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-function PopularItemBlog(props) {
+function PopularItemBlog({ data }) {
+  if (!data) return null;
+  const date = data.createdAt
+    ? moment(data.createdAt).format('DD/MM/YYYY')
+    : '';
+
   return (
-    <div className="media post_item">
-      <img
-        style={{
-          width: '80px',
-          height: '80px',
-          objectFit: 'cover',
-          borderRadius: '5px',
-        }}
-        src={props.data.image}
-        alt="post"
-      />
-      <div className="media-body">
-        <Link to={`/blog-detail/${props.data.id}`}>
-          <h3>{props.data.title}</h3>
-        </Link>
-        <p>{moment(props.createdAt).format('DD/MM/YYYY HH:mm')}</p>
-      </div>
+    <div className="popular_post_widget">
+      <Link to={`/blog-detail/${data.id}`} className="popular-post" style={{ textDecoration: 'none' }}>
+        <img src={data.image} alt={data.title} loading="lazy" />
+        <div className="popular-post__info">
+          <h6>{data.title}</h6>
+          {date && <span><i className="fa-regular fa-calendar" style={{ marginRight: '4px', color: 'var(--c-primary)' }} />{date}</span>}
+        </div>
+      </Link>
     </div>
   );
 }

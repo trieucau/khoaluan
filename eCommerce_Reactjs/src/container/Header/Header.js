@@ -12,6 +12,7 @@ const Header = () => {
   const [quantityMessage, setQuantityMessage] = useState(0);
   const [user, setUser] = useState({});
   const [id, setId] = useState();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const dispatch = useDispatch();
   const dataCart = useSelector((state) => state.shopcart.listCartItem);
@@ -19,16 +20,14 @@ const Header = () => {
   const host = process.env.REACT_APP_BACKEND_URL;
   const socketRef = useRef();
 
-  // danh sách menu chính
   const navItems = [
-    { path: '/', label: 'Trang chủ', exact: true },
-    { path: '/shop', label: 'Cửa hàng' },
-    { path: '/blog', label: 'Tin tức' },
-    { path: '/voucher', label: 'Giảm giá' },
-    { path: '/about', label: 'Giới thiệu' },
+    { path: '/', label: 'Trang chủ', end: true },
+    { path: '/shop', label: 'Cửa hàng', end: false },
+    { path: '/blog', label: 'Tin tức', end: false },
+    { path: '/voucher', label: 'Giảm giá', end: false },
+    { path: '/about', label: 'Giới thiệu', end: false },
   ];
 
-  // lấy danh sách phòng chat + đếm tin nhắn chưa đọc
   const fetchListRoom = async (userId) => {
     const res = await listRoomOfUser(userId);
     if (res?.errCode === 0 && res.data?.[0]?.messageData?.length > 0) {
@@ -48,11 +47,9 @@ const Header = () => {
       dispatch(getItemCartStart(userData.id));
 
       socketRef.current = socketIOClient.connect(host);
-
       socketRef.current.on('getId', (data) => setId(data));
       socketRef.current.on('sendDataServer', () => fetchListRoom(userData.id));
       socketRef.current.on('loadRoomServer', () => fetchListRoom(userData.id));
-
       fetchListRoom(userData.id);
 
       return () => {
@@ -61,17 +58,19 @@ const Header = () => {
     }
   }, [dispatch, host]);
 
-  // sticky header khi scroll
+  // Sticky on scroll
   useEffect(() => {
     const handleScroll = () => {
       const header = document.querySelector('.main_menu');
-      if (header) {
-        header.classList.toggle('sticky', window.scrollY > 0);
-      }
+      if (header) header.classList.toggle('sticky', window.scrollY > 0);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
   }, []);
 
   return (
@@ -81,23 +80,20 @@ const Header = () => {
       <div className="main_menu">
         <div className="container">
           <nav className="navbar navbar-expand-lg navbar-light w-100">
-            {/* logo */}
+            {/* Logo */}
             <NavLink to="/" className="navbar-brand logo_h">
               <img
                 src="/resources/img/logo.png"
-                alt="Logo"
+                alt="Solana Shop"
                 style={{ width: '170px', height: 'auto' }}
               />
             </NavLink>
 
-            {/* nút toggle cho mobile */}
+            {/* Mobile toggle */}
             <button
-              className="navbar-toggler"
+              className="navbar-toggler d-lg-none"
               type="button"
-              data-toggle="collapse"
-              data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
+              onClick={() => setMobileOpen((v) => !v)}
               aria-label="Toggle navigation"
             >
               <span className="icon-bar" />
@@ -105,75 +101,96 @@ const Header = () => {
               <span className="icon-bar" />
             </button>
 
-            {/* nav links */}
-            <div className="collapse navbar-collapse offset w-100" id="navbarSupportedContent">
-              <div className="row w-100 mr-0">
+            {/* Nav links */}
+            <div
+              className={`navbar-collapse${mobileOpen ? ' show' : ''} d-lg-flex`}
+              id="navbarSupportedContent"
+            >
+              <div className="row w-100 mr-0 align-items-center">
+                {/* Center nav */}
                 <div className="col-lg-9 pr-0">
-                  <ul className="nav navbar-nav center_nav pull-right">
-                    {navItems.map((item, index) => (
-                      <li key={index} className="nav-item">
+                  <ul className="nav navbar-nav center_nav">
+                    {navItems.map((item) => (
+                      <li key={item.path} className="nav-item">
                         <NavLink
-                          exact={item.exact || false}
                           to={item.path}
-                          className="nav-link"
-                          activeClassName="selected"
-                          activeStyle={{ color: '#71cd14' }}
+                          end={item.end}
+                          className={({ isActive }) =>
+                            isActive ? 'nav-link selected' : 'nav-link'
+                          }
+                          onClick={() => setMobileOpen(false)}
                         >
                           {item.label}
                         </NavLink>
                       </li>
                     ))}
+
+                    {/* Mobile-only auth links */}
                     {user?.id ? (
-                      <>
-                        <li className="nav-item mobile-only">
-                          <a
-                            className="nav-link"
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => {
-                              localStorage.removeItem('userData');
-                              localStorage.removeItem('token');
-                              window.location.href = '/login';
-                            }}
-                          >
-                            Đăng xuất
-                          </a>
-                        </li>
-                      </>
+                      <li className="nav-item mobile-only">
+                        <button
+                          className="nav-link"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '8px 16px',
+                            width: '100%',
+                            textAlign: 'left',
+                          }}
+                          onClick={() => {
+                            localStorage.removeItem('userData');
+                            localStorage.removeItem('token');
+                            window.location.href = '/login';
+                          }}
+                        >
+                          Đăng xuất
+                        </button>
+                      </li>
                     ) : (
                       <>
                         <li className="nav-item mobile-only">
-                          <NavLink to="/login" className="nav-link" activeClassName="selected">
+                          <NavLink
+                            to="/login"
+                            className={({ isActive }) =>
+                              isActive ? 'nav-link selected' : 'nav-link'
+                            }
+                            onClick={() => setMobileOpen(false)}
+                          >
                             Đăng nhập
                           </NavLink>
                         </li>
                         <li className="nav-item mobile-only">
-                          <NavLink to="/register" className="nav-link" activeClassName="selected">
+                          <NavLink
+                            to="/register"
+                            className={({ isActive }) =>
+                              isActive ? 'nav-link selected' : 'nav-link'
+                            }
+                            onClick={() => setMobileOpen(false)}
+                          >
                             Đăng ký
                           </NavLink>
                         </li>
                       </>
                     )}
-                    <li className="nav-item mobile-only">
-                      <a className="nav-link">🌐 VN</a>
-                    </li>
                   </ul>
                 </div>
 
-                {/* icon bên phải */}
+                {/* Right icons */}
                 <div className="col-lg-3 pr-0">
                   <ul className="nav navbar-nav navbar-right right_nav pull-right">
-                    {/* messenger */}
-                    <li className="nav-item">
+                    {/* Messenger */}
+                    <li className="nav-item" style={{ position: 'relative' }}>
                       <Link to="/user/messenger" className="icons">
-                        <i className="fa-brands fa-facebook-messenger"></i>
+                        <i className="fa-brands fa-facebook-messenger" />
                       </Link>
                       {quantityMessage > 0 && (
                         <span className="box-message-quantity">{quantityMessage}</span>
                       )}
                     </li>
 
-                    {/* giỏ hàng */}
-                    <li className="nav-item">
+                    {/* Cart */}
+                    <li className="nav-item" style={{ position: 'relative' }}>
                       <Link to="/shopcart" className="icons">
                         <i className="ti-shopping-cart" />
                       </Link>
@@ -182,10 +199,10 @@ const Header = () => {
                       )}
                     </li>
 
-                    {/* user */}
+                    {/* User */}
                     <li className="nav-item">
                       <Link to={`/user/detail/${user?.id || ''}`} className="icons">
-                        <i className="ti-user" aria-hidden="true" />
+                        <i className="ti-user" />
                       </Link>
                     </li>
                   </ul>

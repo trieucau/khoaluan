@@ -1,0 +1,687 @@
+/* ============================================================
+   SOLANA SHOP — CUSTOMER DESIGN SYSTEM
+   Global CSS Variables, Animations & Base Styles
+   ============================================================ */
+
+/* ── 1. CSS CUSTOM PROPERTIES ─────────────────────────────── */
+:root {
+  /* Brand Colors */
+  --c-primary: #FF6B9D;
+  --c-primary-dark: #e85a8a;
+  --c-primary-light: #ffb3d0;
+  --c-secondary: #C44569;
+  --c-accent: #F8B195;
+  --c-accent-dark: #f09070;
+  --c-gold: #f7c59f;
+
+  /* Backgrounds */
+  --c-bg: #FFF9FB;
+  --c-bg-alt: #FFF0F6;
+  --c-surface: #FFFFFF;
+  --c-surface-2: #FFF5F9;
+  --c-overlay: rgba(255, 107, 157, 0.06);
+
+  /* Text */
+  --c-text: #2D1B2E;
+  --c-text-soft: #6B5670;
+  --c-text-muted: #9B8EA4;
+  --c-text-on-primary: #FFFFFF;
+
+  /* Border */
+  --c-border: #F0E6EE;
+  --c-border-strong: #ddc8d8;
+
+  /* Status Colors */
+  --c-success: #52c41a;
+  --c-warning: #faad14;
+  --c-error: #ff4d4f;
+  --c-info: #1890ff;
+
+  /* Gradients */
+  --grad-primary: linear-gradient(135deg, #FF6B9D 0%, #F8B195 100%);
+  --grad-primary-v: linear-gradient(180deg, #FF6B9D 0%, #C44569 100%);
+  --grad-hero: linear-gradient(135deg, rgba(255,107,157,0.92) 0%, rgba(196,69,105,0.85) 100%);
+  --grad-soft: linear-gradient(135deg, #fff0f6 0%, #fff9fb 100%);
+  --grad-voucher: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+  --grad-purple: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  /* Typography */
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Be Vietnam Pro', 'Segoe UI', sans-serif;
+  --font-accent: 'Nunito', 'Be Vietnam Pro', sans-serif;
+
+  /* Font Sizes (fluid) */
+  --fs-xs: 0.75rem;    /* 12px */
+  --fs-sm: 0.875rem;   /* 14px */
+  --fs-base: 1rem;     /* 16px */
+  --fs-md: 1.125rem;   /* 18px */
+  --fs-lg: 1.25rem;    /* 20px */
+  --fs-xl: 1.5rem;     /* 24px */
+  --fs-2xl: 2rem;      /* 32px */
+  --fs-3xl: 2.5rem;    /* 40px */
+  --fs-4xl: 3.5rem;    /* 56px */
+
+  /* Spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+
+  /* Border Radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-2xl: 32px;
+  --r-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(196, 69, 105, 0.08);
+  --shadow-md: 0 4px 20px rgba(196, 69, 105, 0.12);
+  --shadow-lg: 0 8px 40px rgba(196, 69, 105, 0.16);
+  --shadow-xl: 0 16px 60px rgba(196, 69, 105, 0.22);
+  --shadow-card: 0 2px 12px rgba(45, 27, 46, 0.08);
+  --shadow-card-hover: 0 8px 30px rgba(45, 27, 46, 0.15);
+
+  /* Transitions */
+  --t-fast: 0.15s ease;
+  --t-base: 0.25s ease;
+  --t-slow: 0.4s ease;
+  --t-bounce: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-index */
+  --z-below: -1;
+  --z-base: 0;
+  --z-card: 10;
+  --z-dropdown: 100;
+  --z-sticky: 500;
+  --z-modal: 1000;
+  --z-toast: 2000;
+}
+
+/* ── 2. BASE RESET & GLOBAL STYLES ───────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* SCOPED to customer pages only — does NOT affect Admin/Shipper
+   Admin/Shipper are in separate routes and use their own stylesheets */
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Root background — kept very light, should not break Admin */
+#root {
+  min-height: 100vh;
+}
+
+/* Headings scoped via .customer-page wrapper or use !important only where needed */
+
+img {
+  max-width: 100%;
+}
+
+/* Remove outline on focus for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 2px;
+}
+
+/* ── 3. KEYFRAME ANIMATIONS ──────────────────────────────── */
+
+/* Fade Up — entrance animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade In */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Slide In from Left */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide In from Right */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scale In */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Shimmer effect for loading / buttons */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Floating animation for decorative elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+/* Pulse ring for badges */
+@keyframes pulseRing {
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255,107,157,0.5); }
+  70%  { transform: scale(1); box-shadow: 0 0 0 8px rgba(255,107,157,0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255,107,157,0); }
+}
+
+/* Gradient shift — for hero overlay */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Stagger fade — used with nth-child delays */
+@keyframes staggerFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Spin for loading */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── 4. UTILITY CLASSES ───────────────────────────────────── */
+
+/* Animations */
+.anim-fade-up     { animation: fadeUp 0.6s var(--t-slow) both; }
+.anim-fade-in     { animation: fadeIn 0.5s ease both; }
+.anim-slide-left  { animation: slideInLeft 0.6s ease both; }
+.anim-slide-right { animation: slideInRight 0.6s ease both; }
+.anim-scale-in    { animation: scaleIn 0.5s var(--t-bounce) both; }
+
+/* Delay helpers */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+
+/* Scroll-reveal hidden state (JS adds .visible class) */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── 5. SECTION TITLE (SectionHeader) ───────────────────── */
+.section-header {
+  text-align: center;
+  margin-bottom: var(--sp-12);
+}
+.section-header__subtitle {
+  font-family: var(--font-accent);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--c-primary);
+  margin-bottom: var(--sp-3);
+  display: block;
+}
+.section-header__title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-3xl);
+  font-weight: 800;
+  color: var(--c-text);
+  margin: 0 0 var(--sp-4);
+  line-height: 1.2;
+}
+@media (max-width: 768px) {
+  .section-header__title { font-size: var(--fs-2xl); }
+}
+.section-header__desc {
+  font-size: var(--fs-base);
+  color: var(--c-text-soft);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+/* Underline accent below title */
+.section-header__title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--grad-primary);
+  border-radius: var(--r-full);
+  margin: var(--sp-4) auto 0;
+}
+
+/* Override Bootstrap .main_title to match design system */
+.main_title {
+  text-align: center;
+  margin-bottom: var(--sp-12) !important;
+}
+.main_title h2 {
+  font-family: var(--font-heading) !important;
+  font-size: var(--fs-3xl) !important;
+  font-weight: 800 !important;
+  color: var(--c-text) !important;
+  position: relative;
+  display: inline-block;
+}
+.main_title h2 span {
+  color: var(--c-primary) !important;
+  background: none !important;
+  padding: 0 !important;
+}
+.main_title h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--grad-primary);
+  border-radius: var(--r-full);
+  margin: var(--sp-3) auto 0;
+}
+.main_title p {
+  color: var(--c-text-soft) !important;
+  font-size: var(--fs-base) !important;
+  margin-top: var(--sp-2);
+}
+
+/* ── 6. BUTTONS ───────────────────────────────────────────── */
+.btn-primary-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: var(--grad-primary);
+  color: #fff;
+  font-family: var(--font-accent);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  padding: 14px 36px;
+  border-radius: var(--r-full);
+  border: none;
+  cursor: pointer;
+  transition: transform var(--t-base), box-shadow var(--t-base);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite;
+}
+.btn-primary-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  color: #fff;
+}
+
+.btn-outline-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: transparent;
+  color: var(--c-primary);
+  font-family: var(--font-accent);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  padding: 13px 35px;
+  border-radius: var(--r-full);
+  border: 2px solid var(--c-primary);
+  cursor: pointer;
+  transition: all var(--t-base);
+  text-decoration: none;
+}
+.btn-outline-cta:hover {
+  background: var(--c-primary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Override existing .main_btn globally for customer pages */
+.main_btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: var(--grad-primary) !important;
+  color: #fff !important;
+  font-family: var(--font-accent) !important;
+  font-size: var(--fs-base) !important;
+  font-weight: 700 !important;
+  padding: 12px 32px !important;
+  border-radius: var(--r-full) !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: transform var(--t-base), box-shadow var(--t-base) !important;
+  text-decoration: none !important;
+  letter-spacing: 0.5px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.main_btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite;
+}
+.main_btn:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: var(--shadow-lg) !important;
+  color: #fff !important;
+}
+
+/* ── 7. CARDS ─────────────────────────────────────────────── */
+.card-customer {
+  background: var(--c-surface);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-border);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--t-base), box-shadow var(--t-base);
+  overflow: hidden;
+}
+.card-customer:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* ── 8. BREADCRUMB BANNER ─────────────────────────────────── */
+.banner_area,
+.banner_area.modern_banner {
+  background: linear-gradient(135deg, #C44569 0%, #FF6B9D 50%, #F8B195 100%) !important;
+  padding: 56px 0 !important;
+  position: relative;
+  overflow: hidden;
+  /* Ensure solid gradient — no transparency leaks */
+  isolation: isolate;
+}
+
+/* Decorative circle — TOP RIGHT, stays inside banner */
+.banner_area::before {
+  content: '';
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  top: -60px;
+  right: -40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Decorative circle — BOTTOM LEFT */
+.banner_area::after {
+  content: '';
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  bottom: -50px;
+  left: 8%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.banner_inner {
+  position: relative;
+  z-index: 2;
+  /* Override style.css gốc đặt background: #f6f6f6 */
+  background: transparent !important;
+  min-height: unset !important;
+}
+
+.banner_title {
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  margin: 0 0 10px !important;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  line-height: 1.2;
+}
+
+.banner_subtitle {
+  color: rgba(255,255,255,0.9) !important;
+  font-size: 15px !important;
+  margin: 0 !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.page_link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.page_link a {
+  color: rgba(255,255,255,0.82) !important;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s;
+  text-decoration: none !important;
+}
+.page_link a:last-child { color: #fff !important; font-weight: 700; }
+.page_link a + a::before {
+  content: '/';
+  margin-right: 6px;
+  opacity: 0.5;
+}
+.page_link a:hover { color: #fff !important; }
+
+/* ── 9. SECTION GAPS ─────────────────────────────────────── */
+.section_gap { padding: var(--sp-20) 0; }
+.section_gap_top { padding-top: var(--sp-20); }
+.section_gap_bottom { padding-bottom: var(--sp-20); }
+.section_gap_bottom_custom { padding-bottom: var(--sp-16); }
+.section-gap { padding: var(--sp-20) 0; }
+.blog-area.section-gap { padding: var(--sp-16) 0; }
+
+/* ── 10. BADGE COMPONENTS ─────────────────────────────────── */
+.badge-new {
+  background: var(--c-primary);
+  color: #fff;
+  font-family: var(--font-accent);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.badge-sale {
+  background: var(--grad-voucher);
+  color: #fff;
+  font-family: var(--font-accent);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+}
+.badge-count {
+  background: var(--c-primary);
+  color: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  animation: pulseRing 2s infinite;
+}
+
+/* ── 11. FORM ELEMENTS ───────────────────────────────────── */
+.form-control-customer {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-md);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--c-text);
+  transition: border-color var(--t-base), box-shadow var(--t-base);
+  outline: none;
+}
+.form-control-customer:focus {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(255,107,157,0.15);
+}
+.form-control-customer::placeholder {
+  color: var(--c-text-muted);
+}
+
+/* ── 12. SKELETON LOADER ─────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #f0e6ee 25%, #faf0f5 50%, #f0e6ee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--r-sm);
+}
+
+/* ── 13. PAGINATION ──────────────────────────────────────── */
+.pagination .page-item .page-link {
+  color: var(--c-primary) !important;
+  border-color: var(--c-border) !important;
+  border-radius: var(--r-sm) !important;
+  margin: 0 2px !important;
+  font-family: var(--font-accent) !important;
+  font-weight: 600 !important;
+  transition: all var(--t-base) !important;
+}
+.pagination .page-item.active .page-link {
+  background: var(--grad-primary) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: var(--shadow-md) !important;
+}
+.pagination .page-item .page-link:hover {
+  background: var(--c-overlay) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ── 14. TOAST OVERRIDE ──────────────────────────────────── */
+.Toastify__toast {
+  font-family: var(--font-body) !important;
+  border-radius: var(--r-md) !important;
+}
+.Toastify__toast--success {
+  background: linear-gradient(135deg, #52c41a, #73d13d) !important;
+}
+.Toastify__toast--error {
+  background: linear-gradient(135deg, #ff4d4f, #ff7875) !important;
+}
+
+/* ── 15. PREFERS REDUCED MOTION ──────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── 16. SCROLLBAR ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--c-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--c-primary-light);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--c-primary); }
+
+/* ── 17. RESPONSIVE HELPERS ─────────────────────────────── */
+@media (max-width: 768px) {
+  .section_gap,
+  .section-gap { padding: var(--sp-12) 0; }
+  .section_gap_top { padding-top: var(--sp-12); }
+  .section_gap_bottom,
+  .section_gap_bottom_custom { padding-bottom: var(--sp-10); }
+}
+
+/* Container mobile fix */
+.container-mobile {
+  max-width: 100% !important;
+  padding-left: var(--sp-4) !important;
+  padding-right: var(--sp-4) !important;
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import ItemProduct from '../Product/ItemProduct';
 import HeaderContent from '../Content/HeaderContent';
+
 function NewProductFeature(props) {
   return (
     <section className="new_product_area section_gap_top section_gap_bottom_custom">
@@ -16,13 +17,14 @@ function NewProductFeature(props) {
                 props.data.map((item, index) => {
                   return (
                     <ItemProduct
+                      key={item.id || index}
                       id={item.id}
                       type="col-lg-3 col-md-3"
                       name={item.name}
                       img={item.productDetail[0].productImage[0].image}
                       price={item.productDetail[0].originalPrice}
                       discountPrice={item.productDetail[0].discountPrice}
-                    ></ItemProduct>
+                    />
                   );
                 })}
             </div>

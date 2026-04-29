@@ -47,12 +47,12 @@ const MessageBubble = ({ message }) => {
   );
 };
 
-// ── Quick suggestions ───────────────────────────────────────
+// Quick suggestions — no emojis per design requirement
 const QUICK_ACTIONS = [
-  '📦 Kiểm tra đơn hàng',
-  '🛍️ Gợi ý sản phẩm',
-  '🎟️ Mã giảm giá',
-  '🔄 Chính sách đổi trả',
+  'Kiểm tra đơn hàng',
+  'Gợi ý sản phẩm',
+  'Mã giảm giá',
+  'Chính sách đổi trả',
 ];
 
 // ── Main Chat Window ────────────────────────────────────────

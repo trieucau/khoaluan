@@ -1,48 +1,55 @@
 import React from 'react';
-function MainFeature(props) {
+import './MainFeature.scss';
+
+const features = [
+  {
+    icon: 'fa-solid fa-tag',
+    title: 'Mua nhiều giảm nhiều',
+    desc: 'Giảm giá lên tận 50% cho đơn hàng combo',
+    color: '#FF6B9D',
+    bg: '#fff0f6',
+  },
+  {
+    icon: 'fa-solid fa-truck-fast',
+    title: 'Miễn phí vận chuyển',
+    desc: 'Giao hàng nhanh trong phạm vi 5km',
+    color: '#7C4DFF',
+    bg: '#f3f0ff',
+  },
+  {
+    icon: 'fa-solid fa-headset',
+    title: 'Hỗ trợ 24/7',
+    desc: 'Đội ngũ chăm sóc khách hàng luôn sẵn sàng',
+    color: '#00BCD4',
+    bg: '#e0f7fa',
+  },
+  {
+    icon: 'fa-solid fa-shield-halved',
+    title: 'Thanh toán an toàn',
+    desc: 'Bảo mật cao qua PayPal & VNPay',
+    color: '#F8B195',
+    bg: '#fff8f5',
+  },
+];
+
+function MainFeature() {
   return (
     <section className="feature-area section_gap_bottom_custom">
       <div className="container">
-        <div className="row">
-          <div className="col-lg-3 col-md-6">
-            <div className="single-feature">
-              <div className="title">
-                <i className="flaticon-money"></i>
-                <h3>Mua nhiều giảm nhiều</h3>
+        <div className="row g-4">
+          {features.map((item, i) => (
+            <div key={i} className="col-lg-3 col-md-6 col-sm-6">
+              <div className="single-feature-card scroll-reveal" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className="feature-icon-wrap" style={{ background: item.bg }}>
+                  <i className={item.icon} style={{ color: item.color }} />
+                </div>
+                <div className="feature-body">
+                  <h5 className="feature-title">{item.title}</h5>
+                  <p className="feature-desc">{item.desc}</p>
+                </div>
               </div>
-              <p>Giảm giá lên tận 50%</p>
             </div>
-          </div>
-
-          <div className="col-lg-3 col-md-6">
-            <div className="single-feature">
-              <div className="title">
-                <i className="flaticon-truck"></i>
-                <h3>Miễn phí vận chuyển</h3>
-              </div>
-              <p>Phạm vi trong khoảng 5km</p>
-            </div>
-          </div>
-
-          <div className="col-lg-3 col-md-6">
-            <div className="single-feature">
-              <div className="title">
-                <i className="flaticon-support"></i>
-                <h3>Sẵn sàng hỗ trợ</h3>
-              </div>
-              <p>Chỉ cần liên hệ với chúng tôi</p>
-            </div>
-          </div>
-
-          <div className="col-lg-3 col-md-6">
-            <div className="single-feature">
-              <div className="title">
-                <i className="flaticon-blockchain"></i>
-                <h3>An toàn thanh toán</h3>
-              </div>
-              <p>Các cổng thanh toán uy tín</p>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

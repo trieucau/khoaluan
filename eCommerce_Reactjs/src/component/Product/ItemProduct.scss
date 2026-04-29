@@ -1,15 +1,192 @@
-.d-block {
-  h4 {
-    display: block;
-    display: -webkit-box;
-    max-width: 100%;
-    height: 35px;
-    margin: 0 auto;
-    font-size: 14px;
-    line-height: 1.4;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+/* ── Product Card ──────────────────────────────────────── */
+.product-card-link {
+  text-decoration: none !important;
+  display: block;
+  margin-bottom: 24px;
+}
+
+.product-card {
+  background: var(--c-surface);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-border);
+  overflow: hidden;
+  transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--c-primary-light);
+}
+
+/* Badges */
+.product-badges {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.product-badge {
+  font-family: var(--font-accent);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: var(--r-full);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.product-badge--sale {
+  background: var(--grad-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255,107,157,0.4);
+}
+
+.product-badge--new {
+  background: var(--c-text);
+  color: #fff;
+}
+
+/* Image */
+.product-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--c-surface-2);
+}
+
+.product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  display: block;
+}
+
+.product-card:hover .product-img {
+  transform: scale(1.06);
+}
+
+/* Hover overlay */
+.product-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(45,27,46,0.85) 0%,
+    rgba(45,27,46,0.2) 60%,
+    transparent 100%
+  );
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 24px;
+  opacity: 0;
+  transition: opacity var(--t-base);
+}
+
+.product-card:hover .product-overlay {
+  opacity: 1;
+}
+
+.product-overlay__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  color: var(--c-primary);
+  font-family: var(--font-accent);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: var(--r-full);
+  transform: translateY(10px);
+  transition: transform var(--t-base);
+  white-space: nowrap;
+}
+
+.product-card:hover .product-overlay__btn {
+  transform: translateY(0);
+}
+
+/* Info */
+.product-info {
+  padding: 14px 16px 18px;
+}
+
+.product-name {
+  font-family: var(--font-body) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--c-text) !important;
+  margin: 0 0 10px !important;
+  line-height: 1.4 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  min-height: 40px;
+}
+
+.product-price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.product-price--current {
+  font-family: var(--font-accent);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-primary);
+}
+
+.product-price--original {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--c-text-muted);
+  text-decoration: line-through;
+}
+
+/* Slick slider product cards */
+.box-productFeature .slick-slide {
+  padding: 0 8px;
+}
+.box-productFeature .slick-list {
+  margin: 0 -8px;
+}
+.box-productFeature .slick-prev,
+.box-productFeature .slick-next {
+  width: 40px !important;
+  height: 40px !important;
+  background: var(--c-surface) !important;
+  border: 1.5px solid var(--c-border) !important;
+  border-radius: 50% !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all var(--t-base) !important;
+  z-index: 5 !important;
+}
+.box-productFeature .slick-prev:hover,
+.box-productFeature .slick-next:hover {
+  background: var(--c-primary) !important;
+  border-color: var(--c-primary) !important;
+}
+.box-productFeature .slick-prev { left: -20px !important; }
+.box-productFeature .slick-next { right: -20px !important; }
+.box-productFeature .slick-prev::before,
+.box-productFeature .slick-next::before {
+  color: var(--c-text-soft) !important;
+  font-size: 16px !important;
+}
+
+@media (max-width: 768px) {
+  .product-card { margin-bottom: 0; }
+  .product-card-link { margin-bottom: 16px; }
 }

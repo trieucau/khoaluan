@@ -1,219 +1,160 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
 import socketIOClient from 'socket.io-client';
 import { loadMessage } from '../../services/userService';
 import moment from 'moment';
+import '../../css/user-pages.css';
 
 const host = process.env.REACT_APP_BACKEND_URL;
-function ChatWindow(props) {
-  const LIMIT = 10;
-  const [offset, setOffset] = useState(LIMIT);
-  const [hasMore, setHasMore] = useState(true);
-  const boxChatRef = useRef(null);
+const LIMIT = 15;
+
+function ChatWindow({ roomId, userId }) {
   const [mess, setMess] = useState([]);
-  const [userData, setuserData] = useState({});
   const [message, setMessage] = useState('');
-  const [id, setId] = useState();
   const [user, setUser] = useState({});
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(LIMIT);
+  const boxChatRef = useRef(null);
   const socketRef = useRef();
+  const textareaRef = useRef(null);
 
-  useEffect(() => {
-    socketRef.current = socketIOClient.connect(host);
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    setUser(userData);
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (boxChatRef.current) {
+        boxChatRef.current.scrollTop = boxChatRef.current.scrollHeight;
+      }
+    }, 80);
+  };
 
-    socketRef.current.on('getId', (data) => {
-      setId(data);
-    }); // phần này đơn giản để gán id cho mỗi phiên kết nối vào page. Mục đích chính là để phân biệt đoạn nào là của mình đang chat.
-
-    if (props.roomId) {
-      socketRef.current.emit('joinRoom', props.roomId); // ← join room khi mở chat
-      fetchMessage();
-    }
-    socketRef.current.off('sendDataServer');
-    socketRef.current.on('sendDataServer', () => {
-      fetchMessage();
-      setTimeout(() => {
-        if (boxChatRef.current) {
-          boxChatRef.current.scrollTop = boxChatRef.current.scrollHeight;
-        }
-      }, 100);
-    });
-    return () => {
-      socketRef.current.emit('leaveRoom', props.roomId); // ← rời room khi đóng
-      socketRef.current.off('sendDataServer');
-      socketRef.current.disconnect();
-    };
-  }, [props.roomId]);
-  let fetchMessage = async (loadMore = false) => {
-    let currentOffset = loadMore ? offset : 0;
-    let res = await loadMessage(props.roomId, props.userId, LIMIT, currentOffset);
-    if (res && res.data) {
+  const fetchMessage = async (loadMore = false) => {
+    const currentOffset = loadMore ? offset : 0;
+    const res = await loadMessage(roomId, userId, LIMIT, currentOffset);
+    if (res?.data) {
       if (loadMore) {
         setMess((prev) => [...res.data, ...prev]);
         setOffset((prev) => prev + LIMIT);
       } else {
         setMess(res.data);
         setOffset(LIMIT);
-        // ← scroll xuống cuối sau khi load lần đầu
-        setTimeout(() => {
-          if (boxChatRef.current) {
-            boxChatRef.current.scrollTop = boxChatRef.current.scrollHeight;
-          }
-        }, 100);
+        scrollToBottom();
       }
       setHasMore(res.data.length === LIMIT);
     }
   };
-  let sendMessage = () => {
-    if (message !== null) {
-      const msg = {
-        text: message,
-        userId: user.id,
-        roomId: props.roomId,
-        userData: userData,
-      };
-      socketRef.current.emit('sendDataClient', msg);
-      setMessage('');
+
+  useEffect(() => {
+    // Get local user
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    setUser(userData || {});
+
+    // Connect socket
+    socketRef.current = socketIOClient.connect(host);
+
+    if (roomId) {
+      socketRef.current.emit('joinRoom', roomId);
+      fetchMessage();
+    }
+
+    // Clear old listener before adding new
+    socketRef.current.off('sendDataServer');
+    socketRef.current.on('sendDataServer', () => {
+      fetchMessage();
+    });
+
+    return () => {
+      if (roomId) socketRef.current.emit('leaveRoom', roomId);
+      socketRef.current.off('sendDataServer');
+      socketRef.current.disconnect();
+    };
+  }, [roomId]); // re-run when roomId changes — THIS is the bug fix
+
+  const sendMessage = () => {
+    if (!message.trim()) return;
+    const msg = {
+      text: message.trim(),
+      userId: user?.id,
+      roomId,
+      userData: user,
+    };
+    socketRef.current.emit('sendDataClient', msg);
+    setMessage('');
+    if (textareaRef.current) textareaRef.current.focus();
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
     }
   };
-  return (
-    <div className="ks-messages ks-messenger__messages col-md-9 border-right">
-      <div className="p-3 py-5">
-        <div className="d-flex justify-content-between">
-          <span className="ks-name">Chat name | 2 members</span>
-          <div className="ks-controls">
-            <div className="dropdown">
-              <button
-                className="btn btn-primary-outline ks-light ks-no-text ks-no-arrow"
-                type="button"
-                id="dropdownMenuButton"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                <span className="fa fa-ellipsis-h ks-icon" />
-              </button>
-              <div
-                className="dropdown-menu dropdown-menu-right ks-simple"
-                aria-labelledby="dropdownMenuButton"
-              >
-                <a className="dropdown-item" href="#">
-                  <span className="fa fa-user-plus ks-icon" />
-                  <span className="ks-text"> Add members</span>
-                </a>
-                <a className="dropdown-item" href="#">
-                  <span className="fa fa-eye-slash ks-icon" />
-                  <span className="ks-text"> Mark as unread</span>
-                </a>
-                <a className="dropdown-item" href="#">
-                  <span className="fa fa-bell-slash-o ks-icon" />
-                  <span className="ks-text"> Mute notifications</span>
-                </a>
-                <a className="dropdown-item" href="#">
-                  <span className="fa fa-mail-forward ks-icon" />
-                  <span className="ks-text"> Forward</span>
-                </a>
-                <a className="dropdown-item" href="#">
-                  <span className="fa fa-ban ks-icon" />
-                  <span className="ks-text"> Spam</span>
-                </a>
-                <a className="dropdown-item" href="#">
-                  <span className="fa fa-trash-o ks-icon" />
-                  <span className="ks-text"> Delete</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <div
-          className="ks-body ks-scrollable jspScrollable"
-          data-auto-height
-          data-reduce-height=".ks-footer"
-          data-fix-height={32}
-          style={{
-            overflow: 'hidden',
-            padding: '0px',
-          }}
-          tabIndex={0}
-        >
-          <div className="jspContainer">
-            <div className="jspPane" style={{ padding: '0px', top: '0px' }}>
-              <ul
-                ref={boxChatRef} // ← dùng ref thay id
-                className="ks-items"
-                style={{ overflowY: 'scroll', maxHeight: '479px' }}
-              >
-                {hasMore && (
-                  <li style={{ textAlign: 'center', padding: '8px' }}>
-                    <button
-                      className="btn btn-sm btn-outline-secondary"
-                      onClick={() => fetchMessage(true)}
-                    >
-                      Tải tin nhắn cũ hơn
-                    </button>
-                  </li>
-                )}
-                {mess &&
-                  mess.length > 0 &&
-                  mess.map((item, index) => {
-                    if (item.userData) {
-                      return (
-                        <li
-                          key={index}
-                          className={
-                            item.userData.id == user.id ? 'ks-item ks-from' : 'ks-item ks-self'
-                          }
-                        >
-                          <span className="ks-avatar ks-offline">
-                            <img
-                              src={item.userData.image}
-                              width={36}
-                              height={36}
-                              className="rounded-circle"
-                            />
-                          </span>
-                          <div className="ks-body">
-                            <div className="ks-header">
-                              <span className="ks-name">
-                                {item.userData.firstName + ' ' + item.userData.lastName}
-                              </span>
-                            </div>
-                            <div className="ks-message">{item.text}</div>
-                            <span className="ks-name">{moment(item.createdAt).fromNow()}</span>
-                          </div>
-                        </li>
-                      );
-                    }
-                  })}
-              </ul>
-            </div>
-            <div className="jspVerticalBar">
-              <div className="jspCap jspCapTop" />
-              <div className="jspTrack">
-                <div className="jspDrag">
-                  <div className="jspDragTop" />
-                  <div className="jspDragBottom" />
-                </div>
-              </div>
-              <div className="jspCap jspCapBottom" />
-            </div>
-          </div>
+  return (
+    <div className="messenger-chatbox">
+      {/* Header */}
+      <div className="messenger-chat-header">
+        <div>
+          <div className="messenger-chat-title">Hỗ trợ Solana Shop</div>
+          <div className="messenger-chat-subtitle">Chúng tôi thường phản hồi trong vài phút</div>
         </div>
-        <div className="ks-footer">
-          <textarea
-            onChange={(e) => setMessage(e.target.value)}
-            value={message}
-            placeholder="Type something..."
-            defaultValue={''}
-          />
-          <div className="ks-controls">
-            <button onClick={() => sendMessage()} className="main_btn">
-              Send
+        <i className="fa-brands fa-facebook-messenger" style={{ color: '#FF6B9D', fontSize: 22 }} />
+      </div>
+
+      {/* Messages */}
+      <div className="messenger-messages" ref={boxChatRef}>
+        {/* Load more */}
+        {hasMore && (
+          <div className="messenger-load-more">
+            <button onClick={() => fetchMessage(true)}>
+              <i className="fa-solid fa-clock-rotate-left" style={{ marginRight: 6 }} />
+              Tải tin nhắn cũ hơn
             </button>
           </div>
-        </div>
+        )}
+
+        {mess.length === 0 && (
+          <div style={{ textAlign: 'center', marginTop: 'auto', color: '#9B8EA4', fontSize: 13 }}>
+            <i className="fa-regular fa-comment-dots" style={{ fontSize: 32, color: '#F0E6EE', display: 'block', marginBottom: 8 }} />
+            Hãy bắt đầu cuộc trò chuyện!
+          </div>
+        )}
+
+        {mess.map((item, index) => {
+          if (!item.userData) return null;
+          const isMine = item.userData.id === user?.id;
+          return (
+            <div key={index} className={`msg-row ${isMine ? 'msg-row--mine' : ''}`}>
+              <img
+                className="msg-avatar"
+                src={item.userData.image || 'https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg'}
+                alt={item.userData.firstName}
+              />
+              <div className="msg-bubble-wrap">
+                <span className="msg-sender">
+                  {isMine ? 'Bạn' : `${item.userData.firstName} ${item.userData.lastName}`}
+                </span>
+                <div className={`msg-bubble ${isMine ? 'msg-bubble--mine' : 'msg-bubble--other'}`}>
+                  {item.text}
+                </div>
+                <span className="msg-time">{moment(item.createdAt).fromNow()}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Input */}
+      <div className="messenger-input-area">
+        <textarea
+          ref={textareaRef}
+          className="messenger-textarea"
+          rows={1}
+          placeholder="Nhắn tin... (Enter để gửi, Shift+Enter xuống dòng)"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <button className="messenger-send-btn" onClick={sendMessage}>
+          <i className="fa-solid fa-paper-plane" />
+        </button>
       </div>
     </div>
   );

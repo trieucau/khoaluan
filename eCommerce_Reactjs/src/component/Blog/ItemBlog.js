@@ -1,40 +1,62 @@
 import moment from 'moment';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './ItemBlog.scss';
 
-function ItemBlog(props) {
+function ItemBlog({ data }) {
+  if (!data) return null;
+  const author = data.userData
+    ? `${data.userData.firstName || ''} ${data.userData.lastName || ''}`.trim()
+    : 'Solana';
+  const commentCount = data.commentData ? data.commentData.length : 0;
+  const dateDay = data.createdAt ? moment(data.createdAt).format('DD') : '';
+  const dateMon = data.createdAt ? moment(data.createdAt).format('MMM') : '';
+
   return (
-    <article className="blog_item">
-      <div className="blog_item_img">
+    <article className="blog-list-item">
+      {/* Thumbnail */}
+      <div className="blog-list-item__thumb">
         <img
-          style={{ height: '514px', objectFit: 'cover' }}
-          className="card-img rounded-0"
-          src={props.data.image}
-          alt=""
+          src={data.image}
+          alt={data.title}
+          loading="lazy"
         />
-        <a href="#" className="blog_item_date">
-          <h3>{moment(props.createdAt).format('DD')}</h3>
-          <p>{moment(props.createdAt).format('MMM')}</p>
-        </a>
+        {data.createdAt && (
+          <div className="blog-list-item__date">
+            <span className="blog-list-item__date-day">{dateDay}</span>
+            <span className="blog-list-item__date-mon">{dateMon}</span>
+          </div>
+        )}
+        <div className="blog-list-item__overlay" />
       </div>
-      <div className="blog_details">
-        <Link
-          style={{ color: '#797979', fontSize: '18px' }}
-          className="d-inline-block"
-          to={`/blog-detail/${props.data.id}`}
-        >
-          <h2>{props.data.title}</h2>
 
-          <p>{props.data.shortdescription}</p>
-          <ul className="blog-info-link">
-            <li>
-              <i className="ti-user" />{' '}
-              {props.data.userData.firstName + ' ' + props.data.userData.lastName}
-            </li>
-            <li>
-              <i className="ti-comments" /> {props.data.commentData.length} Bình luận
-            </li>
-          </ul>
+      {/* Details */}
+      <div className="blog-list-item__body">
+        {/* Meta */}
+        <div className="blog-list-item__meta">
+          <span>
+            <i className="fa-solid fa-user-pen" />
+            {author}
+          </span>
+          <span>
+            <i className="fa-regular fa-comment" />
+            {commentCount} Bình luận
+          </span>
+        </div>
+
+        {/* Title */}
+        <Link to={`/blog-detail/${data.id}`} className="blog-list-item__title-link">
+          <h2 className="blog-list-item__title">{data.title}</h2>
+        </Link>
+
+        {/* Description */}
+        <p className="blog-list-item__desc">
+          {data.shortdescription || data.description}
+        </p>
+
+        <Link to={`/blog-detail/${data.id}`} className="blog-list-item__cta">
+          Đọc tiếp
+          <i className="fa-solid fa-arrow-right" />
         </Link>
       </div>
     </article>

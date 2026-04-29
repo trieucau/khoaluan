@@ -10,13 +10,14 @@ import {
   UpdateUserService,
   handleSendVerifyEmail,
 } from '../../services/userService';
-import { useFetchAllcode } from '../../container/customize/fetch';
+import { useFetchAllcode } from '../customize/fetch';
 import CommonUtils from '../../utils/CommonUtils';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
+import '../../css/user-pages.css';
 import './DetailUserPage.scss';
 
-function DetailUserPage(props) {
+function DetailUserPage() {
   const { id } = useParams();
   const { data: dataGender } = useFetchAllcode('GENDER');
   const [birthday, setbirthday] = useState(new Date());
@@ -37,248 +38,251 @@ function DetailUserPage(props) {
   });
 
   if (dataGender && dataGender.length > 0 && inputValues.genderId === null) {
-    setInputValues({ ...inputValues, ['genderId']: dataGender[0].code });
+    setInputValues({ ...inputValues, genderId: dataGender[0].code });
   }
+
   useEffect(() => {
-    let fetchUser = async () => {
-      let res = await getDetailUserById(id);
-      if (res && res.errCode === 0) {
-        setStateUser(res.data);
-      }
+    const fetchUser = async () => {
+      const res = await getDetailUserById(id);
+      if (res?.errCode === 0) setStateUser(res.data);
     };
     fetchUser();
   }, [id]);
 
-  let setStateUser = (data) => {
+  const setStateUser = (data) => {
     setInputValues({
       ...inputValues,
-      ['firstName']: data.firstName,
-      ['lastName']: data.lastName,
-      ['address']: data.address,
-      ['phonenumber']: data.phonenumber,
-      ['genderId']: data.genderId,
-      ['roleId']: data.roleId,
-      ['email']: data.email,
-      ['id']: data.id,
-      ['dob']: data.dob,
-      ['image']: data.image
-        ? data.image
-        : 'https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg',
-      ['isActiveEmail']: data.isActiveEmail,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      address: data.address,
+      phonenumber: data.phonenumber,
+      genderId: data.genderId,
+      roleId: data.roleId,
+      email: data.email,
+      id: data.id,
+      dob: data.dob,
+      image: data.image ||
+        'https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg',
+      isActiveEmail: data.isActiveEmail,
     });
-
-    setbirthday(
-      moment
-        .unix(+data.dob / 1000)
-        .locale('vi')
-        .toDate()
-    );
+    setbirthday(moment.unix(+data.dob / 1000).locale('vi').toDate());
   };
-  const handleOnChange = (event) => {
-    const { name, value } = event.target;
+
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
     setInputValues({ ...inputValues, [name]: value });
   };
-  let handleOnChangeDatePicker = (date) => {
+
+  const handleOnChangeDatePicker = (date) => {
     setbirthday(date);
     setisChangeDate(true);
   };
-  let handleSaveInfor = async () => {
-    console.log(inputValues.image);
-    let res = await UpdateUserService({
-      id: id,
+
+  const handleSaveInfor = async () => {
+    const res = await UpdateUserService({
+      id,
       firstName: inputValues.firstName,
       lastName: inputValues.lastName,
       address: inputValues.address,
       roleId: inputValues.roleId,
       genderId: inputValues.genderId,
       phonenumber: inputValues.phonenumber,
-      dob: isChangeDate === false ? inputValues.dob : new Date(birthday).getTime(),
+      dob: isChangeDate ? new Date(birthday).getTime() : inputValues.dob,
       image: inputValues.image,
     });
-    if (res && res.errCode === 0) {
-      toast.success('Cập nhật người dùng thành công');
-    } else {
-      toast.error(res.errMessage);
-    }
+    if (res?.errCode === 0) toast.success('Cập nhật thành công!');
+    else toast.error(res?.errMessage);
   };
-  let handleSendEmail = async () => {
-    let res = await handleSendVerifyEmail({
-      id: id,
-    });
-    if (res && res.errCode === 0) {
-      toast.success('Vui lòng kiểm tra email !');
-    } else {
-      toast.error(res.errMessage);
-    }
-  };
-  let handleOnChangeImage = async (event) => {
-    let data = event.target.files;
-    let file = data[0];
-    if (file?.size > 31312281) {
-      toast.error('Dung lượng file bé hơn 30mb');
-    } else {
-      let base64 = await CommonUtils.getBase64(file);
-      let objectUrl = URL.createObjectURL(file);
-      setInputValues({
-        ...inputValues,
-        ['image']: base64,
-        ['imageReview']: objectUrl,
-      });
-    }
-  };
-  let openPreviewImage = (url) => {
-    setInputValues({
-      ...inputValues,
-      ['isOpen']: true,
-      ['imageReview']: url,
-    });
-  };
-  return (
-    <div className="container rounded bg-white mt-5 mb-5">
-      <div className="row">
-        <div className="col-md-3 border-right">
-          <div className="d-flex flex-column align-items-center text-center">
-            <img
-              onClick={() => openPreviewImage(inputValues.image)}
-              className="rounded-circle mt-5"
-              height="170px"
-              style={{ objectFit: 'cover', cursor: 'pointer' }}
-              width="150px"
-              src={inputValues.image}
-            />
-            <span className="font-weight-bold">{inputValues.lastName}</span>
-            <div className="box-email-verify">
-              <span className="text-black-50">{inputValues.email}</span>
-              {inputValues.isActiveEmail === 0 && (
-                <i style={{ color: '#dc0707' }} className="fas fa-times-circle"></i>
-              )}
-              {inputValues.isActiveEmail === 1 && (
-                <i style={{ color: 'green' }} className="fas fa-check-circle"></i>
-              )}
-            </div>
 
-            {inputValues.isActiveEmail === 0 && (
-              <span onClick={() => handleSendEmail()} className="text-verify">
-                xác thực
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="col-md-9 border-right">
-          <div className="p-3 py-5">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h4 className="text-right">Thông tin cá nhân</h4>
-            </div>
-            <div className="row mt-2">
-              <div className="col-md-6">
-                <label className="labels">Họ</label>
-                <input
-                  name="firstName"
-                  onChange={(event) => handleOnChange(event)}
-                  value={inputValues.firstName}
-                  type="text"
-                  className="form-control"
+  const handleSendEmail = async () => {
+    const res = await handleSendVerifyEmail({ id });
+    if (res?.errCode === 0) toast.success('Vui lòng kiểm tra email!');
+    else toast.error(res?.errMessage);
+  };
+
+  const handleOnChangeImage = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 31312281) { toast.error('File phải nhỏ hơn 30MB'); return; }
+    const base64 = await CommonUtils.getBase64(file);
+    const objectUrl = URL.createObjectURL(file);
+    setInputValues({ ...inputValues, image: base64, imageReview: objectUrl });
+  };
+
+  const openPreviewImage = (url) => {
+    setInputValues({ ...inputValues, isOpen: true, imageReview: url });
+  };
+
+  const displayName = `${inputValues.firstName || ''} ${inputValues.lastName || ''}`.trim() || 'Người dùng';
+
+  return (
+    <div className="user-page">
+      <div className="container-fluid px-0">
+        <div className="user-card">
+          <div className="row g-0" style={{ minHeight: 500 }}>
+
+            {/* ── Left: Avatar panel ── */}
+            <div className="col-md-3 col-sm-12">
+              <div className="user-profile-avatar">
+                {/* Avatar */}
+                <img
+                  src={inputValues.imageReview || inputValues.image}
+                  alt={displayName}
+                  className="user-avatar-img"
+                  onClick={() => openPreviewImage(inputValues.image)}
                 />
-              </div>
-              <div className="col-md-6">
-                <label className="labels">Tên</label>
-                <input
-                  name="lastName"
-                  onChange={(event) => handleOnChange(event)}
-                  value={inputValues.lastName}
-                  type="text"
-                  className="form-control"
-                />
-              </div>
-            </div>
-            <div className="row mt-3">
-              <div className="col-md-12">
-                <label className="labels">Số điện thoại</label>
-                <input
-                  name="phonenumber"
-                  onChange={(event) => handleOnChange(event)}
-                  type="text"
-                  className="form-control"
-                  value={inputValues.phonenumber}
-                />
-              </div>
-              <div className="col-md-12">
-                <label className="labels">Địa chỉ</label>
-                <input
-                  name="address"
-                  onChange={(event) => handleOnChange(event)}
-                  type="text"
-                  className="form-control"
-                  value={inputValues.address}
-                />
-              </div>
-            </div>
-            <div className="row mt-3">
-              <div className="col-md-6">
-                <label className="labels">Giới tính</label>
-                <select
-                  value={inputValues.genderId}
-                  name="genderId"
-                  onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
-                >
-                  {dataGender &&
-                    dataGender.length > 0 &&
-                    dataGender.map((item, index) => {
-                      return (
-                        <option key={index} value={item.code}>
-                          {item.value}
-                        </option>
-                      );
-                    })}
-                </select>
-              </div>
-              <div className="col-md-6">
-                <label className="labels">Ngày sinh</label>
-                <DatePicker
-                  className="form-control"
-                  onChange={handleOnChangeDatePicker}
-                  selected={birthday}
-                />
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col-md-3">
-                <label className="labels">Chọn ảnh</label>
+
+                <p className="user-avatar-name">{displayName}</p>
+                <p className="user-avatar-email">{inputValues.email}</p>
+
+                {/* Email verify */}
+                <div className="user-email-verify">
+                  {inputValues.isActiveEmail === 1 ? (
+                    <span className="verify-badge verify-badge--ok">
+                      <i className="fa-solid fa-circle-check" style={{ marginRight: 4 }} />
+                      Đã xác thực
+                    </span>
+                  ) : (
+                    <span className="verify-badge verify-badge--no">
+                      <i className="fa-solid fa-circle-xmark" style={{ marginRight: 4 }} />
+                      Chưa xác thực
+                    </span>
+                  )}
+                </div>
+
+                {inputValues.isActiveEmail === 0 && (
+                  <span className="verify-link" onClick={handleSendEmail}>
+                    Gửi email xác thực
+                  </span>
+                )}
+
+                {/* Upload avatar */}
                 <input
                   type="file"
                   id="previewImg"
-                  accept=".jpg,.png"
+                  accept=".jpg,.png,.jpeg"
                   hidden
-                  onChange={(event) => handleOnChangeImage(event)}
+                  onChange={handleOnChangeImage}
                 />
-                <label
-                  style={{
-                    backgroundColor: '#eee',
-                    borderRadius: '5px',
-                    padding: '6px',
-                    cursor: 'pointer',
-                  }}
-                  className="label-upload"
-                  htmlFor="previewImg"
-                >
-                  Tải ảnh <i className="fas fa-upload"></i>
+                <label htmlFor="previewImg" className="upload-avatar-label">
+                  <i className="fa-solid fa-camera" />
+                  Đổi ảnh
                 </label>
               </div>
             </div>
-            <div onClick={() => handleSaveInfor()} className="mt-5 text-center">
-              <button className="btn btn-primary profile-button" type="button">
-                Lưu thông tin
-              </button>
+
+            {/* ── Right: Form ── */}
+            <div className="col-md-9 col-sm-12">
+              <div className="user-card__header">
+                <h2 className="user-card__title">
+                  <i className="fa-solid fa-id-card" />
+                  Thông tin cá nhân
+                </h2>
+              </div>
+              <div className="user-card__body">
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="user-form-group">
+                      <label htmlFor="firstName">Họ</label>
+                      <input
+                        id="firstName"
+                        name="firstName"
+                        className="user-input"
+                        type="text"
+                        value={inputValues.firstName}
+                        onChange={handleOnChange}
+                        placeholder="Họ của bạn"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="user-form-group">
+                      <label htmlFor="lastName">Tên</label>
+                      <input
+                        id="lastName"
+                        name="lastName"
+                        className="user-input"
+                        type="text"
+                        value={inputValues.lastName}
+                        onChange={handleOnChange}
+                        placeholder="Tên của bạn"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="user-form-group">
+                      <label htmlFor="phonenumber">Số điện thoại</label>
+                      <input
+                        id="phonenumber"
+                        name="phonenumber"
+                        className="user-input"
+                        type="text"
+                        value={inputValues.phonenumber}
+                        onChange={handleOnChange}
+                        placeholder="0xxx xxx xxx"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="user-form-group">
+                      <label htmlFor="genderId">Giới tính</label>
+                      <select
+                        id="genderId"
+                        name="genderId"
+                        className="user-input"
+                        value={inputValues.genderId}
+                        onChange={handleOnChange}
+                      >
+                        {dataGender?.map((item) => (
+                          <option key={item.code} value={item.code}>{item.value}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="user-form-group">
+                      <label>Ngày sinh</label>
+                      <DatePicker
+                        className="user-input"
+                        onChange={handleOnChangeDatePicker}
+                        selected={birthday}
+                        dateFormat="dd/MM/yyyy"
+                        style={{ width: '100%' }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="user-form-group">
+                      <label htmlFor="address">Địa chỉ</label>
+                      <input
+                        id="address"
+                        name="address"
+                        className="user-input"
+                        type="text"
+                        value={inputValues.address}
+                        onChange={handleOnChange}
+                        placeholder="Địa chỉ của bạn"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+                  <button className="user-btn-primary" onClick={handleSaveInfor}>
+                    <i className="fa-solid fa-floppy-disk" />
+                    Lưu thông tin
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      {inputValues.isOpen === true && (
+
+      {inputValues.isOpen && (
         <Lightbox
           mainSrc={inputValues.imageReview}
-          onCloseRequest={() => setInputValues({ ...inputValues, ['isOpen']: false })}
+          onCloseRequest={() => setInputValues({ ...inputValues, isOpen: false })}
         />
       )}
     </div>

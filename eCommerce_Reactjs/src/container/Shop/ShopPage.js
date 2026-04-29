@@ -26,7 +26,7 @@ function ShopPage(props) {
         <div className="banner_inner d-flex align-items-center">
           <div className="container">
             <div className="banner_content d-md-flex justify-content-between align-items-center">
-              <div className="mb-3 mb-md-0 text-highlight">
+              <div className="mb-3 mb-md-0">
                 <p className="banner_title">Danh mục cửa hàng</p>
                 <p className="banner_subtitle">Chọn ngay sản phẩm phù hợp với bạn</p>
               </div>

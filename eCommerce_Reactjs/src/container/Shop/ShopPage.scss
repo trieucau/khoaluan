@@ -1,16 +1,132 @@
-.banner_title {
-  font-family: 'Poppins', sans-serif; /* font hiện đại */
-  font-size: 32px; /* chữ to rõ */
-  font-weight: 800; /* đậm */
-  color: #000000; /* xám đậm sang trọng */
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
+/* ============================================================
+   SHOP PAGE — Redesign
+   ============================================================ */
+
+.cat_product_area {
+  background: var(--c-bg);
+  padding: var(--sp-12) 0 var(--sp-16);
 }
 
-.banner_subtitle {
-  font-family: 'Inter', sans-serif; /* font dễ đọc */
-  font-size: 17px; /* vừa phải */
-  font-weight: 400;
-  color: #000000; /* xám trung tính */
-  line-height: 1.5;
+/* ── Left Sidebar ─────────────────────────────────────── */
+.left_sidebar_area {
+  position: sticky;
+  top: 90px;
+}
+
+.left_sidebar_area .widget {
+  background: var(--c-surface);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-border);
+  padding: 22px;
+  margin-bottom: 20px;
+  transition: box-shadow var(--t-base);
+}
+
+.left_sidebar_area .widget:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.left_sidebar_area .widget_title,
+.left_sidebar_area .filter-title,
+.left_sidebar_area h5 {
+  font-family: var(--font-heading) !important;
+  font-size: var(--fs-lg) !important;
+  font-weight: 700 !important;
+  color: var(--c-text) !important;
+  margin: 0 0 16px !important;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--c-border);
+  position: relative;
+}
+
+/* Category & Brand items */
+.left_sidebar_area .list-group-item,
+.left_sidebar_area .cat-item,
+.cat-list li a,
+.brand-list li a {
+  font-family: var(--font-body) !important;
+  font-size: var(--fs-sm) !important;
+  color: var(--c-text-soft) !important;
+  padding: 8px 12px !important;
+  border-radius: var(--r-sm) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  transition: all var(--t-base) !important;
+  text-decoration: none !important;
+  margin-bottom: 4px;
+}
+
+.cat-list li a:hover,
+.brand-list li a:hover,
+.left_sidebar_area .list-group-item:hover {
+  background: var(--c-overlay) !important;
+  color: var(--c-primary) !important;
+  padding-left: 16px !important;
+}
+
+.cat-list li a.active,
+.brand-list li a.active,
+.left_sidebar_area .list-group-item.active {
+  background: var(--grad-primary) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+/* ── Main Shop Grid ────────────────────────────────────── */
+.product-grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.product-count {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+}
+
+.product-count strong {
+  color: var(--c-primary);
+  font-weight: 700;
+}
+
+/* ── Pagination override ───────────────────────────────── */
+.col-lg-9 .pagination {
+  margin-top: 32px;
+}
+
+/* ── Filter chip ───────────────────────────────────────── */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--c-overlay);
+  color: var(--c-primary);
+  font-family: var(--font-accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--r-full);
+  border: 1.5px solid var(--c-primary-light);
+  cursor: pointer;
+  transition: all var(--t-base);
+}
+
+.filter-chip:hover {
+  background: var(--c-primary);
+  color: #fff;
+}
+
+@media (max-width: 991px) {
+  .left_sidebar_area {
+    position: static;
+    margin-bottom: 24px;
+  }
 }

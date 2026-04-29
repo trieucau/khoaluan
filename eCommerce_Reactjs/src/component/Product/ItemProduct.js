@@ -1,37 +1,59 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { addItemCartStart } from '../../action/ShopCartAction';
 import CommonUtils from '../../utils/CommonUtils';
 import './ItemProduct.scss';
-// độ phân giải ảnh có thể làm vỡ layout
+
 function ItemProduct(props) {
+  // Tính % giảm giá
+  const discountPercent =
+    props.price && props.discountPrice && props.price > props.discountPrice
+      ? Math.round(((props.price - props.discountPrice) / props.price) * 100)
+      : 0;
+
   return (
     <div className={props.type}>
-      <div style={{ cursor: 'pointer' }} className="single-product">
-        <Link to={`/detail-product/${props.id}`}>
-          <div style={{ width: props.width, height: props.height }} className="product-img">
-            <img className="img-fluid w-100" src={props.img} alt="" />
-            <div className="p_icon">
-              <a>
-                <i className="ti-eye" />
-              </a>
-              <a>
-                <i className="ti-shopping-cart" />
-              </a>
+      <Link to={`/detail-product/${props.id}`} className="product-card-link">
+        <div className="product-card">
+          {/* Badges */}
+          <div className="product-badges">
+            {discountPercent > 0 && (
+              <span className="product-badge product-badge--sale">-{discountPercent}%</span>
+            )}
+          </div>
+
+          {/* Image */}
+          <div className="product-img-wrap">
+            <img
+              className="product-img"
+              src={props.img}
+              alt={props.name || 'Sản phẩm'}
+              loading="lazy"
+            />
+            {/* Hover overlay */}
+            <div className="product-overlay">
+              <span className="product-overlay__btn">
+                <i className="fa-solid fa-eye" />
+                Xem chi tiết
+              </span>
             </div>
           </div>
-          <div style={{ width: props.width, height: '99px' }} className="product-btm">
-            <a className="d-block">
-              <h4>{props.name}</h4>
-            </a>
-            <div className="mt-3">
-              <span className="mr-4">{CommonUtils.formatter.format(props.discountPrice)}</span>
-              <del>{CommonUtils.formatter.format(props.price)}</del>
+
+          {/* Info */}
+          <div className="product-info">
+            <h4 className="product-name">{props.name}</h4>
+            <div className="product-price">
+              <span className="product-price--current">
+                {CommonUtils.formatter.format(props.discountPrice)}
+              </span>
+              {props.price && props.price !== props.discountPrice && (
+                <del className="product-price--original">
+                  {CommonUtils.formatter.format(props.price)}
+                </del>
+              )}
             </div>
           </div>
-        </Link>
-      </div>
+        </div>
+      </Link>
     </div>
   );
 }
