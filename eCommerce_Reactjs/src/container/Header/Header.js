@@ -123,6 +123,39 @@ const Header = () => {
                         </NavLink>
                       </li>
                     ))}
+                    {user?.id ? (
+                      <>
+                        <li className="nav-item mobile-only">
+                          <a
+                            className="nav-link"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              localStorage.removeItem('userData');
+                              localStorage.removeItem('token');
+                              window.location.href = '/login';
+                            }}
+                          >
+                            Đăng xuất
+                          </a>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li className="nav-item mobile-only">
+                          <NavLink to="/login" className="nav-link" activeClassName="selected">
+                            Đăng nhập
+                          </NavLink>
+                        </li>
+                        <li className="nav-item mobile-only">
+                          <NavLink to="/register" className="nav-link" activeClassName="selected">
+                            Đăng ký
+                          </NavLink>
+                        </li>
+                      </>
+                    )}
+                    <li className="nav-item mobile-only">
+                      <a className="nav-link">🌐 VN</a>
+                    </li>
                   </ul>
                 </div>
 

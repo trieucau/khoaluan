@@ -18,10 +18,7 @@ function UserHomePage(props) {
   }, []);
 
   return (
-    <div
-      style={{ display: 'flex' }}
-      className="container rounded bg-white mt-5 mb-5 container-mobile"
-    >
+    <div style={{ display: 'flex' }} className="container rounded bg-white mb-5 container-mobile">
       <CategoryUser id={user.id} />
       <Routes>
         <Route path="messenger" element={<MessagePage />} />
