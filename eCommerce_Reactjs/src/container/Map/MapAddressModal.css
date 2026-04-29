@@ -1,0 +1,2 @@
+/* Re-export styles from shared AddressModal stylesheet */
+@import '../ShopCart/AddressModal.css';

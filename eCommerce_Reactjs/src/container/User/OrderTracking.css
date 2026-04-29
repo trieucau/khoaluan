@@ -1,0 +1,558 @@
+/* ============================================================
+   ORDER TRACKING PAGE — Mobile-first, pink design system
+   ============================================================ */
+
+/* ── Page wrapper ────────────────────────────────────────── */
+.ot-page {
+  padding: 20px 24px 60px;
+  max-width: 900px;
+  margin: 0 auto;
+  min-height: 70vh;
+}
+
+/* ── Back button ─────────────────────────────────────────── */
+.ot-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border-radius: 50px;
+  border: 1.5px solid #F0E6EE;
+  background: #fff;
+  color: #6B5670;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  margin-bottom: 20px;
+  text-decoration: none;
+}
+
+.ot-back-btn:hover {
+  border-color: #FF6B9D;
+  color: #FF6B9D;
+  background: rgba(255,107,157,0.04);
+  transform: translateX(-2px);
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.ot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 16px rgba(196,69,105,0.08);
+  border: 1px solid #F0E6EE;
+}
+
+.ot-header__left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ot-header__icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.ot-header__title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #2D1B2E;
+  margin: 0 0 2px;
+}
+
+.ot-header__id {
+  font-size: 13px;
+  color: #9B8EA4;
+  margin: 0;
+  font-weight: 500;
+}
+
+.ot-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Progress Stepper ────────────────────────────────────── */
+.ot-stepper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px 20px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 16px rgba(196,69,105,0.08);
+  border: 1px solid #F0E6EE;
+  overflow-x: auto;
+  gap: 0;
+}
+
+.ot-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  flex: 1;
+  min-width: 70px;
+}
+
+.ot-step__line {
+  position: absolute;
+  top: 18px;
+  right: 50%;
+  width: 100%;
+  height: 3px;
+  background: #F0E6EE;
+  z-index: 0;
+  transform: translateX(-50%);
+}
+
+.ot-step__line--filled {
+  background: linear-gradient(90deg, #FF6B9D, #F8B195);
+}
+
+.ot-step__dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2.5px solid #F0E6EE;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #BEB0C6;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s;
+}
+
+.ot-step--done .ot-step__dot {
+  background: linear-gradient(135deg, #FF6B9D, #F8B195);
+  border-color: #FF6B9D;
+  color: #fff;
+}
+
+.ot-step--active .ot-step__dot {
+  background: linear-gradient(135deg, #C44569, #FF6B9D);
+  border-color: #C44569;
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(255,107,157,0.2);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255,107,157,0.4); }
+  70%  { box-shadow: 0 0 0 8px rgba(255,107,157,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,107,157,0); }
+}
+
+.ot-step__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #BEB0C6;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.ot-step--done .ot-step__label,
+.ot-step--active .ot-step__label {
+  color: #C44569;
+}
+
+/* ── Cancelled banner ────────────────────────────────────── */
+.ot-cancelled-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(231, 76, 60, 0.08);
+  border: 1.5px solid rgba(231, 76, 60, 0.25);
+  border-radius: 16px;
+  padding: 14px 20px;
+  color: #E74C3C;
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.ot-cancelled-banner i {
+  font-size: 20px;
+}
+
+/* ── Info grid ───────────────────────────────────────────── */
+.ot-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ot-info-card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #F0E6EE;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(196,69,105,0.06);
+}
+
+.ot-info-card__header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(255,107,157,0.06) 0%, rgba(248,177,149,0.06) 100%);
+  border-bottom: 1px solid #F0E6EE;
+  font-size: 13px;
+  font-weight: 700;
+  color: #C44569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ot-info-card__body {
+  padding: 16px 18px;
+}
+
+.ot-info-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: #2D1B2E;
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.ot-info-line:last-of-type { margin-bottom: 14px; }
+
+.ot-info-line i {
+  color: #FF6B9D;
+  font-size: 13px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.ot-info-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9B8EA4;
+  font-size: 13px;
+  font-style: italic;
+  margin: 0;
+}
+
+.ot-call-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #2ECC71, #27AE60);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ot-call-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(46,204,113,0.35);
+  color: #fff;
+  text-decoration: none;
+}
+
+/* ── Map section ─────────────────────────────────────────── */
+.ot-map-section {
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #F0E6EE;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(196,69,105,0.08);
+}
+
+.ot-map-section__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #C44569;
+  border-bottom: 1px solid #F0E6EE;
+  background: linear-gradient(135deg, rgba(255,107,157,0.06) 0%, rgba(248,177,149,0.06) 100%);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ot-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 50px;
+  background: rgba(231,76,60,0.1);
+  color: #E74C3C;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.ot-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #E74C3C;
+  animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.ot-map-wrapper {
+  /* map will render inside */
+}
+
+.ot-map-unavailable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  color: #BEB0C6;
+  text-align: center;
+}
+
+.ot-map-unavailable i {
+  font-size: 40px;
+  color: #F0E6EE;
+}
+
+.ot-map-unavailable p {
+  font-size: 14px;
+  margin: 0;
+  color: #9B8EA4;
+}
+
+.ot-map-unavailable span {
+  font-size: 13px;
+  color: #BEB0C6;
+}
+
+.ot-map-unavailable strong {
+  color: #FF6B9D;
+}
+
+/* ── Map Overlay & Legend ────────────────────────────────── */
+.ot-map-info-overlay {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid #F0E6EE;
+}
+
+.ot-map-info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #2D1B2E;
+}
+
+.ot-map-info-row i {
+  font-size: 15px;
+  width: 16px;
+  text-align: center;
+}
+
+.ot-map-legend {
+  position: absolute;
+  bottom: 24px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid #F0E6EE;
+}
+
+.ot-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B5670;
+}
+
+.ot-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.ot-legend-dot--shipper {
+  background: #C44569;
+}
+
+.ot-legend-dot--dest {
+  background: #FF6B9D;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #FF6B9D;
+}
+
+/* ── Loading ─────────────────────────────────────────────── */
+.ot-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 16px;
+  color: #9B8EA4;
+  font-size: 15px;
+}
+
+.ot-loading__spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid #F0E6EE;
+  border-top-color: #FF6B9D;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Error ───────────────────────────────────────────────── */
+.ot-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 14px;
+  text-align: center;
+  padding: 24px;
+}
+
+.ot-error i {
+  font-size: 48px;
+  color: #F0E6EE;
+}
+
+.ot-error h3 {
+  color: #9B8EA4;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .ot-page {
+    padding: 16px 16px 48px;
+  }
+
+  .ot-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 18px;
+  }
+
+  .ot-status-badge {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ot-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ot-stepper {
+    padding: 18px 12px 16px;
+    gap: 0;
+  }
+
+  .ot-step__label {
+    font-size: 10px;
+  }
+
+  .ot-step__dot {
+    width: 30px;
+    height: 30px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ot-header__icon {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+
+  .ot-header__title {
+    font-size: 16px;
+  }
+  
+  .ot-map-info-overlay {
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+  }
+
+  .ot-map-info-row {
+    font-size: 12px;
+  }
+
+  .ot-map-legend {
+    bottom: 10px;
+    left: 10px;
+    padding: 8px 10px;
+  }
+}

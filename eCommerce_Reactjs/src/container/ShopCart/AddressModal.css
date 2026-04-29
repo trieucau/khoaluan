@@ -1,0 +1,521 @@
+/* ============================================================
+   ADDRESS MODALS — Thêm địa chỉ thủ công & Chọn từ bản đồ
+   Mobile-first, customer pink design system
+   ============================================================ */
+
+/* ── Overlay (backdrop) ──────────────────────────────────── */
+.addr-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(45, 27, 46, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: overlayIn 0.2s ease;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Modal card ──────────────────────────────────────────── */
+.addr-modal {
+  background: #fff;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(196, 69, 105, 0.18), 0 4px 20px rgba(0,0,0,0.12);
+  animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Map modal is wider */
+.addr-modal--map {
+  max-width: 720px;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Scrollbar */
+.addr-modal::-webkit-scrollbar { width: 4px; }
+.addr-modal::-webkit-scrollbar-track { background: transparent; }
+.addr-modal::-webkit-scrollbar-thumb { background: #F0E6EE; border-radius: 4px; }
+
+/* ── Header ──────────────────────────────────────────────── */
+.addr-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid #F0E6EE;
+  flex-shrink: 0;
+}
+
+.addr-modal__header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.addr-modal__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #FF6B9D 0%, #F8B195 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.addr-modal__icon--map {
+  background: linear-gradient(135deg, #C44569 0%, #FF6B9D 100%);
+}
+
+.addr-modal__title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #2D1B2E;
+  margin: 0 0 2px;
+  line-height: 1.2;
+}
+
+.addr-modal__subtitle {
+  font-size: 12px;
+  color: #9B8EA4;
+  margin: 0;
+}
+
+.addr-modal__close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #F0E6EE;
+  background: #fff;
+  color: #9B8EA4;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.addr-modal__close:hover {
+  background: #FF6B9D;
+  border-color: #FF6B9D;
+  color: #fff;
+}
+
+/* ── Body ────────────────────────────────────────────────── */
+.addr-modal__body {
+  padding: 22px 24px 8px;
+  flex: 1;
+}
+
+/* Section label */
+.addr-modal__section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #FF6B9D;
+  margin-bottom: 14px;
+}
+
+.addr-modal__section-label i {
+  font-size: 12px;
+}
+
+/* Row layout */
+.addr-modal__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.addr-modal__row--3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* Field */
+.addr-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.addr-modal__row .addr-modal__field {
+  margin-bottom: 0;
+}
+
+.addr-modal__field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6B5670;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Required star */
+.addr-required {
+  color: #FF6B9D;
+  margin-left: 2px;
+}
+
+/* Input */
+.addr-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #F0E6EE;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #2D1B2E;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.addr-input:focus {
+  border-color: #FF6B9D;
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.12);
+}
+
+.addr-input:disabled {
+  background: #F9F5F9;
+  color: #9B8EA4;
+  cursor: not-allowed;
+}
+
+.addr-input::placeholder { color: #BEB0C6; }
+
+/* Select wrapper */
+.addr-select-wrap {
+  position: relative;
+}
+
+.addr-select {
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.addr-select-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9B8EA4;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* ── Map hint banner ─────────────────────────────────────── */
+.addr-map-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(255,107,157,0.08) 0%, rgba(248,177,149,0.08) 100%);
+  border: 1px solid rgba(255,107,157,0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #C44569;
+  font-weight: 500;
+  margin: 0 24px 0;
+}
+
+.addr-map-hint i {
+  font-size: 15px;
+  color: #FF6B9D;
+  flex-shrink: 0;
+}
+
+/* ── Map container ───────────────────────────────────────── */
+.addr-map-container {
+  margin: 16px 24px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1.5px solid #F0E6EE;
+  box-shadow: 0 2px 12px rgba(196,69,105,0.08);
+}
+
+.addr-map-container .leaflet-container {
+  border-radius: 16px;
+}
+
+/* ── Address preview ─────────────────────────────────────── */
+.addr-map-preview {
+  margin: 16px 24px 0;
+  background: #FFF9FB;
+  border: 1.5px solid #F0E6EE;
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.addr-map-preview__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #FF6B9D;
+  margin-bottom: 8px;
+}
+
+.addr-map-preview__value {
+  font-size: 13px;
+  color: #2D1B2E;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.addr-map-preview__empty {
+  color: #9B8EA4;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+.addr-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 18px 24px 22px;
+  border-top: 1px solid #F0E6EE;
+  margin-top: 20px;
+  flex-shrink: 0;
+}
+
+.addr-btn-cancel {
+  padding: 11px 24px;
+  border-radius: 50px;
+  border: 1.5px solid #F0E6EE;
+  background: #fff;
+  color: #6B5670;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.addr-btn-cancel:hover {
+  border-color: #9B8EA4;
+  color: #2D1B2E;
+}
+
+.addr-btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 28px;
+  border-radius: 50px;
+  border: none;
+  background: linear-gradient(135deg, #FF6B9D 0%, #F8B195 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  font-family: inherit;
+}
+
+.addr-btn-save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.38);
+}
+
+.addr-btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Mobile responsive ───────────────────────────────────── */
+@media (max-width: 600px) {
+  .addr-modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .addr-modal {
+    border-radius: 24px 24px 0 0;
+    max-height: 96vh;
+    /* Slide up from bottom on mobile */
+    animation: modalInMobile 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .addr-modal--map {
+    max-height: 96vh;
+  }
+
+  @keyframes modalInMobile {
+    from { opacity: 0; transform: translateY(100%); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .addr-modal__header {
+    padding: 18px 18px 14px;
+  }
+
+  .addr-modal__body {
+    padding: 18px 18px 8px;
+  }
+
+  .addr-modal__row {
+    grid-template-columns: 1fr;
+  }
+
+  .addr-modal__row--3 {
+    grid-template-columns: 1fr;
+  }
+
+  .addr-modal__footer {
+    padding: 14px 18px 20px;
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .addr-btn-cancel,
+  .addr-btn-save {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 24px;
+  }
+
+  .addr-map-hint {
+    margin: 0 18px 0;
+    font-size: 12px;
+  }
+
+  .addr-map-container {
+    margin: 12px 18px 0;
+  }
+
+  .addr-map-preview {
+    margin: 12px 18px 0;
+  }
+
+  .addr-modal__icon {
+    width: 38px;
+    height: 38px;
+    font-size: 15px;
+  }
+
+  .addr-modal__title {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 400px) {
+  .addr-modal__header-left {
+    gap: 10px;
+  }
+}
+
+/* ── Confirm Delete Dialog ───────────────────────────────── */
+.addr-confirm-dialog {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 380px;
+  padding: 32px 28px 24px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.16);
+  animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.addr-confirm-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 24px;
+  margin: 0 auto 18px;
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.35);
+}
+
+.addr-confirm-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #2D1B2E;
+  margin: 0 0 10px;
+}
+
+.addr-confirm-desc {
+  font-size: 14px;
+  color: #9B8EA4;
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+
+.addr-confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.addr-btn-delete-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: 50px;
+  border: none;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+
+.addr-btn-delete-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+@media (max-width: 440px) {
+  .addr-confirm-dialog {
+    margin: 16px;
+    padding: 28px 20px 20px;
+  }
+  .addr-confirm-actions {
+    flex-direction: column-reverse;
+  }
+  .addr-btn-cancel,
+  .addr-btn-delete-confirm {
+    width: 100%;
+    justify-content: center;
+  }
+}

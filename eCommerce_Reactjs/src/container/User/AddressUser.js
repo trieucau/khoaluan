@@ -11,6 +11,7 @@ import {
 import AddressUsersModal from '../ShopCart/AdressUserModal';
 import MapAddressModal from '../Map/MapAddressModal';
 import '../../css/user-pages.css';
+import '../ShopCart/AddressModal.css';
 
 function AddressUser(props) {
   const [dataAddressUser, setDataAddressUser] = useState([]);
@@ -19,6 +20,7 @@ function AddressUser(props) {
   const [isOpenMapModal, setIsOpenMapModal] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [usedAddressIds, setUsedAddressIds] = useState([]);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
 
   const loadUserInfo = async () => {
     const res = await getDetailUserById(props.id);
@@ -84,11 +86,25 @@ function AddressUser(props) {
     }
   };
 
-  const handleDeleteAddress = async (id) => {
-    if (!window.confirm('Bạn có chắc muốn xóa địa chỉ này?')) return;
-    const res = await deleteAddressUserService({ data: { id } });
-    if (res?.errCode === 0) { toast.success('Đã xóa địa chỉ'); await loadDataAddress(); }
-    else toast.error('Xóa địa chỉ thất bại');
+  const handleDeleteAddress = (id) => {
+    setPendingDeleteId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
+    try {
+      const res = await deleteAddressUserService({ data: { id: pendingDeleteId } });
+      if (res?.errCode === 0) {
+        toast.success('Đã xóa địa chỉ thành công!');
+        await loadDataAddress();
+      } else {
+        toast.error(res?.errMessage || 'Xóa địa chỉ thất bại');
+      }
+    } catch {
+      toast.error('Lỗi kết nối máy chủ');
+    } finally {
+      setPendingDeleteId(null);
+    }
   };
 
   const handleCreateAddressFromMap = async (mapData) => {
@@ -217,6 +233,40 @@ function AddressUser(props) {
         userId={props.id}
         onCreateAddress={handleCreateAddressFromMap}
       />
+
+      {/* Confirm Delete Dialog */}
+      {pendingDeleteId && (
+        <div
+          className="addr-modal-overlay"
+          onClick={(e) => e.target === e.currentTarget && setPendingDeleteId(null)}
+          style={{ zIndex: 10000 }}
+        >
+          <div className="addr-confirm-dialog">
+            <div className="addr-confirm-icon">
+              <i className="fa-solid fa-triangle-exclamation" />
+            </div>
+            <h4 className="addr-confirm-title">Xóa địa chỉ?</h4>
+            <p className="addr-confirm-desc">
+              Hành động này không thể hoàn tác. Địa chỉ sẽ bị xóa vĩnh viễn.
+            </p>
+            <div className="addr-confirm-actions">
+              <button
+                className="addr-btn-cancel"
+                onClick={() => setPendingDeleteId(null)}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                className="addr-btn-delete-confirm"
+                onClick={confirmDelete}
+              >
+                <i className="fa-solid fa-trash" />
+                Xóa địa chỉ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

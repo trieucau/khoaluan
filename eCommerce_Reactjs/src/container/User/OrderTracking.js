@@ -1,62 +1,219 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useOrderTracking } from '../../hooks/useOrderTracking';
 import TrackingMap from '../Map/TrackingMap';
-const statusText = {
-  S4: 'Shipper đang đến lấy hàng',
-  S5: 'Đang giao hàng',
+import '../../css/user-pages.css';
+import './OrderTracking.css';
+
+/* ── Status config ─────────────────────────────────────────── */
+const STATUS_CONFIG = {
+  S3: { label: 'Chờ xác nhận',     icon: 'fa-solid fa-clock',              color: '#F8B195', step: 1 },
+  S4: { label: 'Chờ lấy hàng',     icon: 'fa-solid fa-box',                 color: '#FF6B9D', step: 2 },
+  S5: { label: 'Đang giao hàng',   icon: 'fa-solid fa-truck-fast',          color: '#3498DB', step: 3 },
+  S6: { label: 'Đã giao hàng',     icon: 'fa-solid fa-circle-check',        color: '#2ECC71', step: 4 },
+  S7: { label: 'Hủy đơn',          icon: 'fa-solid fa-circle-xmark',        color: '#E74C3C', step: -1 },
+  S8: { label: 'Giao thất bại',    icon: 'fa-solid fa-triangle-exclamation',color: '#E67E22', step: -1 },
 };
+
+const STEPS = [
+  { key: 'S3', label: 'Chờ xác nhận',   icon: 'fa-solid fa-clock' },
+  { key: 'S4', label: 'Chờ lấy hàng',   icon: 'fa-solid fa-box' },
+  { key: 'S5', label: 'Đang giao hàng', icon: 'fa-solid fa-truck-fast' },
+  { key: 'S6', label: 'Đã giao hàng',   icon: 'fa-solid fa-circle-check' },
+];
 
 const OrderTracking = () => {
   const { orderId } = useParams();
-
+  const navigate = useNavigate();
   const { order, shipperLoc, deliveryCoords, loading, error } = useOrderTracking(orderId);
 
-  if (loading) return <div className="container py-5 text-center">Đang tải...</div>;
-  if (error) return <div className="container py-5 text-danger">{error}</div>;
+  /* ── Loading state ────────────────────────────────────────── */
+  if (loading) {
+    return (
+      <div className="ot-loading">
+        <div className="ot-loading__spinner" />
+        <p>Đang tải thông tin đơn hàng...</p>
+      </div>
+    );
+  }
+
+  /* ── Error state ──────────────────────────────────────────── */
+  if (error) {
+    return (
+      <div className="ot-error">
+        <i className="fa-solid fa-circle-exclamation" />
+        <h3>{error}</h3>
+        <button className="ot-back-btn" onClick={() => navigate(-1)}>
+          <i className="fa-solid fa-arrow-left" /> Quay lại
+        </button>
+      </div>
+    );
+  }
+
   if (!order) return null;
 
   const showMap = order.statusId === 'S4' || order.statusId === 'S5';
   const shipper = order.shipperData;
+  const statusCfg = STATUS_CONFIG[order.statusId] || STATUS_CONFIG.S3;
+  const isFailed = order.statusId === 'S7' || order.statusId === 'S8';
+
+  /* ── Active step index ────────────────────────────────────── */
+  const currentStepIdx = isFailed
+    ? -1
+    : STEPS.findIndex((s) => s.key === order.statusId);
 
   return (
-    <div className="container py-4">
-      <div className="card shadow-sm p-4">
-        <h4>Theo dõi đơn hàng #{orderId}</h4>
-        <hr />
+    <div className="ot-page">
+      {/* ── Back button ──────────────────────────────────────── */}
+      <button className="ot-back-btn" onClick={() => navigate(-1)}>
+        <i className="fa-solid fa-arrow-left" />
+        Quay lại
+      </button>
 
-        {/* ✅ Trạng thái */}
-        <p>
-          <strong>Trạng thái:</strong>{' '}
-          <span className="badge bg-primary">
-            {statusText[order.statusId] || order.statusOrderData?.value || order.statusId}
-          </span>
-        </p>
+      {/* ── Page header ──────────────────────────────────────── */}
+      <div className="ot-header">
+        <div className="ot-header__left">
+          <div className="ot-header__icon" style={{ background: statusCfg.color }}>
+            <i className={statusCfg.icon} />
+          </div>
+          <div>
+            <h1 className="ot-header__title">Theo dõi đơn hàng</h1>
+            <p className="ot-header__id">#{orderId}</p>
+          </div>
+        </div>
+        <div
+          className="ot-status-badge"
+          style={{ background: `${statusCfg.color}18`, color: statusCfg.color, border: `1.5px solid ${statusCfg.color}40` }}
+        >
+          <i className={statusCfg.icon} />
+          {statusCfg.label}
+        </div>
+      </div>
 
-        {/* ✅ Địa chỉ */}
-        <p>
-          <strong>Địa chỉ giao:</strong> {order.addressUser?.shipAdress}
-        </p>
+      {/* Progress stepper */}
+      {!isFailed && (
+        <div className="ot-stepper">
+          {STEPS.map((step, idx) => {
+            const isDone    = idx < currentStepIdx;
+            const isActive  = idx === currentStepIdx;
+            return (
+              <div key={step.key} className={`ot-step ${isDone ? 'ot-step--done' : ''} ${isActive ? 'ot-step--active' : ''}`}>
+                {/* Connector line */}
+                {idx > 0 && (
+                  <div className={`ot-step__line ${isDone || isActive ? 'ot-step__line--filled' : ''}`} />
+                )}
+                <div className="ot-step__dot">
+                  {isDone
+                    ? <i className="fa-solid fa-check" />
+                    : isActive
+                      ? <i className={step.icon} />
+                      : <span>{idx + 1}</span>
+                  }
+                </div>
+                <span className="ot-step__label">{step.label}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-        {/* ✅ Thông tin shipper */}
-        {shipper && (
-          <>
-            <p>
-              <strong>Shipper:</strong> {shipper.firstName} {shipper.lastName}
-            </p>
+      {/* Failed/Cancelled banner */}
+      {isFailed && (
+        <div className="ot-cancelled-banner">
+          <i className={statusCfg.icon} />
+          {order.statusId === 'S7' ? 'Đơn hàng này đã bị hủy' : 'Giao hàng thất bại'}
+        </div>
+      )}
 
-            <a href={`tel:${shipper.phonenumber}`} className="btn btn-sm btn-outline-success">
-              Gọi: {shipper.phonenumber}
-            </a>
-          </>
-        )}
+      {/* ── Info grid ────────────────────────────────────────── */}
+      <div className="ot-info-grid">
+        {/* Delivery address card */}
+        <div className="ot-info-card">
+          <div className="ot-info-card__header">
+            <i className="fa-solid fa-location-dot" />
+            Địa chỉ giao hàng
+          </div>
+          <div className="ot-info-card__body">
+            {order.addressUser ? (
+              <>
+                <p className="ot-info-line">
+                  <i className="fa-solid fa-user" />
+                  {order.addressUser.shipName}
+                </p>
+                <p className="ot-info-line">
+                  <i className="fa-solid fa-phone" />
+                  {order.addressUser.shipPhonenumber}
+                </p>
+                <p className="ot-info-line">
+                  <i className="fa-solid fa-map-pin" />
+                  {order.addressUser.shipAdress}
+                </p>
+              </>
+            ) : (
+              <p className="ot-info-empty">Chưa có thông tin địa chỉ</p>
+            )}
+          </div>
+        </div>
 
-        {/* ✅ Bản đồ */}
+        {/* Shipper card */}
+        <div className="ot-info-card">
+          <div className="ot-info-card__header">
+            <i className="fa-solid fa-truck" />
+            Thông tin shipper
+          </div>
+          <div className="ot-info-card__body">
+            {shipper ? (
+              <>
+                <p className="ot-info-line">
+                  <i className="fa-solid fa-user" />
+                  {shipper.firstName} {shipper.lastName}
+                </p>
+                <p className="ot-info-line">
+                  <i className="fa-solid fa-phone" />
+                  {shipper.phonenumber}
+                </p>
+                <a
+                  href={`tel:${shipper.phonenumber}`}
+                  className="ot-call-btn"
+                >
+                  <i className="fa-solid fa-phone" />
+                  Gọi cho shipper
+                </a>
+              </>
+            ) : (
+              <p className="ot-info-empty">
+                <i className="fa-solid fa-circle-info" />
+                {order.statusId === 'S3'
+                  ? 'Shipper chưa được phân công'
+                  : 'Không có thông tin shipper'}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Map section ──────────────────────────────────────── */}
+      <div className="ot-map-section">
+        <div className="ot-map-section__header">
+          <i className="fa-solid fa-map-location-dot" />
+          Bản đồ theo dõi thời gian thực
+          {showMap && (
+            <span className="ot-live-badge">
+              <span className="ot-live-dot" />
+              LIVE
+            </span>
+          )}
+        </div>
+
         {showMap ? (
-          <div style={{ marginTop: '20px' }}>
+          <div className="ot-map-wrapper">
             <TrackingMap shipperLoc={shipperLoc} deliveryCoords={deliveryCoords} />
           </div>
         ) : (
-          <div className="alert alert-warning mt-3">Bản đồ chưa khả dụng cho trạng thái này.</div>
+          <div className="ot-map-unavailable">
+            <i className="fa-solid fa-map" />
+            <p>Bản đồ khả dụng khi shipper đang lấy hoặc giao hàng</p>
+            <span>Trạng thái hiện tại: <strong>{statusCfg.label}</strong></span>
+          </div>
         )}
       </div>
     </div>
