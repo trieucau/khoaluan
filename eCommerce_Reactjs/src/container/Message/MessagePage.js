@@ -56,22 +56,30 @@ function MessagePage() {
       <div className="container-fluid px-0">
         <div className="messenger-layout">
           {/* Sidebar danh sách phòng */}
-          <MessageDisscution
-            userId={dataUser.id}
-            isAdmin={false}
-            handleClickRoom={handleClickRoom}
-            data={dataRoom}
-          />
+          <div className={`messenger-sidebar-wrapper ${selectedRoom ? 'hidden-on-mobile' : ''}`}>
+            <MessageDisscution
+              userId={dataUser.id}
+              isAdmin={false}
+              handleClickRoom={handleClickRoom}
+              data={dataRoom}
+            />
+          </div>
 
           {/* Chat window */}
-          {selectedRoom ? (
-            <ChatWindow userId={dataUser.id} roomId={selectedRoom} />
-          ) : (
-            <div className="messenger-empty">
-              <i className="fa-regular fa-comment-dots" />
-              <p>Chọn một cuộc trò chuyện để bắt đầu</p>
-            </div>
-          )}
+          <div className={`messenger-chatbox-wrapper ${!selectedRoom ? 'hidden-on-mobile' : ''}`}>
+            {selectedRoom ? (
+              <ChatWindow 
+                userId={dataUser.id} 
+                roomId={selectedRoom} 
+                onBack={() => setselectedRoom('')}
+              />
+            ) : (
+              <div className="messenger-empty">
+                <i className="fa-regular fa-comment-dots" />
+                <p>Chọn một cuộc trò chuyện để bắt đầu</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

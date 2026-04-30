@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { getDetailUserById } from '../../services/userService';
 import '../../css/dashboard.css';
 
 const navItems = [
@@ -16,9 +17,24 @@ function CategoryUser({ id }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    setUser(userData);
-  }, []);
+    const fetchUser = async () => {
+      // Get basic data from localStorage immediately for fast render
+      const localData = JSON.parse(localStorage.getItem('userData'));
+      if (localData) setUser(localData);
+      
+      // Fetch fresh data from API to get the latest avatar/info
+      if (id) {
+        const res = await getDetailUserById(id);
+        if (res && res.errCode === 0) {
+          setUser(res.data);
+          // Optional: Update localStorage to keep it synced
+          const updatedLocal = { ...localData, ...res.data };
+          localStorage.setItem('userData', JSON.stringify(updatedLocal));
+        }
+      }
+    };
+    fetchUser();
+  }, [id]);
 
   const handleLogout = () => {
     localStorage.removeItem('userData');
@@ -35,18 +51,22 @@ function CategoryUser({ id }) {
       {/* Avatar */}
       <div className="user-sidebar__avatar">
         <div className="user-sidebar__avatar-img">
-          {user?.avatar ? (
+          {user?.image ? (
             <img
-              src={user.avatar}
+              src={user.image}
               alt={displayName}
+              loading="lazy"
+              decoding="async"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           ) : (
             <i className="fa-solid fa-user" style={{ fontSize: '28px' }} />
           )}
         </div>
-        <p className="user-sidebar__name">{displayName}</p>
-        <p className="user-sidebar__email">{user?.email || ''}</p>
+        <div className="user-sidebar__avatar-info">
+          <p className="user-sidebar__name">{displayName}</p>
+          <p className="user-sidebar__email">{user?.email || ''}</p>
+        </div>
       </div>
 
       {/* Navigation */}

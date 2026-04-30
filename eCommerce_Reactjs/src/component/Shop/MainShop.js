@@ -91,21 +91,19 @@ function MainShop(props) {
   };
   return (
     <div className="col-lg-9">
-      <div className="product_top_bar">
-        <div className="left_dorp">
+      <div className="product_top_bar" style={{ padding: '15px 0', background: 'transparent', borderBottom: '1px solid #F0E6EE', marginBottom: '25px' }}>
+        <div className="left_dorp" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', width: '100%' }}>
           <select
-            style={{ outline: 'none' }}
+            style={{ outline: 'none', padding: '10px 16px', borderRadius: '8px', border: '1px solid #E4D8E1', background: '#fff', color: '#2D1B2E', fontSize: '14px', cursor: 'pointer', flex: '0 0 auto', minWidth: '140px' }}
             onChange={(event) => handleSelectSort(event)}
-            className="sorting"
           >
-            <option value={1}>Sắp xếp</option>
+            <option value={1}>Sắp xếp mặc định</option>
             <option value={2}>Theo giá tiền</option>
             <option value={3}>Theo tên</option>
           </select>
           <select
-            style={{ outline: 'none' }}
+            style={{ outline: 'none', padding: '10px 16px', borderRadius: '8px', border: '1px solid #E4D8E1', background: '#fff', color: '#2D1B2E', fontSize: '14px', cursor: 'pointer', flex: '0 0 auto', minWidth: '120px' }}
             onChange={(event) => handleSelectLimitPage(event)}
-            className="show"
           >
             <option value={6}>Hiển thị 6</option>
             <option value={12}>Hiển thị 12</option>
@@ -113,13 +111,12 @@ function MainShop(props) {
           </select>
           <div
             style={{
-              display: 'inline-block',
-              marginLeft: '10px',
-              width: '300px',
+              flex: '1 1 200px',
+              margin: 0
             }}
           >
             <FormSearch
-              title={'tên tên quần áo'}
+              title={'tên sản phẩm'}
               handleOnchange={handleOnchangeSearch}
               handleSearch={handleSearch}
             />

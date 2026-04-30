@@ -177,7 +177,7 @@ const Header = () => {
                   <ul className="nav navbar-nav navbar-right right_nav pull-right">
                     {/* Messenger */}
                     <li className="nav-item" style={{ position: 'relative' }}>
-                      <Link to="/user/messenger" className="icons">
+                      <Link to="/user/messenger" className="icons" onClick={() => setMobileOpen(false)}>
                         <i className="fa-brands fa-facebook-messenger" />
                       </Link>
                       {quantityMessage > 0 && (
@@ -187,7 +187,7 @@ const Header = () => {
 
                     {/* Cart */}
                     <li className="nav-item" style={{ position: 'relative' }}>
-                      <Link to="/shopcart" className="icons">
+                      <Link to="/shopcart" className="icons" onClick={() => setMobileOpen(false)}>
                         <i className="ti-shopping-cart" />
                       </Link>
                       {dataCart?.length > 0 && (
@@ -197,7 +197,7 @@ const Header = () => {
 
                     {/* User */}
                     <li className="nav-item">
-                      <Link to={`/user/detail/${user?.id || ''}`} className="icons">
+                      <Link to={`/user/detail/${user?.id || ''}`} className="icons" onClick={() => setMobileOpen(false)}>
                         <i className="ti-user" />
                       </Link>
                     </li>

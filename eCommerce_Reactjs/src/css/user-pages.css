@@ -438,6 +438,33 @@
   box-shadow: 0 4px 20px rgba(196,69,105,0.08);
 }
 
+.messenger-sidebar-wrapper {
+  display: flex;
+  height: 100%;
+}
+
+.messenger-chatbox-wrapper {
+  flex: 1;
+  display: flex;
+  height: 100%;
+  min-width: 0;
+}
+
+.messenger-back-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #FF6B9D;
+  font-size: 20px;
+  padding: 0 10px 0 0;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.messenger-back-btn:hover {
+  transform: translateX(-3px);
+}
+
 /* Sidebar list */
 .messenger-sidebar {
   width: 300px;
@@ -447,6 +474,7 @@
   flex-direction: column;
   background: #FFF9FB;
   flex-shrink: 0;
+  height: 100%;
 }
 
 .messenger-sidebar__header {
@@ -576,6 +604,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  height: 100%;
 }
 
 .messenger-chat-header {
@@ -756,6 +785,7 @@
   color: #9B8EA4;
   gap: 12px;
   background: #FFF9FB;
+  height: 100%;
 }
 
 .messenger-empty i {
@@ -776,8 +806,44 @@
   .address-card { flex-direction: column; }
   .address-card__actions { flex-direction: row; align-items: center; }
 
-  .messenger-layout { flex-direction: column; height: auto; border-radius: 16px; }
-  .messenger-sidebar { width: 100%; min-width: unset; height: 220px; border-right: none; border-bottom: 1px solid #F0E6EE; }
-  .messenger-chatbox { height: 420px; }
+  /* Master-Detail Messenger View */
+  .messenger-layout { 
+    height: 75vh; 
+    min-height: 500px; 
+    border-radius: 16px; 
+    flex-direction: column;
+  }
+  
+  .messenger-sidebar-wrapper {
+    width: 100%;
+    height: 100%;
+  }
+
+  .messenger-sidebar { 
+    width: 100%; 
+    min-width: unset; 
+    height: 100%; 
+    border-right: none; 
+  }
+
+  .messenger-chatbox-wrapper {
+    width: 100%;
+    height: 100%;
+  }
+
+  .messenger-chatbox { 
+    height: 100%; 
+  }
+  
+  .hidden-on-mobile {
+    display: none !important;
+  }
+  
+  .messenger-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .user-profile-avatar { border-right: none; border-bottom: 1px solid #F0E6EE; }
 }

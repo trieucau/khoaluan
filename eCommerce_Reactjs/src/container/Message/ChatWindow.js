@@ -5,9 +5,9 @@ import moment from 'moment';
 import '../../css/user-pages.css';
 
 const host = process.env.REACT_APP_BACKEND_URL;
-const LIMIT = 15;
+const LIMIT = 10;
 
-function ChatWindow({ roomId, userId }) {
+function ChatWindow({ roomId, userId, onBack }) {
   const [mess, setMess] = useState([]);
   const [message, setMessage] = useState('');
   const [user, setUser] = useState({});
@@ -91,9 +91,14 @@ function ChatWindow({ roomId, userId }) {
     <div className="messenger-chatbox">
       {/* Header */}
       <div className="messenger-chat-header">
-        <div>
-          <div className="messenger-chat-title">Hỗ trợ Solana Shop</div>
-          <div className="messenger-chat-subtitle">Chúng tôi thường phản hồi trong vài phút</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <button className="messenger-back-btn" onClick={onBack}>
+            <i className="fa-solid fa-chevron-left" />
+          </button>
+          <div>
+            <div className="messenger-chat-title">Hỗ trợ Solana Shop</div>
+            <div className="messenger-chat-subtitle">Chúng tôi thường phản hồi trong vài phút</div>
+          </div>
         </div>
         <i className="fa-brands fa-facebook-messenger" style={{ color: '#FF6B9D', fontSize: 22 }} />
       </div>
@@ -147,7 +152,7 @@ function ChatWindow({ roomId, userId }) {
           ref={textareaRef}
           className="messenger-textarea"
           rows={1}
-          placeholder="Nhắn tin... (Enter để gửi, Shift+Enter xuống dòng)"
+          placeholder="..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
