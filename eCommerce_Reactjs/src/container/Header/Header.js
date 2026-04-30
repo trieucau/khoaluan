@@ -6,6 +6,7 @@ import socketIOClient from 'socket.io-client';
 import { getItemCartStart } from '../../action/ShopCartAction';
 import { listRoomOfUser } from '../../services/userService';
 import TopMenu from './TopMenu';
+import GlobalEffect from '../../component/Effects/GlobalEffect';
 import './Header.scss';
 
 const Header = () => {
@@ -75,6 +76,7 @@ const Header = () => {
 
   return (
     <header className="header_area">
+      <GlobalEffect />
       <TopMenu user={user} />
 
       <div className="main_menu">

@@ -12,15 +12,15 @@ const stats = [
 const team = [
   {
     name: 'Phan Thành Triều',
-    role: 'Co-Founder & Backend Developer',
+    role: 'Co-Founder & FE & BE & DevOps',
     avatar: '/resources/img/team1.jpg',
-    desc: 'Chuyên gia về kiến trúc hệ thống và tối ưu hiệu suất backend.',
+    desc: 'Phát triển toàn diện và tối ưu hạ tầng hệ thống.',
   },
   {
     name: 'Võ Quang Tuấn Trí',
-    role: 'Co-Founder & Frontend Developer',
+    role: 'Co-Founder & WebOps & WebContent',
     avatar: '/resources/img/team2.jpg',
-    desc: 'Đam mê thiết kế giao diện hiện đại, trải nghiệm người dùng xuất sắc.',
+    desc: 'Quản trị vận hành và tối ưu nội dung số.',
   },
 ];
 
@@ -84,9 +84,9 @@ function AboutPage() {
               <em>dành cho bạn</em>
             </h1>
             <p className="about-hero__desc">
-              Chúng tôi tin rằng thời trang không chỉ là trang phục — đó là cách bạn
-              thể hiện bản thân mỗi ngày. Solana ra đời để giúp bạn tìm thấy phong
-              cách riêng với những thiết kế đẹp, chất lượng và phải chăng.
+              Chúng tôi tin rằng thời trang không chỉ là trang phục — đó là cách bạn thể hiện bản
+              thân mỗi ngày. Solana ra đời để giúp bạn tìm thấy phong cách riêng với những thiết kế
+              đẹp, chất lượng và phải chăng.
             </p>
             <div className="about-hero__actions">
               <Link to="/shop" className="main_btn">
@@ -110,7 +110,10 @@ function AboutPage() {
           <div className="row g-4">
             {stats.map((s, i) => (
               <div key={i} className="col-6 col-lg-3">
-                <div className="about-stat-card scroll-reveal" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div
+                  className="about-stat-card scroll-reveal"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
                   <div className="about-stat-card__value">{s.value}</div>
                   <div className="about-stat-card__label">{s.label}</div>
                 </div>
@@ -136,31 +139,43 @@ function AboutPage() {
                 />
                 <div className="about-story__img-badge">
                   <i className="fa-solid fa-award" />
-                  <span>Brand <br />Uy tín</span>
+                  <span>
+                    Brand <br />
+                    Uy tín
+                  </span>
                 </div>
               </div>
             </div>
             <div className="col-lg-6 scroll-reveal delay-200">
               <span className="section-header__subtitle">Về chúng tôi</span>
               <h2 className="about-story__title">
-                Hành trình xây dựng<br />
+                Hành trình xây dựng
+                <br />
                 thương hiệu thời trang Việt
               </h2>
               <p className="about-story__text">
-                Solana Shop được thành lập bởi hai sinh viên đam mê công nghệ và thời trang.
-                Chúng tôi bắt đầu từ mong muốn mang đến trải nghiệm mua sắm thời trang trực tuyến
-                tốt nhất cho người Việt — nơi công nghệ và phong cách gặp nhau.
+                Solana Shop được thành lập bởi hai sinh viên đam mê công nghệ và thời trang. Chúng
+                tôi bắt đầu từ mong muốn mang đến trải nghiệm mua sắm thời trang trực tuyến tốt nhất
+                cho người Việt — nơi công nghệ và phong cách gặp nhau.
               </p>
               <p className="about-story__text">
-                Với nền tảng công nghệ hiện đại, gợi ý sản phẩm thông minh dựa trên AI,
-                và đội ngũ chăm sóc khách hàng tận tâm, Solana cam kết mang lại trải nghiệm
-                mua sắm mượt mà, thú vị và đáng tin cậy.
+                Với nền tảng công nghệ hiện đại, gợi ý sản phẩm thông minh dựa trên AI, và đội ngũ
+                chăm sóc khách hàng tận tâm, Solana cam kết mang lại trải nghiệm mua sắm mượt mà,
+                thú vị và đáng tin cậy.
               </p>
               <ul className="about-story__checklist">
-                <li><i className="fa-solid fa-check" /> Sản phẩm chính hãng 100%</li>
-                <li><i className="fa-solid fa-check" /> Giao hàng nhanh trong 24h</li>
-                <li><i className="fa-solid fa-check" /> Đổi trả dễ dàng trong 7 ngày</li>
-                <li><i className="fa-solid fa-check" /> Thanh toán an toàn đa phương thức</li>
+                <li>
+                  <i className="fa-solid fa-check" /> Sản phẩm chính hãng 100%
+                </li>
+                <li>
+                  <i className="fa-solid fa-check" /> Giao hàng nhanh trong 24h
+                </li>
+                <li>
+                  <i className="fa-solid fa-check" /> Đổi trả dễ dàng trong 7 ngày
+                </li>
+                <li>
+                  <i className="fa-solid fa-check" /> Thanh toán an toàn đa phương thức
+                </li>
               </ul>
             </div>
           </div>
@@ -180,7 +195,10 @@ function AboutPage() {
           <div className="row g-4">
             {values.map((v, i) => (
               <div key={i} className="col-lg-3 col-md-6">
-                <div className="about-value-card scroll-reveal" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div
+                  className="about-value-card scroll-reveal"
+                  style={{ animationDelay: `${i * 0.1}s` }}
+                >
                   <div
                     className="about-value-card__icon"
                     style={{ background: `${v.color}18`, color: v.color }}
@@ -206,7 +224,10 @@ function AboutPage() {
           <div className="row g-4 justify-content-center">
             {team.map((member, i) => (
               <div key={i} className="col-lg-5 col-md-6">
-                <div className="about-team-card scroll-reveal" style={{ animationDelay: `${i * 0.15}s` }}>
+                <div
+                  className="about-team-card scroll-reveal"
+                  style={{ animationDelay: `${i * 0.15}s` }}
+                >
                   <div className="about-team-card__avatar">
                     <img
                       src={member.avatar}
@@ -216,9 +237,7 @@ function AboutPage() {
                         e.target.parentNode.style.background = 'var(--grad-primary)';
                       }}
                     />
-                    <div className="about-team-card__avatar-fallback">
-                      {member.name.charAt(0)}
-                    </div>
+                    <div className="about-team-card__avatar-fallback">{member.name.charAt(0)}</div>
                   </div>
                   <div className="about-team-card__info">
                     <h4 className="about-team-card__name">{member.name}</h4>
@@ -245,7 +264,11 @@ function AboutPage() {
                 Mua sắm ngay
                 <i className="fa-solid fa-bag-shopping" />
               </Link>
-              <Link to="/register" className="btn-outline-cta" style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.5)' }}>
+              <Link
+                to="/register"
+                className="btn-outline-cta"
+                style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.5)' }}
+              >
                 Đăng ký miễn phí
               </Link>
             </div>

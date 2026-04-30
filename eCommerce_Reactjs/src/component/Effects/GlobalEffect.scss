@@ -1,0 +1,42 @@
+.global-star-effect-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* Đảm bảo không block click chuột của người dùng */
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.star-particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  /* Kích hoạt Hardware Acceleration (GPU) để chống giật lag */
+  will-change: transform, opacity;
+}
+
+/* Hiệu ứng bay lên và lấp lánh */
+@keyframes floatStar {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.3);
+  }
+  20% {
+    opacity: 0.8;
+    transform: translate3d(15px, -20vh, 0) scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translate3d(-15px, -50vh, 0) scale(0.8);
+  }
+  80% {
+    opacity: 0.8;
+    transform: translate3d(10px, -80vh, 0) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -100vh, 0) scale(0.3);
+  }
+}
