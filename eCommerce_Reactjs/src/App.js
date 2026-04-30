@@ -26,9 +26,12 @@ import VnpayPaymentPage from './container/Order/VnpayPaymentPage';
 import VnpayPaymentSuccess from './container/Order/VnpayPaymentSuccess';
 import HomePageShipper from './container/Shipper/HomePageShipper';
 import ChatWidget from './component/Chatbot/ChatWidget';
+import RippleEffect from './component/Effects/RippleEffect';
+
 function App() {
   return (
     <Router>
+      <RippleEffect />
       <Routes>
         {/* Public Routes */}
         <Route

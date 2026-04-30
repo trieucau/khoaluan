@@ -1,8 +1,8 @@
 import React, { useEffect, useState, memo } from 'react';
 import './GlobalEffect.scss';
 
-// Giảm số lượng sao xuống 20% so với 180 (còn 144 hạt) để không gian thoáng hơn
-const STAR_COUNT = 144;
+// Số lượng sao được fix cứng theo yêu cầu
+const STAR_COUNT = 123;
 
 const GlobalEffect = () => {
   const [stars, setStars] = useState([]);
