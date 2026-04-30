@@ -14,11 +14,13 @@ import { PAGINATION } from '../../utils/constant';
 import ReactPaginate from 'react-paginate';
 import { saveUserVoucherService } from '../../services/userService';
 import CommonUtils from '../../utils/CommonUtils';
+
 function VoucherHomePage(props) {
   const [dataVoucher, setdataVoucher] = useState([]);
   const [count, setCount] = useState('');
   const [numberPage, setnumberPage] = useState('');
   const [user, setUser] = useState({});
+
   function compareDates(date1, date2) {
     const [day1, month1, year1] = date1.split('/');
     const [day2, month2, year2] = date2.split('/');
@@ -38,6 +40,7 @@ function VoucherHomePage(props) {
       console.log(error);
     }
   }, []);
+
   let fetchData = async () => {
     let arrData = await getAllVoucher({
       limit: PAGINATION.pagerow,
@@ -64,6 +67,7 @@ function VoucherHomePage(props) {
       setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
     }
   };
+
   let handleChangePage = async (number) => {
     setnumberPage(number.selected);
     let arrData = await getAllVoucher({
@@ -74,6 +78,7 @@ function VoucherHomePage(props) {
       setdataVoucher(arrData.data);
     }
   };
+
   let sendDataFromVoucherItem = async (id) => {
     if (user && user.id) {
       let res = await saveUserVoucherService({
@@ -90,43 +95,47 @@ function VoucherHomePage(props) {
       toast.error('Đăng nhập để lưu mã giảm giá');
     }
   };
+
   return (
     <div className="voucher-container">
       <div className="voucher-banner">
-        <img className="photo-banner" src={bannerPhoto}></img>
-        <img src={voucherTodayPhoto}></img>
-        <img src={voucherAllPhoto}></img>
-        <img src={applyVoucherPhoto}></img>
+        <img className="photo-banner" src={bannerPhoto} alt="Banner" />
+        <div className="voucher-banner-content floating-animation">
+          <h2>Mã Giảm Giá Độc Quyền</h2>
+          <p>Tiết kiệm tối đa với ưu đãi cực hot!</p>
+        </div>
       </div>
-      <div className="voucher-list">
-        {dataVoucher &&
-          dataVoucher.length > 0 &&
-          dataVoucher.map((item, index) => {
-            let percent = '';
-            if (item.typeVoucherOfVoucherData.typeVoucher === 'percent') {
-              percent = item.typeVoucherOfVoucherData.value + '%';
-            }
-            if (item.typeVoucherOfVoucherData.typeVoucher === 'money') {
-              percent = CommonUtils.formatter.format(item.typeVoucherOfVoucherData.value);
-            }
-            let MaxValue = item.typeVoucherOfVoucherData.maxValue;
 
-            return (
-              <VoucherItem
-                sendDataFromVoucherItem={sendDataFromVoucherItem}
-                id={item.id}
-                width="550px"
-                height="330px"
-                key={index}
-                name={item.codeVoucher}
-                widthPercent={(item.usedAmount * 100) / item.amount}
-                maxValue={MaxValue}
-                usedAmount={Math.round(((item.usedAmount * 100) / item.amount) * 10) / 10}
-                typeVoucher={percent}
-              />
-            );
-          })}
+      <div className="voucher-list">
+        <div className="voucher-list-container">
+          {dataVoucher &&
+            dataVoucher.length > 0 &&
+            dataVoucher.map((item, index) => {
+              let percent = '';
+              if (item.typeVoucherOfVoucherData.typeVoucher === 'percent') {
+                percent = item.typeVoucherOfVoucherData.value + '%';
+              }
+              if (item.typeVoucherOfVoucherData.typeVoucher === 'money') {
+                percent = CommonUtils.formatter.format(item.typeVoucherOfVoucherData.value);
+              }
+              let MaxValue = item.typeVoucherOfVoucherData.maxValue;
+
+              return (
+                <VoucherItem
+                  sendDataFromVoucherItem={sendDataFromVoucherItem}
+                  id={item.id}
+                  key={index}
+                  name={item.codeVoucher}
+                  widthPercent={(item.usedAmount * 100) / item.amount}
+                  maxValue={MaxValue}
+                  usedAmount={Math.round(((item.usedAmount * 100) / item.amount) * 10) / 10}
+                  typeVoucher={percent}
+                />
+              );
+            })}
+        </div>
       </div>
+
       <div className="box-pagination">
         <ReactPaginate
           previousLabel={'Quay lại'}

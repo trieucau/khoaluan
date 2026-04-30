@@ -218,32 +218,66 @@
 .wrap-voucher {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.name-easier {
-  font-family: var(--font-accent);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text);
-}
-
-.choose-voucher {
-  font-family: var(--font-body);
-  font-size: 13px;
-  color: var(--c-primary);
-  cursor: pointer;
-  border: 1.5px dashed var(--c-primary-light);
-  padding: 4px 14px;
-  border-radius: var(--r-full);
+  gap: 15px;
+  background-color: #fcf8f8;
+  border: 1px solid #fbdad0;
+  padding: 12px 20px;
+  border-radius: var(--r-md);
   transition: all var(--t-base);
-  font-weight: 600;
-}
+  
+  &:hover {
+    background-color: #fef0ef;
+    border-color: #f9c0b1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(238, 77, 45, 0.08);
+  }
 
-.choose-voucher:hover {
-  background: var(--c-overlay);
-  border-style: solid;
+  .voucher-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  .voucher-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+
+    .name-easier {
+      font-family: var(--font-accent);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--c-text);
+      margin-bottom: 2px;
+    }
+
+    .choose-voucher {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--c-text-soft);
+      
+      &.applied {
+        color: #00bfa5;
+        strong {
+          color: #00897b;
+        }
+      }
+    }
+  }
+
+  .voucher-action {
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    border-left: 1px dashed #fad1c7;
+    height: 100%;
+  }
 }
 
 /* Price & checkout */

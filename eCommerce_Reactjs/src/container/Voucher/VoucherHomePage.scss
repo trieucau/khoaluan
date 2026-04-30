@@ -31,7 +31,7 @@
 .voucher-banner .photo-banner {
   width: 100%;
   max-width: 100%;
-  height: 220px;
+  height: 100%;
   object-fit: cover;
   opacity: 0.3;
   position: absolute;
@@ -138,5 +138,33 @@
     grid-template-columns: 1fr;
     padding: 0 12px;
   }
-  .voucher-banner { padding: 28px 0; }
+  .voucher-banner { 
+    padding: 120px 0; /* Tăng padding để banner dài rộng hơn rất nhiều */
+    min-height: 400px; /* Chiều cao tối thiểu lớn hơn */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .voucher-banner-content {
+    padding: 16px 20px;
+  }
+  .voucher-banner-content h2 {
+    font-size: clamp(2rem, 7vw, 2.5rem) !important;
+    margin: 0 0 12px !important;
+  }
+  .voucher-banner-content p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+
+/* Float animation for Banner */
+@keyframes floatUpAndDown {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
+}
+
+.floating-animation {
+  animation: floatUpAndDown 4s ease-in-out infinite;
 }

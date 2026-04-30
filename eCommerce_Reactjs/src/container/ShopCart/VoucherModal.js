@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { ChooseVoucherStart } from '../../action/ShopCartAction';
 
 import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from 'reactstrap';
 import '../User/StoreVoucher.scss';
@@ -11,14 +13,17 @@ import CommonUtils from '../../utils/CommonUtils';
 import VoucherItemSmall from '../User/VoucherItemSmall';
 
 const VoucherModal = (props) => {
+  const dispatch = useDispatch();
   const [inputValues, setInputValues] = useState({
     codeVoucher: '',
     activeBtn: false,
   });
   const [dataVoucher, setdataVoucher] = useState([]);
+  
   let handleCloseModal = () => {
     props.closeModal();
   };
+  
   function compareDates(date1, date2) {
     const [day1, month1, year1] = date1.split('/');
     const [day2, month2, year2] = date2.split('/');
@@ -28,6 +33,7 @@ const VoucherModal = (props) => {
 
     return d1 <= d2;
   }
+  
   useEffect(() => {
     let id = props.id;
     if (id) {
@@ -66,7 +72,8 @@ const VoucherModal = (props) => {
       };
       fetchData();
     }
-  }, [props.isOpenModal]);
+  }, [props.isOpenModal, props.id, props.price]);
+
   const handleOnChange = (event) => {
     const { name, value } = event.target;
 
@@ -77,34 +84,85 @@ const VoucherModal = (props) => {
     }
   };
 
+  const handleApplyVoucherCode = () => {
+    if (!inputValues.codeVoucher) {
+      toast.error('Vui lòng nhập mã voucher!');
+      return;
+    }
+    
+    // Tìm voucher trong danh sách hợp lệ
+    let foundVoucher = dataVoucher.find(
+      (item) => item.voucherData.codeVoucher.toLowerCase() === inputValues.codeVoucher.toLowerCase()
+    );
+
+    if (foundVoucher) {
+      dispatch(ChooseVoucherStart(foundVoucher));
+      toast.success('Áp dụng mã thành công!');
+      props.closeModalFromVoucherItem();
+      setInputValues({ codeVoucher: '', activeBtn: false });
+    } else {
+      toast.error('Mã voucher không hợp lệ, không đủ điều kiện hoặc đã hết hạn!');
+    }
+  };
+
   let closeModalFromVoucherItem = () => {
     props.closeModalFromVoucherItem();
   };
+
   return (
     <div className="">
-      <Modal isOpen={props.isOpenModal} className={'booking-modal-container'} size="md" centered>
-        <div className="modal-header">
-          <h5 className="modal-title">Chọn Eiser Voucher</h5>
+      <Modal isOpen={props.isOpenModal} className={'booking-modal-container voucher-modal'} size="md" centered>
+        <div className="modal-header border-bottom-0 pb-0">
+          <h5 className="modal-title font-weight-bold" style={{fontSize: '1.25rem'}}>Chọn Eiser Voucher</h5>
           <button
             onClick={handleCloseModal}
             type="button"
-            className="btn btn-time"
+            className="btn btn-time close-btn"
             aria-label="Close"
+            style={{background: 'transparent', border: 'none', fontSize: '1.5rem', fontWeight: 'bold', color: '#888'}}
           >
-            X
+            &times;
           </button>
         </div>
-        <ModalBody>
+        <ModalBody className="pt-2">
+          {/* Ô nhập mã Voucher */}
+          <div className="voucher-input-group mb-4" style={{ display: 'flex', gap: '10px', padding: '10px', background: '#f8f9fa', borderRadius: '8px' }}>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Nhập mã voucher tại đây..."
+              name="codeVoucher"
+              value={inputValues.codeVoucher}
+              onChange={handleOnChange}
+              style={{ flex: 1, border: '1px solid #ced4da', borderRadius: '4px', padding: '10px 15px' }}
+            />
+            <button
+              className={`btn ${inputValues.activeBtn ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={handleApplyVoucherCode}
+              disabled={!inputValues.activeBtn}
+              style={{
+                backgroundColor: inputValues.activeBtn ? '#ee4d2d' : '#e0e0e0',
+                borderColor: inputValues.activeBtn ? '#ee4d2d' : '#e0e0e0',
+                color: inputValues.activeBtn ? '#fff' : '#999',
+                fontWeight: '600',
+                padding: '0 20px',
+                borderRadius: '4px'
+              }}
+            >
+              Áp dụng
+            </button>
+          </div>
+
           <div
             style={{
               maxHeight: '400px',
               overflowY: 'auto',
               overflowX: 'hidden',
+              paddingRight: '5px'
             }}
-            className="container-voucher"
+            className="container-voucher custom-scrollbar"
           >
-            {dataVoucher &&
-              dataVoucher.length > 0 &&
+            {dataVoucher && dataVoucher.length > 0 ? (
               dataVoucher.map((item, index) => {
                 let percent = '';
                 if (item.voucherData.typeVoucherOfVoucherData.typeVoucher === 'percent') {
@@ -135,12 +193,16 @@ const VoucherModal = (props) => {
                     typeVoucher={percent}
                   />
                 );
-              })}
+              })
+            ) : (
+              <div className="text-center text-muted my-4">
+                <p>Không có voucher nào khả dụng cho đơn hàng này.</p>
+              </div>
+            )}
           </div>
         </ModalBody>
-        <ModalFooter>
-          {' '}
-          <Button onClick={handleCloseModal}>Hủy</Button>
+        <ModalFooter className="border-top-0 pt-0">
+          <Button color="secondary" onClick={handleCloseModal} style={{borderRadius: '4px'}}>Trở lại</Button>
         </ModalFooter>
       </Modal>
     </div>

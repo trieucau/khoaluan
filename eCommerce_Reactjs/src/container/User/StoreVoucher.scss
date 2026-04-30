@@ -82,3 +82,51 @@
   flex-wrap: wrap;
   margin: 20px 0 0 0;
 }
+
+/* Custom Modal Voucher Styles */
+.voucher-modal {
+  .modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+  
+  .close-btn {
+    transition: color 0.2s;
+    &:hover {
+      color: #ee4d2d !important;
+    }
+  }
+}
+
+.voucher-input-group {
+  input:focus {
+    border-color: #ee4d2d !important;
+    box-shadow: 0 0 0 0.2rem rgba(238, 77, 45, 0.25) !important;
+    outline: none;
+  }
+  button {
+    transition: all 0.2s ease;
+    &:hover:not(:disabled) {
+      background-color: #d73d22 !important;
+      border-color: #d73d22 !important;
+    }
+  }
+}
+
+.custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+}
