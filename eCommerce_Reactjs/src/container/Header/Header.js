@@ -130,24 +130,18 @@ const Header = () => {
                     {/* Mobile-only auth links */}
                     {user?.id ? (
                       <li className="nav-item mobile-only">
-                        <button
+                        <a
                           className="nav-link"
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            padding: '8px 16px',
-                            width: '100%',
-                            textAlign: 'left',
-                          }}
-                          onClick={() => {
+                          style={{ cursor: 'pointer' }}
+                          onClick={(e) => {
+                            e.preventDefault();
                             localStorage.removeItem('userData');
                             localStorage.removeItem('token');
                             window.location.href = '/login';
                           }}
                         >
                           Đăng xuất
-                        </button>
+                        </a>
                       </li>
                     ) : (
                       <>

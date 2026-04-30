@@ -1,3 +1,9 @@
+/* Prevent horizontal overflow globally */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 .box-email-verify {
   display: flex;
   align-items: center;

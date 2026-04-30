@@ -6,8 +6,8 @@
 /* Trigger bubble */
 .chat-bubble {
   position: fixed;
-  bottom: 28px;
-  right: 28px;
+  bottom: 3vw; /* Khoảng cách phụ thuộc vào kích thước màn hình */
+  right: 3vw;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -345,7 +345,7 @@
     height: 75vh;
   }
   .chat-bubble {
-    right: 16px;
-    bottom: 16px;
+    right: 4vw;
+    bottom: 4vw;
   }
 }

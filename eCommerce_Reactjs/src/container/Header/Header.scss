@@ -102,17 +102,19 @@
   z-index: 499;
 }
 
+.header_area {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  width: 100%;
+}
+
 .main_menu.sticky {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
   background: rgba(255,255,255,0.94) !important;
   backdrop-filter: blur(18px) !important;
   -webkit-backdrop-filter: blur(18px) !important;
   box-shadow: 0 2px 20px rgba(196,69,105,0.1) !important;
   border-bottom: 1px solid #F0E6EE !important;
-  z-index: 999 !important;
 }
 
 .main_menu .navbar {
@@ -309,19 +311,31 @@ ul.right_nav .nav-item {
     width: 100%;
   }
 
-  ul.center_nav .nav-item a.nav-link {
+  ul.center_nav .nav-item .nav-link {
     padding: 10px 8px !important;
     border-bottom: 1px solid #F0E6EE;
     width: 100%;
+    text-align: left; /* Ensure button text is aligned */
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #F0E6EE; /* Override button border */
+    font-family: 'Roboto', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    color: #2D1B2E !important;
+    text-transform: uppercase !important;
+    line-height: 40px !important;
+    display: block !important;
+    cursor: pointer;
   }
 
-  ul.center_nav .nav-item a.nav-link.selected::after,
-  ul.center_nav .nav-item a.nav-link:hover::after {
+  ul.center_nav .nav-item .nav-link.selected::after,
+  ul.center_nav .nav-item .nav-link:hover::after {
     display: none !important;
   }
 
-  ul.center_nav .nav-item a.nav-link.selected,
-  ul.center_nav .nav-item a.nav-link:hover {
+  ul.center_nav .nav-item .nav-link.selected,
+  ul.center_nav .nav-item .nav-link:hover {
     color: #FF6B9D !important;
     background: rgba(255,107,157,0.05) !important;
   }
@@ -339,7 +353,21 @@ ul.right_nav .nav-item {
 }
 
 @media (max-width: 576px) {
-  .top_menu p:nth-child(2) { display: none; }
+  .top_menu {
+    display: flex !important;
+    height: 12vw !important; /* Chỉ chiều cao top-menu tỉ lệ thật với chiều rộng màn hình */
+  }
+  .brand-item {
+    font-size: 12px !important; /* Cố định kích thước chữ */
+    margin: 0 16px !important;
+  }
+  .brand-item i {
+    font-size: 14px !important; /* Cố định icon */
+    margin-right: 6px !important;
+  }
+  .marquee-track {
+    animation-duration: 20s !important; /* Trượt nhanh hơn một chút trên mobile */
+  }
   .main_menu .navbar { min-height: 56px; }
   .navbar-brand.logo_h img { height: 32px !important; }
 }

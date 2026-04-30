@@ -349,9 +349,7 @@
 @media (max-width: 600px) {
 }
 @media (max-width: 575px) {
-  .top_menu {
-    display: none;
-  }
+  /* top_menu hiển thị trên mobile theo yêu cầu */
   .header_area + section,
   .header_area + row,
   .header_area + div {
