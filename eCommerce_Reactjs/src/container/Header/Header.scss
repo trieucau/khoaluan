@@ -35,55 +35,59 @@
   height: 0 !important;
 }
 
-/* ─── TOP BAR ───────────────────────────────────────────────── */
+/* ─── TOP BAR MARQUEE ─────────────────────────────────────────── */
 .top_menu {
   background: #2D1B2E;
-  padding: 8px 0;
+  height: 36px;
   position: relative;
   z-index: 600;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-.top_menu .float-left {
+.top-marquee-container {
   display: flex;
   align-items: center;
-  gap: 20px;
+  height: 100%;
+  width: 100%;
+  position: relative;
 }
 
-.top_menu p {
-  margin: 0 !important;
-  font-size: 12px !important;
-  color: rgba(255,255,255,0.7) !important;
+.top-marquee-track {
   display: flex;
   align-items: center;
-  gap: 6px;
+  width: max-content;
+  /* Trượt từ trái sang phải (ngược chiều với banner) */
+  animation: scroll-right 40s linear infinite;
+  padding-left: 20px;
 }
 
-.top_menu .float-right {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.top_menu ul.right_side {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.top_menu ul.right_side li a,
-.top_menu ul.right_side li span {
-  font-size: 12px;
-  color: rgba(255,255,255,0.75) !important;
-  padding: 3px 8px;
-  display: block;
+.top-marquee-track:hover {
+  /* Tự động dừng lại khi rê chuột vào */
+  animation-play-state: paused;
   cursor: pointer;
-  text-decoration: none !important;
-  transition: color 0.2s;
 }
 
-.top_menu ul.right_side li a:hover { color: #FF6B9D !important; }
+.brand-item {
+  color: rgba(255,255,255,0.8);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-right: 60px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.brand-item:hover {
+  color: #FF6B9D;
+}
+
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
+}
 
 /* ─── MAIN NAV ──────────────────────────────────────────────── */
 .header_area {
