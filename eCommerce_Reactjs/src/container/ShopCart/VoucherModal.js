@@ -112,41 +112,80 @@ const VoucherModal = (props) => {
   return (
     <div className="">
       <Modal isOpen={props.isOpenModal} className={'booking-modal-container voucher-modal'} size="md" centered>
-        <div className="modal-header border-bottom-0 pb-0">
-          <h5 className="modal-title font-weight-bold" style={{fontSize: '1.25rem'}}>Chọn Eiser Voucher</h5>
+        <div className="modal-header border-bottom-0" style={{ padding: '24px 24px 16px', background: 'var(--c-bg-alt)', borderRadius: 'var(--r-xl) var(--r-xl) 0 0' }}>
+          <h5 className="modal-title" style={{ fontFamily: 'var(--font-heading)', fontSize: '20px', fontWeight: '800', color: 'var(--c-text)' }}>
+            <i className="fa-solid fa-ticket" style={{ color: 'var(--c-primary)', marginRight: '10px' }}></i>
+            Chọn Voucher Khuyến Mãi
+          </h5>
           <button
             onClick={handleCloseModal}
             type="button"
-            className="btn btn-time close-btn"
+            className="close-btn"
             aria-label="Close"
-            style={{background: 'transparent', border: 'none', fontSize: '1.5rem', fontWeight: 'bold', color: '#888'}}
+            style={{
+              background: 'var(--c-surface)', border: '1px solid var(--c-border)', 
+              width: '32px', height: '32px', borderRadius: '50%', display: 'flex', 
+              alignItems: 'center', justifyContent: 'center', color: 'var(--c-text-muted)', 
+              fontSize: '18px', cursor: 'pointer', transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.color = 'var(--c-primary)'; e.currentTarget.style.borderColor = 'var(--c-primary-light)'; }}
+            onMouseOut={(e) => { e.currentTarget.style.color = 'var(--c-text-muted)'; e.currentTarget.style.borderColor = 'var(--c-border)'; }}
           >
-            &times;
+            <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
-        <ModalBody className="pt-2">
+        <ModalBody style={{ padding: '20px 24px', background: 'var(--c-surface)' }}>
           {/* Ô nhập mã Voucher */}
-          <div className="voucher-input-group mb-4" style={{ display: 'flex', gap: '10px', padding: '10px', background: '#f8f9fa', borderRadius: '8px' }}>
+          <div 
+            className="voucher-input-group" 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'stretch',
+              border: '1.5px solid var(--c-border)', 
+              borderRadius: 'var(--r-md)', 
+              overflow: 'hidden',
+              marginBottom: '24px',
+              background: 'var(--c-surface)',
+              transition: 'border-color 0.2s',
+              height: '48px'
+            }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--c-primary)'; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--c-border)'; }}
+          >
             <input
               type="text"
-              className="form-control"
-              placeholder="Nhập mã voucher tại đây..."
+              placeholder="Mã voucher của bạn..."
               name="codeVoucher"
               value={inputValues.codeVoucher}
               onChange={handleOnChange}
-              style={{ flex: 1, border: '1px solid #ced4da', borderRadius: '4px', padding: '10px 15px' }}
+              style={{ 
+                flex: 1, 
+                border: 'none', 
+                padding: '0 16px',
+                fontFamily: 'var(--font-body)',
+                fontSize: '15px',
+                outline: 'none',
+                background: 'transparent',
+                minWidth: '100px'
+              }}
             />
             <button
-              className={`btn ${inputValues.activeBtn ? 'btn-primary' : 'btn-secondary'}`}
               onClick={handleApplyVoucherCode}
               disabled={!inputValues.activeBtn}
               style={{
-                backgroundColor: inputValues.activeBtn ? '#ee4d2d' : '#e0e0e0',
-                borderColor: inputValues.activeBtn ? '#ee4d2d' : '#e0e0e0',
-                color: inputValues.activeBtn ? '#fff' : '#999',
-                fontWeight: '600',
-                padding: '0 20px',
-                borderRadius: '4px'
+                background: inputValues.activeBtn ? 'var(--grad-primary)' : 'var(--c-bg-alt)',
+                color: inputValues.activeBtn ? '#fff' : 'var(--c-text-muted)',
+                opacity: inputValues.activeBtn ? 1 : 0.6,
+                cursor: inputValues.activeBtn ? 'pointer' : 'not-allowed',
+                padding: '0 24px',
+                border: 'none',
+                fontFamily: 'var(--font-accent)',
+                fontSize: '14px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                transition: 'all 0.2s',
+                whiteSpace: 'nowrap'
               }}
             >
               Áp dụng
@@ -155,10 +194,10 @@ const VoucherModal = (props) => {
 
           <div
             style={{
-              maxHeight: '400px',
+              maxHeight: '350px',
               overflowY: 'auto',
               overflowX: 'hidden',
-              paddingRight: '5px'
+              paddingRight: '8px'
             }}
             className="container-voucher custom-scrollbar"
           >
@@ -195,14 +234,38 @@ const VoucherModal = (props) => {
                 );
               })
             ) : (
-              <div className="text-center text-muted my-4">
-                <p>Không có voucher nào khả dụng cho đơn hàng này.</p>
+              <div style={{ textAlign: 'center', padding: '40px 20px', background: 'var(--c-surface-2)', borderRadius: 'var(--r-lg)', border: '1px dashed var(--c-border-strong)' }}>
+                <i className="fa-solid fa-ticket-simple" style={{ fontSize: '40px', color: 'var(--c-text-muted)', opacity: 0.5, marginBottom: '16px' }}></i>
+                <p style={{ fontFamily: 'var(--font-accent)', fontSize: '15px', fontWeight: '600', color: 'var(--c-text-soft)', margin: 0 }}>
+                  Không có voucher nào khả dụng
+                </p>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--c-text-muted)', marginTop: '4px' }}>
+                  Bạn chưa lưu hoặc voucher không áp dụng cho đơn hàng này.
+                </p>
               </div>
             )}
           </div>
         </ModalBody>
-        <ModalFooter className="border-top-0 pt-0">
-          <Button color="secondary" onClick={handleCloseModal} style={{borderRadius: '4px'}}>Trở lại</Button>
+        <ModalFooter className="border-top-0 pt-0" style={{ padding: '0 24px 24px', background: 'var(--c-surface)', borderRadius: '0 0 var(--r-xl) var(--r-xl)' }}>
+          <button 
+            onClick={handleCloseModal} 
+            style={{
+              padding: '10px 24px',
+              background: 'transparent',
+              border: '2px solid var(--c-border-strong)',
+              borderRadius: 'var(--r-full)',
+              color: 'var(--c-text-soft)',
+              fontFamily: 'var(--font-accent)',
+              fontWeight: '700',
+              fontSize: '14px',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={(e) => { e.currentTarget.style.borderColor = 'var(--c-text-soft)'; e.currentTarget.style.color = 'var(--c-text)'; }}
+            onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--c-border-strong)'; e.currentTarget.style.color = 'var(--c-text-soft)'; }}
+          >
+            Trở lại
+          </button>
         </ModalFooter>
       </Modal>
     </div>

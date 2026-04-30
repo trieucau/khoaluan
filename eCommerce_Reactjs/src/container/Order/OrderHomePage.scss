@@ -384,6 +384,24 @@
       width: 100%;
       min-width: 0;
       text-align: left;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .wrap-price {
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .checkout_btn_inner {
+      width: 100%;
+    }
+
+    .main_btn {
+      width: 100%;
+      justify-content: center;
+      white-space: nowrap;
     }
   }
 }

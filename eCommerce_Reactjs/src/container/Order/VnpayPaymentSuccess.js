@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { paymentOrderVnpaySuccessService, confirmOrderVnpay } from '../../services/userService';
 import { toast } from 'react-toastify';
-import './OrderHomePage.scss';
 
 function useQuery() {
   const { search } = useLocation();
@@ -11,12 +10,14 @@ function useQuery() {
 
 function VnpayPaymentSuccess(props) {
   let query = useQuery();
+  const navigate = useNavigate();
   const [status, setStatus] = useState('loading'); // 'loading' | 'success' | 'failed'
   const [paymentInfo, setPaymentInfo] = useState(null);
   const hasRun = React.useRef(false);
+
   useEffect(() => {
-    if (hasRun.current) return; // ← THÊM - chặn lần chạy thứ 2
-    hasRun.current = true; // ← THÊM
+    if (hasRun.current) return;
+    hasRun.current = true;
 
     let objectParam = {
       vnp_Amount: query.get('vnp_Amount'),
@@ -65,8 +66,8 @@ function VnpayPaymentSuccess(props) {
   };
 
   const formatAmount = (amount) => {
-    if (!amount) return '0';
-    return Number(amount / 100).toLocaleString('vi-VN') + ' VNĐ';
+    if (!amount) return '0 ₫';
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount / 100);
   };
 
   const formatDate = (dateStr) => {
@@ -77,130 +78,129 @@ function VnpayPaymentSuccess(props) {
   const handleGoToOrders = () => {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
-      window.location.href = '/user/order/' + userData.id;
+      navigate('/user/order/' + userData.id);
     } else {
-      window.location.href = '/';
+      navigate('/');
     }
   };
 
   return (
-    <>
-      <div className="wrap-order">
-        <div className="wrap-heading-order">
-          <NavLink to="/" className="navbar-brand logo_h ">
-            <img src="/resources/img/logo.png" alt="" />
-          </NavLink>
-          <span>Thanh Toán VNPAY</span>
-        </div>
+    <div style={{ background: 'var(--c-bg-alt)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* Minimal Header */}
+      <div style={{ padding: '24px 20px', textAlign: 'center' }}>
+        <h1 style={{ margin: 0, fontSize: '20px', fontFamily: 'var(--font-heading)', fontWeight: '800', color: 'var(--c-text)', letterSpacing: '0.5px' }}>
+          SOLANA SHOP
+        </h1>
+      </div>
 
-        <div className="bg-light py-5">
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-12 col-md-6 col-lg-5">
-                <div className="card border-0 shadow-sm rounded-4">
-                  {/* HEADER */}
-                  <div className="card-body text-center pt-4 pb-3 border-bottom">
-                    {status === 'loading' && (
-                      <>
-                        <div
-                          className="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                          style={{ width: 72, height: 72 }}
-                        >
-                          <div
-                            className="spinner-border text-primary"
-                            role="status"
-                            style={{ width: 32, height: 32 }}
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        </div>
-                        <h5 className="fw-bold mb-1">Đang xử lý</h5>
-                        <p className="text-muted small mb-0">Vui lòng chờ trong giây lát...</p>
-                      </>
-                    )}
-
-                    {status === 'success' && (
-                      <>
-                        <div
-                          className="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                          style={{ width: 72, height: 72 }}
-                        >
-                          <i className="fas fa-check-circle text-success fs-2"></i>
-                        </div>
-                        <h5 className="fw-bold text-success mb-1">Thanh toán thành công!</h5>
-                        <p className="text-muted small mb-0">Đơn hàng của bạn đã được xác nhận</p>
-                      </>
-                    )}
-
-                    {status === 'failed' && (
-                      <>
-                        <div
-                          className="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                          style={{ width: 72, height: 72 }}
-                        >
-                          <i className="fas fa-times-circle text-danger fs-2"></i>
-                        </div>
-                        <h5 className="fw-bold text-danger mb-1">Thanh toán thất bại</h5>
-                        <p className="text-muted small mb-0">Đã có lỗi xảy ra, vui lòng thử lại</p>
-                      </>
-                    )}
-                  </div>
-
-                  {/* BODY - thông tin đơn hàng */}
-                  {paymentInfo && status !== 'loading' && (
-                    <div className="card-body px-4 py-3">
-                      <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
-                        <span className="text-muted small">Số tiền</span>
-                        <span className="fw-bold text-primary">
-                          {formatAmount(paymentInfo.vnp_Amount)}
-                        </span>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
-                        <span className="text-muted small">Ngân hàng</span>
-                        <span className="fw-semibold">{paymentInfo.vnp_BankCode}</span>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
-                        <span className="text-muted small">Loại thẻ</span>
-                        <span className="fw-semibold">{paymentInfo.vnp_CardType}</span>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
-                        <span className="text-muted small">Nội dung</span>
-                        <span className="fw-semibold">{paymentInfo.vnp_OrderInfo}</span>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
-                        <span className="text-muted small">Mã giao dịch</span>
-                        <span className="fw-semibold">{paymentInfo.vnp_TransactionNo}</span>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center py-2">
-                        <span className="text-muted small">Thời gian</span>
-                        <span className="fw-semibold">{formatDate(paymentInfo.vnp_PayDate)}</span>
-                      </div>
+      <div className="container" style={{ flex: 1, paddingBottom: '60px' }}>
+        <div className="row justify-content-center">
+          <div className="col-lg-5 col-md-8">
+            
+            {/* Digital Receipt Card */}
+            <div style={{ background: '#fff', borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden' }}>
+              
+              {/* Receipt Header (Status) */}
+              <div style={{ padding: '40px 24px 32px', textAlign: 'center', background: status === 'success' ? '#fafafa' : status === 'failed' ? '#fff1f0' : '#fff' }}>
+                {status === 'loading' && (
+                  <>
+                    <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--c-overlay)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                      <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '24px', color: 'var(--c-primary)' }}></i>
                     </div>
-                  )}
+                    <h2 style={{ margin: '0 0 8px', fontSize: '22px', fontWeight: '800', color: 'var(--c-text)' }}>Đang xác thực...</h2>
+                    <p style={{ margin: 0, color: 'var(--c-text-soft)', fontSize: '14px' }}>Vui lòng giữ nguyên trang web</p>
+                  </>
+                )}
 
-                  {/* FOOTER - nút điều hướng */}
-                  {status !== 'loading' && (
-                    <div className="card-body px-4 pt-0 pb-4 d-flex flex-column gap-2">
-                      <button
-                        className="btn btn-primary w-100 fw-semibold"
-                        onClick={handleGoToOrders}
-                      >
-                        Xem đơn hàng của tôi
-                      </button>
-                      <NavLink to="/" className="btn btn-outline-secondary w-100">
-                        Tiếp tục mua sắm
-                      </NavLink>
+                {status === 'success' && (
+                  <>
+                    <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#52c41a', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', boxShadow: '0 8px 16px rgba(82, 196, 26, 0.2)' }}>
+                      <i className="fa-solid fa-check" style={{ fontSize: '28px', color: '#fff' }}></i>
                     </div>
-                  )}
-                </div>
+                    <h2 style={{ margin: '0 0 4px', fontSize: '22px', fontWeight: '800', color: '#237804' }}>Thanh toán thành công</h2>
+                    <h1 style={{ margin: '8px 0 0', fontSize: '36px', fontWeight: '800', color: 'var(--c-text)' }}>
+                      {formatAmount(paymentInfo?.vnp_Amount)}
+                    </h1>
+                  </>
+                )}
+
+                {status === 'failed' && (
+                  <>
+                    <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#ff4d4f', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', boxShadow: '0 8px 16px rgba(255, 77, 79, 0.2)' }}>
+                      <i className="fa-solid fa-xmark" style={{ fontSize: '28px', color: '#fff' }}></i>
+                    </div>
+                    <h2 style={{ margin: '0 0 8px', fontSize: '22px', fontWeight: '800', color: '#a8071a' }}>Giao dịch thất bại</h2>
+                    <p style={{ margin: 0, color: '#cf1322', fontSize: '14px' }}>Bạn đã hủy giao dịch hoặc có lỗi xảy ra</p>
+                  </>
+                )}
               </div>
+
+              {/* Dashed Line separator (Ticket effect) */}
+              <div style={{ position: 'relative', height: '20px', background: 'transparent' }}>
+                <div style={{ position: 'absolute', top: '50%', left: '-10px', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--c-bg-alt)', transform: 'translateY(-50%)', zIndex: 1 }}></div>
+                <div style={{ position: 'absolute', top: '50%', right: '-10px', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--c-bg-alt)', transform: 'translateY(-50%)', zIndex: 1 }}></div>
+                <div style={{ position: 'absolute', top: '50%', left: '10px', right: '10px', borderTop: '2px dashed var(--c-border)', transform: 'translateY(-50%)' }}></div>
+              </div>
+
+              {/* Receipt Details */}
+              {paymentInfo && status !== 'loading' && (
+                <div style={{ padding: '24px 32px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <span style={{ color: 'var(--c-text-soft)', fontSize: '14px' }}>Mã tham chiếu</span>
+                    <span style={{ color: 'var(--c-text)', fontSize: '14px', fontWeight: '600' }}>{paymentInfo.vnp_TransactionNo || '---'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <span style={{ color: 'var(--c-text-soft)', fontSize: '14px' }}>Thời gian</span>
+                    <span style={{ color: 'var(--c-text)', fontSize: '14px', fontWeight: '600' }}>{formatDate(paymentInfo.vnp_PayDate) || '---'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <span style={{ color: 'var(--c-text-soft)', fontSize: '14px' }}>Phương thức</span>
+                    <span style={{ color: 'var(--c-text)', fontSize: '14px', fontWeight: '600' }}>VNPAY {paymentInfo.vnp_BankCode ? `(${paymentInfo.vnp_BankCode})` : ''}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--c-text-soft)', fontSize: '14px' }}>Nội dung</span>
+                    <span style={{ color: 'var(--c-text)', fontSize: '14px', fontWeight: '600', textAlign: 'right', maxWidth: '60%' }}>{paymentInfo.vnp_OrderInfo || '---'}</span>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Actions */}
+            {status !== 'loading' && (
+              <div style={{ marginTop: '24px', display: 'flex', gap: '12px', flexDirection: 'column' }}>
+                <button
+                  onClick={handleGoToOrders}
+                  style={{
+                    width: '100%', height: '52px', background: 'var(--c-text)', color: '#fff',
+                    border: 'none', borderRadius: '12px', fontSize: '15px', fontWeight: '700',
+                    cursor: 'pointer', transition: 'all 0.2s',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                  onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                  Xem đơn hàng của tôi
+                </button>
+                <button
+                  onClick={() => navigate('/')}
+                  style={{
+                    width: '100%', height: '52px', background: 'transparent', color: 'var(--c-text)',
+                    border: '1px solid var(--c-border-strong)', borderRadius: '12px', fontSize: '15px', fontWeight: '700',
+                    cursor: 'pointer', transition: 'all 0.2s'
+                  }}
+                  onMouseOver={(e) => { e.currentTarget.style.background = 'var(--c-surface-2)'; e.currentTarget.style.borderColor = 'var(--c-text)'; }}
+                  onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--c-border-strong)'; }}
+                >
+                  Tiếp tục mua sắm
+                </button>
+              </div>
+            )}
+
           </div>
         </div>
       </div>
-
-      <div className="w-100 bg-light" style={{ height: 100 }} />
-    </>
+    </div>
   );
 }
 

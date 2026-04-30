@@ -215,6 +215,13 @@
 }
 
 /* Voucher section */
+.voucher-modal .modal-content {
+  border-radius: var(--r-xl);
+  border: none;
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
 .wrap-voucher {
   display: flex;
   align-items: center;
@@ -314,11 +321,41 @@
 @media (max-width: 768px) {
   .box-shopcart-bottom {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 16px;
+    align-items: stretch;
+    padding: 20px 16px;
+    gap: 16px;
   }
-  .content-right { text-align: left; width: 100%; }
-  .checkout_btn_inner { justify-content: flex-start; margin-top: 10px; }
+  .content-left {
+    width: 100%;
+    border-bottom: 1px solid var(--c-border);
+    padding-bottom: 16px;
+  }
+  .wrap-voucher {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .content-right {
+    text-align: left;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .wrap-price {
+    justify-content: space-between;
+    margin-bottom: 0;
+    align-items: center;
+  }
+  .checkout_btn_inner {
+    justify-content: center;
+    width: 100%;
+  }
+  .checkout_btn_inner .main_btn {
+    width: 100%;
+    justify-content: center;
+    white-space: nowrap;
+    padding: 14px 24px !important;
+  }
   
   /* Chuyển table thành card layout trên mobile */
   .cart_inner .table thead {
