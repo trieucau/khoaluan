@@ -1,6 +1,6 @@
 const Footer = () => (
   <footer className="ap-footer">
-    © {new Date().getFullYear()} AdminHub — Hệ thống quản trị thương mại điện tử
+    © {new Date().getFullYear()} Đồ án tốt nghiệp - Phan Thành Triều & Võ Quang Tuấn Trí
   </footer>
 );
 export default Footer;

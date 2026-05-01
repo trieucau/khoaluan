@@ -111,7 +111,13 @@ let getAllOrders = (data) => {
             where: {
               id: addressUser.userId,
             },
+            raw: true,
+            nest: true
           });
+
+          if (user && user.image) {
+            user.image = Buffer.from(user.image, 'base64').toString('binary');
+          }
 
           res.rows[i].userData = user;
           res.rows[i].addressUser = addressUser;
@@ -574,11 +580,16 @@ let getAdminShippersOnMap = () => {
       const shipperIds = [...new Set(orders.map((o) => o.shipperId).filter(Boolean))];
       const list = [];
       for (const sid of shipperIds) {
-        const user = await db.User.findOne({
+        let user = await db.User.findOne({
           where: { id: sid },
-          attributes: ['id', 'firstName', 'lastName', 'phonenumber'],
+          attributes: ['id', 'firstName', 'lastName', 'phonenumber', 'image'],
           raw: true,
+          nest: true,
         });
+
+        if (user && user.image) {
+          user.image = Buffer.from(user.image, 'base64').toString('binary');
+        }
         const location = await db.ShipperLocation.findOne({
           where: { shipperId: sid },
           raw: true,

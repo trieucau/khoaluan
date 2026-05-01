@@ -86,28 +86,26 @@ const AddSizeModal = (props) => {
   };
   return (
     <div className="">
-      <Modal isOpen={props.isOpenModal} className={'booking-modal-container'} size="md" centered>
-        <div className="modal-header">
-          <h5 className="modal-title">Thêm kích thước chi tiết sản phẩm</h5>
+      <Modal isOpen={props.isOpenModal} className={'booking-modal-container ap-modal-custom'} size="md" centered>
+        <div className="modal-header border-bottom-0 pb-0">
+          <h5 className="modal-title ap-page-title fs-5">{inputValues.isActionUpdate ? 'Cập nhật kích thước' : 'Thêm kích thước chi tiết sản phẩm'}</h5>
           <button
             onClick={handleCloseModal}
             type="button"
-            className="btn btn-time"
+            className="btn-close btn-close-white"
             aria-label="Close"
-          >
-            X
-          </button>
+          ></button>
         </div>
-        <ModalBody>
+        <ModalBody className="pt-3">
           <div className="row">
-            <div className="col-12 form-group">
-              <label>Kích thước</label>
+            <div className="col-12 ap-form-group">
+              <label className="ap-label">Kích thước</label>
               <select
                 value={inputValues.sizeId}
                 name="sizeId"
                 onChange={(event) => handleOnChange(event)}
                 id="inputState"
-                className="form-control"
+                className="ap-select-input"
               >
                 {dataSize &&
                   dataSize.length > 0 &&
@@ -120,43 +118,46 @@ const AddSizeModal = (props) => {
                   })}
               </select>
             </div>
-            <div className="col-12 form-group">
-              <label>Chiều rộng</label>
+            <div className="col-12 ap-form-group">
+              <label className="ap-label">Chiều rộng (cm)</label>
               <input
                 value={inputValues.width}
                 name="width"
                 onChange={(event) => handleOnChange(event)}
                 type="text"
-                className="form-control"
+                className="ap-input"
+                placeholder="Nhập chiều rộng..."
               />
             </div>
-            <div className="col-12 form-group">
-              <label>Chiều dài</label>
+            <div className="col-12 ap-form-group">
+              <label className="ap-label">Chiều dài (cm)</label>
               <input
                 value={inputValues.height}
                 name="height"
                 onChange={(event) => handleOnChange(event)}
                 type="text"
-                className="form-control"
+                className="ap-input"
+                placeholder="Nhập chiều dài..."
               />
             </div>
-            <div className="col-12 form-group">
-              <label>Khối lượng</label>
+            <div className="col-12 ap-form-group mb-0">
+              <label className="ap-label">Khối lượng (gram)</label>
               <input
                 value={inputValues.weight}
                 name="weight"
                 onChange={(event) => handleOnChange(event)}
                 type="text"
-                className="form-control"
+                className="ap-input"
+                placeholder="Nhập khối lượng..."
               />
             </div>
           </div>
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={handleSaveInfor}>
+        <ModalFooter className="border-top-0 pt-0">
+          <button className="ap-btn ap-btn-ghost" onClick={handleCloseModal}>Hủy</button>
+          <button className="ap-btn ap-btn-primary" onClick={handleSaveInfor}>
             Lưu thông tin
-          </Button>{' '}
-          <Button onClick={handleCloseModal}>Hủy</Button>
+          </button>
         </ModalFooter>
       </Modal>
     </div>

@@ -243,7 +243,7 @@ let getAllUser = (data) => {
       let objectFilter = {
         where: { statusId: 'S1' },
         attributes: {
-          exclude: ['password', 'image'],
+          exclude: ['password'],
         },
         include: [
           { model: db.Allcode, as: 'roleData', attributes: ['value', 'code'] },
@@ -266,6 +266,14 @@ let getAllUser = (data) => {
           phonenumber: { [Op.substring]: data.keyword },
         };
       let res = await db.User.findAndCountAll(objectFilter);
+      if (res.rows && res.rows.length > 0) {
+        res.rows = res.rows.map((item) => {
+          if (item.image) {
+            item.image = Buffer.from(item.image, 'base64').toString('binary');
+          }
+          return item;
+        });
+      }
       resolve({
         errCode: 0,
         data: res.rows,

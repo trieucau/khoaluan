@@ -16,7 +16,7 @@ const STATUS_BADGE = {
 const Turnover = () => {
   const [data, setData] = useState([]);
   const [dataExport, setDataExport] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [stats, setStats] = useState({ actual: 0, pending: 0, cancelled: 0, totalOrders: 0, deliveredOrders: 0, cancelledOrders: 0 });
   const [type, setType] = useState('day');
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
@@ -28,8 +28,24 @@ const Turnover = () => {
     try {
       const res = await getStatisticOverturn({ oneDate: type === 'day' ? startDate : dateTime, twoDate: endDate, type });
       if (res?.errCode === 0) {
-        const total = res.data.reduce((sum, o) => sum + o.totalpriceProduct, 0);
-        setTotalPrice(total);
+        let actual = 0, pending = 0, cancelled = 0;
+        let deliveredOrders = 0, cancelledOrders = 0;
+        
+        res.data.forEach(item => {
+           const status = item.statusOrderData?.value;
+           const price = item.totalpriceProduct;
+           if (status === 'Đã giao' || status === 'Đã giao hàng') {
+               actual += price;
+               deliveredOrders++;
+           }
+           else if (status === 'Đã hủy' || status === 'Đã huỷ') {
+               cancelled += price;
+               cancelledOrders++;
+           }
+           else pending += price;
+        });
+
+        setStats({ actual, pending, cancelled, totalOrders: res.data.length, deliveredOrders, cancelledOrders });
         setData(res.data);
         setDataExport(res.data.map(item => ({
           id: item.id,
@@ -92,18 +108,24 @@ const Turnover = () => {
 
       {/* Summary card */}
       {data.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
           {[
-            { label: 'Tổng đơn hàng', value: data.length, icon: '📦', color: '#6366f1' },
-            { label: 'Doanh thu', value: CommonUtils.formatter.format(totalPrice), icon: '💰', color: '#f59e0b' },
-            { label: 'TB/đơn', value: CommonUtils.formatter.format(Math.round(totalPrice / data.length)), icon: '📊', color: '#10b981' },
+            { label: 'Doanh Thu Thực Tế', desc: `${stats.deliveredOrders} đơn đã giao`, value: CommonUtils.formatter.format(stats.actual), icon: '💰', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
+            { label: 'Doanh Thu Chờ Thu', desc: `${stats.totalOrders - stats.deliveredOrders - stats.cancelledOrders} đơn đang xử lý`, value: CommonUtils.formatter.format(stats.pending), icon: '⏳', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+            { label: 'Khách Hủy (Thất Thoát)', desc: `${stats.cancelledOrders} đơn bị hủy`, value: CommonUtils.formatter.format(stats.cancelled), icon: '📉', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
+            { label: 'Trung Bình / Đơn', desc: 'Chỉ tính đơn thành công', value: CommonUtils.formatter.format(stats.deliveredOrders > 0 ? Math.round(stats.actual / stats.deliveredOrders) : 0), icon: '📈', color: '#6366f1', bg: 'rgba(99, 102, 241, 0.15)' },
           ].map((s, i) => (
-            <div key={i} className="ap-card" style={{ margin: 0 }}>
-              <div className="ap-card-body" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: `${s.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{s.icon}</div>
-                <div>
-                  <div style={{ fontSize: 11, color: 'var(--ap-text-muted)', textTransform: 'uppercase', letterSpacing: 1 }}>{s.label}</div>
-                  <div style={{ fontWeight: 700, fontSize: 18, color: s.color }}>{s.value}</div>
+            <div key={i} className="ap-card" style={{ margin: 0, border: `1px solid ${s.color}40`, background: 'var(--ap-surface)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: s.bg, filter: 'blur(24px)' }} />
+              
+              <div className="ap-card-body" style={{ display: 'flex', alignItems: 'center', gap: 16, position: 'relative', zIndex: 1 }}>
+                <div style={{ width: 54, height: 54, borderRadius: 16, background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0, border: `1px solid ${s.color}40` }}>
+                  {s.icon}
+                </div>
+                <div style={{ overflow: 'hidden' }}>
+                  <div style={{ fontSize: 11, color: 'var(--ap-text-muted)', textTransform: 'uppercase', letterSpacing: 0.5, fontWeight: 600, marginBottom: 4 }}>{s.label}</div>
+                  <div style={{ fontWeight: 800, fontSize: 18, color: s.color, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{s.value}</div>
+                  <div style={{ fontSize: 11, color: 'var(--ap-text-dim)', marginTop: 4 }}>{s.desc}</div>
                 </div>
               </div>
             </div>
@@ -112,27 +134,32 @@ const Turnover = () => {
       )}
 
       {/* Table */}
-      <div className="ap-card">
-        <div className="ap-table-wrap">
-          <table className="ap-table">
+      <div className="ap-card" style={{ overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table className="ap-table" style={{ minWidth: 800 }}>
             <thead>
               <tr><th>Mã đơn</th><th>Ngày đặt</th><th>Loại ship</th><th>Voucher</th><th>Thanh toán</th><th>Trạng thái</th><th style={{ textAlign: 'right' }}>Tổng tiền</th><th></th></tr>
             </thead>
             <tbody>
               {loading ? <SkeletonRows cols={8} /> :
                 data.length === 0 ? <EmptyState icon="📈" title="Chọn khoảng thời gian và nhấn Lọc" desc="Kết quả thống kê sẽ hiển thị tại đây" /> :
-                  data.map((item, idx) => (
-                    <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 20}ms` }}>
-                      <td style={{ fontFamily: 'monospace', color: 'var(--ap-primary)', fontWeight: 600 }}>#{item.id}</td>
-                      <td style={{ fontSize: 12, color: 'var(--ap-text-muted)', whiteSpace: 'nowrap' }}>{moment.utc(item.createdAt).local().format('DD/MM/YYYY HH:mm')}</td>
-                      <td style={{ fontSize: 13 }}>{item.typeShipData?.type}</td>
-                      <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#a5b4fc' }}>{item.voucherData?.codeVoucher || '—'}</span></td>
-                      <td><span className={`ap-badge ${item.isPaymentOnlien === 0 ? 'ap-badge-gray' : 'ap-badge-cyan'}`}>{item.isPaymentOnlien === 0 ? '💵 Tiền mặt' : '💳 Online'}</span></td>
-                      <td><span className={`ap-badge ${STATUS_BADGE[item.statusOrderData?.value] || 'ap-badge-gray'}`}>{item.statusOrderData?.value}</span></td>
-                      <td style={{ textAlign: 'right', fontWeight: 700, color: '#fbbf24' }}>{CommonUtils.formatter.format(item.totalpriceProduct)}</td>
-                      <td><Link to={`/admin/order-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">🔍</Link></td>
-                    </tr>
-                  ))
+                  data.map((item, idx) => {
+                    const status = item.statusOrderData?.value;
+                    const isSuccess = status === 'Đã giao' || status === 'Đã giao hàng';
+                    const isCancelled = status === 'Đã hủy' || status === 'Đã huỷ';
+                    return (
+                      <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 20}ms` }}>
+                        <td style={{ fontFamily: 'monospace', color: 'var(--ap-primary)', fontWeight: 600 }}>#{item.id}</td>
+                        <td style={{ fontSize: 12, color: 'var(--ap-text-muted)', whiteSpace: 'nowrap' }}>{moment.utc(item.createdAt).local().format('DD/MM/YYYY HH:mm')}</td>
+                        <td style={{ fontSize: 13 }}>{item.typeShipData?.type}</td>
+                        <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#a5b4fc' }}>{item.voucherData?.codeVoucher || '—'}</span></td>
+                        <td><span className={`ap-badge ${item.isPaymentOnlien === 0 ? 'ap-badge-gray' : 'ap-badge-cyan'}`}>{item.isPaymentOnlien === 0 ? '💵 Tiền mặt' : '💳 Online'}</span></td>
+                        <td><span className={`ap-badge ${STATUS_BADGE[item.statusOrderData?.value] || 'ap-badge-gray'}`}>{item.statusOrderData?.value}</span></td>
+                        <td style={{ textAlign: 'right', fontWeight: 700, color: isSuccess ? '#10b981' : (isCancelled ? '#ef4444' : '#fbbf24') }}>{isCancelled && '-'}{CommonUtils.formatter.format(item.totalpriceProduct)}</td>
+                        <td><Link to={`/admin/order-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">🔍</Link></td>
+                      </tr>
+                    )
+                  })
               }
             </tbody>
           </table>

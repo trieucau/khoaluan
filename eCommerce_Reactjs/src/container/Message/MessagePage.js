@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import ChatWindow from './ChatWindow';
-import MessageDisscution from './MessageDisscution';
+import UserChatWindow from './UserChatWindow';
+import UserMessageDisscution from './UserMessageDisscution';
 import { createNewRoom, listRoomOfUser } from '../../services/userService';
 import socketIOClient from 'socket.io-client';
 import '../../css/user-pages.css';
@@ -57,7 +57,7 @@ function MessagePage() {
         <div className="messenger-layout">
           {/* Sidebar danh sách phòng */}
           <div className={`messenger-sidebar-wrapper ${selectedRoom ? 'hidden-on-mobile' : ''}`}>
-            <MessageDisscution
+            <UserMessageDisscution
               userId={dataUser.id}
               isAdmin={false}
               handleClickRoom={handleClickRoom}
@@ -68,7 +68,7 @@ function MessagePage() {
           {/* Chat window */}
           <div className={`messenger-chatbox-wrapper ${!selectedRoom ? 'hidden-on-mobile' : ''}`}>
             {selectedRoom ? (
-              <ChatWindow 
+              <UserChatWindow 
                 userId={dataUser.id} 
                 roomId={selectedRoom} 
                 onBack={() => setselectedRoom('')}

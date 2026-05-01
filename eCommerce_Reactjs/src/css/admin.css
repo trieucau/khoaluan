@@ -30,13 +30,13 @@
 
 /* ---- RESET ---- */
 .admin-portal * { box-sizing: border-box; margin: 0; padding: 0; }
-.admin-portal { font-family: 'Be Vietnam Pro', sans-serif; background: var(--ap-bg); color: var(--ap-text); min-height: 100vh; }
+.admin-portal { font-family: 'Be Vietnam Pro', sans-serif; background: var(--ap-bg); color: var(--ap-text); height: 100vh; overflow: hidden; }
 
 /* ---- LAYOUT ---- */
-.ap-layout { display: grid; grid-template-rows: var(--ap-header-h) 1fr; grid-template-columns: var(--ap-sidebar-w) 1fr; min-height: 100vh; }
+.ap-layout { display: grid; grid-template-rows: var(--ap-header-h) 1fr; grid-template-columns: var(--ap-sidebar-w) 1fr; height: 100vh; overflow: hidden; }
 .ap-header-wrap { grid-column: 1 / -1; grid-row: 1; z-index: 200; }
-.ap-sidebar-wrap { grid-column: 1; grid-row: 2; }
-.ap-main { grid-column: 2; grid-row: 2; overflow-y: auto; background: var(--ap-bg); display: flex; flex-direction: column; }
+.ap-sidebar-wrap { grid-column: 1; grid-row: 2; overflow-y: auto; overflow-x: hidden; position: relative; }
+.ap-main { grid-column: 2; grid-row: 2; overflow-y: auto; overflow-x: hidden; background: var(--ap-bg); display: flex; flex-direction: column; }
 .ap-page { padding: 28px 32px; flex: 1; }
 
 /* ---- HEADER ---- */
@@ -147,10 +147,10 @@
 .ap-badge-blue { background: rgba(59,130,246,0.15); color: #93c5fd; }
 
 /* ---- TABLE ---- */
-.ap-table-wrap { overflow-x: auto; }
-.ap-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-.ap-table thead tr { background: rgba(22,27,34,0.9); }
-.ap-table th { padding: 11px 14px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ap-text-dim); border-bottom: 1px solid var(--ap-border); white-space: nowrap; user-select: none; }
+.ap-table-wrap { overflow-x: auto; overflow-y: auto; max-height: calc(100vh - 280px); min-height: 200px; }
+.ap-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.5px; }
+.ap-table thead tr { background: var(--ap-surface2); }
+.ap-table th { position: sticky; top: 0; z-index: 10; background: var(--ap-surface2); padding: 11px 14px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ap-text-dim); border-bottom: 1px solid var(--ap-border); white-space: nowrap; user-select: none; }
 .ap-table td { padding: 13px 14px; border-bottom: 1px solid rgba(48,54,61,0.5); color: var(--ap-text); vertical-align: middle; }
 .ap-table tbody tr { transition: var(--ap-transition); }
 .ap-table tbody tr:hover { background: rgba(99,102,241,0.04); }

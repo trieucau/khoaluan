@@ -13,7 +13,7 @@ import AddCategory from './Category/AddCategory';
 import ManageBrand from './Brand/ManageBrand';
 import AddBrand from './Brand/AddBrand';
 import Information from './User/Information';
-import ChangePassword from './User/ChangePassword';
+import AdminChangePassword from './User/AdminChangePassword';
 import AddProduct from './Product/AddProduct';
 import ManageProduct from './Product/ManageProduct';
 import EditProduct from './Product/EditProduct';
@@ -83,7 +83,7 @@ function HomePageAdmin() {
               <Route path="/add-user" element={<Adduser />} />
               <Route path="/edit-user/:id" element={<Adduser />} />
               <Route path="/infor/:id" element={<Information />} />
-              <Route path="/change-password/:id" element={<ChangePassword />} />
+              <Route path="/change-password/:id" element={<AdminChangePassword />} />
               <Route path="/list-category" element={<ManageCategory />} />
               <Route path="/add-category" element={<AddCategory />} />
               <Route path="/edit-category/:id" element={<AddCategory />} />

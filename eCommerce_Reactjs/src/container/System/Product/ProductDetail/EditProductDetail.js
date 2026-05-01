@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import CommonUtils from '../../../../utils/CommonUtils';
 import '../AddProduct.scss';
@@ -9,7 +9,10 @@ import {
   getProductDetailByIdService,
   UpdateProductDetailService,
 } from '../../../../services/userService';
+
 const EditProductDetail = (props) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [inputValues, setInputValues] = useState({
     originalPrice: '',
     discountPrice: '',
@@ -19,7 +22,6 @@ const EditProductDetail = (props) => {
     nameDetail: '',
     description: '',
   });
-  const { id } = useParams();
 
   useEffect(() => {
     let fetchProductDetail = async () => {
@@ -30,6 +32,7 @@ const EditProductDetail = (props) => {
     };
     fetchProductDetail();
   }, []);
+
   let setStateProductdetail = (data) => {
     setInputValues({
       ...inputValues,
@@ -40,6 +43,7 @@ const EditProductDetail = (props) => {
       ['description']: data.description,
     });
   };
+
   const handleOnChange = (event) => {
     const { name, value } = event.target;
     setInputValues({ ...inputValues, [name]: value });
@@ -48,9 +52,7 @@ const EditProductDetail = (props) => {
   let handleSaveProductDetail = async () => {
     let res = await UpdateProductDetailService({
       id: id,
-
       description: inputValues.description,
-
       originalPrice: inputValues.originalPrice,
       discountPrice: inputValues.discountPrice,
       nameDetail: inputValues.nameDetail,
@@ -61,70 +63,88 @@ const EditProductDetail = (props) => {
       toast.error(res.errMessage);
     }
   };
-  return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý chi tiết sản phẩm</h1>
 
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Cập nhật chi tiết sản phẩm
+  return (
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <h1 className="ap-page-title">Cập nhật chi tiết sản phẩm</h1>
+            <div className="ap-page-subtitle">Chỉnh sửa thông tin phân loại sản phẩm</div>
+          </div>
+          <div>
+            <button className="ap-btn ap-btn-ghost" onClick={() => navigate(-1)}>
+              <i className="fas fa-arrow-left me-1"></i> Quay lại
+            </button>
+          </div>
         </div>
-        <div className="card-body">
+      </div>
+
+      <div className="ap-card mb-4">
+        <div className="ap-card-header">
+          <div className="ap-card-title">
+            <i className="fas fa-edit me-2" /> Thông tin phân loại
+          </div>
+        </div>
+        <div className="ap-card-body">
           <form>
-            <div className="form-row">
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Tên loại sản phẩm</label>
+            <div className="ap-form-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+              <div className="ap-form-group">
+                <label className="ap-label">Tên loại sản phẩm</label>
                 <input
                   type="text"
                   value={inputValues.nameDetail}
                   name="nameDetail"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
+                  className="ap-input"
+                  placeholder="Nhập tên phân loại..."
                 />
               </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Giá gốc</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Giá gốc (VNĐ)</label>
                 <input
                   type="number"
                   value={inputValues.originalPrice}
                   name="originalPrice"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
+                  className="ap-input"
+                  placeholder="Nhập giá gốc..."
                 />
               </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Giá khuyến mãi</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Giá khuyến mãi (VNĐ)</label>
                 <input
                   type="number"
                   value={inputValues.discountPrice}
                   name="discountPrice"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
+                  className="ap-input"
+                  placeholder="Nhập giá khuyến mãi..."
                 />
               </div>
             </div>
-            <div className="form-group">
-              <label htmlFor="inputAddress">Mô tả chi tiết</label>
+            
+            <div className="ap-form-group mt-2">
+              <label className="ap-label">Mô tả chi tiết</label>
               <textarea
                 rows="4"
                 value={inputValues.description}
                 name="description"
                 onChange={(event) => handleOnChange(event)}
-                className="form-control"
+                className="ap-textarea"
+                placeholder="Nhập mô tả chi tiết cho loại sản phẩm này..."
               ></textarea>
             </div>
 
-            <button
-              onClick={() => handleSaveProductDetail()}
-              type="button"
-              className="btn btn-primary"
-            >
-              Lưu thông tin
-            </button>
+            <div className="mt-4 text-end">
+              <button
+                onClick={() => handleSaveProductDetail()}
+                type="button"
+                className="ap-btn ap-btn-primary"
+              >
+                <i className="fas fa-save"></i> Lưu thông tin
+              </button>
+            </div>
           </form>
         </div>
       </div>

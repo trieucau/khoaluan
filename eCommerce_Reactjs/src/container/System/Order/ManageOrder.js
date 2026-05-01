@@ -28,7 +28,7 @@ const SkeletonRows = ({ cols = 9 }) => (
   </>
 );
 
-const Pagination = ({ count, onPageChange }) => (
+const Pagination = ({ count, onPageChange, forcePage }) => (
   <div style={{ padding: '14px 20px', borderTop: '1px solid var(--ap-border)', display: 'flex', justifyContent: 'center' }}>
     <ReactPaginate
       previousLabel="← Trước"
@@ -36,6 +36,7 @@ const Pagination = ({ count, onPageChange }) => (
       breakLabel="..."
       pageCount={count}
       marginPagesDisplayed={2}
+      forcePage={forcePage}
       containerClassName="ap-pagination"
       pageClassName="ap-page-item"
       pageLinkClassName="ap-page-link"
@@ -54,10 +55,29 @@ const Pagination = ({ count, onPageChange }) => (
 const ManageOrder = () => {
   const [dataOrder, setDataOrder] = useState([]);
   const [count, setCount] = useState(0);
+  const [numberPage, setNumberPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [statusId, setStatusId] = useState('ALL');
   const [search, setSearch] = useState('');
   const { data: dataStatusOrder } = useFetchAllcode('STATUS-ORDER');
+  const [statusCounts, setStatusCounts] = useState({});
+
+  useEffect(() => {
+    if (dataStatusOrder && dataStatusOrder.length > 0) {
+      const fetchCounts = async () => {
+        const counts = {};
+        const statuses = ['ALL', ...dataStatusOrder.map(s => s.code)];
+        await Promise.all(statuses.map(async (sid) => {
+          try {
+            const res = await getAllOrder({ limit: 1, offset: 0, statusId: sid });
+            if (res?.errCode === 0) counts[sid] = res.count;
+          } catch (e) {}
+        }));
+        setStatusCounts(counts);
+      };
+      fetchCounts();
+    }
+  }, [dataStatusOrder]);
 
   const loadOrderData = useCallback(async (sid = statusId, offset = 0) => {
     setLoading(true);
@@ -70,8 +90,16 @@ const ManageOrder = () => {
 
   useEffect(() => { loadOrderData('ALL'); }, []);
 
-  const handleStatusChange = (sid) => { setStatusId(sid); loadOrderData(sid); };
-  const handlePageChange = ({ selected }) => loadOrderData(statusId, selected * PAGINATION.pagerow);
+  const handleStatusChange = (sid) => { 
+    setStatusId(sid); 
+    setNumberPage(0);
+    loadOrderData(sid, 0); 
+  };
+  
+  const handlePageChange = ({ selected }) => { 
+    setNumberPage(selected);
+    loadOrderData(statusId, selected * PAGINATION.pagerow); 
+  };
   const handleExport = async () => {
     const res = await getAllOrder({ limit: '', offset: '', statusId: 'ALL' });
     if (res?.errCode === 0) await CommonUtils.exportExcel(res.data, 'Danh sách đơn hàng', 'ListOrder');
@@ -102,10 +130,12 @@ const ManageOrder = () => {
             {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', color: 'var(--ap-text-dim)', cursor: 'pointer', fontSize: 16 }}>×</button>}
           </div>
           <div className="ap-tabs" style={{ flexWrap: 'wrap' }}>
-            <button className={`ap-tab${statusId === 'ALL' ? ' active' : ''}`} onClick={() => handleStatusChange('ALL')}>Tất cả</button>
+            <button className={`ap-tab${statusId === 'ALL' ? ' active' : ''}`} onClick={() => handleStatusChange('ALL')}>
+              Tất cả {statusCounts['ALL'] !== undefined && <span style={{ marginLeft: 6, background: statusId === 'ALL' ? 'rgba(255,255,255,0.2)' : 'rgba(120,120,130,0.2)', padding: '2px 6px', borderRadius: 10, fontSize: 11 }}>{statusCounts['ALL']}</span>}
+            </button>
             {dataStatusOrder?.map(s => (
               <button key={s.code} className={`ap-tab${statusId === s.code ? ' active' : ''}`} onClick={() => handleStatusChange(s.code)}>
-                {s.value}
+                {s.value} {statusCounts[s.code] !== undefined && <span style={{ marginLeft: 6, background: statusId === s.code ? 'rgba(255,255,255,0.2)' : 'rgba(120,120,130,0.2)', padding: '2px 6px', borderRadius: 10, fontSize: 11 }}>{statusCounts[s.code]}</span>}
               </button>
             ))}
           </div>
@@ -143,8 +173,12 @@ const ManageOrder = () => {
                     <td><span className="ap-badge ap-badge-indigo">#{item.id}</span></td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div className="ap-avatar" style={{ width: 28, height: 28, fontSize: 11 }}>
-                          {(item.userData?.firstName?.[0] || '?').toUpperCase()}
+                        <div className="ap-avatar" style={{ width: 28, height: 28, fontSize: 11, flexShrink: 0, overflow: 'hidden' }}>
+                          {item.userData?.image ? (
+                            <img src={item.userData.image} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            (item.userData?.firstName?.[0] || '?').toUpperCase()
+                          )}
                         </div>
                         <span style={{ fontSize: 13 }}>{item.userData?.email}</span>
                       </div>
@@ -169,7 +203,7 @@ const ManageOrder = () => {
             </tbody>
           </table>
         </div>
-        {!loading && count > 1 && <Pagination count={count} onPageChange={handlePageChange} />}
+        {!loading && count > 1 && <Pagination count={count} onPageChange={handlePageChange} forcePage={numberPage} />}
       </div>
     </div>
   );

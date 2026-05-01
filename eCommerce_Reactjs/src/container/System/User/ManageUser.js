@@ -59,6 +59,17 @@ const ManageUser = () => {
     fetchAllUser(keyword, selected * PAGINATION.pagerow);
   };
 
+  const handleSearch = () => {
+    setNumberPage(0);
+    fetchAllUser(keyword, 0);
+  };
+
+  const handleClearSearch = () => {
+    setKeyword('');
+    setNumberPage(0);
+    fetchAllUser('', 0);
+  };
+
   const handleExport = async () => {
     const res = await getAllUsers({ limit: '', offset: '', keyword: '' });
     if (res?.errCode === 0) await CommonUtils.exportExcel(res.data, 'Danh sách người dùng', 'ListUser');
@@ -86,12 +97,12 @@ const ManageUser = () => {
             <input
               value={keyword}
               onChange={e => setKeyword(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && fetchAllUser(keyword)}
+              onKeyDown={e => e.key === 'Enter' && handleSearch()}
               placeholder="Tìm theo SĐT, email..."
             />
-            {keyword && <button onClick={() => { setKeyword(''); fetchAllUser(''); }} style={{ background: 'none', border: 'none', color: 'var(--ap-text-dim)', cursor: 'pointer', fontSize: 16 }}>×</button>}
+            {keyword && <button onClick={handleClearSearch} style={{ background: 'none', border: 'none', color: 'var(--ap-text-dim)', cursor: 'pointer', fontSize: 16 }}>×</button>}
           </div>
-          <button className="ap-btn ap-btn-primary ap-btn-sm" onClick={() => fetchAllUser(keyword)}>Tìm kiếm</button>
+          <button className="ap-btn ap-btn-primary ap-btn-sm" onClick={handleSearch}>Tìm kiếm</button>
         </div>
 
         <div className="ap-table-wrap">
@@ -118,7 +129,13 @@ const ManageUser = () => {
                     <td style={{ color:'var(--ap-text-dim)', fontWeight:600, fontSize:13 }}>{idx+1}</td>
                     <td>
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                        <div className="ap-avatar" style={{ width:32, height:32, fontSize:11, flexShrink:0 }}>{initials}</div>
+                        <div className="ap-avatar" style={{ width:32, height:32, fontSize:11, flexShrink:0 }}>
+                          {item.image ? (
+                            <img src={item.image} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            initials
+                          )}
+                        </div>
                         <div>
                           <div style={{ fontWeight:600, fontSize:13 }}>{item.firstName} {item.lastName}</div>
                           <div style={{ fontSize:11, color:'var(--ap-text-dim)' }}>{item.genderData?.value}</div>
@@ -147,7 +164,7 @@ const ManageUser = () => {
           <div style={{ padding:'14px 20px', borderTop:'1px solid var(--ap-border)', display:'flex', justifyContent:'center' }}>
             <ReactPaginate
               previousLabel="← Trước" nextLabel="Sau →" breakLabel="..."
-              pageCount={count} marginPagesDisplayed={2}
+              pageCount={count} marginPagesDisplayed={2} forcePage={numberPage}
               containerClassName="ap-pagination" pageClassName="ap-page-item" pageLinkClassName="ap-page-link"
               previousClassName="ap-page-item" previousLinkClassName="ap-page-link"
               nextClassName="ap-page-item" nextLinkClassName="ap-page-link"

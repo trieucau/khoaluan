@@ -98,56 +98,60 @@ const AddImageModal = (props) => {
   };
   return (
     <div className="">
-      <Modal isOpen={props.isOpenModal} className={'booking-modal-container'} size="md" centered>
-        <div className="modal-header">
-          <h5 className="modal-title">Thêm hình ảnh chi tiết sản phẩm</h5>
+      <Modal isOpen={props.isOpenModal} className={'booking-modal-container ap-modal-custom'} size="md" centered>
+        <div className="modal-header border-bottom-0 pb-0">
+          <h5 className="modal-title ap-page-title fs-5">{inputValues.isActionUpdate ? 'Cập nhật hình ảnh' : 'Thêm hình ảnh chi tiết sản phẩm'}</h5>
           <button
             onClick={handleCloseModal}
             type="button"
-            className="btn btn-time"
+            className="btn-close btn-close-white"
             aria-label="Close"
-          >
-            X
-          </button>
+          ></button>
         </div>
-        <ModalBody>
+        <ModalBody className="pt-3">
           <div className="row">
-            <div className="col-12 form-group">
-              <label>Tên hình ảnh</label>
+            <div className="col-12 ap-form-group">
+              <label className="ap-label">Tên hình ảnh</label>
               <input
                 value={inputValues.caption}
                 name="caption"
                 onChange={(event) => handleOnChange(event)}
                 type="text"
-                className="form-control"
+                className="ap-input"
+                placeholder="Nhập tên hình ảnh..."
               />
             </div>
-            <div className="col-12 form-group">
-              <label>Ảnh hiển thị</label>
+            <div className="col-12 ap-form-group">
+              <label className="ap-label">Ảnh hiển thị</label>
               <div
                 style={{
                   backgroundImage: `url(${inputValues.imageReview})`,
+                  display: inputValues.imageReview ? 'block' : 'none'
                 }}
                 onClick={() => openPreviewImage()}
-                className="img-review"
+                className="img-review rounded shadow-sm border border-secondary"
+                title="Nhấp để xem lớn"
               ></div>
+              {!inputValues.imageReview && (
+                <div className="text-muted small fst-italic">Chưa có ảnh nào được chọn.</div>
+              )}
             </div>
-            <div className="col-12 form-group">
-              <label>Chọn hình ảnh</label>
+            <div className="col-12 ap-form-group mb-0">
+              <label className="ap-label">Chọn hình ảnh mới</label>
               <input
                 onChange={(event) => handleOnChangeImage(event)}
                 type="file"
                 accept=".jpg,.png"
-                className="form-control form-file"
+                className="ap-input"
               />
             </div>
           </div>
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={HandleSendDataFromModal}>
+        <ModalFooter className="border-top-0 pt-0">
+          <button className="ap-btn ap-btn-ghost" onClick={handleCloseModal}>Hủy</button>
+          <button className="ap-btn ap-btn-primary" onClick={HandleSendDataFromModal}>
             Lưu thông tin
-          </Button>
-          <Button onClick={handleCloseModal}>Hủy</Button>
+          </button>
         </ModalFooter>
       </Modal>
       {inputValues.isOpen === true && (

@@ -3,11 +3,12 @@ import { getAllProductDetailByIdService, DeleteProductDetailService } from '../.
 import { toast } from 'react-toastify';
 import { PAGINATION } from '../../../../utils/constant';
 import CommonUtils from '../../../../utils/CommonUtils';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { SkeletonRows, EmptyState, AdminPagination, PageHeader } from '../../AdminShared';
 
 const ManageProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [count, setCount] = useState(0);
   const [page, setPage] = useState(0);
@@ -40,7 +41,14 @@ const ManageProductDetail = () => {
       <PageHeader
         title="🧩 Chi tiết sản phẩm"
         subtitle={`Quản lý các loại phân loại cho sản phẩm #${id}`}
-        actions={<Link to={`/admin/add-product-detail/${id}`} className="ap-btn ap-btn-primary">+ Thêm phân loại</Link>}
+        actions={
+          <div className="d-flex gap-2">
+            <button className="ap-btn ap-btn-ghost" onClick={() => navigate(-1)}>
+              <i className="fas fa-arrow-left me-1"></i> Quay lại
+            </button>
+            <Link to={`/admin/add-product-detail/${id}`} className="ap-btn ap-btn-primary">+ Thêm phân loại</Link>
+          </div>
+        }
       />
       <div className="ap-card">
         <div className="ap-table-wrap">

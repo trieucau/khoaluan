@@ -125,9 +125,18 @@ let getAllReceipt = (data) => {
       //  if(data.keyword !=='') objectFilter.where = {...objectFilter.where, name: {[Op.substring]: data.keyword  } }
       let res = await db.Receipt.findAndCountAll(objectFilter);
       for (let i = 0; i < res.rows.length; i++) {
-        res.rows[i].userData = await db.User.findOne({
+        let user = await db.User.findOne({
           where: { id: res.rows[i].userId },
+          raw: true,
+          nest: true
         });
+
+        if (user && user.image) {
+          user.image = Buffer.from(user.image, 'base64').toString('binary');
+        }
+
+        res.rows[i].userData = user;
+        
         res.rows[i].supplierData = await db.Supplier.findOne({
           where: { id: res.rows[i].supplierId },
         });

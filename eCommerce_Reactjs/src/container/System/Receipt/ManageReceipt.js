@@ -55,8 +55,12 @@ const ManageReceipt = () => {
                     <td style={{ fontSize: 13 }}>{item.supplierData?.phonenumber}</td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div className="ap-avatar" style={{ width: 28, height: 28, fontSize: 11 }}>
-                          {item.userData?.firstName?.[0]?.toUpperCase() || '?'}
+                        <div className="ap-avatar" style={{ width: 28, height: 28, fontSize: 11, flexShrink: 0, overflow: 'hidden' }}>
+                          {item.userData?.image ? (
+                            <img src={item.userData.image} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            item.userData?.firstName?.[0]?.toUpperCase() || '?'
+                          )}
                         </div>
                         <span style={{ fontSize: 13 }}>{item.userData?.firstName} {item.userData?.lastName}</span>
                       </div>

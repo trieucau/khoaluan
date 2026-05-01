@@ -2,16 +2,50 @@
   background: no-repeat center center;
   background-size: cover;
   width: 100px;
-
   height: 40px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 .img-review {
   background: no-repeat center center;
   background-size: cover;
-  width: 200px;
+  width: 100%;
+  max-width: 200px;
   cursor: pointer;
-  height: 100px;
+  height: 120px;
+  margin-top: 8px;
 }
 .ReactModal__Overlay {
   z-index: 2000 !important;
+}
+
+/* Custom modal styling for Admin Dark Theme */
+.ap-modal-custom {
+  .modal-content {
+    background-color: var(--ap-surface);
+    color: var(--ap-text);
+    border: 1px solid var(--ap-border);
+    border-radius: var(--ap-radius);
+    box-shadow: var(--ap-shadow);
+  }
+  
+  .btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.5;
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .text-muted {
+    color: var(--ap-text-dim) !important;
+  }
+
+  .border-secondary {
+    border-color: var(--ap-border) !important;
+  }
 }

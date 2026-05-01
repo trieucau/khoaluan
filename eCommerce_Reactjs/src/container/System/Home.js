@@ -6,6 +6,7 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import AdminShipperMap from './ShipperMap/AdminShipperMap';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, ArcElement, Filler);
 
@@ -46,6 +47,13 @@ const Home = () => {
   const [type, setType] = useState('month');
   const [month, setMonth] = useState(new Date());
   const [year, setYear] = useState(new Date());
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     loadCountCard();
@@ -128,102 +136,127 @@ const Home = () => {
       </div>
 
       {/* Stat Cards */}
-      <div className="ap-stats-grid">
-        {STATS.map((s) => (
-          <div key={s.label} className={`ap-stat-card ${s.color}`}>
-            <div className={`ap-stat-icon ${s.color}`}>{s.icon}</div>
-            <div style={{ flex: 1 }}>
-              <div className="ap-stat-value">
-                {loadingCards ? (
-                  <div className="ap-skeleton ap-skeleton-text" style={{ width: 60, height: 28 }} />
-                ) : (
-                  <AnimatedNumber value={s.value || 0} />
-                )}
+      <div className="ap-stats-grid" style={{ 
+         display: 'flex', 
+         flexWrap: isMobile ? 'nowrap' : 'wrap', 
+         overflowX: isMobile ? 'auto' : 'visible', 
+         WebkitOverflowScrolling: 'touch',
+         gap: 16,
+         paddingBottom: isMobile ? 8 : 0,
+         width: '100%',
+         maxWidth: '100%'
+      }}>
+        {STATS.map((s) => {
+          const Tag = s.to ? Link : 'div';
+          return (
+            <Tag key={s.label} to={s.to} className={`ap-stat-card ${s.color}`} style={{ minWidth: isMobile ? 220 : 'calc(25% - 12px)', flexShrink: 0, textDecoration: 'none', cursor: s.to ? 'pointer' : 'default', display: 'flex', alignItems: 'center' }}>
+              <div className={`ap-stat-icon ${s.color}`}>{s.icon}</div>
+              <div style={{ flex: 1 }}>
+                <div className="ap-stat-value" style={{ color: 'var(--ap-text-primary)' }}>
+                  {loadingCards ? (
+                    <div className="ap-skeleton ap-skeleton-text" style={{ width: 60, height: 28 }} />
+                  ) : (
+                    <AnimatedNumber value={s.value || 0} />
+                  )}
+                </div>
+                <div className="ap-stat-label" style={{ color: 'var(--ap-text-dim)' }}>{s.label}</div>
               </div>
-              <div className="ap-stat-label">{s.label}</div>
-            </div>
-            {s.to && (
-              <Link to={s.to} style={{ fontSize: 18, color: 'var(--ap-text-dim)', textDecoration: 'none', transition: 'var(--ap-transition)' }}
-                onMouseEnter={e => e.target.style.color = 'var(--ap-primary-light)'}
-                onMouseLeave={e => e.target.style.color = 'var(--ap-text-dim)'}
-              >›</Link>
-            )}
-          </div>
-        ))}
+              {s.to && (
+                <div style={{ fontSize: 20, color: 'var(--ap-text-dim)' }}>›</div>
+              )}
+            </Tag>
+          );
+        })}
       </div>
 
-      {/* Line Chart + Pie */}
-      <div className="ap-grid-3" style={{ marginBottom: 20 }}>
-        <div className="ap-card">
-          <div className="ap-card-header">
-            <span className="ap-card-title">📈 Doanh thu theo tháng</span>
-            <div className="ap-chart-toolbar" style={{ margin: 0, gap: 8 }}>
-              <div className="ap-datepicker-wrap">
-                <DatePicker
-                  selected={year}
-                  onChange={(date) => { setYear(date); loadStatisticOrderByMonth(moment(date).format('YYYY')); }}
-                  dateFormat="yyyy"
-                  showYearPicker
-                  placeholderText="Chọn năm"
-                />
+      {/* Main Dashboard Grid */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: isMobile ? '1fr' : 'repeat(12, 1fr)', 
+        gap: 16 
+      }}>
+        
+          {/* 1. Map Card (Desktop: Top-Left, Mobile: 3rd) */}
+          <div className="ap-card" style={{ gridColumn: isMobile ? '1' : 'span 7', order: isMobile ? 3 : 1, margin: 0, minWidth: 0 }}>
+            <div className="ap-card-header" style={{ padding: '12px 16px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 10, justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center' }}>
+               <span className="ap-card-title" style={{ fontSize: 14 }}>📍 Bảng Điều Hành Shipper Trực Tuyến</span>
+               <Link to="/admin/shipper-map" className="ap-btn ap-btn-ghost ap-btn-sm" style={{ textDecoration: 'none', padding: '4px 10px', fontSize: 11, alignSelf: isMobile ? 'flex-end' : 'auto' }}>Mở lớn ↗</Link>
+            </div>
+            <div className="ap-card-body" style={{ padding: 0, overflow: 'hidden', borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+               <AdminShipperMap isMini={true} />
+            </div>
+          </div>
+
+          {/* Pie Chart */}
+          <div className="ap-card" style={{ gridColumn: isMobile ? '1' : 'span 5', order: isMobile ? 1 : 2, margin: 0, minWidth: 0 }}>
+            <div className="ap-card-header" style={{ padding: '12px 16px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 12, justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center' }}>
+              <span className="ap-card-title" style={{ fontSize: 14 }}>🥧 Trạng thái đơn hàng</span>
+              <div className="ap-chart-toolbar" style={{ margin: 0, gap: 8, display: 'grid', gridTemplateColumns: 'minmax(70px, 1fr) minmax(100px, 2fr) auto', width: isMobile ? '100%' : 'auto' }}>
+                
+                <select className="ap-select" value={type} onChange={(e) => setType(e.target.value)} 
+                        style={{ width: '100%', fontSize: 11, padding: '4px 8px', height: 28 }}>
+                  <option value="day">Ngày</option>
+                  <option value="month">Tháng</option>
+                  <option value="year">Năm</option>
+                </select>
+
+                <div className="ap-datepicker-wrap" style={{ width: '100%', display: 'flex' }}>
+                  {type === 'day' && <DatePicker className="ap-input" style={{ width: '100%', fontSize: 11, padding: '4px 8px', height: 28 }} selectsRange startDate={startDate} endDate={endDate} onChange={setDateRange} isClearable placeholderText="Ngày" />}
+                  {type === 'month' && <DatePicker className="ap-input" style={{ width: '100%', fontSize: 11, padding: '4px 8px', height: 28 }} selected={DateTime} onChange={setDateTime} dateFormat="MM/yyyy" showMonthYearPicker placeholderText="Tháng" />}
+                  {type === 'year' && <DatePicker className="ap-input" style={{ width: '100%', fontSize: 11, padding: '4px 8px', height: 28 }} selected={DateTime} onChange={setDateTime} dateFormat="yyyy" showYearPicker placeholderText="Năm" />}
+                </div>
+
+                <button className="ap-btn ap-btn-primary" onClick={loadStatusOrder} 
+                        style={{ padding: '0 12px', fontSize: 11, height: 28, display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                  Lọc
+                </button>
               </div>
             </div>
-          </div>
-          <div className="ap-card-body">
-            <Line options={{ ...chartDefaults, plugins: { ...chartDefaults.plugins, title: { display: false } } }} data={dataLine} />
-          </div>
-        </div>
-
-        <div className="ap-card">
-          <div className="ap-card-header">
-            <span className="ap-card-title">🥧 Trạng thái đơn hàng</span>
-            <div className="ap-chart-toolbar" style={{ margin: 0, gap: 8 }}>
-              <select className="ap-select" value={type} onChange={(e) => setType(e.target.value)} style={{ fontSize: 12, padding: '4px 8px' }}>
-                <option value="day">Ngày</option>
-                <option value="month">Tháng</option>
-                <option value="year">Năm</option>
-              </select>
-              {type === 'day' && (
-                <div className="ap-datepicker-wrap">
-                  <DatePicker selectsRange startDate={startDate} endDate={endDate} onChange={setDateRange} isClearable placeholderText="Chọn ngày" />
-                </div>
-              )}
-              {type === 'month' && (
-                <div className="ap-datepicker-wrap">
-                  <DatePicker selected={DateTime} onChange={setDateTime} dateFormat="MM/yyyy" showMonthYearPicker placeholderText="Chọn tháng" />
-                </div>
-              )}
-              {type === 'year' && (
-                <div className="ap-datepicker-wrap">
-                  <DatePicker selected={DateTime} onChange={setDateTime} dateFormat="yyyy" showYearPicker placeholderText="Chọn năm" />
-                </div>
-              )}
-              <button className="ap-btn ap-btn-primary ap-btn-sm" onClick={loadStatusOrder}>Lọc</button>
+            <div className="ap-card-body" style={{ height: 220, padding: '10px', display: 'flex', justifyContent: 'center' }}>
+              <Pie data={dataPie} options={{ ...pieOptions, maintainAspectRatio: false }} />
             </div>
           </div>
-          <div className="ap-card-body">
-            <Pie data={dataPie} options={pieOptions} />
-          </div>
-        </div>
-      </div>
 
-      {/* Bar Chart */}
-      <div className="ap-card">
-        <div className="ap-card-header">
-          <span className="ap-card-title">📊 Doanh thu theo ngày</span>
-          <div className="ap-datepicker-wrap">
-            <DatePicker
-              selected={month}
-              onChange={(date) => { setMonth(date); loadStatisticOrderByDay(moment(date).format('YYYY'), moment(date).format('M')); }}
-              dateFormat="MM/yyyy"
-              showMonthYearPicker
-              placeholderText="Chọn tháng"
-            />
+          {/* Line Chart */}
+          <div className="ap-card" style={{ gridColumn: isMobile ? '1' : 'span 7', order: isMobile ? 2 : 3, margin: 0, minWidth: 0 }}>
+            <div className="ap-card-header" style={{ padding: '12px 16px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 10, justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center' }}>
+              <span className="ap-card-title" style={{ fontSize: 14 }}>📈 Doanh thu theo tháng</span>
+              <div className="ap-chart-toolbar" style={{ margin: 0, gap: 8, display: 'flex', width: isMobile ? '100%' : '140px', justifyContent: isMobile ? 'flex-end' : 'flex-end' }}>
+                <div className="ap-datepicker-wrap" style={{ width: '100%', display: 'flex' }}>
+                  <DatePicker 
+                    selected={year} onChange={(date) => { setYear(date); loadStatisticOrderByMonth(moment(date).format('YYYY')); }} 
+                    dateFormat="yyyy" showYearPicker placeholderText="Năm" 
+                    className="ap-input"
+                    style={{ width: '100%', fontSize: 11, padding: '4px 8px', height: 28 }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="ap-card-body" style={{ height: 260, padding: '10px' }}>
+              <Line options={{ ...chartDefaults, maintainAspectRatio: false, plugins: { ...chartDefaults.plugins, title: { display: false } } }} data={dataLine} />
+            </div>
           </div>
-        </div>
-        <div className="ap-card-body">
-          <Bar options={{ ...chartDefaults, plugins: { ...chartDefaults.plugins, title: { display: false } } }} data={dataBar} />
-        </div>
+
+          {/* Bar Chart */}
+          <div className="ap-card" style={{ gridColumn: isMobile ? '1' : 'span 5', order: isMobile ? 4 : 4, margin: 0, minWidth: 0 }}>
+            <div className="ap-card-header" style={{ padding: '12px 16px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 10, justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center' }}>
+              <span className="ap-card-title" style={{ fontSize: 14 }}>📊 Doanh thu theo ngày</span>
+              <div className="ap-chart-toolbar" style={{ margin: 0, gap: 8, display: 'flex', width: isMobile ? '100%' : '140px', justifyContent: isMobile ? 'flex-end' : 'flex-end' }}>
+                <div className="ap-datepicker-wrap" style={{ width: '100%', display: 'flex' }}>
+                  <DatePicker 
+                    className="ap-input"
+                    style={{ width: '100%', fontSize: 11, padding: '4px 8px', height: 28 }}
+                    selected={month} onChange={(date) => { setMonth(date); loadStatisticOrderByDay(moment(date).format('YYYY'), moment(date).format('M')); }} 
+                    dateFormat="MM/yyyy" showMonthYearPicker placeholderText="Tháng" 
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="ap-card-body" style={{ height: 220, padding: '10px' }}>
+              <Bar options={{ ...chartDefaults, maintainAspectRatio: false, plugins: { ...chartDefaults.plugins, title: { display: false } } }} data={dataBar} />
+            </div>
+          </div>
+
       </div>
     </div>
   );

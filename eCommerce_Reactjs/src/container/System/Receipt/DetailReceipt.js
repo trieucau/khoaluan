@@ -7,12 +7,14 @@ import {
 } from '../../../services/userService';
 
 import { toast } from 'react-toastify';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import CommonUtils from '../../../utils/CommonUtils';
 import moment from 'moment';
+
 const DetailReceipt = (props) => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [dataProduct, setdataProduct] = useState([]);
   const [dataProductDetail, setdataProductDetail] = useState([]);
   const [dataProductDetailSize, setdataProductDetailSize] = useState([]);
@@ -23,22 +25,26 @@ const DetailReceipt = (props) => {
     price: '',
     productId: '',
   });
+
   if (dataProduct && dataProduct.length > 0 && inputValues.productId === '') {
     setInputValues({ ...inputValues, ['productId']: dataProduct[0].id });
     setproductDetailSizeId(dataProduct[0].productDetail[0].productDetailSize[0].id);
     setdataProductDetail(dataProduct[0].productDetail);
     setdataProductDetailSize(dataProduct[0].productDetail[0].productDetailSize);
   }
+
   useEffect(() => {
     loadProduct();
     loadReceiptDetail(id);
   }, []);
+
   let loadReceiptDetail = async (id) => {
     let res = await getDetailReceiptByIdService(id);
     if (res && res.errCode == 0) {
       setdataReceiptDetail(res.data.receiptDetail);
     }
   };
+
   let loadProduct = async () => {
     let arrData = await getAllProductAdmin({
       sortName: '',
@@ -53,10 +59,12 @@ const DetailReceipt = (props) => {
       setdataProduct(arrData.data);
     }
   };
+
   const handleOnChange = (event) => {
     const { name, value } = event.target;
     setInputValues({ ...inputValues, [name]: value });
   };
+
   const handleOnChangeProduct = (event) => {
     const { name, value } = event.target;
     setInputValues({ ...inputValues, [name]: value });
@@ -68,6 +76,7 @@ const DetailReceipt = (props) => {
       }
     }
   };
+
   let handleOnChangeProductDetail = (event) => {
     const { name, value } = event.target;
     for (let i = 0; i < dataProductDetail.length; i++) {
@@ -77,6 +86,7 @@ const DetailReceipt = (props) => {
       }
     }
   };
+
   let handleSaveReceiptDetail = async () => {
     let res = await createNewReceiptDetailService({
       receiptId: id,
@@ -85,39 +95,52 @@ const DetailReceipt = (props) => {
       price: inputValues.price,
     });
     if (res && res.errCode === 0) {
-      toast.success('Thêm nhập chi tiết hàng thành công');
+      toast.success('Thêm chi tiết nhập hàng thành công');
       setInputValues({
         ...inputValues,
-
         ['quantity']: '',
         ['price']: '',
       });
       loadReceiptDetail(id);
     } else if (res && res.errCode === 2) {
       toast.error(res.errMessage);
-    } else toast.error('Thêm nhập hàng thất bại');
+    } else {
+      toast.error('Thêm nhập hàng thất bại');
+    }
   };
 
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý chi tiết nhập hàng</h1>
-
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Thêm mới chi tiết nhập hàng
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <h1 className="ap-page-title">Quản lý chi tiết nhập hàng</h1>
+            <div className="ap-page-subtitle">Thêm và xem chi tiết phiếu nhập #{id}</div>
+          </div>
+          <div>
+            <button className="ap-btn ap-btn-ghost" onClick={() => navigate(-1)}>
+              <i className="fas fa-arrow-left me-1"></i> Quay lại
+            </button>
+          </div>
         </div>
-        <div className="card-body">
+      </div>
+
+      <div className="ap-card mb-4">
+        <div className="ap-card-header">
+          <div className="ap-card-title">
+            <i className="fas fa-plus-circle me-2" /> Thêm mới sản phẩm nhập
+          </div>
+        </div>
+        <div className="ap-card-body">
           <form>
-            <div className="form-row">
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Sản phẩm</label>
+            <div className="ap-form-row" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+              <div className="ap-form-group">
+                <label className="ap-label">Sản phẩm</label>
                 <select
                   value={inputValues.productId}
                   name="productId"
                   onChange={(event) => handleOnChangeProduct(event)}
-                  id="inputState"
-                  className="form-control"
+                  className="ap-select-input"
                 >
                   {dataProduct &&
                     dataProduct.length > 0 &&
@@ -130,12 +153,11 @@ const DetailReceipt = (props) => {
                     })}
                 </select>
               </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Loại sản phẩm</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Loại sản phẩm (Màu sắc)</label>
                 <select
                   onChange={(event) => handleOnChangeProductDetail(event)}
-                  id="inputState"
-                  className="form-control"
+                  className="ap-select-input"
                 >
                   {dataProductDetail &&
                     dataProductDetail.length > 0 &&
@@ -148,14 +170,13 @@ const DetailReceipt = (props) => {
                     })}
                 </select>
               </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Size sản phẩm</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Size sản phẩm</label>
                 <select
                   value={productDetailSizeId}
                   name="productDetailSizeId"
                   onChange={(event) => setproductDetailSizeId(event.target.value)}
-                  id="inputState"
-                  className="form-control"
+                  className="ap-select-input"
                 >
                   {dataProductDetailSize &&
                     dataProductDetailSize.length > 0 &&
@@ -168,81 +189,91 @@ const DetailReceipt = (props) => {
                     })}
                 </select>
               </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputEmail4">Số lượng</label>
+            </div>
+
+            <div className="ap-form-row mt-2" style={{ gridTemplateColumns: '1fr 1fr' }}>
+              <div className="ap-form-group">
+                <label className="ap-label">Số lượng nhập</label>
                 <input
                   type="number"
                   value={inputValues.quantity}
                   name="quantity"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
+                  className="ap-input"
+                  placeholder="Nhập số lượng..."
                 />
               </div>
-              <div className="form-group col-md-6">
-                <label htmlFor="inputEmail4">Đơn giá</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Đơn giá nhập (VNĐ)</label>
                 <input
                   type="number"
                   value={inputValues.price}
                   name="price"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
+                  className="ap-input"
+                  placeholder="Nhập đơn giá..."
                 />
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => handleSaveReceiptDetail()}
-              className="btn btn-primary"
-            >
-              Lưu thông tin
-            </button>
+            <div className="mt-3 text-end">
+              <button
+                type="button"
+                onClick={() => handleSaveReceiptDetail()}
+                className="ap-btn ap-btn-primary"
+              >
+                <i className="fas fa-plus"></i> Thêm vào phiếu
+              </button>
+            </div>
           </form>
         </div>
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Danh sách chi tiết nhập hàng
-        </div>
-        <div className="card-body">
-          <div className="row">
-            <div className="col-12">
-              {/* <button  style={{float:'right'}} onClick={() => handleOnClickExport()} className="btn btn-success mb-2" >Xuất excel <i class="fa-solid fa-file-excel"></i></button> */}
-            </div>
+      </div>
+
+      <div className="ap-card">
+        <div className="ap-card-header">
+          <div className="ap-card-title">
+            <i className="fas fa-list me-2" /> Danh sách chi tiết đã nhập
           </div>
-          <div className="table-responsive">
-            <table
-              className="table table-bordered"
-              style={{ border: '1' }}
-              width="100%"
-              cellspacing="0"
-            >
+        </div>
+        <div className="ap-card-body p-0">
+          <div className="ap-table-wrap">
+            <table className="ap-table">
               <thead>
                 <tr>
                   <th>STT</th>
-                  <th>Mã đơn</th>
-                  <th>Tên sản phẩm</th>
+                  <th>Mã phiếu</th>
+                  <th>Tên sản phẩm - Phân loại - Size</th>
                   <th>Số lượng</th>
                   <th>Đơn giá</th>
+                  <th>Thành tiền</th>
                 </tr>
               </thead>
-
               <tbody>
-                {dataReceiptDetail &&
-                  dataReceiptDetail.length > 0 &&
+                {dataReceiptDetail && dataReceiptDetail.length > 0 ? (
                   dataReceiptDetail.map((item, index) => {
                     let name = `${item.productData.name} - ${item.productDetailData.nameDetail} - ${item.productDetailSizeData.sizeData.value}`;
                     return (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{item.receiptId}</td>
-                        <td>{name}</td>
+                        <td><span className="ap-badge ap-badge-indigo">#{item.receiptId}</span></td>
+                        <td className="fw-bold">{name}</td>
                         <td>{item.quantity}</td>
                         <td>{CommonUtils.formatter.format(item.price)}</td>
+                        <td className="text-warning fw-bold">{CommonUtils.formatter.format(item.price * item.quantity)}</td>
                       </tr>
                     );
-                  })}
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center py-4">
+                      <div className="ap-empty">
+                        <i className="fas fa-box-open ap-empty-icon"></i>
+                        <div className="ap-empty-title">Chưa có sản phẩm nào</div>
+                        <div className="ap-empty-desc">Phiếu nhập này hiện đang trống.</div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

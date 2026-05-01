@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { getDetailUserById } from '../../services/userService';
 
 const ROUTE_LABELS = {
   '/admin': 'Trang chủ',
@@ -33,6 +34,14 @@ const Header = ({ onToggleSidebar }) => {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     setUser(userData || {});
+    
+    if (userData.id) {
+      getDetailUserById(userData.id).then(res => {
+        if (res?.errCode === 0 && res.data?.image) {
+          setUser(prev => ({ ...prev, image: res.data.image }));
+        }
+      }).catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -82,7 +91,13 @@ const Header = ({ onToggleSidebar }) => {
       <div className="ap-header-right">
         <div ref={dropRef} style={{ position: 'relative' }}>
           <div className="ap-user-btn" onClick={() => setOpen(v => !v)}>
-            <div className="ap-avatar">{initials}</div>
+            <div className="ap-avatar" style={{ overflow: 'hidden' }}>
+              {user.image ? (
+                <img src={user.image} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                initials
+              )}
+            </div>
             <span className="ap-user-name">{fullName}</span>
             <div className="ap-online-dot" />
           </div>

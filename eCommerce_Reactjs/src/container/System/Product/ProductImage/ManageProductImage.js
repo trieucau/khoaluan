@@ -24,11 +24,13 @@ import {
   Link,
   Redirect,
   useParams,
+  useNavigate,
 } from 'react-router-dom';
 import AddImageModal from './AddImageModal';
 import AddSizeModal from './AddSizeModal';
 const ManageProductImage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [dataProductDetailImage, setdataProductDetailImage] = useState([]);
   const [dataProductDetailSize, setdataProductDetailSize] = useState([]);
   const [isOpen, setisOpen] = useState(false);
@@ -229,209 +231,224 @@ const ManageProductImage = () => {
     }
   };
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Thông tin chi tiết sản phẩm</h1>
-
-      <div>
-        <div className="card mb-4">
-          <div className="card-header">
-            <i className="fas fa-table me-1" />
-            Danh sách hình ảnh chi tiết sản phẩm
-            <div onClick={() => handleOpenModal()} className="float-right">
-              <i
-                style={{
-                  fontSize: '35px',
-                  cursor: 'pointer',
-                  color: '#0D6EFD',
-                }}
-                className="fas fa-plus-square"
-              ></i>
-            </div>
+    <div className="ap-page">
+      <div className="ap-page-header">
+        <div className="ap-page-header-row">
+          <div>
+            <h1 className="ap-page-title">Thông tin chi tiết sản phẩm</h1>
+            <div className="ap-page-subtitle">Quản lý hình ảnh và kích thước của sản phẩm</div>
           </div>
-          <div className="card-body">
-            <div className="table-responsive">
-              <table
-                className="table table-bordered"
-                style={{ border: '1' }}
-                width="100%"
-                cellspacing="0"
-              >
-                <thead>
-                  <tr>
-                    <th>STT</th>
-                    <th>Tên hình ảnh</th>
-                    <th>Hình ảnh</th>
-                    <th>Thao tác</th>
-                  </tr>
-                </thead>
+          <div>
+            <button className="ap-btn ap-btn-ghost" onClick={() => navigate(-1)}>
+              <i className="fas fa-arrow-left me-1"></i> Quay lại
+            </button>
+          </div>
+        </div>
+      </div>
 
-                <tbody>
-                  {dataProductDetailImage &&
-                    dataProductDetailImage.length > 0 &&
-                    dataProductDetailImage.map((item, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>{item.caption}</td>
-                          <td>
-                            <div
-                              onClick={() => openPreviewImage(item.image)}
-                              className="box-image"
-                              style={{ backgroundImage: `url(${item.image})` }}
-                            ></div>
-                          </td>
-                          <td>
-                            <span
+      <div className="ap-card mb-4">
+        <div className="ap-card-header">
+          <div className="ap-card-title">
+            <i className="fas fa-image me-2" /> Danh sách hình ảnh
+          </div>
+          <button className="ap-btn ap-btn-primary ap-btn-sm" onClick={() => handleOpenModal()}>
+            <i className="fas fa-plus"></i> Thêm hình ảnh
+          </button>
+        </div>
+        <div className="ap-card-body p-0">
+          <div className="ap-table-wrap">
+            <table className="ap-table">
+              <thead>
+                <tr>
+                  <th>STT</th>
+                  <th>Tên hình ảnh</th>
+                  <th>Hình ảnh</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dataProductDetailImage && dataProductDetailImage.length > 0 ? (
+                  dataProductDetailImage.map((item, index) => {
+                    return (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{item.caption}</td>
+                        <td>
+                          <div
+                            onClick={() => openPreviewImage(item.image)}
+                            className="box-image shadow-sm"
+                            style={{ backgroundImage: `url(${item.image})` }}
+                            title="Nhấp để xem lớn"
+                          ></div>
+                        </td>
+                        <td>
+                          <div className="d-flex gap-2">
+                            <button
+                              className="ap-btn ap-btn-ghost ap-btn-sm"
                               onClick={() => handleEditProductImage(item.id)}
-                              style={{ color: '#0E6DFE', cursor: 'pointer' }}
                             >
-                              Edit
-                            </span>
-                            &nbsp; &nbsp;
-                            <span
+                              <i className="fas fa-edit"></i>
+                            </button>
+                            <button
+                              className="ap-btn ap-btn-ghost ap-btn-sm text-danger"
                               onClick={() => handleDeleteProductImage(item.id)}
-                              style={{ color: '#0E6DFE', cursor: 'pointer' }}
                             >
-                              Delete
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <AddImageModal
-            isOpenModal={isOpenModal}
-            closeModal={closeModal}
-            sendDataFromModal={sendDataFromModal}
-            productImageId={productImageId}
-          />
-        </div>
-
-        {isOpen === true && (
-          <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />
-        )}
-        <ReactPaginate
-          previousLabel={'Quay lại'}
-          nextLabel={'Tiếp'}
-          breakLabel={'...'}
-          pageCount={count}
-          marginPagesDisplayed={3}
-          containerClassName={'pagination justify-content-center'}
-          pageClassName={'page-item'}
-          pageLinkClassName={'page-link'}
-          previousLinkClassName={'page-link'}
-          nextClassName={'page-item'}
-          nextLinkClassName={'page-link'}
-          breakLinkClassName={'page-link'}
-          breakClassName={'page-item'}
-          activeClassName={'active'}
-          onPageChange={handleChangePage}
-        />
-      </div>
-
-      <div>
-        <div className="card mb-4">
-          <div className="card-header">
-            <i className="fas fa-table me-1" />
-            Danh sách kích thước chi tiết sản phẩm
-            <div onClick={() => handleOpenModalSize()} className="float-right">
-              <i
-                style={{
-                  fontSize: '35px',
-                  cursor: 'pointer',
-                  color: '#0D6EFD',
-                }}
-                className="fas fa-plus-square"
-              ></i>
-            </div>
-          </div>
-          <div className="card-body">
-            <div className="table-responsive">
-              <table
-                className="table table-bordered"
-                style={{ border: '1' }}
-                width="100%"
-                cellspacing="0"
-              >
-                <thead>
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
                   <tr>
-                    <th>STT</th>
-                    <th>Kích thước</th>
-                    <th>Chiều rộng</th>
-                    <th>Chiều dài</th>
-                    <th>Khối lượng</th>
-                    <th>Số lượng tồn</th>
-                    <th>Thao tác</th>
+                    <td colSpan="4" className="text-center py-4">
+                      <div className="ap-empty">
+                        <i className="fas fa-images ap-empty-icon"></i>
+                        <div className="ap-empty-title">Chưa có hình ảnh nào</div>
+                        <div className="ap-empty-desc">Vui lòng thêm hình ảnh mới cho sản phẩm này</div>
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-
-                <tbody>
-                  {dataProductDetailSize &&
-                    dataProductDetailSize.length > 0 &&
-                    dataProductDetailSize.map((item, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>{item.sizeData.value}</td>
-                          <td>{item.width}</td>
-                          <td>{item.height}</td>
-                          <td>{item.weight}</td>
-                          <td>{item.stock}</td>
-                          <td>
-                            <span
-                              onClick={() => handleEditProductSize(item.id)}
-                              style={{ color: '#0E6DFE', cursor: 'pointer' }}
-                            >
-                              Edit
-                            </span>
-                            &nbsp; &nbsp;
-                            <span
-                              onClick={() => handleDeleteProductSize(item.id)}
-                              style={{ color: '#0E6DFE', cursor: 'pointer' }}
-                            >
-                              Delete
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            </div>
+                )}
+              </tbody>
+            </table>
           </div>
-
-          <AddSizeModal
-            isOpenModal={isOpenModalSize}
-            closeModal={closeModalSize}
-            sendDataFromModalSize={sendDataFromModalSize}
-            productSizeId={productSizeId}
-          />
         </div>
-
-        {isOpen === true && (
-          <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />
+        {count > 1 && (
+          <div className="card-footer bg-transparent border-0 d-flex justify-content-center py-3">
+            <ReactPaginate
+              previousLabel={'<'}
+              nextLabel={'>'}
+              breakLabel={'...'}
+              pageCount={count}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={3}
+              containerClassName={'ap-pagination'}
+              pageClassName={'ap-page-item'}
+              pageLinkClassName={''}
+              previousClassName={'ap-page-item'}
+              previousLinkClassName={''}
+              nextClassName={'ap-page-item'}
+              nextLinkClassName={''}
+              breakClassName={'ap-page-item'}
+              breakLinkClassName={''}
+              activeClassName={'ap-page-active'}
+              onPageChange={handleChangePage}
+            />
+          </div>
         )}
-        <ReactPaginate
-          previousLabel={'Quay lại'}
-          nextLabel={'Tiếp'}
-          breakLabel={'...'}
-          pageCount={countSize}
-          marginPagesDisplayed={3}
-          containerClassName={'pagination justify-content-center'}
-          pageClassName={'page-item'}
-          pageLinkClassName={'page-link'}
-          previousLinkClassName={'page-link'}
-          nextClassName={'page-item'}
-          nextLinkClassName={'page-link'}
-          breakLinkClassName={'page-link'}
-          breakClassName={'page-item'}
-          activeClassName={'active'}
-          onPageChange={handleChangePageProductSize}
-        />
       </div>
+
+      <div className="ap-card mb-4">
+        <div className="ap-card-header">
+          <div className="ap-card-title">
+            <i className="fas fa-ruler-combined me-2" /> Danh sách kích thước
+          </div>
+          <button className="ap-btn ap-btn-primary ap-btn-sm" onClick={() => handleOpenModalSize()}>
+            <i className="fas fa-plus"></i> Thêm kích thước
+          </button>
+        </div>
+        <div className="ap-card-body p-0">
+          <div className="ap-table-wrap">
+            <table className="ap-table">
+              <thead>
+                <tr>
+                  <th>STT</th>
+                  <th>Kích thước</th>
+                  <th>Chiều rộng</th>
+                  <th>Chiều dài</th>
+                  <th>Khối lượng</th>
+                  <th>Số lượng tồn</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dataProductDetailSize && dataProductDetailSize.length > 0 ? (
+                  dataProductDetailSize.map((item, index) => {
+                    return (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td><span className="ap-badge ap-badge-indigo">{item.sizeData.value}</span></td>
+                        <td>{item.width}</td>
+                        <td>{item.height}</td>
+                        <td>{item.weight}</td>
+                        <td><span className={item.stock > 0 ? 'text-success fw-bold' : 'text-danger fw-bold'}>{item.stock}</span></td>
+                        <td>
+                          <div className="d-flex gap-2">
+                            <button
+                              className="ap-btn ap-btn-ghost ap-btn-sm"
+                              onClick={() => handleEditProductSize(item.id)}
+                            >
+                              <i className="fas fa-edit"></i>
+                            </button>
+                            <button
+                              className="ap-btn ap-btn-ghost ap-btn-sm text-danger"
+                              onClick={() => handleDeleteProductSize(item.id)}
+                            >
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="text-center py-4">
+                      <div className="ap-empty">
+                        <i className="fas fa-box-open ap-empty-icon"></i>
+                        <div className="ap-empty-title">Chưa có kích thước nào</div>
+                        <div className="ap-empty-desc">Vui lòng thêm kích thước mới cho sản phẩm này</div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {countSize > 1 && (
+          <div className="card-footer bg-transparent border-0 d-flex justify-content-center py-3">
+            <ReactPaginate
+              previousLabel={'<'}
+              nextLabel={'>'}
+              breakLabel={'...'}
+              pageCount={countSize}
+              marginPagesDisplayed={2}
+              pageRangeDisplayed={3}
+              containerClassName={'ap-pagination'}
+              pageClassName={'ap-page-item'}
+              pageLinkClassName={''}
+              previousClassName={'ap-page-item'}
+              previousLinkClassName={''}
+              nextClassName={'ap-page-item'}
+              nextLinkClassName={''}
+              breakClassName={'ap-page-item'}
+              breakLinkClassName={''}
+              activeClassName={'ap-page-active'}
+              onPageChange={handleChangePageProductSize}
+            />
+          </div>
+        )}
+      </div>
+
+      <AddImageModal
+        isOpenModal={isOpenModal}
+        closeModal={closeModal}
+        sendDataFromModal={sendDataFromModal}
+        productImageId={productImageId}
+      />
+      <AddSizeModal
+        isOpenModal={isOpenModalSize}
+        closeModal={closeModalSize}
+        sendDataFromModalSize={sendDataFromModalSize}
+        productSizeId={productSizeId}
+      />
+
+      {isOpen === true && (
+        <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />
+      )}
     </div>
   );
 };

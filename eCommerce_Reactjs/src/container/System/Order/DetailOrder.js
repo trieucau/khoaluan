@@ -93,15 +93,21 @@ function DetailOrder() {
                     const name = `${item.product.name} - ${item.productDetail.nameDetail} - ${item.productDetailSize?.sizeData?.value}`;
                     return (
                       <tr key={idx}>
-                        <td colSpan={4} style={{padding:0, border:'none'}}>
-                          <ShopCartItem
-                            isOrder={true} id={item.id}
-                            productdetailsizeId={item.productDetailSize?.id}
-                            name={name}
-                            price={item.productDetail.discountPrice}
-                            quantity={item.quantity}
-                            image={item.productImage?.[0]?.image}
-                          />
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 'var(--ap-radius-sm)', overflow: 'hidden', border: '1px solid var(--ap-border)', background: '#fff' }}>
+                              <img src={item.productImage?.[0]?.image} alt={name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ap-text)', lineHeight: 1.4 }}>{item.product.name}</span>
+                              <span style={{ fontSize: 11, color: 'var(--ap-text-muted)' }}>{item.productDetail.nameDetail} — {item.productDetailSize?.sizeData?.value}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ fontSize: 13, color: 'var(--ap-text-dim)' }}>{CommonUtils.formatter.format(item.productDetail.discountPrice)}</td>
+                        <td style={{ textAlign: 'center', fontSize: 13, fontWeight: 600 }}>{item.quantity}</td>
+                        <td style={{ textAlign: 'right', fontSize: 13, fontWeight: 700, color: 'var(--ap-success)' }}>
+                          {CommonUtils.formatter.format(item.quantity * item.productDetail.discountPrice)}
                         </td>
                       </tr>
                     );
