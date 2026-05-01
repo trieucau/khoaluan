@@ -20,11 +20,7 @@ let getCountCardStatistic = () => {
           star: { [Op.gt]: 0 },
         },
       });
-      let countOrder = await db.OrderProduct.count({
-        where: {
-          statusId: { [Op.ne]: 'S7' },
-        },
-      });
+      let countOrder = await db.OrderProduct.count();
       let data = {
         countUser,
         countProduct,

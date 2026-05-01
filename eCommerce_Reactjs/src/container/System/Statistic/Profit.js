@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getStatisticProfit } from '../../../services/userService';
 import { Link } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
@@ -11,32 +11,38 @@ const Profit = () => {
   const [data, setData] = useState([]);
   const [dataExport, setDataExport] = useState([]);
   const [stats, setStats] = useState({ actualRevenue: 0, actualImport: 0, actualProfit: 0, deliveredOrders: 0 });
-  const [type, setType] = useState('day');
-  const [dateRange, setDateRange] = useState([null, null]);
+  const [type, setType] = useState('year');
+  const [dateRange, setDateRange] = useState([new Date(), new Date()]);
   const [startDate, endDate] = dateRange;
   const [dateTime, setDateTime] = useState(new Date());
   const [loading, setLoading] = useState(false);
 
-  const handleFilter = async () => {
-    setLoading(true);
-    try {
-      const res = await getStatisticProfit({ oneDate: type === 'day' ? startDate : dateTime, twoDate: endDate, type });
-      if (res?.errCode === 0) {
-        let actualRevenue = 0, actualImport = 0, actualProfit = 0, deliveredOrders = 0;
-        const exported = res.data.map(item => {
-          const status = item.statusOrderData?.value;
-          if (status === 'Đã giao' || status === 'Đã giao hàng') {
-            actualRevenue += item.totalpriceProduct;
-            actualImport += item.importPrice;
-            actualProfit += item.profitPrice;
-            deliveredOrders++;
-          }
-          return { id: item.id, createdAt: moment.utc(item.createdAt).local().format('DD/MM/YYYY HH:mm'), typeShip: item.typeShipData?.type, codeVoucher: item.voucherData?.codeVoucher, paymentType: item.isPaymentOnlien === 0 ? 'Tiền mặt' : 'Online', statusOrder: item.statusOrderData?.value, totalpriceProduct: item.totalpriceProduct, importPrice: item.importPrice, profitPrice: item.profitPrice };
-        });
-        setData(res.data); setDataExport(exported); setStats({ actualRevenue, actualImport, actualProfit, deliveredOrders });
-      }
-    } finally { setLoading(false); }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      if (type === 'day' && (!startDate || !endDate)) return;
+      if ((type === 'month' || type === 'year') && !dateTime) return;
+
+      setLoading(true);
+      try {
+        const res = await getStatisticProfit({ oneDate: type === 'day' ? startDate : dateTime, twoDate: endDate, type });
+        if (res?.errCode === 0) {
+          let actualRevenue = 0, actualImport = 0, actualProfit = 0, deliveredOrders = 0;
+          const exported = res.data.map(item => {
+            const status = item.statusOrderData?.value;
+            if (status === 'Đã giao' || status === 'Đã giao hàng') {
+              actualRevenue += item.totalpriceProduct;
+              actualImport += item.importPrice;
+              actualProfit += item.profitPrice;
+              deliveredOrders++;
+            }
+            return { id: item.id, createdAt: moment.utc(item.createdAt).local().format('DD/MM/YYYY HH:mm'), typeShip: item.typeShipData?.type, codeVoucher: item.voucherData?.codeVoucher, paymentType: item.isPaymentOnlien === 0 ? 'Tiền mặt' : 'Online', statusOrder: item.statusOrderData?.value, totalpriceProduct: item.totalpriceProduct, importPrice: item.importPrice, profitPrice: item.profitPrice };
+          });
+          setData(res.data); setDataExport(exported); setStats({ actualRevenue, actualImport, actualProfit, deliveredOrders });
+        }
+      } finally { setLoading(false); }
+    };
+    fetchData();
+  }, [type, startDate, endDate, dateTime]);
 
   const fmt = v => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v);
 
@@ -45,7 +51,7 @@ const Profit = () => {
       <PageHeader title="💹 Thống kê lợi nhuận" subtitle="Phân tích lợi nhuận theo ngày / tháng / năm"
         actions={data.length > 0 && <button className="ap-btn ap-btn-success" onClick={() => CommonUtils.exportExcel(dataExport, 'Lợi nhuận', 'Profit')}>📊 Xuất Excel</button>}
       />
-      <div className="ap-card" style={{ marginBottom: 20 }}>
+      <div className="ap-card" style={{ marginBottom: 20, position: 'relative', zIndex: 10 }}>
         <div className="ap-card-body">
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap' }}>
             <div className="ap-form-group" style={{ minWidth: 160 }}>
@@ -57,26 +63,24 @@ const Profit = () => {
               </select>
             </div>
             {type === 'day' && (
-              <div className="ap-form-group" style={{ minWidth: 220 }}>
+              <div className="ap-form-group" style={{ minWidth: 280 }}>
                 <label className="ap-label">Khoảng ngày</label>
-                <DatePicker className="ap-input" selectsRange startDate={startDate} endDate={endDate} onChange={setDateRange} isClearable dateFormat="dd/MM/yyyy" placeholderText="Chọn khoảng ngày" />
+                <DatePicker className="ap-input" selectsRange startDate={startDate} endDate={endDate} onChange={setDateRange} isClearable dateFormat="dd/MM/yyyy" placeholderText="Chọn khoảng ngày" popperPlacement="bottom-start" portalId="root" />
               </div>
             )}
             {type === 'month' && (
               <div className="ap-form-group">
                 <label className="ap-label">Chọn tháng</label>
-                <DatePicker className="ap-input" selected={dateTime} onChange={setDateTime} dateFormat="MM/yyyy" showMonthYearPicker />
+                <DatePicker className="ap-input" selected={dateTime} onChange={setDateTime} dateFormat="MM/yyyy" showMonthYearPicker popperPlacement="bottom-start" portalId="root" />
               </div>
             )}
             {type === 'year' && (
               <div className="ap-form-group">
                 <label className="ap-label">Chọn năm</label>
-                <DatePicker className="ap-input" selected={dateTime} onChange={setDateTime} dateFormat="yyyy" showYearPicker />
+                <DatePicker className="ap-input" selected={dateTime} onChange={setDateTime} dateFormat="yyyy" showYearPicker popperPlacement="bottom-start" portalId="root" />
               </div>
             )}
-            <button className="ap-btn ap-btn-primary" onClick={handleFilter} disabled={loading} style={{ height: 40, alignSelf: 'flex-end', marginBottom: 2 }}>
-              {loading ? '⏳...' : '🔍 Lọc'}
-            </button>
+            {/* Removed the manual filter button */}
           </div>
         </div>
       </div>
@@ -122,7 +126,7 @@ const Profit = () => {
             </thead>
             <tbody>
               {loading ? <SkeletonRows cols={9} /> :
-                data.length === 0 ? <EmptyState icon="💹" title="Chọn khoảng thời gian và nhấn Lọc" /> :
+                data.length === 0 ? <EmptyState icon="💹" title="Không có dữ liệu" desc="Chưa có dữ liệu thống kê trong khoảng thời gian này" /> :
                   data.map((item, idx) => {
                     const profit = item.profitPrice;
                     const status = item.statusOrderData?.value;

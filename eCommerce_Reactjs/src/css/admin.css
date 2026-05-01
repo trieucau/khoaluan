@@ -548,3 +548,7 @@
 }
 
 
+
+/* Fix DatePicker */
+.react-datepicker-wrapper { width: 100%; display: block; }
+.react-datepicker-popper { z-index: 99999 !important; }

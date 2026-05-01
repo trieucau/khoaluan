@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getStatisticOverturn } from '../../../services/userService';
 import { Link } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
@@ -17,49 +17,56 @@ const Turnover = () => {
   const [data, setData] = useState([]);
   const [dataExport, setDataExport] = useState([]);
   const [stats, setStats] = useState({ actual: 0, pending: 0, cancelled: 0, totalOrders: 0, deliveredOrders: 0, cancelledOrders: 0 });
-  const [type, setType] = useState('day');
-  const [dateRange, setDateRange] = useState([null, null]);
+  const [type, setType] = useState('year');
+  const [dateRange, setDateRange] = useState([new Date(), new Date()]);
   const [startDate, endDate] = dateRange;
   const [dateTime, setDateTime] = useState(new Date());
   const [loading, setLoading] = useState(false);
 
-  const handleFilter = async () => {
-    setLoading(true);
-    try {
-      const res = await getStatisticOverturn({ oneDate: type === 'day' ? startDate : dateTime, twoDate: endDate, type });
-      if (res?.errCode === 0) {
-        let actual = 0, pending = 0, cancelled = 0;
-        let deliveredOrders = 0, cancelledOrders = 0;
-        
-        res.data.forEach(item => {
-           const status = item.statusOrderData?.value;
-           const price = item.totalpriceProduct;
-           if (status === 'Đã giao' || status === 'Đã giao hàng') {
-               actual += price;
-               deliveredOrders++;
-           }
-           else if (status === 'Đã hủy' || status === 'Đã huỷ') {
-               cancelled += price;
-               cancelledOrders++;
-           }
-           else pending += price;
-        });
+  useEffect(() => {
+    const fetchData = async () => {
+      if (type === 'day' && (!startDate || !endDate)) return;
+      if ((type === 'month' || type === 'year') && !dateTime) return;
 
-        setStats({ actual, pending, cancelled, totalOrders: res.data.length, deliveredOrders, cancelledOrders });
-        setData(res.data);
-        setDataExport(res.data.map(item => ({
-          id: item.id,
-          createdAt: moment.utc(item.createdAt).local().format('DD/MM/YYYY HH:mm:ss'),
-          updatedAt: moment.utc(item.updatedAt).local().format('DD/MM/YYYY HH:mm:ss'),
-          typeShip: item.typeShipData?.type,
-          codeVoucher: item.voucherData?.codeVoucher,
-          paymentType: item.isPaymentOnlien === 0 ? 'Tiền mặt' : 'Online',
-          statusOrder: item.statusOrderData?.value,
-          totalpriceProduct: item.totalpriceProduct,
-        })));
-      }
-    } finally { setLoading(false); }
-  };
+      setLoading(true);
+      try {
+        const res = await getStatisticOverturn({ oneDate: type === 'day' ? startDate : dateTime, twoDate: endDate, type });
+        if (res?.errCode === 0) {
+          let actual = 0, pending = 0, cancelled = 0;
+          let deliveredOrders = 0, cancelledOrders = 0;
+          
+          res.data.forEach(item => {
+             const status = item.statusOrderData?.value;
+             const price = item.totalpriceProduct;
+             if (status === 'Đã giao' || status === 'Đã giao hàng') {
+                 actual += price;
+                 deliveredOrders++;
+             }
+             else if (status === 'Đã hủy' || status === 'Đã huỷ') {
+                 cancelled += price;
+                 cancelledOrders++;
+             }
+             else pending += price;
+          });
+
+          setStats({ actual, pending, cancelled, totalOrders: res.data.length, deliveredOrders, cancelledOrders });
+          setData(res.data);
+          setDataExport(res.data.map(item => ({
+            id: item.id,
+            createdAt: moment.utc(item.createdAt).local().format('DD/MM/YYYY HH:mm:ss'),
+            updatedAt: moment.utc(item.updatedAt).local().format('DD/MM/YYYY HH:mm:ss'),
+            typeShip: item.typeShipData?.type,
+            codeVoucher: item.voucherData?.codeVoucher,
+            paymentType: item.isPaymentOnlien === 0 ? 'Tiền mặt' : 'Online',
+            statusOrder: item.statusOrderData?.value,
+            totalpriceProduct: item.totalpriceProduct,
+          })));
+        }
+      } finally { setLoading(false); }
+    };
+
+    fetchData();
+  }, [type, startDate, endDate, dateTime]);
 
   return (
     <div className="ap-page">
@@ -68,7 +75,7 @@ const Turnover = () => {
       />
 
       {/* Filter toolbar */}
-      <div className="ap-card" style={{ marginBottom: 20 }}>
+      <div className="ap-card" style={{ marginBottom: 20, position: 'relative', zIndex: 10 }}>
         <div className="ap-card-body">
           <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap' }}>
             <div className="ap-form-group" style={{ minWidth: 160 }}>
@@ -80,28 +87,25 @@ const Turnover = () => {
               </select>
             </div>
             {type === 'day' && (
-              <div className="ap-form-group" style={{ minWidth: 220 }}>
+              <div className="ap-form-group" style={{ minWidth: 280 }}>
                 <label className="ap-label">Khoảng ngày</label>
                 <DatePicker className="ap-input" selectsRange startDate={startDate} endDate={endDate}
-                  onChange={setDateRange} isClearable dateFormat="dd/MM/yyyy" placeholderText="Chọn khoảng ngày" />
+                  onChange={setDateRange} isClearable dateFormat="dd/MM/yyyy" placeholderText="Chọn khoảng ngày" popperPlacement="bottom-start" portalId="root" />
               </div>
             )}
             {type === 'month' && (
               <div className="ap-form-group">
                 <label className="ap-label">Chọn tháng</label>
-                <DatePicker className="ap-input" selected={dateTime} onChange={setDateTime} dateFormat="MM/yyyy" showMonthYearPicker placeholderText="Tháng/Năm" />
+                <DatePicker className="ap-input" selected={dateTime} onChange={setDateTime} dateFormat="MM/yyyy" showMonthYearPicker placeholderText="Tháng/Năm" popperPlacement="bottom-start" portalId="root" />
               </div>
             )}
             {type === 'year' && (
               <div className="ap-form-group">
                 <label className="ap-label">Chọn năm</label>
-                <DatePicker className="ap-input" selected={dateTime} onChange={setDateTime} dateFormat="yyyy" showYearPicker placeholderText="Năm" />
+                <DatePicker className="ap-input" selected={dateTime} onChange={setDateTime} dateFormat="yyyy" showYearPicker placeholderText="Năm" popperPlacement="bottom-start" portalId="root" />
               </div>
             )}
-            <button className="ap-btn ap-btn-primary" onClick={handleFilter} disabled={loading}
-              style={{ height: 40, alignSelf: 'flex-end', marginBottom: 2 }}>
-              {loading ? '⏳...' : '🔍 Lọc dữ liệu'}
-            </button>
+            {/* Removed the manual filter button */}
           </div>
         </div>
       </div>
@@ -142,7 +146,7 @@ const Turnover = () => {
             </thead>
             <tbody>
               {loading ? <SkeletonRows cols={8} /> :
-                data.length === 0 ? <EmptyState icon="📈" title="Chọn khoảng thời gian và nhấn Lọc" desc="Kết quả thống kê sẽ hiển thị tại đây" /> :
+                data.length === 0 ? <EmptyState icon="📈" title="Không có dữ liệu" desc="Chưa có dữ liệu thống kê trong khoảng thời gian này" /> :
                   data.map((item, idx) => {
                     const status = item.statusOrderData?.value;
                     const isSuccess = status === 'Đã giao' || status === 'Đã giao hàng';
