@@ -80,10 +80,10 @@ const Home = () => {
   };
 
   const STATS = [
-    { label: 'Tổng đơn hàng', value: CountCard.countOrder, icon: '📦', color: 'indigo', to: '/admin/list-order' },
-    { label: 'Đánh giá', value: CountCard.countReview, icon: '⭐', color: 'purple', to: null },
-    { label: 'Sản phẩm', value: CountCard.countProduct, icon: '🛍️', color: 'green', to: '/admin/list-product' },
-    { label: 'Thành viên', value: CountCard.countUser, icon: '👥', color: 'amber', to: '/admin/list-user' },
+    { label: 'Tổng đơn hàng', value: CountCard.countOrder, icon: <i className="fa-solid fa-box"></i>, color: 'indigo', to: '/admin/list-order' },
+    { label: 'Đánh giá', value: CountCard.countReview, icon: <i className="fa-solid fa-star"></i>, color: 'purple', to: null },
+    { label: 'Sản phẩm', value: CountCard.countProduct, icon: <i className="fa-solid fa-bag-shopping"></i>, color: 'green', to: '/admin/list-product' },
+    { label: 'Thành viên', value: CountCard.countUser, icon: <i className="fa-solid fa-users"></i>, color: 'amber', to: '/admin/list-user' },
   ];
 
   const dataLine = {
@@ -131,7 +131,7 @@ const Home = () => {
   return (
     <div className="ap-page">
       <div className="ap-page-header">
-        <div className="ap-page-title">📊 Tổng quan hệ thống</div>
+        <div className="ap-page-title"><i className="fa-solid fa-gauge" style={{marginRight: 8}}></i>Tổng quan hệ thống</div>
         <div className="ap-page-subtitle">Thống kê và báo cáo hoạt động kinh doanh</div>
       </div>
 
@@ -240,7 +240,7 @@ const Home = () => {
           {/* Bar Chart */}
           <div className="ap-card" style={{ gridColumn: isMobile ? '1' : 'span 5', order: isMobile ? 4 : 4, margin: 0, minWidth: 0 }}>
             <div className="ap-card-header" style={{ padding: '12px 16px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 10, justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center' }}>
-              <span className="ap-card-title" style={{ fontSize: 14 }}>📊 Doanh thu theo ngày</span>
+              <span className="ap-card-title" style={{ fontSize: 14 }}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Doanh thu theo ngày</span>
               <div className="ap-chart-toolbar" style={{ margin: 0, gap: 8, display: 'flex', width: isMobile ? '100%' : '140px', justifyContent: isMobile ? 'flex-end' : 'flex-end' }}>
                 <div className="ap-datepicker-wrap" style={{ width: '100%', display: 'flex' }}>
                   <DatePicker 

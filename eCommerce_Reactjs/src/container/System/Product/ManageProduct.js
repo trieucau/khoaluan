@@ -70,11 +70,11 @@ const ManageProduct = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">🛍️ Quản lý sản phẩm</div>
+            <div className="ap-page-title"><i className="fa-solid fa-bag-shopping" style={{marginRight: 8}}></i>Quản lý sản phẩm</div>
             <div className="ap-page-subtitle">Danh sách toàn bộ sản phẩm trong hệ thống</div>
           </div>
           <div style={{ display:'flex', gap:10 }}>
-            <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+            <button className="ap-btn ap-btn-success" onClick={handleExport}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>
             <Link to="/admin/add-product" className="ap-btn ap-btn-primary">+ Thêm sản phẩm</Link>
           </div>
         </div>
@@ -83,7 +83,7 @@ const ManageProduct = () => {
       <div className="ap-card">
         <div className="ap-toolbar">
           <div className="ap-search-bar">
-            <span style={{ color:'var(--ap-text-dim)' }}>🔍</span>
+            <span style={{ color:'var(--ap-text-dim)' }}><i className="fa-solid fa-magnifying-glass"></i></span>
             <input
               value={keyword}
               onChange={e => setKeyword(e.target.value)}
@@ -108,7 +108,7 @@ const ManageProduct = () => {
               {loading ? <SkeletonRows /> : dataProduct.length === 0 ? (
                 <tr><td colSpan={8} style={{ padding:0, border:'none' }}>
                   <div className="ap-empty">
-                    <div className="ap-empty-icon">🛍️</div>
+                    <div className="ap-empty-icon"><i className="fa-solid fa-bag-shopping" style={{marginRight: 8}}></i></div>
                     <div className="ap-empty-title">Không tìm thấy sản phẩm</div>
                     <div className="ap-empty-desc">Thử thay đổi từ khóa tìm kiếm</div>
                   </div>
@@ -137,8 +137,8 @@ const ManageProduct = () => {
                     <td><span className={`ap-badge ${sc.cls}`}>{sc.label}</span></td>
                     <td>
                       <div style={{ display:'flex', gap:5, justifyContent:'center', flexWrap:'wrap' }}>
-                        <Link to={`/admin/list-product-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">📋 Chi tiết</Link>
-                        <Link to={`/admin/edit-product/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️</Link>
+                        <Link to={`/admin/list-product-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-list-check" style={{marginRight: 8}}></i>Chi tiết</Link>
+                        <Link to={`/admin/edit-product/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-pen-to-square"></i></Link>
                         {isActive
                           ? <button className="ap-btn ap-btn-warning ap-btn-sm" onClick={() => handleBan(item.id)}>🚫 Ẩn</button>
                           : <button className="ap-btn ap-btn-success ap-btn-sm" onClick={() => handleActive(item.id)}>✅ Hiện</button>

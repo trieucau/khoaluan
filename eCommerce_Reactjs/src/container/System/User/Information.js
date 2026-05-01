@@ -64,7 +64,7 @@ const Information = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">👤 Thông tin cá nhân</div>
+            <div className="ap-page-title"><i className="fa-solid fa-user" style={{marginRight: 8}}></i>Thông tin cá nhân</div>
             <div className="ap-page-subtitle">Xem và cập nhật thông tin tài khoản Admin</div>
           </div>
           <Link to="/admin" className="ap-btn ap-btn-ghost">← Dashboard</Link>
@@ -101,7 +101,7 @@ const Information = () => {
             )}
             <div style={{ marginTop: 12 }}>
               <span className={`ap-badge ${values.roleId === 'R1' ? 'ap-badge-indigo' : 'ap-badge-cyan'}`}>
-                {values.roleId === 'R1' ? '👑 Admin' : values.roleId === 'R2' ? '📦 Shipper' : '👤 User'}
+                {values.roleId === 'R1' ? '👑 Admin' : values.roleId === 'R2' ? <><i className="fa-solid fa-box" style={{marginRight: 8}}></i>Shipper</> : <><i className="fa-solid fa-user" style={{marginRight: 8}}></i>User</>}
               </span>
             </div>
           </div>
@@ -109,7 +109,7 @@ const Information = () => {
 
         {/* Form panel */}
         <div className="ap-card">
-          <div className="ap-card-header"><span className="ap-card-title">📝 Chỉnh sửa thông tin</span></div>
+          <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-pen-to-square" style={{marginRight: 8}}></i>Chỉnh sửa thông tin</span></div>
           <div className="ap-card-body">
             <div className="ap-form-row">
               <div className="ap-form-group">

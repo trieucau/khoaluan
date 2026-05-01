@@ -59,7 +59,7 @@ const AddProduct = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">🛍️ Thêm sản phẩm mới</div>
+            <div className="ap-page-title"><i className="fa-solid fa-bag-shopping" style={{marginRight: 8}}></i>Thêm sản phẩm mới</div>
             <div className="ap-page-subtitle">Tạo sản phẩm với đầy đủ thông tin, phân loại và hình ảnh</div>
           </div>
           <Link to="/admin/list-product" className="ap-btn ap-btn-ghost">← Danh sách sản phẩm</Link>
@@ -71,7 +71,7 @@ const AddProduct = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Basic info */}
           <div className="ap-card">
-            <div className="ap-card-header"><span className="ap-card-title">📋 Thông tin cơ bản</span></div>
+            <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-list-check" style={{marginRight: 8}}></i>Thông tin cơ bản</span></div>
             <div className="ap-card-body">
               <div className="ap-form-row">
                 <div className="ap-form-group" style={{ flex: 2 }}>
@@ -110,7 +110,7 @@ const AddProduct = () => {
 
           {/* Markdown description */}
           <div className="ap-card">
-            <div className="ap-card-header"><span className="ap-card-title">📝 Mô tả chi tiết (Markdown)</span></div>
+            <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-pen-to-square" style={{marginRight: 8}}></i>Mô tả chi tiết (Markdown)</span></div>
             <div className="ap-card-body" style={{ padding: 0 }}>
               <div style={{ borderRadius: 'var(--ap-radius-sm)', overflow: 'hidden' }}>
                 <MdEditor style={{ height: 360 }} renderHTML={t => mdParser.render(t)}
@@ -148,8 +148,7 @@ const AddProduct = () => {
                 </div>
               </div>
               {discountPct > 0 && (
-                <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#6ee7b7' }}>
-                  🏷️ Giảm <strong>{discountPct}%</strong> — tiết kiệm {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(values.originalPrice - values.discountPrice)}
+                <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#6ee7b7' }}><i className="fa-solid fa-tags" style={{marginRight: 8}}></i>Giảm <strong>{discountPct}%</strong> — tiết kiệm {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(values.originalPrice - values.discountPrice)}
                 </div>
               )}
             </div>
@@ -178,7 +177,7 @@ const AddProduct = () => {
 
           {/* Image */}
           <div className="ap-card">
-            <div className="ap-card-header"><span className="ap-card-title">🖼️ Hình ảnh sản phẩm</span></div>
+            <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-image" style={{marginRight: 8}}></i>Hình ảnh sản phẩm</span></div>
             <div className="ap-card-body">
               <input type="file" id="prodImg" accept=".jpg,.png,.webp" hidden onChange={handleImageChange} />
               <label htmlFor="prodImg" className="ap-btn ap-btn-ghost" style={{ width: '100%', justifyContent: 'center', cursor: 'pointer' }}>

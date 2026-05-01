@@ -114,10 +114,10 @@ const ManageOrder = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">📦 Quản lý đơn hàng</div>
+            <div className="ap-page-title"><i className="fa-solid fa-box" style={{marginRight: 8}}></i>Quản lý đơn hàng</div>
             <div className="ap-page-subtitle">Theo dõi và quản lý tất cả đơn đặt hàng</div>
           </div>
-          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>
         </div>
       </div>
 
@@ -125,7 +125,7 @@ const ManageOrder = () => {
         {/* Toolbar */}
         <div className="ap-toolbar">
           <div className="ap-search-bar">
-            <span style={{ color: 'var(--ap-text-dim)' }}>🔍</span>
+            <span style={{ color: 'var(--ap-text-dim)' }}><i className="fa-solid fa-magnifying-glass"></i></span>
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm theo mã đơn, email, SĐT..." />
             {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', color: 'var(--ap-text-dim)', cursor: 'pointer', fontSize: 16 }}>×</button>}
           </div>
@@ -195,7 +195,7 @@ const ManageOrder = () => {
                       {item.shipperData ? `${item.shipperData.firstName} ${item.shipperData.lastName}` : <span style={{ color: 'var(--ap-text-dim)' }}>Chưa có</span>}
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <Link to={`/admin/order-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">🔍 Chi tiết</Link>
+                      <Link to={`/admin/order-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-magnifying-glass"></i>Chi tiết</Link>
                     </td>
                   </tr>
                 );

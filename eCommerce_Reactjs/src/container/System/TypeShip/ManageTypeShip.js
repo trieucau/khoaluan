@@ -37,9 +37,9 @@ const ManageTypeShip = () => {
 
   return (
     <div className="ap-page">
-      <PageHeader title="🚚 Quản lý loại giao hàng" subtitle="Cấu hình các loại hình vận chuyển"
+      <PageHeader title={<><i className="fa-solid fa-truck-fast" style={{marginRight: 8}}></i>Quản lý loại giao hàng</>} subtitle="Cấu hình các loại hình vận chuyển"
         actions={<>
-          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>
           <Link to="/admin/add-typeship" className="ap-btn ap-btn-primary">+ Thêm loại ship</Link>
         </>}
       />
@@ -49,7 +49,7 @@ const ManageTypeShip = () => {
           <table className="ap-table">
             <thead><tr><th>#</th><th>Tên loại giao hàng</th><th>Phí vận chuyển</th><th style={{ textAlign: 'center' }}>Thao tác</th></tr></thead>
             <tbody>
-              {loading ? <SkeletonRows cols={4} /> : data.length === 0 ? <EmptyState icon="🚚" title="Không có loại ship nào" /> :
+              {loading ? <SkeletonRows cols={4} /> : data.length === 0 ? <EmptyState icon={<><i className="fa-solid fa-truck-fast" style={{marginRight: 8}}></i></>} title="Không có loại ship nào" /> :
                 data.map((item, idx) => (
                   <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
                     <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
@@ -61,8 +61,8 @@ const ManageTypeShip = () => {
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-                        <Link to={`/admin/edit-typeship/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️ Sửa</Link>
-                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}>🗑️</button>
+                        <Link to={`/admin/edit-typeship/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-pen-to-square"></i>Sửa</Link>
+                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}><i className="fa-solid fa-trash"></i></button>
                       </div>
                     </td>
                   </tr>

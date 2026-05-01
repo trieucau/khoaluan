@@ -45,9 +45,9 @@ const ManageVoucher = () => {
 
   return (
     <div className="ap-page">
-      <PageHeader title="🏷️ Quản lý mã Voucher" subtitle="Danh sách mã giảm giá và khuyến mãi"
+      <PageHeader title={<><i className="fa-solid fa-tags" style={{marginRight: 8}}></i>Quản lý mã Voucher</>} subtitle="Danh sách mã giảm giá và khuyến mãi"
         actions={<>
-          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>
           <Link to="/admin/add-voucher" className="ap-btn ap-btn-primary">+ Thêm voucher</Link>
         </>}
       />
@@ -62,7 +62,7 @@ const ManageVoucher = () => {
               </tr>
             </thead>
             <tbody>
-              {loading ? <SkeletonRows cols={9} /> : data.length === 0 ? <EmptyState icon="🏷️" title="Không có voucher nào" /> :
+              {loading ? <SkeletonRows cols={9} /> : data.length === 0 ? <EmptyState icon={<><i className="fa-solid fa-tags" style={{marginRight: 8}}></i></>} title="Không có voucher nào" /> :
                 data.map((item, idx) => {
                   const expired = isExpired(item.toDate);
                   const used = item.usedAmount >= item.amount;
@@ -85,8 +85,8 @@ const ManageVoucher = () => {
                       <td><span className={`ap-badge ${status.cls}`}>{status.label}</span></td>
                       <td>
                         <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-                          <Link to={`/admin/edit-voucher/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️ Sửa</Link>
-                          <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}>🗑️</button>
+                          <Link to={`/admin/edit-voucher/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-pen-to-square"></i>Sửa</Link>
+                          <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}><i className="fa-solid fa-trash"></i></button>
                         </div>
                       </td>
                     </tr>

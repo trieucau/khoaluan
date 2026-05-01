@@ -70,7 +70,7 @@ const AddBlog = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">{isAdd ? '✍️ Tạo bài đăng' : '✏️ Chỉnh sửa bài đăng'}</div>
+            <div className="ap-page-title">{isAdd ? <><i className="fa-solid fa-pen-nib" style={{marginRight: 8}}></i>Tạo bài đăng</> : <><i className="fa-solid fa-pen-to-square"></i>Chỉnh sửa bài đăng</>}</div>
             <div className="ap-page-subtitle">{isAdd ? 'Viết bài blog mới' : 'Cập nhật nội dung bài viết'}</div>
           </div>
           <Link to="/admin/list-blog" className="ap-btn ap-btn-ghost">← Quay lại</Link>
@@ -78,7 +78,7 @@ const AddBlog = () => {
       </div>
 
       <div className="ap-card">
-        <div className="ap-card-header"><span className="ap-card-title">📝 Thông tin bài viết</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-pen-to-square" style={{marginRight: 8}}></i>Thông tin bài viết</span></div>
         <div className="ap-card-body">
           {/* Basic info row */}
           <div className="ap-form-row">

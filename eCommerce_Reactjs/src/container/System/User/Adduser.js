@@ -60,7 +60,7 @@ const Adduser = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">{isAdd ? '➕ Thêm người dùng' : '✏️ Cập nhật người dùng'}</div>
+            <div className="ap-page-title">{isAdd ? <><i className="fa-solid fa-plus" style={{marginRight: 6}}></i>Thêm người dùng</> : <><i className="fa-solid fa-pen-to-square"></i>Cập nhật người dùng</>}</div>
             <div className="ap-page-subtitle">{isAdd ? 'Tạo tài khoản người dùng mới' : `Chỉnh sửa thông tin người dùng`}</div>
           </div>
           <Link to="/admin/list-user" className="ap-btn ap-btn-ghost">← Quay lại</Link>
@@ -68,7 +68,7 @@ const Adduser = () => {
       </div>
 
       <div className="ap-card" style={{ maxWidth: 760 }}>
-        <div className="ap-card-header"><span className="ap-card-title">👤 Thông tin tài khoản</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-user" style={{marginRight: 8}}></i>Thông tin tài khoản</span></div>
         <div className="ap-card-body">
           {isAdd && (
             <div className="ap-form-row">

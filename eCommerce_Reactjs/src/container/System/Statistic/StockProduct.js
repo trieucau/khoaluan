@@ -42,29 +42,29 @@ const StockProduct = () => {
   };
 
   const stockBadge = (qty) => {
-    if (qty === 0) return <span className="ap-badge ap-badge-red" style={{ fontWeight: 700 }}>🚨 Hết hàng</span>;
-    if (qty < 10) return <span className="ap-badge ap-badge-amber" style={{ fontWeight: 700 }}>⚠️ Sắp hết ({qty})</span>;
-    return <span className="ap-badge ap-badge-green">✅ {qty}</span>;
+    if (qty === 0) return <span className="ap-badge ap-badge-red" style={{ fontWeight: 700 }}><i className="fa-solid fa-circle-exclamation" style={{marginRight: 4}}></i>Hết hàng</span>;
+    if (qty < 10) return <span className="ap-badge ap-badge-amber" style={{ fontWeight: 700 }}><i className="fa-solid fa-triangle-exclamation" style={{marginRight: 4}}></i>Sắp hết ({qty})</span>;
+    return <span className="ap-badge ap-badge-green"><i className="fa-solid fa-check" style={{marginRight: 4}}></i>{qty}</span>;
   };
 
   return (
     <div className="ap-page">
-      <PageHeader title="📦 Tồn kho sản phẩm" subtitle="Theo dõi số lượng hàng tồn theo từng size"
-        actions={<button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>}
+      <PageHeader title={<><i className="fa-solid fa-box" style={{marginRight: 8}}></i>Tồn kho sản phẩm</>} subtitle="Theo dõi số lượng hàng tồn theo từng size"
+        actions={<button className="ap-btn ap-btn-success" onClick={handleExport}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>}
       />
 
       {/* Alert Note */}
       <div style={{ marginBottom: 16, padding: '12px 16px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: '#fca5a5', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 16 }}>⚠️</span> 
+        <span style={{ fontSize: 16 }}><i className="fa-solid fa-triangle-exclamation"></i></span> 
         <span><strong>Cảnh báo:</strong> Hãy ưu tiên kiểm tra và nhập thêm hàng cho các mặt hàng đang trong tình trạng Đứt hàng hoặc Sắp hết.</span>
       </div>
 
       {/* Stats Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 16, marginBottom: 24 }}>
         {[
-          { label: 'Tổng Phân Loại (SKU)', value: stats.totalItems || (count ? count * PAGINATION.pagerow : 0), icon: '📦', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
-          { label: 'Cảnh Báo Sắp Hết (<10)', value: stats.lowStock, icon: '⚠️', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
-          { label: 'Cảnh Báo Đứt Hàng (0)', value: stats.outOfStock, icon: '🚨', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
+          { label: 'Tổng Phân Loại (SKU)', value: stats.totalItems || (count ? count * PAGINATION.pagerow : 0), icon: <><i className="fa-solid fa-box" style={{marginRight: 8}}></i></>, color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
+          { label: 'Cảnh Báo Sắp Hết (<10)', value: stats.lowStock, icon: <i className="fa-solid fa-triangle-exclamation"></i>, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+          { label: 'Cảnh Báo Đứt Hàng (0)', value: stats.outOfStock, icon: <i className="fa-solid fa-circle-exclamation"></i>, color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
         ].map((s, i) => (
           <div key={i} className="ap-card" style={{ margin: 0, border: `1px solid ${s.color}40`, background: 'var(--ap-surface)', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: s.bg, filter: 'blur(24px)' }} />
@@ -89,7 +89,7 @@ const StockProduct = () => {
               <tr><th>#</th><th>Sản phẩm — Phân loại — Size</th><th>Danh mục</th><th>Nhãn hàng</th><th>Chất liệu</th><th style={{ textAlign: 'center' }}>Tồn kho</th></tr>
             </thead>
             <tbody>
-              {loading ? <SkeletonRows cols={6} /> : data.length === 0 ? <EmptyState icon="📦" title="Không có dữ liệu tồn kho" /> :
+              {loading ? <SkeletonRows cols={6} /> : data.length === 0 ? <EmptyState icon={<><i className="fa-solid fa-box" style={{marginRight: 8}}></i></>} title="Không có dữ liệu tồn kho" /> :
                 data.map((item, idx) => {
                   const name = `${item.productdData?.name} — ${item.productDetaildData?.nameDetail} — ${item.sizeData?.value}`;
                   return (

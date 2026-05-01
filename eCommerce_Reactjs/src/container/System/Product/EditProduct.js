@@ -42,7 +42,7 @@ const EditProduct = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">✏️ Cập nhật sản phẩm</div>
+            <div className="ap-page-title"><i className="fa-solid fa-pen-to-square"></i>Cập nhật sản phẩm</div>
             <div className="ap-page-subtitle">Chỉnh sửa thông tin sản phẩm #{id}</div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
@@ -53,7 +53,7 @@ const EditProduct = () => {
       </div>
 
       <div className="ap-card">
-        <div className="ap-card-header"><span className="ap-card-title">🛍️ Thông tin cơ bản</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-bag-shopping" style={{marginRight: 8}}></i>Thông tin cơ bản</span></div>
         <div className="ap-card-body">
           <div className="ap-form-row">
             <div className="ap-form-group" style={{ flex: 2 }}>

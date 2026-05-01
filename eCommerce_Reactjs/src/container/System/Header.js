@@ -104,11 +104,11 @@ const Header = ({ onToggleSidebar }) => {
           {open && (
             <div className="ap-dropdown">
               <div className="ap-dropdown-item" style={{ cursor: 'default', fontSize: 11, opacity: 0.6 }}>
-                <span>👤</span><span>{user.roleId === 'R1' ? 'Super Admin' : 'Nhân viên'}</span>
+                <span><i className="fa-solid fa-user" style={{marginRight: 8}}></i></span><span>{user.roleId === 'R1' ? 'Super Admin' : 'Nhân viên'}</span>
               </div>
               <div className="ap-dropdown-divider" />
               <Link to={`/admin/infor/${user.id}`} className="ap-dropdown-item" onClick={() => setOpen(false)}>
-                <span>📋</span><span>Thông tin cá nhân</span>
+                <span><i className="fa-solid fa-list-check" style={{marginRight: 8}}></i></span><span>Thông tin cá nhân</span>
               </Link>
               <Link to={`/admin/change-password/${user.id}`} className="ap-dropdown-item" onClick={() => setOpen(false)}>
                 <span>🔑</span><span>Đổi mật khẩu</span>

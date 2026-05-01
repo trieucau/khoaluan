@@ -49,7 +49,7 @@ const AddTypeVoucher = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">{isAdd ? '🎫 Thêm loại khuyến mãi' : '✏️ Cập nhật loại KM'}</div>
+            <div className="ap-page-title">{isAdd ? <><i className="fa-solid fa-ticket" style={{marginRight: 8}}></i>Thêm loại khuyến mãi</> : <><i className="fa-solid fa-pen-to-square"></i>Cập nhật loại KM</>}</div>
             <div className="ap-page-subtitle">Cấu hình loại giảm giá và điều kiện áp dụng</div>
           </div>
           <Link to="/admin/list-typevoucher" className="ap-btn ap-btn-ghost">← Quay lại</Link>
@@ -57,7 +57,7 @@ const AddTypeVoucher = () => {
       </div>
 
       <div className="ap-card" style={{ maxWidth: 680 }}>
-        <div className="ap-card-header"><span className="ap-card-title">🎫 Thông tin loại khuyến mãi</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-ticket" style={{marginRight: 8}}></i>Thông tin loại khuyến mãi</span></div>
         <div className="ap-card-body">
           <div className="ap-form-row">
             <div className="ap-form-group">

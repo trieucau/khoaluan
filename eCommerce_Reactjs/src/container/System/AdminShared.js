@@ -21,11 +21,13 @@ export const SkeletonRows = ({ cols = 5 }) => (
 /**
  * Empty state for admin table pages
  */
-export const EmptyState = ({ icon = '📭', title = 'Không có dữ liệu', desc = 'Thử thay đổi từ khóa tìm kiếm' }) => (
+export const EmptyState = ({ icon = 'fa-solid fa-box-open', title = 'Không có dữ liệu', desc = 'Thử thay đổi từ khóa tìm kiếm' }) => (
   <tr>
     <td colSpan={99} style={{ padding: 0, border: 'none' }}>
       <div className="ap-empty">
-        <div className="ap-empty-icon">{icon}</div>
+        <div className="ap-empty-icon" style={{ opacity: 0.7 }}>
+          {typeof icon === 'string' ? <i className={icon}></i> : icon}
+        </div>
         <div className="ap-empty-title">{title}</div>
         <div className="ap-empty-desc">{desc}</div>
       </div>
@@ -69,7 +71,7 @@ export const AdminPagination = ({ count, onPageChange }) => {
 export const SearchBar = ({ value, onChange, onSearch, placeholder = 'Tìm kiếm...', actions }) => (
   <div className="ap-toolbar">
     <div className="ap-search-bar" style={{ flex: 1 }}>
-      <span style={{ color: 'var(--ap-text-dim)', flexShrink: 0 }}>🔍</span>
+      <span style={{ color: 'var(--ap-text-dim)', flexShrink: 0 }}><i className="fa-solid fa-magnifying-glass"></i></span>
       <input
         value={value}
         onChange={e => onChange(e.target.value)}

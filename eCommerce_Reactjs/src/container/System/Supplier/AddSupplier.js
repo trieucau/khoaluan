@@ -40,14 +40,14 @@ const AddSupplier = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">{isAdd ? '➕ Thêm nhà cung cấp' : '✏️ Cập nhật nhà cung cấp'}</div>
+            <div className="ap-page-title">{isAdd ? <><i className="fa-solid fa-plus" style={{marginRight: 6}}></i>Thêm nhà cung cấp</> : <><i className="fa-solid fa-pen-to-square"></i>Cập nhật nhà cung cấp</>}</div>
             <div className="ap-page-subtitle">{isAdd ? 'Đăng ký nhà cung cấp mới' : 'Cập nhật thông tin nhà cung cấp'}</div>
           </div>
           <Link to="/admin/list-supplier" className="ap-btn ap-btn-ghost">← Quay lại</Link>
         </div>
       </div>
       <div className="ap-card" style={{ maxWidth: 680 }}>
-        <div className="ap-card-header"><span className="ap-card-title">🏭 Thông tin nhà cung cấp</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-industry" style={{marginRight: 8}}></i>Thông tin nhà cung cấp</span></div>
         <div className="ap-card-body">
           <div className="ap-form-row">
             <div className="ap-form-group">

@@ -70,8 +70,8 @@ const Turnover = () => {
 
   return (
     <div className="ap-page">
-      <PageHeader title="📈 Thống kê doanh thu" subtitle="Lọc và phân tích doanh thu theo ngày / tháng / năm"
-        actions={data.length > 0 && <button className="ap-btn ap-btn-success" onClick={() => CommonUtils.exportExcel(dataExport, 'Doanh thu', 'TurnOver')}>📊 Xuất Excel</button>}
+      <PageHeader title={<><i className="fa-solid fa-chart-line" style={{marginRight: 8}}></i>Thống kê doanh thu</>} subtitle="Lọc và phân tích doanh thu theo ngày / tháng / năm"
+        actions={data.length > 0 && <button className="ap-btn ap-btn-success" onClick={() => CommonUtils.exportExcel(dataExport, 'Doanh thu', 'TurnOver')}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>}
       />
 
       {/* Filter toolbar */}
@@ -114,10 +114,10 @@ const Turnover = () => {
       {data.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
           {[
-            { label: 'Doanh Thu Thực Tế', desc: `${stats.deliveredOrders} đơn đã giao`, value: CommonUtils.formatter.format(stats.actual), icon: '💰', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
-            { label: 'Doanh Thu Chờ Thu', desc: `${stats.totalOrders - stats.deliveredOrders - stats.cancelledOrders} đơn đang xử lý`, value: CommonUtils.formatter.format(stats.pending), icon: '⏳', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
-            { label: 'Khách Hủy (Thất Thoát)', desc: `${stats.cancelledOrders} đơn bị hủy`, value: CommonUtils.formatter.format(stats.cancelled), icon: '📉', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
-            { label: 'Trung Bình / Đơn', desc: 'Chỉ tính đơn thành công', value: CommonUtils.formatter.format(stats.deliveredOrders > 0 ? Math.round(stats.actual / stats.deliveredOrders) : 0), icon: '📈', color: '#6366f1', bg: 'rgba(99, 102, 241, 0.15)' },
+            { label: 'Doanh Thu Thực Tế', desc: `${stats.deliveredOrders} đơn đã giao`, value: CommonUtils.formatter.format(stats.actual), icon: <i className="fa-solid fa-sack-dollar"></i>, color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
+            { label: 'Doanh Thu Chờ Thu', desc: `${stats.totalOrders - stats.deliveredOrders - stats.cancelledOrders} đơn đang xử lý`, value: CommonUtils.formatter.format(stats.pending), icon: <i className="fa-solid fa-hourglass-half"></i>, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+            { label: 'Khách Hủy (Thất Thoát)', desc: `${stats.cancelledOrders} đơn bị hủy`, value: CommonUtils.formatter.format(stats.cancelled), icon: <i className="fa-solid fa-arrow-trend-down"></i>, color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
+            { label: 'Trung Bình / Đơn', desc: 'Chỉ tính đơn thành công', value: CommonUtils.formatter.format(stats.deliveredOrders > 0 ? Math.round(stats.actual / stats.deliveredOrders) : 0), icon: <i className="fa-solid fa-chart-line"></i>, color: '#6366f1', bg: 'rgba(99, 102, 241, 0.15)' },
           ].map((s, i) => (
             <div key={i} className="ap-card" style={{ margin: 0, border: `1px solid ${s.color}40`, background: 'var(--ap-surface)', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: s.bg, filter: 'blur(24px)' }} />
@@ -146,7 +146,7 @@ const Turnover = () => {
             </thead>
             <tbody>
               {loading ? <SkeletonRows cols={8} /> :
-                data.length === 0 ? <EmptyState icon="📈" title="Không có dữ liệu" desc="Chưa có dữ liệu thống kê trong khoảng thời gian này" /> :
+                data.length === 0 ? <EmptyState icon="fa-solid fa-chart-line" title="Không có dữ liệu" desc="Chưa có dữ liệu thống kê trong khoảng thời gian này" /> :
                   data.map((item, idx) => {
                     const status = item.statusOrderData?.value;
                     const isSuccess = status === 'Đã giao' || status === 'Đã giao hàng';
@@ -157,10 +157,10 @@ const Turnover = () => {
                         <td style={{ fontSize: 12, color: 'var(--ap-text-muted)', whiteSpace: 'nowrap' }}>{moment.utc(item.createdAt).local().format('DD/MM/YYYY HH:mm')}</td>
                         <td style={{ fontSize: 13 }}>{item.typeShipData?.type}</td>
                         <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#a5b4fc' }}>{item.voucherData?.codeVoucher || '—'}</span></td>
-                        <td><span className={`ap-badge ${item.isPaymentOnlien === 0 ? 'ap-badge-gray' : 'ap-badge-cyan'}`}>{item.isPaymentOnlien === 0 ? '💵 Tiền mặt' : '💳 Online'}</span></td>
+                        <td><span className={`ap-badge ${item.isPaymentOnlien === 0 ? 'ap-badge-gray' : 'ap-badge-cyan'}`}>{item.isPaymentOnlien === 0 ? <><i className="fa-solid fa-money-bill-wave" style={{marginRight: 4}}></i>Tiền mặt</> : <><i className="fa-solid fa-credit-card" style={{marginRight: 4}}></i>Online</>}</span></td>
                         <td><span className={`ap-badge ${STATUS_BADGE[item.statusOrderData?.value] || 'ap-badge-gray'}`}>{item.statusOrderData?.value}</span></td>
                         <td style={{ textAlign: 'right', fontWeight: 700, color: isSuccess ? '#10b981' : (isCancelled ? '#ef4444' : '#fbbf24') }}>{isCancelled && '-'}{CommonUtils.formatter.format(item.totalpriceProduct)}</td>
-                        <td><Link to={`/admin/order-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">🔍</Link></td>
+                        <td><Link to={`/admin/order-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-magnifying-glass"></i></Link></td>
                       </tr>
                     )
                   })

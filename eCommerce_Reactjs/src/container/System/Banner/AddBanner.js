@@ -50,7 +50,7 @@ const AddBanner = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">{isAdd ? '🖼️ Thêm Banner' : '✏️ Cập nhật Banner'}</div>
+            <div className="ap-page-title">{isAdd ? <><i className="fa-solid fa-image" style={{marginRight: 8}}></i>Thêm Banner</> : <><i className="fa-solid fa-pen-to-square"></i>Cập nhật Banner</>}</div>
             <div className="ap-page-subtitle">Quản lý hình ảnh quảng cáo trang chủ</div>
           </div>
           <Link to="/admin/list-banner" className="ap-btn ap-btn-ghost">← Quay lại</Link>
@@ -58,7 +58,7 @@ const AddBanner = () => {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 20 }}>
         <div className="ap-card">
-          <div className="ap-card-header"><span className="ap-card-title">📋 Thông tin Banner</span></div>
+          <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-list-check" style={{marginRight: 8}}></i>Thông tin Banner</span></div>
           <div className="ap-card-body">
             <div className="ap-form-group">
               <label className="ap-label">Tên Banner *</label>
@@ -79,7 +79,7 @@ const AddBanner = () => {
           </div>
         </div>
         <div className="ap-card">
-          <div className="ap-card-header"><span className="ap-card-title">🖼️ Hình ảnh</span></div>
+          <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-image" style={{marginRight: 8}}></i>Hình ảnh</span></div>
           <div className="ap-card-body">
             <input type="file" id="bannerImg" accept=".jpg,.png,.webp" hidden onChange={handleImageChange} />
             <label htmlFor="bannerImg" style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8, border:'2px dashed var(--ap-border)', borderRadius:'var(--ap-radius)', padding:24, cursor:'pointer' }}>

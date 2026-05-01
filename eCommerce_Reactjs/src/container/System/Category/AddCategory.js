@@ -40,7 +40,7 @@ const AddCategory = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">{isAdd ? '➕ Thêm danh mục' : '✏️ Cập nhật danh mục'}</div>
+            <div className="ap-page-title">{isAdd ? <><i className="fa-solid fa-plus" style={{marginRight: 6}}></i>Thêm danh mục</> : <><i className="fa-solid fa-pen-to-square"></i>Cập nhật danh mục</>}</div>
             <div className="ap-page-subtitle">{isAdd ? 'Tạo danh mục sản phẩm mới' : 'Chỉnh sửa thông tin danh mục'}</div>
           </div>
           <Link to="/admin/list-category" className="ap-btn ap-btn-ghost">← Quay lại</Link>
@@ -48,7 +48,7 @@ const AddCategory = () => {
       </div>
 
       <div className="ap-card" style={{ maxWidth: 600 }}>
-        <div className="ap-card-header"><span className="ap-card-title">📋 Thông tin danh mục</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-list-check" style={{marginRight: 8}}></i>Thông tin danh mục</span></div>
         <div className="ap-card-body">
           <div className="ap-form-row">
             <div className="ap-form-group">

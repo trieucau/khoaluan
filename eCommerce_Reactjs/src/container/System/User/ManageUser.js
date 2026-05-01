@@ -80,11 +80,11 @@ const ManageUser = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">👥 Quản lý người dùng</div>
+            <div className="ap-page-title"><i className="fa-solid fa-users" style={{marginRight: 8}}></i>Quản lý người dùng</div>
             <div className="ap-page-subtitle">Danh sách tài khoản trong hệ thống</div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+            <button className="ap-btn ap-btn-success" onClick={handleExport}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>
             <Link to="/admin/add-user" className="ap-btn ap-btn-primary">+ Thêm mới</Link>
           </div>
         </div>
@@ -93,7 +93,7 @@ const ManageUser = () => {
       <div className="ap-card">
         <div className="ap-toolbar">
           <div className="ap-search-bar">
-            <span style={{ color: 'var(--ap-text-dim)' }}>🔍</span>
+            <span style={{ color: 'var(--ap-text-dim)' }}><i className="fa-solid fa-magnifying-glass"></i></span>
             <input
               value={keyword}
               onChange={e => setKeyword(e.target.value)}
@@ -117,7 +117,7 @@ const ManageUser = () => {
               {loading ? <SkeletonRows /> : dataUser.length === 0 ? (
                 <tr><td colSpan={7} style={{ padding:0, border:'none' }}>
                   <div className="ap-empty">
-                    <div className="ap-empty-icon">👤</div>
+                    <div className="ap-empty-icon"><i className="fa-solid fa-user" style={{marginRight: 8}}></i></div>
                     <div className="ap-empty-title">Không tìm thấy người dùng</div>
                   </div>
                 </td></tr>
@@ -150,8 +150,8 @@ const ManageUser = () => {
                     <td><span className={`ap-badge ${role.cls}`}>{role.label}</span></td>
                     <td>
                       <div style={{ display:'flex', gap:6, justifyContent:'center' }}>
-                        <Link to={`/admin/edit-user/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️ Sửa</Link>
-                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={e => handleDelete(e, item.id)}>🗑️</button>
+                        <Link to={`/admin/edit-user/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-pen-to-square"></i>Sửa</Link>
+                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={e => handleDelete(e, item.id)}><i className="fa-solid fa-trash"></i></button>
                       </div>
                     </td>
                   </tr>

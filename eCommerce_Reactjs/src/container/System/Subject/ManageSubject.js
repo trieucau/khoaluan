@@ -38,9 +38,9 @@ const ManageSubject = () => {
 
   return (
     <div className="ap-page">
-      <PageHeader title="📚 Quản lý chủ đề" subtitle="Danh sách chủ đề bài đăng blog"
+      <PageHeader title={<><i className="fa-solid fa-book" style={{marginRight: 8}}></i>Quản lý chủ đề</>} subtitle="Danh sách chủ đề bài đăng blog"
         actions={<>
-          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>
           <Link to="/admin/add-subject" className="ap-btn ap-btn-primary">+ Thêm chủ đề</Link>
         </>}
       />
@@ -50,7 +50,7 @@ const ManageSubject = () => {
           <table className="ap-table">
             <thead><tr><th>#</th><th>Tên chủ đề</th><th>Mã code</th><th style={{ textAlign: 'center' }}>Thao tác</th></tr></thead>
             <tbody>
-              {loading ? <SkeletonRows cols={4} /> : data.length === 0 ? <EmptyState icon="📚" title="Không có chủ đề nào" /> :
+              {loading ? <SkeletonRows cols={4} /> : data.length === 0 ? <EmptyState icon={<><i className="fa-solid fa-book" style={{marginRight: 8}}></i></>} title="Không có chủ đề nào" /> :
                 data.map((item, idx) => (
                   <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
                     <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
@@ -58,8 +58,8 @@ const ManageSubject = () => {
                     <td><span className="ap-badge ap-badge-cyan">{item.code}</span></td>
                     <td>
                       <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-                        <Link to={`/admin/edit-subject/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️ Sửa</Link>
-                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={e => handleDelete(e, item.id)}>🗑️</button>
+                        <Link to={`/admin/edit-subject/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-pen-to-square"></i>Sửa</Link>
+                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={e => handleDelete(e, item.id)}><i className="fa-solid fa-trash"></i></button>
                       </div>
                     </td>
                   </tr>

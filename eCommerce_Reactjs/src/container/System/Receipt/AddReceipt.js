@@ -82,7 +82,7 @@ const AddReceipt = () => {
       </div>
 
       <div className="ap-card" style={{ maxWidth: 760 }}>
-        <div className="ap-card-header"><span className="ap-card-title">📋 Thông tin phiếu nhập</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-list-check" style={{marginRight: 8}}></i>Thông tin phiếu nhập</span></div>
         <div className="ap-card-body">
           <div className="ap-form-group">
             <label className="ap-label">Nhà cung cấp *</label>
@@ -92,7 +92,7 @@ const AddReceipt = () => {
           </div>
 
           <div style={{ borderTop: '1px solid var(--ap-border)', margin: '16px 0', paddingTop: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ap-text-muted)', marginBottom: 12 }}>🛍️ Chọn sản phẩm nhập</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ap-text-muted)', marginBottom: 12 }}><i className="fa-solid fa-bag-shopping" style={{marginRight: 8}}></i>Chọn sản phẩm nhập</div>
             <div className="ap-form-row">
               <div className="ap-form-group">
                 <label className="ap-label">Sản phẩm *</label>

@@ -40,14 +40,14 @@ const AddBrand = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">{isAdd ? '➕ Thêm nhãn hàng' : '✏️ Cập nhật nhãn hàng'}</div>
+            <div className="ap-page-title">{isAdd ? <><i className="fa-solid fa-plus" style={{marginRight: 6}}></i>Thêm nhãn hàng</> : <><i className="fa-solid fa-pen-to-square"></i>Cập nhật nhãn hàng</>}</div>
             <div className="ap-page-subtitle">{isAdd ? 'Tạo thương hiệu sản phẩm mới' : 'Chỉnh sửa thông tin nhãn hàng'}</div>
           </div>
           <Link to="/admin/list-brand" className="ap-btn ap-btn-ghost">← Quay lại</Link>
         </div>
       </div>
       <div className="ap-card" style={{ maxWidth: 600 }}>
-        <div className="ap-card-header"><span className="ap-card-title">©️ Thông tin nhãn hàng</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-copyright" style={{marginRight: 8}}></i>Thông tin nhãn hàng</span></div>
         <div className="ap-card-body">
           <div className="ap-form-row">
             <div className="ap-form-group">

@@ -48,8 +48,8 @@ const Profit = () => {
 
   return (
     <div className="ap-page">
-      <PageHeader title="💹 Thống kê lợi nhuận" subtitle="Phân tích lợi nhuận theo ngày / tháng / năm"
-        actions={data.length > 0 && <button className="ap-btn ap-btn-success" onClick={() => CommonUtils.exportExcel(dataExport, 'Lợi nhuận', 'Profit')}>📊 Xuất Excel</button>}
+      <PageHeader title={<><i className="fa-solid fa-chart-pie" style={{marginRight: 8}}></i>Thống kê lợi nhuận</>} subtitle="Phân tích lợi nhuận theo ngày / tháng / năm"
+        actions={data.length > 0 && <button className="ap-btn ap-btn-success" onClick={() => CommonUtils.exportExcel(dataExport, 'Lợi nhuận', 'Profit')}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>}
       />
       <div className="ap-card" style={{ marginBottom: 20, position: 'relative', zIndex: 10 }}>
         <div className="ap-card-body">
@@ -88,7 +88,7 @@ const Profit = () => {
       {/* Alert Note */}
       {data.length > 0 && (
         <div style={{ marginBottom: 16, padding: '12px 16px', borderRadius: 8, background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#93c5fd', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 16 }}>ℹ️</span> 
+          <span style={{ fontSize: 16 }}><i className="fa-solid fa-circle-info"></i></span> 
           <span><strong>Lưu ý:</strong> Báo cáo Lợi nhuận Ròng dưới đây chỉ được tính toán dựa trên các đơn hàng có trạng thái <strong>"Đã giao"</strong> thành công.</span>
         </div>
       )}
@@ -96,10 +96,10 @@ const Profit = () => {
       {data.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 16, marginBottom: 24 }}>
           {[
-            { label: 'Tổng đơn thành công', value: stats.deliveredOrders, icon: '📦', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
-            { label: 'Doanh thu thực tế', value: fmt(stats.actualRevenue), icon: '💰', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
-            { label: 'Tổng tiền vốn', value: fmt(stats.actualImport), icon: '📥', color: '#64748b', bg: 'rgba(100, 116, 139, 0.15)' },
-            { label: 'Lợi Nhuận Ròng', value: fmt(stats.actualProfit), icon: '💎', color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.15)' },
+            { label: 'Tổng đơn thành công', value: stats.deliveredOrders, icon: <i className="fa-solid fa-box-open"></i>, color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
+            { label: 'Doanh thu thực tế', value: fmt(stats.actualRevenue), icon: <i className="fa-solid fa-sack-dollar"></i>, color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
+            { label: 'Tổng tiền vốn', value: fmt(stats.actualImport), icon: <i className="fa-solid fa-box-archive"></i>, color: '#64748b', bg: 'rgba(100, 116, 139, 0.15)' },
+            { label: 'Lợi Nhuận Ròng', value: fmt(stats.actualProfit), icon: <i className="fa-solid fa-gem"></i>, color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.15)' },
           ].map((s, i) => (
             <div key={i} className="ap-card" style={{ margin: 0, border: `1px solid ${s.color}40`, background: 'var(--ap-surface)', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: s.bg, filter: 'blur(24px)' }} />
@@ -126,7 +126,7 @@ const Profit = () => {
             </thead>
             <tbody>
               {loading ? <SkeletonRows cols={9} /> :
-                data.length === 0 ? <EmptyState icon="💹" title="Không có dữ liệu" desc="Chưa có dữ liệu thống kê trong khoảng thời gian này" /> :
+                data.length === 0 ? <EmptyState icon="fa-solid fa-chart-pie" title="Không có dữ liệu" desc="Chưa có dữ liệu thống kê trong khoảng thời gian này" /> :
                   data.map((item, idx) => {
                     const profit = item.profitPrice;
                     const status = item.statusOrderData?.value;
@@ -138,12 +138,12 @@ const Profit = () => {
                         <td style={{ fontFamily: 'monospace', color: 'var(--ap-primary)', fontWeight: 600 }}>#{item.id}</td>
                         <td style={{ fontSize: 12, color: 'var(--ap-text-muted)', whiteSpace: 'nowrap' }}>{moment.utc(item.createdAt).local().format('DD/MM/YYYY HH:mm')}</td>
                         <td><span style={{ fontFamily: 'monospace', fontSize: 12, color: '#a5b4fc' }}>{item.voucherData?.codeVoucher || '—'}</span></td>
-                        <td><span className={`ap-badge ${item.isPaymentOnlien === 0 ? 'ap-badge-gray' : 'ap-badge-cyan'}`}>{item.isPaymentOnlien === 0 ? '💵 Mặt' : '💳 Online'}</span></td>
+                        <td><span className={`ap-badge ${item.isPaymentOnlien === 0 ? 'ap-badge-gray' : 'ap-badge-cyan'}`}>{item.isPaymentOnlien === 0 ? <><i className="fa-solid fa-money-bill-wave" style={{marginRight: 4}}></i>Tiền mặt</> : <><i className="fa-solid fa-credit-card" style={{marginRight: 4}}></i>Online</>}</span></td>
                         <td><span className={`ap-badge ${isSuccess ? 'ap-badge-green' : (isCancelled ? 'ap-badge-red' : 'ap-badge-amber')}`}>{status}</span></td>
                         <td style={{ textAlign: 'right', color: '#fbbf24', fontWeight: 600 }}>{isCancelled && '-'}{fmt(item.totalpriceProduct)}</td>
                         <td style={{ textAlign: 'right', color: 'var(--ap-text-muted)' }}>{isCancelled && '-'}{fmt(item.importPrice)}</td>
                         <td style={{ textAlign: 'right', fontWeight: 700, color: !isSuccess ? 'var(--ap-text-muted)' : (profit >= 0 ? '#10b981' : '#ef4444') }}>{!isSuccess ? 'Không tính' : fmt(profit)}</td>
-                        <td><Link to={`/admin/order-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">🔍</Link></td>
+                        <td><Link to={`/admin/order-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-magnifying-glass"></i></Link></td>
                       </tr>
                     );
                   })

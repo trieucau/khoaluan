@@ -83,7 +83,7 @@ function DetailOrder() {
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
           {/* Items card */}
           <div className="ap-card">
-            <div className="ap-card-header"><span className="ap-card-title">🛒 Sản phẩm trong đơn</span></div>
+            <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-cart-shopping" style={{marginRight: 8}}></i>Sản phẩm trong đơn</span></div>
             <div style={{ overflowX:'auto' }}>
               <table className="ap-table">
                 <thead><tr><th>Sản phẩm</th><th>Đơn giá</th><th style={{textAlign:'center'}}>SL</th><th style={{textAlign:'right'}}>Tổng</th></tr></thead>
@@ -136,7 +136,7 @@ function DetailOrder() {
         <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
           {/* Status + actions */}
           <div className="ap-card">
-            <div className="ap-card-header"><span className="ap-card-title">📋 Trạng thái đơn hàng</span></div>
+            <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-list-check" style={{marginRight: 8}}></i>Trạng thái đơn hàng</span></div>
             <div className="ap-card-body">
               <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16 }}>
                 <span className={`ap-badge ${STATUS_BADGE[order.statusId]||'ap-badge-gray'}`} style={{ fontSize:13, padding:'5px 12px' }}>
@@ -151,7 +151,7 @@ function DetailOrder() {
                   )}
                 </>}
                 {order.statusId === 'S4' && (
-                  <button className="ap-btn ap-btn-primary" style={{width:'100%',justifyContent:'center'}} onClick={() => updateStatus('S5')}>📦 Xác nhận gửi hàng</button>
+                  <button className="ap-btn ap-btn-primary" style={{width:'100%',justifyContent:'center'}} onClick={() => updateStatus('S5')}><i className="fa-solid fa-box" style={{marginRight: 8}}></i>Xác nhận gửi hàng</button>
                 )}
                 {order.statusId === 'S5' && (
                   <button className="ap-btn ap-btn-success" style={{width:'100%',justifyContent:'center'}} onClick={() => updateStatus('S6')}>🎉 Đã giao hàng</button>
@@ -162,7 +162,7 @@ function DetailOrder() {
 
           {/* Customer info */}
           <div className="ap-card">
-            <div className="ap-card-header"><span className="ap-card-title">👤 Thông tin nhận hàng</span></div>
+            <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-user" style={{marginRight: 8}}></i>Thông tin nhận hàng</span></div>
             <div className="ap-card-body">
               <InfoRow label="Tên người nhận" value={order.addressUser?.shipName} />
               <InfoRow label="Số điện thoại" value={order.addressUser?.shipPhonenumber} />
@@ -187,7 +187,7 @@ function DetailOrder() {
           {/* Shipper */}
           {order.shipperData && (
             <div className="ap-card">
-              <div className="ap-card-header"><span className="ap-card-title">🚚 Shipper</span></div>
+              <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-truck-fast" style={{marginRight: 8}}></i>Shipper</span></div>
               <div className="ap-card-body">
                 <InfoRow label="Tên" value={`${order.shipperData.firstName} ${order.shipperData.lastName}`} />
                 <InfoRow label="SĐT" value={order.shipperData.phonenumber} />

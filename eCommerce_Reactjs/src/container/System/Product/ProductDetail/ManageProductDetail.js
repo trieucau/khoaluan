@@ -69,9 +69,9 @@ const ManageProductDetail = () => {
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-                        <Link to={`/admin/list-product-detail-image/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">🖼️ Ảnh</Link>
-                        <Link to={`/admin/update-product-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️</Link>
-                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}>🗑️</button>
+                        <Link to={`/admin/list-product-detail-image/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-image" style={{marginRight: 8}}></i>Ảnh</Link>
+                        <Link to={`/admin/update-product-detail/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-pen-to-square"></i></Link>
+                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}><i className="fa-solid fa-trash"></i></button>
                       </div>
                     </td>
                   </tr>

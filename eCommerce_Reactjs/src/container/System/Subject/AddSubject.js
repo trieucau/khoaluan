@@ -40,14 +40,14 @@ const AddSubject = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">{isAdd ? '➕ Thêm chủ đề' : '✏️ Cập nhật chủ đề'}</div>
+            <div className="ap-page-title">{isAdd ? <><i className="fa-solid fa-plus" style={{marginRight: 6}}></i>Thêm chủ đề</> : <><i className="fa-solid fa-pen-to-square"></i>Cập nhật chủ đề</>}</div>
             <div className="ap-page-subtitle">{isAdd ? 'Tạo chủ đề blog mới' : 'Chỉnh sửa thông tin chủ đề'}</div>
           </div>
           <Link to="/admin/list-subject" className="ap-btn ap-btn-ghost">← Quay lại</Link>
         </div>
       </div>
       <div className="ap-card" style={{ maxWidth: 600 }}>
-        <div className="ap-card-header"><span className="ap-card-title">📚 Thông tin chủ đề</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-book" style={{marginRight: 8}}></i>Thông tin chủ đề</span></div>
         <div className="ap-card-body">
           <div className="ap-form-row">
             <div className="ap-form-group">

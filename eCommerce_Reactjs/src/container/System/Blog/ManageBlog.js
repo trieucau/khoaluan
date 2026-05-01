@@ -44,9 +44,9 @@ const ManageBlog = () => {
 
   return (
     <div className="ap-page">
-      <PageHeader title="✍️ Quản lý bài đăng" subtitle="Danh sách bài viết blog"
+      <PageHeader title={<><i className="fa-solid fa-pen-nib" style={{marginRight: 8}}></i>Quản lý bài đăng</>} subtitle="Danh sách bài viết blog"
         actions={<>
-          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>
           <Link to="/admin/add-blog" className="ap-btn ap-btn-primary">+ Thêm bài đăng</Link>
         </>}
       />
@@ -56,7 +56,7 @@ const ManageBlog = () => {
           <table className="ap-table">
             <thead><tr><th>#</th><th>Tiêu đề bài viết</th><th>Chủ đề</th><th>Hình ảnh</th><th style={{ textAlign: 'center' }}>Thao tác</th></tr></thead>
             <tbody>
-              {loading ? <SkeletonRows cols={5} /> : data.length === 0 ? <EmptyState icon="✍️" title="Không có bài đăng nào" /> :
+              {loading ? <SkeletonRows cols={5} /> : data.length === 0 ? <EmptyState icon={<><i className="fa-solid fa-pen-nib" style={{marginRight: 8}}></i></>} title="Không có bài đăng nào" /> :
                 data.map((item, idx) => (
                   <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
                     <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
@@ -77,8 +77,8 @@ const ManageBlog = () => {
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-                        <Link to={`/admin/edit-blog/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">✏️ Sửa</Link>
-                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}>🗑️</button>
+                        <Link to={`/admin/edit-blog/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-pen-to-square"></i>Sửa</Link>
+                        <button className="ap-btn ap-btn-danger ap-btn-sm" onClick={() => handleDelete(item.id)}><i className="fa-solid fa-trash"></i></button>
                       </div>
                     </td>
                   </tr>

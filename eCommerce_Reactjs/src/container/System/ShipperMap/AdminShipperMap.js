@@ -271,7 +271,7 @@ const AdminShipperMap = ({ isMini = false }) => {
               ${seqNumber ? `<span style="background:${color};color:#fff;padding:2px 6px;border-radius:4px;font-size:11px;margin-right:6px">Điểm ${seqNumber}</span>` : ''} 
               Mã đơn #${p.oid}
             </div>
-            <div style="font-size:12px;color:#555">👤 ${customerName}</div>
+            <div style="font-size:12px;color:#555"><i className="fa-solid fa-user" style={{marginRight: 8}}></i>${customerName}</div>
             <div style="font-size:12px;color:#555;margin-top:4px">🏠 ${address || '—'}</div>
           </div>`;
         const icon = makeIcon(color, iconContent, null, 22);
@@ -445,7 +445,7 @@ const AdminShipperMap = ({ isMini = false }) => {
                             <div style={{ fontSize: 12, color: '#94a3b8', margin: '2px 0' }}>📞 {s.shipper?.phonenumber || '—'}</div>
                             <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                               <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: hasGps ? 'rgba(52,211,153,0.1)' : 'rgba(100,116,139,0.1)', color: hasGps ? '#34d399' : '#94a3b8' }}>{hasGps ? 'GPS On' : 'Offline'}</span>
-                              <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(99,102,241,0.1)', color: '#818cf8' }}>📦 {orderIds.length} đơn</span>
+                              <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(99,102,241,0.1)', color: '#818cf8' }}><i className="fa-solid fa-box" style={{marginRight: 8}}></i>{orderIds.length} đơn</span>
                             </div>
                           </div>
                           <div style={{ color: '#3b82f6', fontSize: 20 }}>›</div>
@@ -460,8 +460,7 @@ const AdminShipperMap = ({ isMini = false }) => {
                   <div style={{ padding: '14px 20px 12px', background: 'linear-gradient(135deg,#1e3a8a,#0891b2)', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
                     <button onClick={() => { setSelectedShipper(null); setSelectedOrderId(null); }} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>←</button>
                     <div style={{ overflow: 'hidden' }}>
-                      <div style={{ fontWeight: 800, fontSize: 15, color: '#fff', letterSpacing: 0.3, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                        📦 Đơn của {selectedShipper.shipper ? `${selectedShipper.shipper.firstName} ${selectedShipper.shipper.lastName}` : 'Shipper'}
+                      <div style={{ fontWeight: 800, fontSize: 15, color: '#fff', letterSpacing: 0.3, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}><i className="fa-solid fa-box" style={{marginRight: 8}}></i>Đơn của {selectedShipper.shipper ? `${selectedShipper.shipper.firstName} ${selectedShipper.shipper.lastName}` : 'Shipper'}
                       </div>
                       <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
                         <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#34d399', display: 'inline-block' }} />

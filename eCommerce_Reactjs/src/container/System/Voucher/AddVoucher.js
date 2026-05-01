@@ -63,7 +63,7 @@ const AddVoucher = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">{isAdd ? '🏷️ Tạo mã Voucher' : '✏️ Cập nhật Voucher'}</div>
+            <div className="ap-page-title">{isAdd ? <><i className="fa-solid fa-tags" style={{marginRight: 8}}></i>Tạo mã Voucher</> : <><i className="fa-solid fa-pen-to-square"></i>Cập nhật Voucher</>}</div>
             <div className="ap-page-subtitle">Cấu hình mã giảm giá cho khách hàng</div>
           </div>
           <Link to="/admin/list-voucher" className="ap-btn ap-btn-ghost">← Quay lại</Link>
@@ -71,7 +71,7 @@ const AddVoucher = () => {
       </div>
 
       <div className="ap-card" style={{ maxWidth: 720 }}>
-        <div className="ap-card-header"><span className="ap-card-title">🏷️ Thông tin voucher</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-tags" style={{marginRight: 8}}></i>Thông tin voucher</span></div>
         <div className="ap-card-body">
           <div className="ap-form-row">
             <div className="ap-form-group">

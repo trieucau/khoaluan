@@ -40,14 +40,14 @@ const AddTypeShip = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">{isAdd ? '➕ Thêm loại giao hàng' : '✏️ Cập nhật loại giao hàng'}</div>
+            <div className="ap-page-title">{isAdd ? <><i className="fa-solid fa-plus" style={{marginRight: 6}}></i>Thêm loại giao hàng</> : <><i className="fa-solid fa-pen-to-square"></i>Cập nhật loại giao hàng</>}</div>
             <div className="ap-page-subtitle">Cấu hình hình thức vận chuyển và phí ship</div>
           </div>
           <Link to="/admin/list-typeship" className="ap-btn ap-btn-ghost">← Quay lại</Link>
         </div>
       </div>
       <div className="ap-card" style={{ maxWidth: 560 }}>
-        <div className="ap-card-header"><span className="ap-card-title">🚚 Thông tin loại giao hàng</span></div>
+        <div className="ap-card-header"><span className="ap-card-title"><i className="fa-solid fa-truck-fast" style={{marginRight: 8}}></i>Thông tin loại giao hàng</span></div>
         <div className="ap-card-body">
           <div className="ap-form-row">
             <div className="ap-form-group">

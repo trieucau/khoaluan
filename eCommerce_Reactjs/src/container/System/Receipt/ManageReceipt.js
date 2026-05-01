@@ -29,9 +29,9 @@ const ManageReceipt = () => {
 
   return (
     <div className="ap-page">
-      <PageHeader title="📦 Quản lý nhập hàng" subtitle="Lịch sử phiếu nhập hàng từ nhà cung cấp"
+      <PageHeader title={<><i className="fa-solid fa-box" style={{marginRight: 8}}></i>Quản lý nhập hàng</>} subtitle="Lịch sử phiếu nhập hàng từ nhà cung cấp"
         actions={<>
-          <button className="ap-btn ap-btn-success" onClick={handleExport}>📊 Xuất Excel</button>
+          <button className="ap-btn ap-btn-success" onClick={handleExport}><i className="fa-solid fa-file-excel" style={{marginRight: 6}}></i>Xuất Excel</button>
           <Link to="/admin/add-receipt" className="ap-btn ap-btn-primary">+ Tạo phiếu nhập</Link>
         </>}
       />
@@ -42,7 +42,7 @@ const ManageReceipt = () => {
               <tr><th>#</th><th>Ngày nhập</th><th>Nhà cung cấp</th><th>SĐT NCC</th><th>Nhân viên</th><th style={{ textAlign: 'center' }}>Thao tác</th></tr>
             </thead>
             <tbody>
-              {loading ? <SkeletonRows cols={6} /> : data.length === 0 ? <EmptyState icon="📦" title="Không có phiếu nhập nào" /> :
+              {loading ? <SkeletonRows cols={6} /> : data.length === 0 ? <EmptyState icon={<><i className="fa-solid fa-box" style={{marginRight: 8}}></i></>} title="Không có phiếu nhập nào" /> :
                 data.map((item, idx) => (
                   <tr key={item.id} className="ap-row-enter" style={{ animationDelay: `${idx * 30}ms` }}>
                     <td style={{ color: 'var(--ap-text-dim)', fontWeight: 600, width: 50 }}>{idx + 1}</td>
@@ -66,7 +66,7 @@ const ManageReceipt = () => {
                       </div>
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <Link to={`/admin/detail-receipt/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm">🔍 Xem chi tiết</Link>
+                      <Link to={`/admin/detail-receipt/${item.id}`} className="ap-btn ap-btn-ghost ap-btn-sm"><i className="fa-solid fa-magnifying-glass"></i>Xem chi tiết</Link>
                     </td>
                   </tr>
                 ))
