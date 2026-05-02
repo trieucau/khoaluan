@@ -41,6 +41,9 @@ const ShipperDashboard = ({ gpsData }) => {
     temp: '--', city: 'Đang tải...', icon: '🌤', 
     conditionMsg: 'Đang đánh giá', conditionColor: 'var(--sp-text-muted)' 
   });
+  
+  const [recentPeriod, setRecentPeriod] = useState('day');
+  const [pastPeriod, setPastPeriod] = useState('week');
 
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   const shipperId = userData?.id;
@@ -156,12 +159,73 @@ const ShipperDashboard = ({ gpsData }) => {
   const today = moment().format('YYYY-MM-DD');
   const todayOrders = orders.filter((o) => moment(o.createdAt).format('YYYY-MM-DD') === today);
   
-  // Stats calculations
+  // Base Stats calculations
   const pendingOrders = orders.filter(o => o.statusId === 'S4');
   const activeOrders = orders.filter(o => o.statusId === 'S5');
-  const doneOrdersToday = todayOrders.filter(o => o.statusId === 'S6');
   
-  const incomeToday = doneOrdersToday.length * 15000;
+  // --- COMPARISON LOGIC ---
+  const getDaysByPeriod = (p) => {
+    switch (p) {
+      case 'day': return 1;
+      case 'week': return 7;
+      case 'month': return 30;
+      case 'year': return 365;
+      default: return 1;
+    }
+  };
+
+  const calculateStats = (period, offsetDays = 0) => {
+    const days = getDaysByPeriod(period);
+    const end = moment().subtract(offsetDays, 'days').endOf('day');
+    const start = moment().subtract(offsetDays + days - 1, 'days').startOf('day');
+    
+    const filtered = orders.filter(o => {
+      const d = moment(o.createdAt);
+      return d.isBetween(start, end, null, '[]');
+    });
+
+    return {
+      total: filtered.length,
+      waiting: filtered.filter(o => o.statusId === 'S4').length,
+      delivering: filtered.filter(o => o.statusId === 'S5').length,
+      completed: filtered.filter(o => o.statusId === 'S6').length,
+      cancelled: filtered.filter(o => o.statusId === 'S7').length,
+      failed: filtered.filter(o => o.statusId === 'S8').length,
+    };
+  };
+
+  const recentDays = getDaysByPeriod(recentPeriod);
+  const recentStats = calculateStats(recentPeriod, 0);
+  const pastStats = calculateStats(pastPeriod, recentDays);
+
+  const getChange = (curr, prev) => {
+    if (prev === 0) return curr > 0 ? 100 : 0;
+    return Math.round(((curr - prev) / prev) * 100);
+  };
+
+  const chartData = [
+    { key: 'total', label: 'Tổng đơn', curr: recentStats.total, prev: pastStats.total, isGood: true },
+    { key: 'waiting', label: 'Chờ lấy', curr: recentStats.waiting, prev: pastStats.waiting, isGood: true },
+    { key: 'delivering', label: 'Đang giao', curr: recentStats.delivering, prev: pastStats.delivering, isGood: true },
+    { key: 'completed', label: 'Hoàn thành', curr: recentStats.completed, prev: pastStats.completed, isGood: true },
+    { key: 'cancelled', label: 'Đã hủy', curr: recentStats.cancelled, prev: pastStats.cancelled, isGood: false },
+    { key: 'failed', label: 'Thất bại', curr: recentStats.failed, prev: pastStats.failed, isGood: false },
+  ];
+
+  const maxVal = Math.max(10, ...chartData.map(d => d.curr));
+  const periodLabels = { day: 'Hôm nay', week: 'Tuần này', month: 'Tháng này', year: 'Năm nay' };
+  const pastPeriodLabels = { day: 'Hôm qua', week: 'Tuần trước', month: 'Tháng trước', year: 'Năm trước' };
+
+  let summaryText = '';
+  const compChange = getChange(recentStats.completed, pastStats.completed);
+  if (compChange > 0) summaryText = `Tỷ lệ hoàn thành đơn hàng tăng ${compChange}% so với ${pastPeriodLabels[pastPeriod]?.toLowerCase()}.`;
+  else if (compChange < 0) summaryText = `Tỷ lệ hoàn thành đơn hàng giảm ${Math.abs(compChange)}% so với ${pastPeriodLabels[pastPeriod]?.toLowerCase()}.`;
+  else summaryText = `Tỷ lệ hoàn thành đơn hàng duy trì ổn định so với ${pastPeriodLabels[pastPeriod]?.toLowerCase()}.`;
+  
+  const failChange = getChange(recentStats.failed + recentStats.cancelled, pastStats.failed + pastStats.cancelled);
+  if (failChange > 0) summaryText += ` Lượng đơn huỷ/thất bại tăng ${failChange}%.`;
+  else if (failChange < 0) summaryText += ` Lượng đơn huỷ/thất bại giảm ${Math.abs(failChange)}%.`;
+  // --- END COMPARISON LOGIC ---
   
   // Weekly chart logic
   moment.locale('vi');
@@ -215,58 +279,91 @@ const ShipperDashboard = ({ gpsData }) => {
         </div>
       )}
 
-      {/* Overview Grid */}
-      <div className="sp-card-title" style={{ marginBottom: 16, color: 'var(--sp-text-muted)', fontSize: 13, letterSpacing: 1 }}>TỔNG QUAN HÔM NAY</div>
-      <div className="sp-overview-grid">
-        {/* Card 1 */}
-        <div className="sp-overview-card">
-          <div className="sp-overview-top">
-            <div className="sp-overview-icon gray"><IconBox /></div>
-            <div className="sp-overview-badge">- hôm qua</div>
-          </div>
-          <div>
-            <div className="sp-overview-value">{loading ? '—' : <AnimatedNumber value={todayOrders.length} />}</div>
-            <div className="sp-overview-label">Đơn hôm nay</div>
-            <div className="sp-overview-desc">{todayOrders.length === 0 ? 'Chưa nhận đơn nào' : `${todayOrders.length} đơn phát sinh`}</div>
-          </div>
-        </div>
-        
-        {/* Card 2 */}
-        <div className="sp-overview-card">
-          <div className="sp-overview-top">
-            <div className="sp-overview-icon blue"><IconTruck /></div>
-            {activeOrders.length > 0 && <div className="sp-overview-badge green">▲ {activeOrders.length}</div>}
-          </div>
-          <div>
-            <div className="sp-overview-value">{loading ? '—' : <AnimatedNumber value={activeOrders.length} />}</div>
-            <div className="sp-overview-label">Đang giao</div>
-            <div className="sp-overview-desc">{activeOrders.length} đơn chưa cập nhật</div>
+      {/* Overview & Comparison */}
+      <div className="sp-card-title" style={{ marginBottom: 16, color: 'var(--sp-text-muted)', fontSize: 13, letterSpacing: 1 }}>TỔNG QUAN & SO SÁNH</div>
+      <div className="sp-comparison-grid">
+        {/* Left: Chart */}
+        <div className="sp-comp-card">
+          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Trực quan hóa dữ liệu</div>
+          <div style={{ fontSize: 13, color: 'var(--sp-text-dim)' }}>So sánh: {periodLabels[recentPeriod]} vs {pastPeriodLabels[pastPeriod]}</div>
+          
+          <div className="sp-comp-chart">
+            {chartData.map(item => {
+              const change = getChange(item.curr, item.prev);
+              let pctClass = '';
+              let arrow = '';
+              if (change > 0) {
+                pctClass = item.isGood ? 'up' : 'down';
+                arrow = '↑';
+              } else if (change < 0) {
+                pctClass = item.isGood ? 'down' : 'up';
+                arrow = '↓';
+              }
+              const prevHeightPct = Math.max(5, (item.prev / maxVal) * 100);
+              const heightPct = Math.max(5, (item.curr / maxVal) * 100);
+
+              let barColor = 'var(--sp-primary)';
+              if (item.key === 'completed') barColor = 'var(--sp-success)';
+              if (item.key === 'delivering') barColor = 'var(--sp-primary-light)';
+              if (item.key === 'cancelled' || item.key === 'failed') barColor = 'var(--sp-danger)';
+
+              return (
+                <div key={item.key} className="sp-comp-bar-wrap">
+                  <div className="sp-comp-bar-head">
+                    {change !== 0 && (
+                      <div className={`sp-comp-bar-pct ${pctClass}`}>
+                        {Math.abs(change)}% {arrow}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-end', height: '100%', gap: 4, width: '100%', justifyContent: 'center' }} className="sp-comp-bar-container">
+                    <div className="sp-comp-bar past" style={{ '--bar-pct': `${prevHeightPct}%`, background: 'var(--sp-surface2)', opacity: 0.6 }} title={`Quá khứ: ${item.prev}`}>
+                      <span className="sp-bar-val">{item.prev > 0 ? item.prev : ''}</span>
+                    </div>
+                    <div className="sp-comp-bar recent" style={{ '--bar-pct': `${heightPct}%`, background: barColor }} title={`Gần đây: ${item.curr}`}>
+                      <span className="sp-bar-val">{item.curr > 0 ? item.curr : ''}</span>
+                    </div>
+                  </div>
+                  <div className="sp-comp-bar-label">{item.label}</div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Card 3 */}
-        <div className="sp-overview-card">
-          <div className="sp-overview-top">
-            <div className="sp-overview-icon green"><IconCheck /></div>
-            {doneOrdersToday.length > 0 && <div className="sp-overview-badge green">▲ {doneOrdersToday.length}</div>}
+        {/* Right: Controls */}
+        <div className="sp-comp-card" style={{ padding: '24px 20px' }}>
+          <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 20 }}>Tùy chỉnh so sánh</div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--sp-text-muted)', marginBottom: 12 }}>GẦN ĐÂY</div>
+              <div className="sp-comp-radios">
+                {['day', 'week', 'month', 'year'].map(p => (
+                  <label key={`rec-${p}`} className={`sp-radio-label ${recentPeriod === p ? 'selected-recent' : ''}`}>
+                    {periodLabels[p]}
+                    <input type="radio" name="recent" value={p} checked={recentPeriod === p} onChange={(e) => setRecentPeriod(e.target.value)} />
+                    {recentPeriod === p && <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--sp-primary)' }} />}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--sp-text-muted)', marginBottom: 12 }}>QUÁ KHỨ (Cột mờ)</div>
+              <div className="sp-comp-radios">
+                {['day', 'week', 'month', 'year'].map(p => (
+                  <label key={`past-${p}`} className={`sp-radio-label ${pastPeriod === p ? 'selected-past' : ''}`}>
+                    {pastPeriodLabels[p]}
+                    <input type="radio" name="past" value={p} checked={pastPeriod === p} onChange={(e) => setPastPeriod(e.target.value)} />
+                    {pastPeriod === p && <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--sp-text-muted)' }} />}
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
-          <div>
-            <div className="sp-overview-value">{loading ? '—' : <AnimatedNumber value={doneOrdersToday.length} />}</div>
-            <div className="sp-overview-label">Đã hoàn thành</div>
-            <div className="sp-overview-desc">Tỉ lệ thành công {doneOrdersToday.length > 0 ? '100%' : '0%'}</div>
-          </div>
-        </div>
 
-        {/* Card 4 */}
-        <div className="sp-overview-card">
-          <div className="sp-overview-top">
-            <div className="sp-overview-icon amber"><IconDollar /></div>
-            {incomeToday > 0 && <div className="sp-overview-badge green">▲ 15%</div>}
-          </div>
-          <div>
-            <div className="sp-overview-value" style={{ fontSize: 24 }}>{loading ? '—' : formatMoney(incomeToday)}</div>
-            <div className="sp-overview-label">Thu nhập hôm nay</div>
-            <div className="sp-overview-desc">Mục tiêu: 200.000đ</div>
+          <div className="sp-comp-summary">
+            {summaryText}
           </div>
         </div>
       </div>
