@@ -28,6 +28,61 @@ const HomePageShipper = () => {
   const [availableCount, setAvailableCount] = useState(0);
   const [activeCount, setActiveCount] = useState(0);
 
+  // --- GPS Tracking Logic ---
+  const [gpsData, setGpsData] = useState({ isOnline: false, gpsStartTime: null, gpsTotalMs: 0 });
+
+  useEffect(() => {
+    const savedDate = localStorage.getItem('gpsDate');
+    const todayStr = new Date().toDateString();
+    
+    let isOnline = localStorage.getItem('shipperGPS') === 'true';
+    let totalMs = parseInt(localStorage.getItem('gpsTotalMs') || '0', 10);
+    let startTime = parseInt(localStorage.getItem('gpsStartTime') || '0', 10);
+    
+    if (savedDate !== todayStr) {
+      totalMs = 0;
+      if (isOnline) {
+        startTime = Date.now();
+        localStorage.setItem('gpsStartTime', startTime);
+      } else {
+        startTime = null;
+        localStorage.removeItem('gpsStartTime');
+      }
+      localStorage.setItem('gpsDate', todayStr);
+      localStorage.setItem('gpsTotalMs', '0');
+    } else {
+      if (isOnline && !startTime) {
+        startTime = Date.now();
+        localStorage.setItem('gpsStartTime', startTime);
+      }
+    }
+    setGpsData({ isOnline, gpsStartTime: startTime || null, gpsTotalMs: totalMs });
+  }, []);
+
+  const toggleGps = useCallback(() => {
+    setGpsData(prev => {
+      const isOnline = !prev.isOnline;
+      let totalMs = prev.gpsTotalMs;
+      let startTime = prev.gpsStartTime;
+      const now = Date.now();
+      
+      localStorage.setItem('shipperGPS', String(isOnline));
+      localStorage.setItem('gpsDate', new Date().toDateString());
+      
+      if (isOnline) {
+        startTime = now;
+        localStorage.setItem('gpsStartTime', startTime);
+      } else {
+        if (startTime) totalMs += (now - startTime);
+        startTime = null;
+        localStorage.removeItem('gpsStartTime');
+        localStorage.setItem('gpsTotalMs', totalMs);
+      }
+      return { isOnline, gpsStartTime: startTime, gpsTotalMs: totalMs };
+    });
+  }, []);
+  // --- End GPS Logic ---
+
   useEffect(() => {
     const fetchCounts = async () => {
       try {
@@ -60,11 +115,11 @@ const HomePageShipper = () => {
       </div>
 
       <div className="sp-layout">
-        <div className="sp-header"><ShipperHeader onToggleSidebar={open} availableCount={availableCount} /></div>
+        <div className="sp-header"><ShipperHeader onToggleSidebar={open} availableCount={availableCount} isOnline={gpsData.isOnline} onToggleGps={toggleGps} /></div>
         <div className="sp-sidebar"><ShipperSideBar availableCount={availableCount} activeCount={activeCount} /></div>
         <main className="sp-main">
           <Routes>
-            <Route path="/"                 element={<ShipperDashboard />} />
+            <Route path="/"                 element={<ShipperDashboard gpsData={gpsData} />} />
             <Route path="/orders-available" element={<OrdersAvailable />} />
             <Route path="/my-orders"        element={<OrdersActive />} />
             <Route path="/stats"            element={<ShipperStats />} />

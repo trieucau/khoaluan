@@ -34,7 +34,7 @@ const AnimatedNumber = ({ value }) => {
   return <>{display}</>;
 };
 
-const ShipperDashboard = () => {
+const ShipperDashboard = ({ gpsData }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [weather, setWeather] = useState({ 
@@ -45,7 +45,34 @@ const ShipperDashboard = () => {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   const shipperId = userData?.id;
   const firstName = userData?.firstName || 'Shipper';
-  const isOnline = localStorage.getItem('shipperGPS') === 'true';
+  
+  const { isOnline, gpsStartTime, gpsTotalMs } = gpsData || { isOnline: false, gpsStartTime: null, gpsTotalMs: 0 };
+  const [sessionTimeMs, setSessionTimeMs] = useState(gpsTotalMs);
+
+  useEffect(() => {
+    let timer;
+    if (isOnline) {
+      // Immediate update
+      const now = Date.now();
+      setSessionTimeMs(gpsTotalMs + (now - (gpsStartTime || now)));
+      
+      timer = setInterval(() => {
+        const currentNow = Date.now();
+        setSessionTimeMs(gpsTotalMs + (currentNow - (gpsStartTime || currentNow)));
+      }, 1000);
+    } else {
+      setSessionTimeMs(gpsTotalMs);
+    }
+    return () => { if (timer) clearInterval(timer); };
+  }, [isOnline, gpsStartTime, gpsTotalMs]);
+
+  const formatMs = (ms) => {
+    const totalSecs = Math.floor(ms / 1000);
+    const h = Math.floor(totalSecs / 3600);
+    const m = Math.floor((totalSecs % 3600) / 60);
+    const s = totalSecs % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   useEffect(() => {
     if (!shipperId) { setLoading(false); return; }
@@ -166,7 +193,11 @@ const ShipperDashboard = () => {
         </div>
         <div className={`sp-online-status ${!isOnline ? 'off' : ''}`}>
           <div className={`sp-gps-dot ${isOnline ? 'on' : 'off'}`} style={{ width: 8, height: 8 }} />
-          Ca Làm {isOnline ? 'đang bật' : 'đang tắt'} - {moment().format('HH:mm')}
+          {isOnline ? (
+            <span>Ca làm đang chạy - {formatMs(sessionTimeMs)}</span>
+          ) : (
+            <span>Ca làm đã dừng - Tổng: {formatMs(sessionTimeMs)}</span>
+          )}
         </div>
       </div>
 
