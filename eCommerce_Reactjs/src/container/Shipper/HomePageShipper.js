@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Route, Routes, NavLink } from 'react-router-dom';
+import { getOrdersAvailableForShipper, getAllOrdersByShipper } from '../../services/userService';
 import ShipperHeader from './ShipperHeader';
 import ShipperSideBar from './ShipperSideBar';
 import ShipperDashboard from './ShipperDashboard';
@@ -24,17 +25,43 @@ const HomePageShipper = () => {
   const open  = useCallback(() => setSidebarOpen(true),  []);
   const close = useCallback(() => setSidebarOpen(false), []);
 
+  const [availableCount, setAvailableCount] = useState(0);
+  const [activeCount, setActiveCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const shipperId = JSON.parse(localStorage.getItem('userData') || '{}')?.id;
+        if (!shipperId) return;
+
+        const [resAvail, resAll] = await Promise.all([
+          getOrdersAvailableForShipper(),
+          getAllOrdersByShipper({ shipperId })
+        ]);
+
+        if (resAvail?.errCode === 0) setAvailableCount(resAvail.data?.length || 0);
+        if (resAll?.errCode === 0) {
+          const active = (resAll.data || []).filter(o => o.statusId === 'S4' || o.statusId === 'S5');
+          setActiveCount(active.length);
+        }
+      } catch (e) { /* ignore */ }
+    };
+    fetchCounts();
+    const timer = setInterval(fetchCounts, 10000); // 10s polling
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="shipper-portal">
       <div className={`sp-sidebar-overlay${sidebarOpen ? ' open' : ''}`} onClick={close} aria-hidden="true" />
       <div className={`sp-sidebar-drawer${sidebarOpen ? ' open' : ''}`}>
         <button className="sp-sidebar-close" onClick={close} aria-label="Đóng menu">✕</button>
-        <ShipperSideBar onLinkClick={close} />
+        <ShipperSideBar onLinkClick={close} availableCount={availableCount} activeCount={activeCount} />
       </div>
 
       <div className="sp-layout">
-        <div className="sp-header"><ShipperHeader onToggleSidebar={open} /></div>
-        <div className="sp-sidebar"><ShipperSideBar /></div>
+        <div className="sp-header"><ShipperHeader onToggleSidebar={open} availableCount={availableCount} /></div>
+        <div className="sp-sidebar"><ShipperSideBar availableCount={availableCount} activeCount={activeCount} /></div>
         <main className="sp-main">
           <Routes>
             <Route path="/"                 element={<ShipperDashboard />} />

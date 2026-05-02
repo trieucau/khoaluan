@@ -1,33 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-const ShipperHeader = ({ onToggleSidebar }) => {
-  const [user, setUser] = useState({});
-  const [open, setOpen] = useState(false);
-  const dropRef = useRef(null);
-  const navigate = useNavigate();
+const ShipperHeader = ({ onToggleSidebar, availableCount }) => {
+  const [gpsOn, setGpsOn] = useState(false);
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    setUser(userData);
+    // Init GPS state
+    const saved = localStorage.getItem('shipperGPS');
+    if (saved === 'true') setGpsOn(true);
   }, []);
 
-  useEffect(() => {
-    const handler = (e) => {
-      if (dropRef.current && !dropRef.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('userData');
-    localStorage.removeItem('token');
-    navigate('/login');
+  const toggleGps = () => {
+    const newVal = !gpsOn;
+    setGpsOn(newVal);
+    localStorage.setItem('shipperGPS', String(newVal));
   };
 
-  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase() || 'S';
-  const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Shipper';
+
 
   return (
     <nav className="sp-header-bar">
@@ -43,39 +32,20 @@ const ShipperHeader = ({ onToggleSidebar }) => {
       </Link>
 
       <div className="sp-header-right">
-        <div ref={dropRef} style={{ position: 'relative' }}>
-          <button className="sp-user-btn" onClick={() => setOpen(v => !v)} style={{ border: 'none' }}>
-            <div className="sp-avatar">{initials}</div>
-            <span className="sp-user-name">{fullName}</span>
-            <div className="sp-online-dot" />
-          </button>
-
-          {open && (
-            <div className="sp-dropdown">
-              {/* User info */}
-              <div className="sp-dropdown-item" style={{ cursor: 'default', fontSize: 12, opacity: 0.7 }}>
-                <span>🚚</span><span>{fullName}</span>
-              </div>
-              <div className="sp-dropdown-divider" />
-
-              {/* Profile */}
-              <Link to="/shipper/profile" className="sp-dropdown-item" onClick={() => setOpen(false)}>
-                <span>👤</span><span>Thông tin cá nhân</span>
-              </Link>
-
-              {/* Change password */}
-              <Link to="/shipper/change-password" className="sp-dropdown-item" onClick={() => setOpen(false)}>
-                <span>🔐</span><span>Đổi mật khẩu</span>
-              </Link>
-
-              <div className="sp-dropdown-divider" />
-
-              {/* Logout */}
-              <div className="sp-dropdown-item" onClick={handleLogout} style={{ color: '#fca5a5' }}>
-                <span>🚪</span><span>Đăng xuất</span>
-              </div>
+        <div className="sp-header-actions" style={{ marginRight: 0 }}>
+          {/* GPS Toggle */}
+          <div className="sp-toggle-wrap" onClick={toggleGps}>
+            <span className={`sp-toggle-label ${gpsOn ? 'active' : ''}`}>GPS</span>
+            <div className={`sp-toggle ${gpsOn ? 'on' : ''}`}>
+              <div className="sp-toggle-knob" />
             </div>
-          )}
+          </div>
+
+          {/* Notification Bell */}
+          <Link to="/shipper/orders-available" className="sp-noti-btn" title="Đơn có thể nhận">
+            🔔
+            {availableCount > 0 && <span className="sp-noti-badge">{availableCount > 99 ? '99+' : availableCount}</span>}
+          </Link>
         </div>
       </div>
     </nav>
