@@ -106,7 +106,7 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
         onClick={() => setOpen((v) => !v)}
         style={{
           position: 'absolute', top: '50%', left: open ? 'calc(98% - 18px)' : 0,
-          transform: 'translateY(-50%)', zIndex: 1100,
+          transform: 'translateY(-50%)', zIndex: 3000,
           width: 28, height: 56, background: 'linear-gradient(135deg,#1d4ed8,#0891b2)',
           color: '#fff', border: 'none', borderRadius: '0 8px 8px 0',
           cursor: 'pointer', fontSize: 18, fontWeight: 700,
@@ -122,7 +122,7 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
       {/* Sliding Panel */}
       <div style={{
         position: 'absolute', top: 0, left: 0, height: '100%', width: '100%',
-        background: '#0f172a', zIndex: 1050,
+        background: '#0f172a', zIndex: 2900,
         boxShadow: open ? '4px 0 32px rgba(0,0,0,0.5)' : 'none',
         transform: open ? 'translateX(0)' : 'translateX(-100%)',
         transition: 'transform 0.35s cubic-bezier(.4,0,.2,1)',

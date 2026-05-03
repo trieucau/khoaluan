@@ -17,19 +17,19 @@ const BOTTOM_NAV = [
   { to: '/shipper/orders-available',            icon: '📋', label: 'Nhận đơn'  },
   { to: '/shipper/my-orders',                   icon: '📦', label: 'Đơn của tôi' },
   { to: '/shipper/stats',                       icon: '📊', label: 'Thống kê'  },
-  { to: '/shipper/map',                         icon: '🗺️', label: 'Bản đồ'    },
 ];
 
 const HomePageShipper = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const open  = useCallback(() => setSidebarOpen(true),  []);
-  const close = useCallback(() => setSidebarOpen(false), []);
+  const toggleSidebar = useCallback(() => setSidebarOpen(prev => !prev), []);
+  const closeSidebar  = useCallback(() => setSidebarOpen(false), []);
 
   const [availableCount, setAvailableCount] = useState(0);
   const [activeCount, setActiveCount] = useState(0);
 
   // --- GPS Tracking Logic ---
   const [gpsData, setGpsData] = useState({ isOnline: false, gpsStartTime: null, gpsTotalMs: 0 });
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     const savedDate = localStorage.getItem('gpsDate');
@@ -108,24 +108,23 @@ const HomePageShipper = () => {
 
   return (
     <div className="shipper-portal">
-      <div className={`sp-sidebar-overlay${sidebarOpen ? ' open' : ''}`} onClick={close} aria-hidden="true" />
+      <div className={`sp-sidebar-overlay${sidebarOpen ? ' open' : ''}`} onClick={closeSidebar} aria-hidden="true" />
       <div className={`sp-sidebar-drawer${sidebarOpen ? ' open' : ''}`}>
-        <button className="sp-sidebar-close" onClick={close} aria-label="Đóng menu">✕</button>
-        <ShipperSideBar onLinkClick={close} availableCount={availableCount} activeCount={activeCount} />
+        <button className="sp-sidebar-close" onClick={closeSidebar} aria-label="Đóng menu">✕</button>
+        <ShipperSideBar onLinkClick={closeSidebar} availableCount={availableCount} activeCount={activeCount} />
       </div>
 
       <div className="sp-layout">
-        <div className="sp-header"><ShipperHeader onToggleSidebar={open} availableCount={availableCount} isOnline={gpsData.isOnline} onToggleGps={toggleGps} /></div>
+        <div className="sp-header"><ShipperHeader onToggleSidebar={toggleSidebar} availableCount={availableCount} isOnline={gpsData.isOnline} onToggleGps={toggleGps} onToggleNotifications={() => setShowNotifications(!showNotifications)} /></div>
         <div className="sp-sidebar"><ShipperSideBar availableCount={availableCount} activeCount={activeCount} /></div>
         <main className="sp-main">
           <Routes>
-            <Route path="/"                 element={<ShipperDashboard gpsData={gpsData} />} />
+            <Route path="/"                 element={<ShipperDashboard gpsData={gpsData} onToggleGps={toggleGps} showNotifications={showNotifications} setShowNotifications={setShowNotifications} />} />
             <Route path="/orders-available" element={<OrdersAvailable />} />
             <Route path="/my-orders"        element={<OrdersActive />} />
             <Route path="/stats"            element={<ShipperStats />} />
             <Route path="/profile"          element={<ShipperProfile />} />
             <Route path="/change-password"  element={<ShipperChangePassword />} />
-            <Route path="/map"              element={<ShipperMap />} />
           </Routes>
         </main>
       </div>

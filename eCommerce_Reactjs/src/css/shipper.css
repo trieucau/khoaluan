@@ -20,6 +20,7 @@
   --sp-text-dim: #6B7280;
   --sp-sidebar-w: 240px;
   --sp-header-h: 64px;
+  --sp-bottom-nav-h: 64px;
   --sp-radius: 16px;
   --sp-radius-sm: 10px;
   --sp-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
@@ -32,10 +33,10 @@
 .shipper-portal { font-family: 'Be Vietnam Pro', sans-serif; background: var(--sp-bg); color: var(--sp-text); min-height: 100vh; }
 
 /* ---- LAYOUT ---- */
-.sp-layout { display: grid; grid-template-rows: var(--sp-header-h) 1fr; grid-template-columns: var(--sp-sidebar-w) 1fr; min-height: 100vh; }
+.sp-layout { display: grid; grid-template-rows: var(--sp-header-h) 1fr; grid-template-columns: var(--sp-sidebar-w) 1fr; height: 100vh; overflow: hidden; }
 .sp-header { grid-column: 1 / -1; grid-row: 1; z-index: 200; }
 .sp-sidebar { grid-column: 1; grid-row: 2; }
-.sp-main { grid-column: 2; grid-row: 2; overflow-y: auto; background: var(--sp-bg); }
+.sp-main { grid-column: 2; grid-row: 2; overflow: hidden; background: var(--sp-bg); position: relative; }
 .sp-page { padding: 28px 32px; }
 
 /* ---- HEADER ---- */
@@ -650,3 +651,231 @@ svg.lucide { width:20px; height:20px; stroke-width:2; stroke:currentColor; fill:
 .sp-btn:focus-visible { outline:2px solid var(--sp-primary); outline-offset:2px; }
 .sp-bottom-nav-item:focus-visible { outline:2px solid var(--sp-primary); }
 
+/* ============================================================
+   MAP-CENTRIC COMMAND CENTER UI
+   ============================================================ */
+.sp-command-center {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.sp-full-map-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Floating Overlay Container */
+.sp-overlay-container {
+  position: absolute;
+  inset: 0;
+  z-index: 100; /* Higher priority */
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  overflow: visible; /* CRITICAL: Prevent clipping of floating widgets */
+}
+
+.sp-overlay-container > * {
+  pointer-events: auto;
+}
+
+/* Responsive Grid for Overlays */
+.sp-float-status {
+  width: 100%;
+  max-width: 500px;
+  align-self: center;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 10;
+}
+
+.sp-float-middle {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+  display: flex;
+  pointer-events: none;
+}
+
+.sp-float-middle > * {
+  pointer-events: auto;
+}
+
+/* Base side column (Web) */
+.sp-float-side {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  bottom: 20px;
+  width: 240px; /* Reduced by 30% from 340px */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 100;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sp-float-side > * {
+  pointer-events: auto;
+}
+
+.sp-float-active-wrapper {
+  width: 100%;
+}
+
+/* Glassmorphism Refinement */
+.sp-glass-panel {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  padding: 16px;
+}
+
+/* MOBILE ADAPTATION (Tablet/Mobile) */
+@media (max-width: 1024px) {
+  .sp-float-side {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 12px;
+    justify-content: flex-end;
+    pointer-events: none;
+  }
+
+  .sp-float-side > div:not(.sp-float-active-wrapper) {
+    display: none; /* Hide non-essential widgets on mobile to prioritize map */
+  }
+
+  .sp-float-active-wrapper {
+    width: 100%;
+    pointer-events: auto;
+  }
+
+  .sp-float-status {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    z-index: 1000;
+  }
+
+  .sp-zone-earnings {
+    position: absolute;
+    top: 70px;
+    right: 12px;
+    z-index: 1000;
+  }
+}
+
+/* SMALL MOBILE */
+@media (max-width: 600px) {
+  .sp-overlay-container {
+    padding: 0;
+  }
+
+  .sp-float-side {
+    padding: 0;
+  }
+
+  .sp-glass-panel {
+    border-radius: 0; /* Full width bottom sheet */
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .sp-float-active-wrapper .sp-glass-panel {
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+  }
+}
+
+/* Ticker Animation */
+.sp-ticker-wrap {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sp-ticker-content {
+  display: inline-block;
+  padding-left: 100%;
+  animation: sp-ticker 30s linear infinite;
+  color: var(--sp-text);
+  font-weight: 500;
+}
+
+@keyframes sp-ticker {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-100%, 0, 0); }
+}
+
+/* ============================================================
+   MOBILE HUB & FLOATING WIDGETS
+   ============================================================ */
+.sp-mobile-hub-btn {
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+.sp-mobile-hub-btn:active {
+  transform: scale(0.9) !important;
+}
+
+.sp-mobile-hub-btn.active {
+  background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4) !important;
+}
+
+@media (max-width: 1024px) {
+  .sp-float-side.hub-expanded {
+    display: flex !important;
+    animation: spSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 32px 32px 0 0;
+    box-shadow: 0 -20px 60px rgba(0,0,0,0.6);
+  }
+
+  .sp-float-side.hub-expanded > div {
+    display: flex !important;
+    width: 100%;
+  }
+}
+
+.sp-action-icon-btn {
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.sp-action-icon-btn:active {
+  transform: scale(0.92);
+  background: rgba(255,255,255,0.1) !important;
+}
+
+.sp-action-icon-btn.success:active {
+  background: rgba(34, 197, 94, 0.3) !important;
+}
+
+/* Proportional scaling for web widgets */
+@media (min-width: 1025px) {
+  .sp-float-side {
+    gap: 1.5vw;
+  }
+  .sp-glass-panel {
+    padding: 1.2vw;
+  }
+}

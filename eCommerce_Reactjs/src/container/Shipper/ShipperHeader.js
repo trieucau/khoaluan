@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const ShipperHeader = ({ onToggleSidebar, availableCount, isOnline, onToggleGps }) => {
+const ShipperHeader = ({ onToggleSidebar, availableCount, isOnline, onToggleGps, onToggleNotifications }) => {
   return (
     <nav className="sp-header-bar">
       {/* Hamburger */}
@@ -26,10 +26,10 @@ const ShipperHeader = ({ onToggleSidebar, availableCount, isOnline, onToggleGps 
           </div>
 
           {/* Notification Bell */}
-          <Link to="/shipper/orders-available" className="sp-noti-btn" title="Đơn có thể nhận">
+          <button className="sp-noti-btn" onClick={onToggleNotifications} title="Đơn có thể nhận">
             🔔
             {availableCount > 0 && <span className="sp-noti-badge">{availableCount > 99 ? '99+' : availableCount}</span>}
-          </Link>
+          </button>
         </div>
       </div>
     </nav>
