@@ -237,14 +237,29 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
   }, [activeOrders]);
 
   const [dailyStats, setDailyStats] = useState({ count: 0, income: 0 });
+  const [reliabilityScore, setReliabilityScore] = useState(0);
+
   useEffect(() => {
     if (!shipperId) return;
     const today = moment().format('YYYY-MM-DD');
     getAllOrdersByShipper({ shipperId })
       .then(res => {
         if (res?.errCode === 0) {
-          const todayDone = res.data.filter(o => o.statusId === 'S6' && moment(o.updatedAt).format('YYYY-MM-DD') === today);
+          const allOrders = res.data || [];
+          // Daily Stats
+          const todayDone = allOrders.filter(o => o.statusId === 'S6' && moment(o.updatedAt).format('YYYY-MM-DD') === today);
           setDailyStats({ count: todayDone.length, income: todayDone.length * 20000 });
+
+          // Reliability Score Logic
+          const total = allOrders.length;
+          if (total > 0) {
+            const completed = allOrders.filter(o => o.statusId === 'S6').length;
+            const failed = allOrders.filter(o => o.statusId === 'S8').length;
+            const completionRate = Math.round((completed / total) * 100);
+            const successRate = (completed + failed) > 0 ? Math.round((completed / (completed + failed)) * 100) : 0;
+            const score = Math.max(0, Math.min(100, Math.round(completionRate * 0.7 + successRate * 0.3)));
+            setReliabilityScore(score);
+          }
         }
       });
   }, [shipperId]);
@@ -349,8 +364,8 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
               transition: dragging === 'side' ? 'none' : 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
-            <WeatherWidget dragHandleClass="sp-drag-handle" />
-            <RankWidget dragHandleClass="sp-drag-handle" />
+            <WeatherWidget dragHandleClass="sp-drag-handle" pos={shipperPos} />
+            <RankWidget dragHandleClass="sp-drag-handle" score={reliabilityScore} />
             <ActiveOrderWidget 
               order={heroOrder} 
               isMinimized={isMinimized} 
