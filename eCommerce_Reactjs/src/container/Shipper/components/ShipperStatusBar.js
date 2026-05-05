@@ -1,6 +1,48 @@
 import React from 'react';
 
-const ShipperStatusBar = ({ isOnline, sessionTimeMs, formatMs, firstName, dailyStats, formatMoney }) => {
+const ShipperStatusBar = ({ isOnline, sessionTimeMs, formatMs, firstName, dailyStats, formatMoney, weatherData, rankProgress }) => {
+  const tickerText = React.useMemo(() => {
+    let msg = [];
+    
+    // 1. Weather & High Demand (Operational Efficiency)
+    if (weatherData) {
+      const code = weatherData.weathercode;
+      const temp = Math.round(weatherData.temperature);
+      const city = weatherData.city;
+
+      msg.push(`📍 ${city} (${temp}°C)`);
+
+      if (code >= 51) msg.push('🌧️ Cảnh báo mưa: Đường trơn trượt, hãy giảm tốc độ và chú ý an toàn.');
+      else if (temp >= 35) msg.push('🔥 Cảnh báo nắng nóng: Hãy nghỉ ngơi tại các trạm dừng chân.');
+      else msg.push('☀️ Thời tiết lý tưởng để bùng nổ doanh thu hôm nay!');
+
+      // Simulate Heatmap based on city
+      msg.push(`🗺️ Khu vực ${city} đang có nhu cầu cao, hãy sẵn sàng nhận đơn!`);
+    }
+
+    // 2. Ranking Progress (Financial Motivation)
+    if (rankProgress) {
+      const { score, nextGoal, nextRank } = rankProgress;
+      if (score < 95) {
+        msg.push(`🏆 Mục tiêu: Chỉ cần thêm ${nextGoal - score}% tin cậy để đạt ${nextRank}!`);
+      } else {
+        msg.push('👑 Bạn đang là tài xế Huyền Thoại! Duy trì phong độ để nhận ưu đãi tối đa.');
+      }
+    }
+
+    // 3. Performance & Earnings
+    if (dailyStats.count > 0) {
+      msg.push(`✨ Hôm nay: Đã hoàn thành ${dailyStats.count} đơn • Thu nhập: +${formatMoney(dailyStats.income)}`);
+    } else {
+      msg.push('💪 Chúc bạn một ngày mới "nổ đơn" liên tục!');
+    }
+
+    // 4. System Tips
+    msg.push('💡 Mẹo: Chấp nhận đơn nhanh trong 30s để tăng 5% điểm ưu tiên từ hệ thống.');
+
+    return msg.join('   •   ');
+  }, [weatherData, dailyStats, firstName, rankProgress]);
+
   return (
     <section className="sp-float-status" style={{
       position: 'absolute', top: 'clamp(10px, 1.5vw, 24px)', left: '50%', transform: 'translateX(-50%)',
@@ -51,7 +93,7 @@ const ShipperStatusBar = ({ isOnline, sessionTimeMs, formatMs, firstName, dailyS
             color: '#fbbf24', 
             fontWeight: 700 
           }}>
-            Khu vực Quận 1 (+5k thưởng) • Lưu ý thời tiết mưa tại Quận 7 • Shipper {firstName} đã hoàn thành xuất sắc ca sáng! • Cảnh báo: Đường Nguyễn Huệ đang cấm xe • Chúc bạn một ngày làm việc hiệu quả!
+            {tickerText}
           </div>
         </div>
       </div>

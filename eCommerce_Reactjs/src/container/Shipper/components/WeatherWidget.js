@@ -1,49 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-const WeatherWidget = ({ dragHandleClass, pos }) => {
-  const [weather, setWeather] = useState({ temp: '--', city: 'Đang tải...', desc: 'Cập nhật thời tiết...' });
+const WeatherWidget = ({ dragHandleClass, weatherData }) => {
+  const weather = React.useMemo(() => {
+    if (!weatherData) return { temp: '--', city: 'Đang tải...', desc: 'Cập nhật thời tiết...' };
+    
+    const temp = Math.round(weatherData.temperature);
+    const code = weatherData.weathercode;
+    const city = weatherData.city;
+    
+    let desc = 'Trời quang';
+    if (code >= 1 && code <= 3) desc = 'Nhiều mây';
+    if (code >= 45 && code <= 48) desc = 'Có sương mù';
+    if (code >= 51 && code <= 67) desc = 'Có mưa nhẹ';
+    if (code >= 71 && code <= 82) desc = 'Có mưa rào';
+    if (code >= 95) desc = 'Có dông';
 
-  useEffect(() => {
-    if (!pos || !pos[0]) return;
-
-    const fetchWeather = async () => {
-      try {
-        // Free API: Open-Meteo
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos[0]}&longitude=${pos[1]}&current_weather=true`);
-        const data = await res.json();
-        
-        if (data?.current_weather) {
-          const temp = Math.round(data.current_weather.temperature);
-          const code = data.current_weather.weathercode;
-          
-          // Simple mapping for common weather codes
-          let desc = 'Trời quang';
-          if (code >= 1 && code <= 3) desc = 'Nhiều mây';
-          if (code >= 45 && code <= 48) desc = 'Có sương mù';
-          if (code >= 51 && code <= 67) desc = 'Có mưa nhẹ';
-          if (code >= 71 && code <= 82) desc = 'Có mưa rào';
-          if (code >= 95) desc = 'Có dông';
-
-          // Reverse geocoding for city name (simple approach using lat/lng if no API key)
-          // For now, let's just use "Vị trí của bạn" or try a simple reverse geocode
-          let city = 'Vị trí hiện tại';
-          try {
-             const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos[0]}&lon=${pos[1]}`);
-             const geoData = await geoRes.json();
-             city = geoData.address.city || geoData.address.town || geoData.address.suburb || 'TP. Hồ Chí Minh';
-          } catch(e) { console.error(e); }
-
-          setWeather({ temp, city, desc });
-        }
-      } catch (e) {
-        console.error('Weather error:', e);
-      }
-    };
-
-    fetchWeather();
-    const interval = setInterval(fetchWeather, 600000); // 10 mins
-    return () => clearInterval(interval);
-  }, [pos]);
+    return { temp, city, desc };
+  }, [weatherData]);
 
   return (
     <div className="sp-glass-panel" style={{ padding: 12, borderRadius: 16, position: 'relative' }}>

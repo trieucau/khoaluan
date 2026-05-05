@@ -139,6 +139,29 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
   const { isOnline, gpsStartTime, gpsTotalMs } = gpsData || { isOnline: false, gpsStartTime: null, gpsTotalMs: 0 };
   const [sessionTimeMs, setSessionTimeMs] = useState(gpsTotalMs);
   const [shipperPos, setShipperPos] = useState([10.7626, 106.6601]);
+  const [weatherData, setWeatherData] = useState(null);
+
+  useEffect(() => {
+    if (!shipperPos || !shipperPos[0]) return;
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${shipperPos[0]}&longitude=${shipperPos[1]}&current_weather=true`);
+        const data = await res.json();
+        if (data?.current_weather) {
+          let city = 'Vị trí hiện tại';
+          try {
+            const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${shipperPos[0]}&lon=${shipperPos[1]}`);
+            const geoData = await geoRes.json();
+            city = geoData.address.city || geoData.address.town || geoData.address.suburb || 'Khu vực hiện tại';
+          } catch(e) {}
+          setWeatherData({ ...data.current_weather, city });
+        }
+      } catch (e) {}
+    };
+    fetchWeather();
+    const interval = setInterval(fetchWeather, 600000);
+    return () => clearInterval(interval);
+  }, [shipperPos]);
 
   useEffect(() => {
     socketRef.current = socketIOClient.connect(BACKEND_URL);
@@ -238,6 +261,7 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
 
   const [dailyStats, setDailyStats] = useState({ count: 0, income: 0 });
   const [reliabilityScore, setReliabilityScore] = useState(0);
+  const [rankProgress, setRankProgress] = useState(null);
 
   useEffect(() => {
     if (!shipperId) return;
@@ -259,6 +283,16 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
             const successRate = (completed + failed) > 0 ? Math.round((completed / (completed + failed)) * 100) : 0;
             const score = Math.max(0, Math.min(100, Math.round(completionRate * 0.7 + successRate * 0.3)));
             setReliabilityScore(score);
+
+            // Calculate Next Rank
+            let nextGoal = 70;
+            let nextRank = 'Hạng B';
+            if (score >= 95) { nextGoal = 100; nextRank = 'Huyền Thoại'; }
+            else if (score >= 90) { nextGoal = 95; nextRank = 'Hạng S+'; }
+            else if (score >= 80) { nextGoal = 90; nextRank = 'Hạng S'; }
+            else if (score >= 70) { nextGoal = 80; nextRank = 'Hạng A'; }
+            
+            setRankProgress({ score, nextGoal, nextRank, total });
           }
         }
       });
@@ -332,6 +366,8 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
             firstName={firstName} 
             dailyStats={dailyStats} 
             formatMoney={formatMoney} 
+            weatherData={weatherData}
+            rankProgress={rankProgress}
           />
         </div>
 
@@ -364,7 +400,7 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
               transition: dragging === 'side' ? 'none' : 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
-            <WeatherWidget dragHandleClass="sp-drag-handle" pos={shipperPos} />
+            <WeatherWidget dragHandleClass="sp-drag-handle" pos={shipperPos} weatherData={weatherData} />
             <RankWidget dragHandleClass="sp-drag-handle" score={reliabilityScore} />
             <ActiveOrderWidget 
               order={heroOrder} 
