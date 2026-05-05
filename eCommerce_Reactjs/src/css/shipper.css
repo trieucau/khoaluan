@@ -1217,3 +1217,72 @@ svg.lucide { width:20px; height:20px; stroke-width:2; stroke:currentColor; fill:
   font-weight: 700;
   color: var(--sp-primary-light);
 }
+
+/* ============================================================
+   PAGINATION UI
+   ============================================================ */
+.sp-pagination {
+  background: rgba(15, 23, 42, 0.4) !important;
+  backdrop-filter: blur(5px);
+}
+
+.sp-pagination-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--sp-text-muted);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.sp-pagination-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.sp-pagination-btn:active:not(:disabled) {
+  transform: translateY(-1px) scale(0.95);
+}
+
+.sp-pagination-btn.active {
+  background: linear-gradient(135deg, var(--sp-primary), var(--sp-primary-light));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.sp-pagination-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.sp-pagination-btn svg {
+  stroke-width: 3;
+}
+
+/* Mobile adjustments for pagination */
+@media (max-width: 600px) {
+  .sp-pagination {
+    padding: 12px 10px !important;
+    gap: 6px !important;
+  }
+  .sp-pagination-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 12px;
+  }
+}

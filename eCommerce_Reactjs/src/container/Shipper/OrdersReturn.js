@@ -31,6 +31,8 @@ const OrdersReturn = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   const shipperId = userData?.id;
@@ -56,15 +58,28 @@ const OrdersReturn = () => {
 
   useEffect(() => { load(); }, [load]);
 
-  const counts = RETURN_TABS.reduce((acc, t) => {
-    acc[t.key] = t.key === 'all' ? orders.length : orders.filter(o => o.statusId === t.key).length;
-    return acc;
-  }, {});
+  const counts = React.useMemo(() => {
+    return RETURN_TABS.reduce((acc, t) => {
+      acc[t.key] = t.key === 'all' ? orders.length : orders.filter(o => o.statusId === t.key).length;
+      return acc;
+    }, {});
+  }, [orders]);
 
-  const filtered = tab === 'all' ? orders : orders.filter(o => o.statusId === tab);
+  const filtered = React.useMemo(() => {
+    return tab === 'all' ? orders : orders.filter(o => o.statusId === tab);
+  }, [orders, tab]);
+
+  // Reset page when tab changes
+  useEffect(() => { setCurrentPage(1); }, [tab]);
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const pagedItems = React.useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filtered.slice(start, start + itemsPerPage);
+  }, [filtered, currentPage]);
 
   return (
-    <div className="sp-page">
+    <div className="sp-page" style={{ paddingBottom: 100 }}>
       <div className="sp-page-header">
         <div className="sp-page-title">
           <svg className="sp-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>
@@ -101,7 +116,7 @@ const OrdersReturn = () => {
             <tbody>
               {loading ? (
                 <SkeletonRows />
-              ) : filtered.length === 0 ? (
+              ) : pagedItems.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={{ padding: 0, border: 'none' }}>
                     <div className="sp-empty">
@@ -114,7 +129,7 @@ const OrdersReturn = () => {
                   </td>
                 </tr>
               ) : (
-                filtered.map((o, i) => {
+                pagedItems.map((o, i) => {
                   const cfg = STATUS_CONFIG[o.statusId] || { label: o.statusId, badge: 'sp-badge-gray', icon: null };
                   return (
                     <tr key={o.id} className="sp-row-enter" style={{ animationDelay: `${i * 40}ms` }}>
@@ -152,6 +167,40 @@ const OrdersReturn = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="sp-pagination" style={{ padding: '16px 20px', borderTop: '1px solid var(--sp-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+            <div style={{ fontSize: 13, color: 'var(--sp-text-dim)', fontWeight: 600 }}>
+              Hiển thị <span style={{ color: '#fff' }}>{(currentPage-1)*itemsPerPage + 1} - {Math.min(currentPage*itemsPerPage, filtered.length)}</span> trong <span style={{ color: '#fff' }}>{filtered.length}</span> đơn
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button 
+                className="sp-pagination-btn" 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              {[...Array(totalPages)].map((_, i) => (
+                <button 
+                  key={i} 
+                  className={`sp-pagination-btn${currentPage === i + 1 ? ' active' : ''}`}
+                  onClick={() => setCurrentPage(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button 
+                className="sp-pagination-btn" 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

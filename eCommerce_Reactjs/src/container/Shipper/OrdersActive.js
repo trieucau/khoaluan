@@ -116,6 +116,8 @@ const OrdersActive = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
   const [actionLoading, setActionLoading] = useState(null); // orderId
   const [completeModal, setCompleteModal] = useState(null);
   const [failModal, setFailModal] = useState(null);
@@ -129,8 +131,18 @@ const OrdersActive = () => {
     setLoading(true);
     try {
       const res = await getAllOrdersByShipper({ shipperId });
-      setOrders(res?.errCode === 0 ? res.data || [] : []);
-    } catch { setOrders([]); }
+      if (res?.errCode === 0) {
+        // Only show shipping and completed orders here
+        const activeOrders = (res.data || []).filter(o => 
+          o.statusId === 'S5' || o.statusId === 'S6'
+        );
+        setOrders(activeOrders);
+      } else {
+        setOrders([]);
+      }
+    } catch { 
+      setOrders([]); 
+    }
     finally { setLoading(false); }
   }, [shipperId]);
 
@@ -154,12 +166,25 @@ const OrdersActive = () => {
     } catch { toast.error('Lỗi kết nối'); }
   };
 
-  const counts = TABS.reduce((acc, t) => {
-    acc[t.key] = t.key === 'all' ? orders.length : orders.filter((o) => o.statusId === t.key).length;
-    return acc;
-  }, {});
+  const counts = React.useMemo(() => {
+    return TABS.reduce((acc, t) => {
+      acc[t.key] = t.key === 'all' ? orders.length : orders.filter((o) => o.statusId === t.key).length;
+      return acc;
+    }, {});
+  }, [orders]);
 
-  const filtered = tab === 'all' ? orders : orders.filter((o) => o.statusId === tab);
+  const filtered = React.useMemo(() => {
+    return tab === 'all' ? orders : orders.filter((o) => o.statusId === tab);
+  }, [orders, tab]);
+
+  // Reset page when tab changes
+  useEffect(() => { setCurrentPage(1); }, [tab]);
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const pagedItems = React.useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filtered.slice(start, start + itemsPerPage);
+  }, [filtered, currentPage]);
 
   return (
     <div className="sp-page">
@@ -199,7 +224,7 @@ const OrdersActive = () => {
             <tbody>
               {loading ? (
                 <SkeletonRows />
-              ) : filtered.length === 0 ? (
+              ) : pagedItems.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={{ padding: 0, border: 'none' }}>
                     <div className="sp-empty">
@@ -212,7 +237,7 @@ const OrdersActive = () => {
                   </td>
                 </tr>
               ) : (
-                filtered.map((o, i) => {
+                pagedItems.map((o, i) => {
                   const cfg = STATUS_CONFIG[o.statusId] || { label: o.statusId, badge: 'sp-badge-gray', icon: (<svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /><path d="M9 12h6M9 16h4" /></svg>) };
                   const isActing = actionLoading === o.id;
                   return (
@@ -288,6 +313,40 @@ const OrdersActive = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="sp-pagination" style={{ padding: '16px 20px', borderTop: '1px solid var(--sp-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+            <div style={{ fontSize: 13, color: 'var(--sp-text-dim)', fontWeight: 600 }}>
+              Hiển thị <span style={{ color: '#fff' }}>{(currentPage-1)*itemsPerPage + 1} - {Math.min(currentPage*itemsPerPage, filtered.length)}</span> trong <span style={{ color: '#fff' }}>{filtered.length}</span> đơn
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button 
+                className="sp-pagination-btn" 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              {[...Array(totalPages)].map((_, i) => (
+                <button 
+                  key={i} 
+                  className={`sp-pagination-btn${currentPage === i + 1 ? ' active' : ''}`}
+                  onClick={() => setCurrentPage(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button 
+                className="sp-pagination-btn" 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Modals */}
