@@ -4,20 +4,20 @@ import { getOrdersAvailableForShipper, getAllOrdersByShipper } from '../../servi
 import ShipperHeader from './ShipperHeader';
 import ShipperSideBar from './ShipperSideBar';
 import ShipperDashboard from './ShipperDashboard';
-import ShipperStats from './ShipperStats';
 import ShipperProfile from './ShipperProfile';
 import ShipperChangePassword from './ShipperChangePassword';
 import OrdersAvailable from './OrdersAvailable';
 import OrdersActive from './OrdersActive';
-import ShipperMap from '../Map/ShipperMap';
 import '../../css/shipper.css';
+
 
 const BOTTOM_NAV = [
   { to: '/shipper',                  end: true, icon: '🏠', label: 'Trang chủ' },
   { to: '/shipper/orders-available',            icon: '📋', label: 'Nhận đơn'  },
   { to: '/shipper/my-orders',                   icon: '📦', label: 'Đơn của tôi' },
-  { to: '/shipper/stats',                       icon: '📊', label: 'Thống kê'  },
+  { to: '/shipper/profile',                     icon: '👤', label: 'Cá nhân' },
 ];
+
 
 const HomePageShipper = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -125,10 +125,10 @@ const HomePageShipper = () => {
 
             <Route path="/orders-available" element={<OrdersAvailable />} />
             <Route path="/my-orders"        element={<OrdersActive />} />
-            <Route path="/stats"            element={<ShipperStats />} />
             <Route path="/profile"          element={<ShipperProfile />} />
             <Route path="/change-password"  element={<ShipperChangePassword />} />
           </Routes>
+
         </main>
       </div>
 
