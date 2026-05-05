@@ -11,6 +11,9 @@ import OrdersActive from './OrdersActive';
 import OrdersReturn from './OrdersReturn';
 import ActivityRate from './ActivityRate';
 import ShipperRewards from './ShipperRewards';
+import ShipperHistory from './ShipperHistory';
+import ShipperHandbook from './ShipperHandbook';
+import ShipperSupport from './ShipperSupport';
 import '../../css/shipper.css';
 
 
@@ -131,6 +134,9 @@ const HomePageShipper = () => {
             <Route path="/returns"          element={<OrdersReturn />} />
             <Route path="/activity-rate"    element={<ActivityRate />} />
             <Route path="/rewards"          element={<ShipperRewards />} />
+            <Route path="/history"          element={<ShipperHistory />} />
+            <Route path="/handbook"         element={<ShipperHandbook />} />
+            <Route path="/support"          element={<ShipperSupport />} />
             <Route path="/profile"          element={<ShipperProfile />} />
             <Route path="/change-password"  element={<ShipperChangePassword />} />
           </Routes>

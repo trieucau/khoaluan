@@ -4,18 +4,18 @@ import { getAllOrdersByShipper } from '../../services/userService';
 
 // --- CONSTANTS ---
 const TIER_CONFIG = [
-  { min: 95, label: 'Bạch Kim', next: 'Hết cấp', color: 'cyan', icon: '🏆' },
-  { min: 90, label: 'Kim Cương', next: 'Bạch Kim', color: 'blue', icon: '💎' },
-  { min: 80, label: 'Vàng', next: 'Kim Cương', color: 'amber', icon: '🥇' },
-  { min: 70, label: 'Bạc', next: 'Vàng', color: 'green', icon: '🥈' },
-  { min: 0, label: 'Đồng', next: 'Bạc', color: 'red', icon: '🥉' },
+  { min: 95, label: 'Bạch Kim', next: 'Hết cấp', color: 'cyan', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>) },
+  { min: 90, label: 'Kim Cương', next: 'Bạch Kim', color: 'blue', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M11 3 8 9l3 12"/><path d="m13 3 3 6-3 12"/><path d="M2 9h20"/></svg>) },
+  { min: 80, label: 'Vàng', next: 'Kim Cương', color: 'amber', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>) },
+  { min: 70, label: 'Bạc', next: 'Vàng', color: 'green', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>) },
+  { min: 0, label: 'Đồng', next: 'Bạc', color: 'red', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>) },
 ];
 
 const REWARDS = [
-  { id: 1, title: 'Thẻ nạp điện thoại 50k', cost: 500, type: 'Card', icon: '📱', color: 'blue' },
-  { id: 2, title: 'Voucher giảm giá 10%', cost: 300, type: 'Voucher', icon: '🎫', color: 'amber' },
-  { id: 3, title: 'Voucher xăng xe 100k', cost: 1000, type: 'Gas', icon: '⛽', color: 'green' },
-  { id: 4, title: 'Áo khoác Shipper Pro', cost: 2500, type: 'Gear', icon: '🧥', color: 'cyan' },
+  { id: 1, title: 'Thẻ nạp điện thoại 50k', cost: 500, type: 'Card', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>), color: 'blue' },
+  { id: 2, title: 'Voucher giảm giá 10%', cost: 300, type: 'Voucher', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>), color: 'amber' },
+  { id: 3, title: 'Voucher xăng xe 100k', cost: 1000, type: 'Gas', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m3 22 2-2"/><path d="M4 18h2"/><path d="M4 14h2"/><path d="M4 10h2"/><path d="M4 6h2"/><path d="M5 22h14"/><path d="M7 2h10"/><path d="M12 2v20"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12"/></svg>), color: 'green' },
+  { id: 4, title: 'Áo khoác Shipper Pro', cost: 2500, type: 'Gear', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>), color: 'cyan' },
 ];
 
 const ShipperRewards = () => {
