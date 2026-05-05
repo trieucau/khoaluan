@@ -397,26 +397,49 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
             style={{
               position: 'absolute',
               top: isMobile ? 'auto' : sidePos.y,
-              right: isMobile ? (isHubExpanded ? 12 : -1000) : sidePos.right,
-              bottom: isMobile ? (isHubExpanded ? 80 : -1000) : 'auto',
-              width: isMobile ? 'calc(100% - 24px)' : 'clamp(230px, 16vw, 300px)',
-              display: (isMobile && !isHubExpanded) ? 'none' : 'flex',
-              flexDirection: 'column', gap: '1vw',
+              right: isMobile ? 0 : sidePos.right,
+              bottom: isMobile ? (isHubExpanded ? 'var(--sp-bottom-nav-h)' : '-100%') : 'auto',
+              width: isMobile ? '100%' : 'clamp(230px, 16vw, 300px)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: isMobile ? 0 : '1vw',
               zIndex: 2000,
               pointerEvents: (isMobile && !isHubExpanded) ? 'none' : 'auto',
-              transition: dragging === 'side' ? 'none' : 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              transition: dragging === 'side' ? 'none' : 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+              background: 'transparent',
+              borderRadius: 0,
+              paddingBottom: isMobile ? 'calc(env(safe-area-inset-bottom) + var(--sp-bottom-nav-h) + 10px)' : 0
             }}
           >
-            <WeatherWidget dragHandleClass="sp-drag-handle" pos={shipperPos} weatherData={weatherData} />
-            <RankWidget dragHandleClass="sp-drag-handle" score={reliabilityScore} />
-            <ActiveOrderWidget 
-              order={heroOrder} 
-              isMinimized={isMinimized} 
-              toggleMinimize={() => setIsMinimized(!isMinimized)}
-              onShowItems={() => setShowOrderItems(true)}
-              onComplete={(id) => setCompleteModal(id)}
-              formatMoney={formatMoney}
-            />
+            {isMobile && (
+              <div style={{ padding: '20px 24px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>Trung tâm điều khiển</h3>
+                <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)', padding: '4px 10px', borderRadius: 20 }}>SẴN SÀNG</span>
+              </div>
+            )}
+
+            <div style={{ 
+              display: isMobile ? 'grid' : 'flex', 
+              gridTemplateColumns: isMobile ? '1fr 1fr' : 'none',
+              flexDirection: 'column',
+              gap: isMobile ? 12 : '1vw',
+              padding: isMobile ? '12px 20px' : 0
+            }}>
+              <WeatherWidget dragHandleClass={isMobile ? "" : "sp-drag-handle"} pos={shipperPos} weatherData={weatherData} isMobile={isMobile} />
+              <RankWidget dragHandleClass={isMobile ? "" : "sp-drag-handle"} score={reliabilityScore} isMobile={isMobile} />
+            </div>
+
+            <div style={{ padding: isMobile ? '0 20px 20px' : 0 }}>
+              <ActiveOrderWidget 
+                order={heroOrder} 
+                isMinimized={isMinimized} 
+                toggleMinimize={() => setIsMinimized(!isMinimized)}
+                onShowItems={() => setShowOrderItems(true)}
+                onComplete={(id) => setCompleteModal(id)}
+                formatMoney={formatMoney}
+                isMobile={isMobile}
+              />
+            </div>
           </section>
 
           {isMobile && (

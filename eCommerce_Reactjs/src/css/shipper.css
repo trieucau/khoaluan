@@ -843,18 +843,53 @@ svg.lucide { width:20px; height:20px; stroke-width:2; stroke:currentColor; fill:
 @media (max-width: 1024px) {
   .sp-float-side.hub-expanded {
     display: flex !important;
-    animation: spSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: 32px 32px 0 0;
-    box-shadow: 0 -20px 60px rgba(0,0,0,0.6);
+    animation: spMobileSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    background: transparent !important; 
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 20px 0; 
+    border-radius: 0;
+    box-shadow: none !important;
+    border: none !important;
+    gap: 0;
+  }
+
+  .sp-float-side.hub-expanded::before {
+    content: '';
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .sp-float-side.hub-expanded > div {
     display: flex !important;
     width: 100%;
+    animation: spFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
   }
+
+  /* Inner widgets styling within hub - Restore dark theme */
+  .sp-float-side.hub-expanded .sp-glass-panel {
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+  }
+}
+
+@keyframes spFadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spMobileSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .sp-action-icon-btn {
