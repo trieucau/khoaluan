@@ -97,6 +97,40 @@ const ActivityRate = () => {
     { day: 'T5', val: 90 }, { day: 'T6', val: 85 }, { day: 'T7', val: 40 }, { day: 'CN', val: 20 }
   ];
 
+  const rankDetails = useMemo(() => {
+    const s = stats.score;
+    if (s >= 95) return { 
+      label: 'Xế Xịn Hạng S+', 
+      color: '#10b981', 
+      badge: 'sp-badge-green', 
+      desc: 'Ưu tiên nhận đơn cao nhất & Thưởng 10% doanh thu' 
+    };
+    if (s >= 90) return { 
+      label: 'Xế Xịn Hạng S', 
+      color: '#34d399', 
+      badge: 'sp-badge-green', 
+      desc: 'Ưu tiên nhận đơn & Thưởng 5% doanh thu' 
+    };
+    if (s >= 80) return { 
+      label: 'Tài Xế Hạng A', 
+      color: '#3b82f6', 
+      badge: 'sp-badge-blue', 
+      desc: 'Tài xế chuyên nghiệp, hoạt động ổn định' 
+    };
+    if (s >= 70) return { 
+      label: 'Tài Xế Hạng B', 
+      color: '#f59e0b', 
+      badge: 'sp-badge-amber', 
+      desc: 'Tài xế tiềm năng, cần cố gắng thêm' 
+    };
+    return { 
+      label: 'Hạng C (Cảnh báo)', 
+      color: '#ef4444', 
+      badge: 'sp-badge-red', 
+      desc: 'Tỉ lệ hoạt động thấp, nguy cơ hạn chế nhận đơn' 
+    };
+  }, [stats.score]);
+
   return (
     <div className="sp-page" style={{ paddingBottom: 100 }}>
       <div className="sp-page-header">
@@ -111,12 +145,13 @@ const ActivityRate = () => {
         
         {/* Reliability Score Gauge */}
         <div className="sp-glass-panel" style={{ padding: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 24 }}>
-          <div style={{ position: 'relative', width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="200" height="200" viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)' }}>
-              <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-              <circle cx="50" cy="50" r="45" fill="none" stroke="var(--sp-primary)" strokeWidth="8" 
+          <div className="sp-gauge-container">
+            <svg className="sp-gauge-svg" width="200" height="200" viewBox="0 0 100 100">
+              <circle className="sp-gauge-bg" cx="50" cy="50" r="45" />
+              <circle className="sp-gauge-fill" cx="50" cy="50" r="45" 
+                stroke={rankDetails.color}
                 strokeDasharray="282.7" strokeDashoffset={282.7 - (282.7 * stats.score / 100)}
-                style={{ transition: 'stroke-dashoffset 1s ease-out', strokeLinecap: 'round', filter: 'drop-shadow(0 0 8px var(--sp-primary))' }} 
+                style={{ filter: `drop-shadow(0 0 8px ${rankDetails.color})` }} 
               />
             </svg>
             <div style={{ position: 'absolute', textAlign: 'center' }}>
@@ -125,8 +160,11 @@ const ActivityRate = () => {
             </div>
           </div>
           <div style={{ marginTop: 24, textAlign: 'center' }}>
-            <div className="sp-badge sp-badge-green" style={{ padding: '6px 16px', borderRadius: 20 }}>
-              {stats.score >= 90 ? 'Xế Xịn Hạng S+' : stats.score >= 70 ? 'Tài Xế Chuyên Nghiệp' : 'Cần Cải Thiện'}
+            <div className={`sp-badge ${rankDetails.badge}`} style={{ padding: '6px 16px', borderRadius: 20, fontSize: 13, fontWeight: 700 }}>
+              {rankDetails.label}
+            </div>
+            <div style={{ marginTop: 12, fontSize: 12, color: 'var(--sp-text-dim)', maxWidth: 220, lineHeight: 1.5 }}>
+              {rankDetails.desc}
             </div>
           </div>
         </div>
@@ -171,20 +209,11 @@ const ActivityRate = () => {
           <svg className="sp-icon-sm" style={{ color: 'var(--sp-primary)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
           Biểu đồ hoạt động tuần
         </div>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', height: 160, gap: 12, paddingBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="sp-weekly-chart">
           {weeklyData.map((d, i) => (
-            <div key={d.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-              <div style={{ 
-                width: '100%', 
-                maxWidth: 40, 
-                height: `${d.val}%`, 
-                background: i === 4 ? 'var(--sp-primary)' : 'rgba(255,255,255,0.1)', 
-                borderRadius: '8px 8px 4px 4px',
-                position: 'relative',
-                transition: 'height 1s ease',
-                boxShadow: i === 4 ? '0 0 15px var(--sp-primary-light)' : 'none'
-              }}>
-                {i === 4 && <div style={{ position: 'absolute', top: -25, left: '50%', transform: 'translateX(-50%)', fontSize: 10, fontWeight: 700, color: 'var(--sp-primary-light)' }}>{d.val}</div>}
+            <div key={d.day} className="sp-chart-col">
+              <div className={`sp-chart-bar${i === 4 ? ' active' : ''}`} style={{ height: `${d.val}%` }}>
+                {i === 4 && <div className="sp-chart-bar-val">{d.val}</div>}
               </div>
               <div style={{ fontSize: 11, color: 'var(--sp-text-muted)', fontWeight: 600 }}>{d.day}</div>
             </div>

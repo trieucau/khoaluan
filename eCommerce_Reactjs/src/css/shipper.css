@@ -1136,3 +1136,84 @@ svg.lucide { width:20px; height:20px; stroke-width:2; stroke:currentColor; fill:
 .sp-badge .sp-icon-sm, .sp-badge .sp-icon-xs {
   stroke-width: 2.5;
 }
+
+/* ============================================================
+   ACTIVITY RATE PAGE
+   ============================================================ */
+.sp-metric-card {
+  transition: var(--sp-transition);
+  border: 1px solid var(--sp-border);
+}
+.sp-metric-card:hover {
+  border-color: var(--sp-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+}
+
+.sp-gauge-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sp-gauge-svg {
+  transform: rotate(-90deg);
+}
+
+.sp-gauge-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 8;
+}
+
+.sp-gauge-fill {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-out;
+}
+
+.sp-weekly-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 160px;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sp-chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.sp-chart-bar {
+  width: 100%;
+  max-width: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px 8px 4px 4px;
+  position: relative;
+  transition: height 1s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sp-chart-bar.active {
+  background: var(--sp-primary);
+  box-shadow: 0 0 15px var(--sp-primary-light);
+}
+
+.sp-chart-bar-val {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--sp-primary-light);
+}
