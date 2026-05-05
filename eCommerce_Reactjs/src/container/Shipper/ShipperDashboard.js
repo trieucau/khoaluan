@@ -1,15 +1,13 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { getAllOrdersByShipper, getOrdersAvailableForShipper } from '../../services/userService';
+import { getAllOrdersByShipper } from '../../services/userService';
 import moment from 'moment';
 import { MapContainer, TileLayer, Marker, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import socketIOClient from 'socket.io-client';
 import { truckIcon } from '../Map/mapIcons';
 import { useOSRMRoute } from '../../hooks/useOSRMRoute';
 import { getDistance } from '../../utils/MapUtils';
 import OrderPanel from './OrderPanel';
-import { shipperTakeOrder } from '../../services/userService';
 import { toast } from 'react-toastify';
 
 // MODULAR COMPONENTS
@@ -17,7 +15,6 @@ import WeatherWidget from './components/WeatherWidget';
 import RankWidget from './components/RankWidget';
 import ActiveOrderWidget from './components/ActiveOrderWidget';
 import ShipperStatusBar from './components/ShipperStatusBar';
-import OrderQuickAcceptModal from './components/OrderQuickAcceptModal';
 import CompleteModal from './components/CompleteModal';
 
 
@@ -66,16 +63,22 @@ const createNumberIcon = (number) =>
     iconAnchor: [12, 12],
   });
 
-const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNotifications, skippedOrders, setSkippedOrders }) => {
-  const socketRef = React.useRef(null);
-  const [activeOrders, setActiveOrders] = useState([]);
-  const [availableOrders, setAvailableOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+const ShipperDashboard = ({ 
+  gpsData, 
+  onToggleGps, 
+  showNotifications, 
+  setShowNotifications, 
+  skippedOrders, 
+  setSkippedOrders,
+  availableOrders,
+  shipperPos,
+  activeOrders
+}) => {
+  const [loading, setLoading] = useState(false); // Data is now passed down, so loading is mostly handled by parent or is fast
   const [osrmDurations] = useState({});
   const [ignoredOrders, setIgnoredOrders] = useState(new Set());
   const [showOrderItems, setShowOrderItems] = useState(false);
   const [completeModal, setCompleteModal] = useState(null);
-
 
   const [isMinimized, setIsMinimized] = useState(false);
   const [isHubExpanded, setIsHubExpanded] = useState(false);
@@ -140,7 +143,6 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
   
   const { isOnline, gpsStartTime, gpsTotalMs } = gpsData || { isOnline: false, gpsStartTime: null, gpsTotalMs: 0 };
   const [sessionTimeMs, setSessionTimeMs] = useState(gpsTotalMs);
-  const [shipperPos, setShipperPos] = useState([10.7626, 106.6601]);
   const [weatherData, setWeatherData] = useState(null);
 
   useEffect(() => {
@@ -165,42 +167,6 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
     return () => clearInterval(interval);
   }, [shipperPos]);
 
-  useEffect(() => {
-    socketRef.current = socketIOClient.connect(BACKEND_URL);
-    return () => socketRef.current?.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (isOnline && navigator.geolocation) {
-      const watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          setShipperPos([lat, lng]);
-          socketRef.current?.emit('shipper:location', { 
-            shipperId, lat, lng, 
-            orderIds: activeOrders.map(o => o.id) 
-          });
-        },
-        (err) => console.error(err),
-        { enableHighAccuracy: true }
-      );
-      return () => navigator.geolocation.clearWatch(watchId);
-    }
-  }, [isOnline, activeOrders, shipperId]);
-
-  const handleAcceptOrder = async (orderId) => {
-    try {
-      const res = await shipperTakeOrder(orderId);
-      if (res?.errCode === 0) {
-        toast.success('Chấp nhận đơn hàng thành công!');
-        window.location.reload(); 
-      } else {
-        toast.error(res?.errMessage || 'Lỗi khi nhận đơn');
-      }
-    } catch (e) { toast.error('Lỗi kết nối server'); }
-  };
-
   const handleIgnoreOrder = (orderId) => {
     setIgnoredOrders(prev => new Set(prev).add(orderId));
   };
@@ -211,7 +177,7 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
 
   const handleDeliveryDone = () => {
     setCompleteModal(null);
-    window.location.reload(); // Refresh to show next order
+    window.location.reload(); 
   };
 
 
@@ -243,23 +209,7 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!shipperId) return;
-      try {
-        const [resActive, resAvail] = await Promise.all([
-          getAllOrdersByShipper({ shipperId, status: 'working' }),
-          getOrdersAvailableForShipper()
-        ]);
-        if (resActive?.errCode === 0) setActiveOrders(resActive.data || []);
-        if (resAvail?.errCode === 0) setAvailableOrders(resAvail.data || []);
-      } catch (e) { console.error(e); }
-      finally { setLoading(false); }
-    };
-    fetchData();
-    const interval = setInterval(fetchData, 15000);
-    return () => clearInterval(interval);
-  }, [shipperId]);
+  // Data fetching is now handled by parent (HomePageShipper)
 
   const heroOrder = useMemo(() => {
     if (!activeOrders || activeOrders.length === 0) return null;
@@ -592,16 +542,7 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
             </div>
           )}
 
-          {showNotifications && (
-            <OrderQuickAcceptModal 
-              orders={availableOrders}
-              shipperPos={shipperPos}
-              skippedIds={skippedOrders}
-              onAccept={handleAcceptOrder}
-              onSkip={handleSkipOrder}
-              onClose={() => setShowNotifications(false)}
-            />
-          )}
+          {/* OrderQuickAcceptModal is now global in HomePageShipper */}
 
           {completeModal && (
             <CompleteModal

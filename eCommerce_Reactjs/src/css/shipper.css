@@ -926,7 +926,7 @@ svg.lucide { width:20px; height:20px; stroke-width:2; stroke:currentColor; fill:
   max-height: 75vh;
 
 
-  z-index: 5000;
+  z-index: 99999;
   display: flex;
   flex-direction: column;
   animation: spQuickAcceptEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1);

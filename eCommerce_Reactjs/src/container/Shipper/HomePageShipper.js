@@ -14,7 +14,13 @@ import ShipperRewards from './ShipperRewards';
 import ShipperHistory from './ShipperHistory';
 import ShipperHandbook from './ShipperHandbook';
 import ShipperSupport from './ShipperSupport';
+import OrderQuickAcceptModal from './components/OrderQuickAcceptModal';
+import { toast } from 'react-toastify';
+import socketIOClient from 'socket.io-client';
+import { shipperTakeOrder } from '../../services/userService';
 import '../../css/shipper.css';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6969';
 
 
 const BOTTOM_NAV = [
@@ -33,10 +39,59 @@ const HomePageShipper = () => {
   const [availableCount, setAvailableCount] = useState(0);
   const [activeCount, setActiveCount] = useState(0);
 
-  // --- GPS Tracking Logic ---
+  // --- GLOBAL STATE & LOGIC ---
   const [gpsData, setGpsData] = useState({ isOnline: false, gpsStartTime: null, gpsTotalMs: 0 });
   const [showNotifications, setShowNotifications] = useState(false);
   const [skippedOrders, setSkippedOrders] = useState(new Set());
+  const [shipperPos, setShipperPos] = useState([10.7626, 106.6601]);
+  const [availableOrders, setAvailableOrders] = useState([]);
+  const [activeOrders, setActiveOrders] = useState([]);
+  const socketRef = React.useRef(null);
+
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  const shipperId = userData?.id;
+
+  // Initialize Socket
+  useEffect(() => {
+    socketRef.current = socketIOClient.connect(BACKEND_URL);
+    return () => socketRef.current?.disconnect();
+  }, []);
+
+  // Location Tracking
+  useEffect(() => {
+    if (gpsData.isOnline && navigator.geolocation) {
+      const watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          setShipperPos([lat, lng]);
+          socketRef.current?.emit('shipper:location', { 
+            shipperId, lat, lng, 
+            orderIds: activeOrders.map(o => o.id) 
+          });
+        },
+        (err) => console.error(err),
+        { enableHighAccuracy: true }
+      );
+      return () => navigator.geolocation.clearWatch(watchId);
+    }
+  }, [gpsData.isOnline, activeOrders, shipperId]);
+
+  const handleAcceptOrder = async (orderId) => {
+    try {
+      const res = await shipperTakeOrder(orderId);
+      if (res?.errCode === 0) {
+        toast.success('Chấp nhận đơn hàng thành công!');
+        window.location.reload(); 
+      } else {
+        toast.error(res?.errMessage || 'Lỗi khi nhận đơn');
+      }
+    } catch (e) { toast.error('Lỗi kết nối server'); }
+  };
+
+  const handleSkipOrder = (orderId) => {
+    setSkippedOrders(prev => new Set(prev).add(orderId));
+  };
 
 
   useEffect(() => {
@@ -94,25 +149,28 @@ const HomePageShipper = () => {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const shipperId = JSON.parse(localStorage.getItem('userData') || '{}')?.id;
         if (!shipperId) return;
 
         const [resAvail, resAll] = await Promise.all([
           getOrdersAvailableForShipper(),
-          getAllOrdersByShipper({ shipperId })
+          getAllOrdersByShipper({ shipperId, status: 'working' })
         ]);
 
-        if (resAvail?.errCode === 0) setAvailableCount(resAvail.data?.length || 0);
+        if (resAvail?.errCode === 0) {
+          setAvailableOrders(resAvail.data || []);
+          setAvailableCount(resAvail.data?.length || 0);
+        }
         if (resAll?.errCode === 0) {
+          setActiveOrders(resAll.data || []);
           const active = (resAll.data || []).filter(o => o.statusId === 'S4' || o.statusId === 'S5');
           setActiveCount(active.length);
         }
       } catch (e) { /* ignore */ }
     };
     fetchCounts();
-    const timer = setInterval(fetchCounts, 10000); // 10s polling
+    const timer = setInterval(fetchCounts, 15000); 
     return () => clearInterval(timer);
-  }, []);
+  }, [shipperId]);
 
   return (
     <div className="shipper-portal">
@@ -127,7 +185,17 @@ const HomePageShipper = () => {
         <div className="sp-sidebar"><ShipperSideBar availableCount={Math.max(0, availableCount - skippedOrders.size)} activeCount={activeCount} /></div>
         <main className="sp-main">
           <Routes>
-            <Route path="/"                 element={<ShipperDashboard gpsData={gpsData} onToggleGps={toggleGps} showNotifications={showNotifications} setShowNotifications={setShowNotifications} skippedOrders={skippedOrders} setSkippedOrders={setSkippedOrders} />} />
+            <Route path="/"                 element={<ShipperDashboard 
+                                                        gpsData={gpsData} 
+                                                        onToggleGps={toggleGps} 
+                                                        showNotifications={showNotifications} 
+                                                        setShowNotifications={setShowNotifications} 
+                                                        skippedOrders={skippedOrders} 
+                                                        setSkippedOrders={setSkippedOrders}
+                                                        availableOrders={availableOrders}
+                                                        shipperPos={shipperPos}
+                                                        activeOrders={activeOrders}
+                                                      />} />
 
             <Route path="/orders-available" element={<OrdersAvailable />} />
             <Route path="/my-orders"        element={<OrdersActive />} />
@@ -156,6 +224,18 @@ const HomePageShipper = () => {
           ))}
         </div>
       </nav>
+
+      {/* Global Notifications Modal */}
+      {showNotifications && (
+        <OrderQuickAcceptModal 
+          orders={availableOrders}
+          shipperPos={shipperPos}
+          skippedIds={skippedOrders}
+          onAccept={handleAcceptOrder}
+          onSkip={handleSkipOrder}
+          onClose={() => setShowNotifications(false)}
+        />
+      )}
     </div>
   );
 };
