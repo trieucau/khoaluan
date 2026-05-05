@@ -30,7 +30,11 @@ const ShipperSideBar = ({ onLinkClick, availableCount = 0, activeCount = 0 }) =>
     if (userData.id) {
       getDetailUserById(userData.id).then(res => {
         if (res?.errCode === 0 && res.data?.image) {
-          setAvatar(res.data.image);
+          let img = res.data.image;
+          if (res.data.image.data) {
+            img = new Buffer(res.data.image.data, 'base64').toString('binary');
+          }
+          setAvatar(img);
         }
       });
     }

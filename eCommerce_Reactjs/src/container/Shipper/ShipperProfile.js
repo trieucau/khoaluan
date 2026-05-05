@@ -32,11 +32,18 @@ const ShipperProfile = () => {
     getDetailUserById(id).then(res => {
       if (res?.errCode === 0) {
         const d = res.data;
+        let imageBase64 = d.image || DEFAULT_AVATAR;
+        
+        // Handle Buffer if backend returns binary BLOB as Buffer object
+        if (d.image && d.image.data) {
+          imageBase64 = new Buffer(d.image.data, 'base64').toString('binary');
+        }
+
         setValues({
           firstName: d.firstName || '', lastName: d.lastName || '',
           address: d.address || '', phonenumber: d.phonenumber || '',
           genderId: d.genderId || 'M', email: d.email || '',
-          image: d.image || DEFAULT_AVATAR, imageReview: '',
+          image: imageBase64, imageReview: '',
         });
         if (d.dob) setBirthday(moment.unix(+d.dob / 1000).toDate());
       }
@@ -71,125 +78,145 @@ const ShipperProfile = () => {
   const initials = `${values.firstName?.[0] || ''}${values.lastName?.[0] || ''}`.toUpperCase() || 'S';
 
   return (
-    <div className="sp-page">
-      {/* Header */}
+    <div className="sp-page sp-profile-page">
       <div className="sp-page-header">
-        <div className="sp-page-header-row">
-          <div>
-            <div className="sp-page-title">
-              <svg className="sp-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              Thông tin cá nhân
-            </div>
-            <div className="sp-page-subtitle">Xem và cập nhật thông tin tài khoản Shipper của bạn</div>
-          </div>
-          <Link to="/shipper" className="sp-btn sp-btn-ghost">← Dashboard</Link>
-        </div>
+        <h1 className="sp-page-title">Thông tin cá nhân</h1>
+        <p className="sp-page-subtitle">Quản lý và cập nhật thông tin tài khoản của bạn</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 18 }}>
-        {/* Avatar panel */}
-        <div className="sp-card" style={{ height: 'fit-content' }}>
-          <div className="sp-card-body" style={{ textAlign: 'center', padding: 24 }}>
-            <div style={{ position: 'relative', display: 'inline-block', marginBottom: 16 }}>
+      <div className="sp-profile-container">
+        {/* Sidebar: Avatar & Summary */}
+        <aside className="sp-profile-aside">
+          <div className="sp-card avatar-section">
+            <div className="avatar-wrapper">
               {displayImg && displayImg !== DEFAULT_AVATAR ? (
-                <img src={displayImg} alt="avatar"
-                  style={{ width: 110, height: 110, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--sp-primary)', boxShadow: '0 4px 16px rgba(59,130,246,0.3)' }} />
+                <img src={displayImg} alt="avatar" className="avatar-img" />
               ) : (
-                <div style={{ width: 110, height: 110, borderRadius: '50%', background: 'linear-gradient(135deg,#3b82f6,#06b6d4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, fontWeight: 800, color: '#fff', border: '3px solid rgba(255,255,255,0.1)' }}>
-                  {initials}
-                </div>
+                <div className="avatar-placeholder">{initials}</div>
               )}
-              <label style={{ position: 'absolute', bottom: 4, right: 4, width: 28, height: 28, borderRadius: '50%', background: 'var(--sp-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid var(--sp-bg)', fontSize: 13 }}>
-                <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange} />
+              <label className="avatar-upload-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <input type="file" accept="image/*" onChange={handleImageChange} hidden />
               </label>
             </div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--sp-text)', marginBottom: 4 }}>
-              {[values.firstName, values.lastName].filter(Boolean).join(' ') || 'Shipper'}
+            <div className="profile-brief">
+              <h3 className="name">{[values.firstName, values.lastName].filter(Boolean).join(' ') || 'Shipper'}</h3>
+              <p className="email">{values.email}</p>
+              <div className="badge-wrapper">
+                <span className="sp-badge sp-badge-blue">Tài xế chuyên nghiệp</span>
+              </div>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--sp-text-muted)', marginBottom: 12 }}>{values.email}</div>
-            <span className="sp-badge sp-badge-blue" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-              Shipper Chuyên Nghiệp
-            </span>
           </div>
-        </div>
+          
+          <Link to="/shipper/change-password" title="Bảo mật tài khoản" className="sp-btn sp-btn-ghost sp-btn-block">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ width: 16, marginRight: 8 }}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Đổi mật khẩu
+          </Link>
+        </aside>
 
-        {/* Info form */}
-        <div className="sp-card">
-          <div className="sp-card-header">
-            <span className="sp-card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-              Thông tin cơ bản
-            </span>
-          </div>
-          <div className="sp-card-body">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              {[
-                { label: 'Họ *', name: 'firstName', placeholder: 'Nguyễn' },
-                { label: 'Tên *', name: 'lastName', placeholder: 'Văn A' },
-              ].map(f => (
-                <div key={f.name}>
-                  <label className="sp-form-label">{f.label}</label>
-                  <input className="sp-input" name={f.name} value={values[f.name]} onChange={handleChange} placeholder={f.placeholder}
-                    style={{ width: '100%', background: 'var(--sp-surface2)', border: '1px solid var(--sp-border)', borderRadius: 8, padding: '9px 13px', color: 'var(--sp-text)', fontSize: 13, outline: 'none', fontFamily: 'inherit' }} />
+        {/* Main Content: Form */}
+        <main className="sp-profile-main">
+          <div className="sp-card">
+            <div className="sp-card-body">
+              <div className="sp-form-grid">
+                <div className="sp-form-group">
+                  <label className="sp-form-label">Họ</label>
+                  <input className="sp-input" name="firstName" value={values.firstName} onChange={handleChange} placeholder="Nguyễn" />
                 </div>
-              ))}
-            </div>
-
-            <div style={{ marginTop: 14 }}>
-              <label className="sp-form-label">Email</label>
-              <input value={values.email} readOnly
-                style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--sp-border)', borderRadius: 8, padding: '9px 13px', color: 'var(--sp-text-dim)', fontSize: 13, fontFamily: 'inherit', cursor: 'not-allowed' }} />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 14 }}>
-              <div>
-                <label className="sp-form-label">Số điện thoại</label>
-                <input className="sp-input" name="phonenumber" value={values.phonenumber} onChange={handleChange} placeholder="0912345678"
-                  style={{ width: '100%', background: 'var(--sp-surface2)', border: '1px solid var(--sp-border)', borderRadius: 8, padding: '9px 13px', color: 'var(--sp-text)', fontSize: 13, fontFamily: 'inherit', outline: 'none' }} />
+                <div className="sp-form-group">
+                  <label className="sp-form-label">Tên</label>
+                  <input className="sp-input" name="lastName" value={values.lastName} onChange={handleChange} placeholder="Văn A" />
+                </div>
               </div>
-              <div>
-                <label className="sp-form-label">Giới tính</label>
-                <select name="genderId" value={values.genderId} onChange={handleChange}
-                  style={{ width: '100%', background: 'var(--sp-surface2)', border: '1px solid var(--sp-border)', borderRadius: 8, padding: '9px 13px', color: 'var(--sp-text)', fontSize: 13, fontFamily: 'inherit', outline: 'none' }}>
-                  {GENDER_OPTS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
-                </select>
+
+              <div className="sp-form-group">
+                <label className="sp-form-label">Email (Liên hệ)</label>
+                <input className="sp-input readonly" value={values.email} readOnly />
               </div>
-            </div>
 
-            <div style={{ marginTop: 14 }}>
-              <label className="sp-form-label">Ngày sinh</label>
-              <DatePicker
-                selected={birthday}
-                onChange={date => { setBirthday(date); setIsChangeDate(true); }}
-                dateFormat="dd/MM/yyyy"
-                showYearDropdown dropdownMode="select"
-                customInput={
-                  <input style={{ width: '100%', background: 'var(--sp-surface2)', border: '1px solid var(--sp-border)', borderRadius: 8, padding: '9px 13px', color: 'var(--sp-text)', fontSize: 13, fontFamily: 'inherit', outline: 'none' }} />
-                }
-              />
-            </div>
+              <div className="sp-form-grid">
+                <div className="sp-form-group">
+                  <label className="sp-form-label">Số điện thoại</label>
+                  <input className="sp-input" name="phonenumber" value={values.phonenumber} onChange={handleChange} placeholder="09xxxxxxx" />
+                </div>
+                <div className="sp-form-group">
+                  <label className="sp-form-label">Giới tính</label>
+                  <select className="sp-select" name="genderId" value={values.genderId} onChange={handleChange}>
+                    {GENDER_OPTS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
+                  </select>
+                </div>
+              </div>
 
-            <div style={{ marginTop: 14 }}>
-              <label className="sp-form-label">Địa chỉ</label>
-              <input name="address" value={values.address} onChange={handleChange} placeholder="Số nhà, đường, quận..."
-                style={{ width: '100%', background: 'var(--sp-surface2)', border: '1px solid var(--sp-border)', borderRadius: 8, padding: '9px 13px', color: 'var(--sp-text)', fontSize: 13, fontFamily: 'inherit', outline: 'none' }} />
-            </div>
+              <div className="sp-form-group">
+                <label className="sp-form-label">Ngày sinh</label>
+                <DatePicker
+                  selected={birthday}
+                  onChange={date => { setBirthday(date); setIsChangeDate(true); }}
+                  dateFormat="dd/MM/yyyy"
+                  showYearDropdown
+                  customInput={<input className="sp-input" />}
+                />
+              </div>
 
-            <div style={{ display: 'flex', gap: 10, marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--sp-border)' }}>
-              <button className="sp-btn sp-btn-primary" onClick={handleSave} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
-              </button>
-              <Link to="/shipper/change-password" className="sp-btn sp-btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                Đổi mật khẩu
-              </Link>
+              <div className="sp-form-group">
+                <label className="sp-form-label">Địa chỉ cư trú</label>
+                <input className="sp-input" name="address" value={values.address} onChange={handleChange} placeholder="Địa chỉ đầy đủ..." />
+              </div>
+
+              <div className="sp-form-actions">
+                <button className="sp-btn sp-btn-primary" onClick={handleSave} disabled={loading}>
+                  {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
+
+      <style>{`
+        .sp-profile-page { max-width: 1000px; margin: 0 auto; padding-bottom: 60px; }
+        .sp-profile-container { display: grid; grid-template-columns: 280px 1fr; gap: 24px; margin-top: 24px; }
+        
+        .avatar-section { padding: 32px 20px; text-align: center; margin-bottom: 16px; }
+        .avatar-wrapper { position: relative; display: inline-block; margin-bottom: 16px; }
+        .avatar-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--sp-primary); box-shadow: 0 8px 24px rgba(59,130,246,0.2); }
+        .avatar-placeholder { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--sp-primary), #06b6d4); display: flex; alignItems: center; justify-content: center; font-size: 40px; font-weight: 800; color: #fff; border: 4px solid rgba(255,255,255,0.1); }
+        
+        .avatar-upload-btn { 
+          position: absolute; bottom: 4px; right: 4px; width: 32px; height: 32px; 
+          background: var(--sp-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+          color: #fff; cursor: pointer; border: 3px solid var(--sp-bg); transition: 0.2s;
+        }
+        .avatar-upload-btn:hover { transform: scale(1.1); }
+        .avatar-upload-btn svg { width: 16px; height: 16px; }
+
+        .profile-brief .name { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .profile-brief .email { font-size: 13px; color: var(--sp-text-muted); margin-bottom: 16px; }
+        
+        .sp-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .sp-form-group { margin-bottom: 20px; }
+        .sp-form-label { display: block; font-size: 13px; font-weight: 600; color: var(--sp-text-muted); margin-bottom: 8px; }
+        
+        .sp-input, .sp-select { 
+          width: 100%; background: var(--sp-surface2); border: 1px solid var(--sp-border); 
+          border-radius: 10px; padding: 12px 16px; color: #fff; font-size: 14px; transition: 0.2s; outline: none;
+        }
+        .sp-input:focus { border-color: var(--sp-primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .sp-input.readonly { background: rgba(255,255,255,0.03); color: var(--sp-text-dim); cursor: not-allowed; }
+        
+        .sp-form-actions { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--sp-border); }
+        .sp-btn-block { width: 100%; justify-content: center; }
+
+        @media (max-width: 900px) {
+          .sp-profile-container { grid-template-columns: 1fr; }
+          .sp-profile-aside { max-width: 400px; margin: 0 auto; width: 100%; }
+        }
+
+        @media (max-width: 600px) {
+          .sp-form-grid { grid-template-columns: 1fr; gap: 0; }
+          .sp-page { padding: 20px 16px; }
+        }
+      `}</style>
     </div>
   );
 };

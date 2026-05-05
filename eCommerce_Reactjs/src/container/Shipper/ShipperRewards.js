@@ -4,18 +4,18 @@ import { getAllOrdersByShipper } from '../../services/userService';
 
 // --- CONSTANTS ---
 const TIER_CONFIG = [
-  { min: 95, label: 'Bạch Kim', next: 'Hết cấp', color: 'cyan', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>) },
-  { min: 90, label: 'Kim Cương', next: 'Bạch Kim', color: 'blue', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M11 3 8 9l3 12"/><path d="m13 3 3 6-3 12"/><path d="M2 9h20"/></svg>) },
-  { min: 80, label: 'Vàng', next: 'Kim Cương', color: 'amber', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>) },
-  { min: 70, label: 'Bạc', next: 'Vàng', color: 'green', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>) },
-  { min: 0, label: 'Đồng', next: 'Bạc', color: 'red', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>) },
+  { min: 95, label: 'Bạch Kim', next: 'Hết cấp', color: 'cyan', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /></svg>) },
+  { min: 90, label: 'Kim Cương', next: 'Bạch Kim', color: 'blue', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 3h12l4 6-10 12L2 9z" /><path d="M11 3 8 9l3 12" /><path d="m13 3 3 6-3 12" /><path d="M2 9h20" /></svg>) },
+  { min: 80, label: 'Vàng', next: 'Kim Cương', color: 'amber', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="6" /><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" /></svg>) },
+  { min: 70, label: 'Bạc', next: 'Vàng', color: 'green', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="6" /><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" /></svg>) },
+  { min: 0, label: 'Đồng', next: 'Bạc', color: 'red', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="6" /><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" /></svg>) },
 ];
 
 const REWARDS = [
-  { id: 1, title: 'Thẻ nạp điện thoại 50k', cost: 500, type: 'Card', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>), color: 'blue' },
-  { id: 2, title: 'Voucher giảm giá 10%', cost: 300, type: 'Voucher', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>), color: 'amber' },
-  { id: 3, title: 'Voucher xăng xe 100k', cost: 1000, type: 'Gas', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m3 22 2-2"/><path d="M4 18h2"/><path d="M4 14h2"/><path d="M4 10h2"/><path d="M4 6h2"/><path d="M5 22h14"/><path d="M7 2h10"/><path d="M12 2v20"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12"/></svg>), color: 'green' },
-  { id: 4, title: 'Áo khoác Shipper Pro', cost: 2500, type: 'Gear', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>), color: 'cyan' },
+  { id: 1, title: 'Thẻ nạp điện thoại 50k', cost: 500, type: 'Card', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" /><line x1="12" y1="18" x2="12.01" y2="18" /></svg>), color: 'blue' },
+  { id: 2, title: 'Voucher giảm giá 10%', cost: 300, type: 'Voucher', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" /></svg>), color: 'amber' },
+  { id: 3, title: 'Voucher xăng xe 100k', cost: 1000, type: 'Gas', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m3 22 2-2" /><path d="M4 18h2" /><path d="M4 14h2" /><path d="M4 10h2" /><path d="M4 6h2" /><path d="M5 22h14" /><path d="M7 2h10" /><path d="M12 2v20" /><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12" /></svg>), color: 'green' },
+  { id: 4, title: 'Áo khoác Shipper Pro', cost: 2500, type: 'Gear', icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" /></svg>), color: 'cyan' },
 ];
 
 const ShipperRewards = () => {
@@ -39,19 +39,19 @@ const ShipperRewards = () => {
       const res = await getAllOrdersByShipper({ shipperId });
       if (res?.errCode === 0) {
         const orders = res.data || [];
-        
+
         // 1. Calculate Reliability Score (70% Completion, 30% Success/Fail Ratio)
         const total = orders.length;
         const completed = orders.filter(o => o.statusId === 'S6').length;
         const failed = orders.filter(o => o.statusId === 'S8').length;
-        
+
         const completionRate = total > 0 ? (completed / total) * 100 : 0;
         const successRate = (completed + failed) > 0 ? (completed / (completed + failed)) * 100 : 0;
         const score = Math.max(0, Math.min(100, Math.round(completionRate * 0.7 + successRate * 0.3)));
 
         // 2. Points Logic: 10 points per completed order + (score * 5) bonus
-        const currentPoints = (completed * 10) + (score * 5); 
-        
+        const currentPoints = (completed * 10) + (score * 5);
+
         // 3. Determine Tier
         const tier = TIER_CONFIG.find(t => score >= t.min) || TIER_CONFIG[TIER_CONFIG.length - 1];
 
@@ -97,10 +97,9 @@ const ShipperRewards = () => {
   const progressPct = score; // Use score directly as progress percentage for simplicity
 
   return (
-    <div className="sp-page" style={{ paddingBottom: 100 }}>
+    <div className="sp-page sp-rewards-page">
       <div className="sp-page-header">
         <div className="sp-page-title">
-          <svg className="sp-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 12 20 22 4 22 4 12" /><rect x="2" y="7" width="20" height="5" /><line x1="12" y1="22" x2="12" y2="7" /><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" /></svg>
           Chương trình thưởng
         </div>
         <div className="sp-page-subtitle">Tích lũy điểm thưởng từ mỗi đơn hàng và đổi những phần quà giá trị</div>
@@ -108,7 +107,7 @@ const ShipperRewards = () => {
 
       <div className="sp-card" style={{ marginBottom: 28, background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -20, right: -20, width: 150, height: 150, background: 'var(--sp-primary)', opacity: 0.1, borderRadius: '50%', filter: 'blur(40px)' }} />
-        
+
         <div className="sp-card-body" style={{ display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'center' }}>
           <div style={{ flex: '1 1 200px' }}>
             <div style={{ fontSize: 13, color: 'var(--sp-text-dim)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 8, letterSpacing: 1 }}>Điểm hiện tại</div>
@@ -133,7 +132,7 @@ const ShipperRewards = () => {
                 <div style={{ fontSize: 14, fontWeight: 800, color: '#fff' }}>{currentTier?.next}</div>
               </div>
             </div>
-            
+
             <div className="sp-progress-wrap" style={{ margin: '8px 0' }}>
               <div className="sp-progress-bar" style={{ height: 10, borderRadius: 5 }}>
                 <div className="sp-progress-fill" style={{ width: `${progressPct}%` }} />
@@ -158,7 +157,7 @@ const ShipperRewards = () => {
             <span>Đặc quyền</span>
           </button>
           <button className={`sp-tab${tab === 'history' ? ' active' : ''}`} onClick={() => setTab('history')}>
-            <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
             <span>Lịch sử</span>
           </button>
         </div>
@@ -196,23 +195,23 @@ const ShipperRewards = () => {
               ].map((p, idx) => {
                 const isActive = score >= p.min;
                 return (
-                  <div key={idx} style={{ 
-                    display: 'flex', alignItems: 'center', gap: 12, padding: 16, 
+                  <div key={idx} style={{
+                    display: 'flex', alignItems: 'center', gap: 12, padding: 16,
                     background: isActive ? 'rgba(34, 197, 94, 0.05)' : 'rgba(255, 255, 255, 0.02)',
                     border: '1px solid',
                     borderColor: isActive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255, 255, 255, 0.05)',
                     borderRadius: 12,
                     opacity: isActive ? 1 : 0.5
                   }}>
-                    <div style={{ 
-                      width: 24, height: 24, borderRadius: '50%', 
+                    <div style={{
+                      width: 24, height: 24, borderRadius: '50%',
                       background: isActive ? 'var(--sp-success)' : 'var(--sp-text-dim)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff'
                     }}>
                       {isActive ? (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><polyline points="20 6 9 17 4 12"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><polyline points="20 6 9 17 4 12" /></svg>
                       ) : (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                       )}
                     </div>
                     <span style={{ fontSize: 14, fontWeight: 600, color: isActive ? '#fff' : 'var(--sp-text-dim)' }}>{p.label}</span>
@@ -266,6 +265,8 @@ const ShipperRewards = () => {
         .sp-reward-card.amber:hover { border-color: #f59e0b; }
         .sp-reward-card.red:hover { border-color: #ef4444; }
         .sp-reward-card.cyan:hover { border-color: #06b6d4; }
+
+        .sp-rewards-page { max-width: 800px; margin: 0 auto; padding-bottom: 80px; }
       `}</style>
     </div>
   );

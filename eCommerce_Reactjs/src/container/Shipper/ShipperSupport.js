@@ -15,10 +15,9 @@ const ShipperSupport = () => {
   };
 
   return (
-    <div className="sp-page" style={{ paddingBottom: 100 }}>
+    <div className="sp-page" style={{ maxWidth: 800, margin: '0 auto', paddingBottom: 100 }}>
       <div className="sp-page-header">
         <div className="sp-page-title">
-          <svg className="sp-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           Hỗ trợ trực tuyến
         </div>
         <div className="sp-page-subtitle">Liên hệ ngay để được giải đáp thắc mắc và xử lý sự cố nhanh chóng</div>
@@ -29,7 +28,7 @@ const ShipperSupport = () => {
         <a href="tel:19006868" className="sp-card sp-support-card" style={{ textDecoration: 'none' }}>
           <div className="sp-card-body" style={{ textAlign: 'center', padding: '32px 20px' }}>
             <div className="sp-support-icon-circle blue">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
             </div>
             <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Hotline 24/7</div>
             <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--sp-primary-light)', letterSpacing: 1 }}>1900 6868</div>
@@ -40,7 +39,7 @@ const ShipperSupport = () => {
         <a href="https://zalo.me" target="_blank" rel="noreferrer" className="sp-card sp-support-card" style={{ textDecoration: 'none' }}>
           <div className="sp-card-body" style={{ textAlign: 'center', padding: '32px 20px' }}>
             <div className="sp-support-icon-circle cyan">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" /></svg>
             </div>
             <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Chat Zalo</div>
             <div style={{ fontSize: 24, fontWeight: 900, color: '#06b6d4', letterSpacing: 1 }}>Hỗ trợ Chat</div>
@@ -58,8 +57,8 @@ const ShipperSupport = () => {
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: 20 }}>
               <label className="sp-form-label">Loại yêu cầu</label>
-              <select 
-                className="sp-textarea" 
+              <select
+                className="sp-textarea"
                 style={{ height: 44, padding: '0 14px' }}
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -74,9 +73,9 @@ const ShipperSupport = () => {
 
             <div style={{ marginBottom: 24 }}>
               <label className="sp-form-label">Nội dung chi tiết</label>
-              <textarea 
-                className="sp-textarea" 
-                rows="5" 
+              <textarea
+                className="sp-textarea"
+                rows="5"
                 placeholder="Mô tả vấn đề bạn đang gặp phải..."
                 required
                 value={formData.content}
@@ -85,15 +84,15 @@ const ShipperSupport = () => {
               <div className="sp-char-count">{formData.content.length}/500</div>
             </div>
 
-            <button 
-              type="submit" 
-              className="sp-btn sp-btn-primary" 
+            <button
+              type="submit"
+              className="sp-btn sp-btn-primary"
               style={{ width: '100%', height: 48, justifyContent: 'center', fontSize: 15 }}
               disabled={loading}
             >
               {loading ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <svg className="sp-refresh-icon spinning" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                  <svg className="sp-refresh-icon spinning" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
                   Đang gửi...
                 </span>
               ) : 'Gửi yêu cầu ngay'}
