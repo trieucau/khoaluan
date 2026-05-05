@@ -9,7 +9,9 @@ const ActiveOrderWidget = ({ order, onShowItems, onComplete, isMinimized, toggle
   if (!order) {
     return (
       <div className="sp-glass-panel" style={{ textAlign: 'center', padding: '24px 12px', borderRadius: 20, opacity: 0.8, background: 'rgba(15, 23, 42, 0.8)' }}>
-        <div style={{ fontSize: 24, marginBottom: 12 }}>🧊</div>
+        <div style={{ fontSize: 24, marginBottom: 12, display: 'flex', justifyContent: 'center' }}>
+          <svg className="sp-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z"/><path d="M2 9.5 12 15l10-5.5"/></svg>
+        </div>
         <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>Đang chờ đơn mới...</div>
         <div style={{ fontSize: 10, color: 'var(--sp-text-dim)', marginTop: 4 }}>Khu vực có nhu cầu cao</div>
       </div>
@@ -38,7 +40,10 @@ const ActiveOrderWidget = ({ order, onShowItems, onComplete, isMinimized, toggle
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, marginTop: 10 }}>
-        <div className="sp-badge sp-badge-blue" style={{ fontSize: 9, padding: '3px 8px', borderRadius: 16, fontWeight: 900 }}>⚡ ĐANG GIAO #{order.id}</div>
+        <div className="sp-badge sp-badge-blue" style={{ fontSize: 9, padding: '3px 8px', borderRadius: 16, fontWeight: 900, display: 'flex', alignItems: 'center', gap: 4 }}>
+          <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          ĐANG GIAO #{order.id}
+        </div>
         <div style={{ fontSize: 16, fontWeight: 900, color: '#10b981' }}>{formatMoney(order.typeShipData?.price || 30000)}</div>
       </div>
 
@@ -50,14 +55,18 @@ const ActiveOrderWidget = ({ order, onShowItems, onComplete, isMinimized, toggle
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
           <div style={{ display: 'flex', gap: 12 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>📍</div>
+            <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6' }}>
+              <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+            </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 8, fontWeight: 900, color: '#3b82f6', letterSpacing: 1, marginBottom: 2 }}>LẤY HÀNG</div>
               <div style={{ fontSize: 12, color: '#e2e8f0', fontWeight: 600 }}>Kho Solana Center</div>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(245, 158, 11, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🏁</div>
+            <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(245, 158, 11, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b' }}>
+              <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 8, fontWeight: 900, color: '#f59e0b', letterSpacing: 1, marginBottom: 2 }}>GIAO ĐẾN</div>
               <div style={{ fontSize: 12, color: '#fff', fontWeight: 700 }}>{order.addressUser?.shipAdress || 'Địa chỉ khách'}</div>

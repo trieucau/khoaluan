@@ -5,18 +5,17 @@ import moment from 'moment';
 import ModalCancelOrder from '../../component/ModalCancelOrder/ModalCancelOrder';
 
 const STATUS_CONFIG = {
-  S4: { label: 'Chờ lấy hàng', badge: 'sp-badge-amber', icon: '📦' },
-  S5: { label: 'Đang giao', badge: 'sp-badge-blue', icon: '🚚' },
-  S6: { label: 'Đã giao', badge: 'sp-badge-green', icon: '✅' },
-  S7: { label: 'Đã hủy', badge: 'sp-badge-red', icon: '🚫' },
-  S8: { label: 'Giao thất bại', badge: 'sp-badge-red', icon: '❌' },
+  S4: { label: 'Chờ lấy hàng', badge: 'sp-badge-amber', icon: (<svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>) },
+  S5: { label: 'Đang giao', badge: 'sp-badge-blue', icon: (<svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>) },
+  S6: { label: 'Đã giao', badge: 'sp-badge-green', icon: (<svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>) },
+  S7: { label: 'Đã hủy', badge: 'sp-badge-red', icon: (<svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>) },
+  S8: { label: 'Giao thất bại', badge: 'sp-badge-red', icon: (<svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>) },
 };
 
 const TABS = [
-  { key: 'all', label: 'Tất cả' },
-  { key: 'S4', label: 'Chờ lấy hàng' },
-  { key: 'S5', label: 'Đang giao' },
-  { key: 'S6', label: 'Đã hoàn thành' },
+  { key: 'all', label: 'Tất cả', icon: (<svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>) },
+  { key: 'S5', label: 'Đang giao', icon: (<svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>) },
+  { key: 'S6', label: 'Đã hoàn thành', icon: (<svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>) },
 ];
 
 const Stepper = ({ statusId }) => {
@@ -34,7 +33,9 @@ const Stepper = ({ statusId }) => {
         return (
           <div key={s.id} className="sp-step">
             <div className={`sp-step-dot ${state}`} title={s.label}>
-              {state === 'done' ? '✓' : i + 1}
+              {state === 'done' ? (
+                <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4"><polyline points="20 6 9 17 4 12"/></svg>
+              ) : i + 1}
             </div>
             {i < steps.length - 1 && <div className={`sp-step-line ${cur > i ? 'done' : ''}`} />}
           </div>
@@ -76,7 +77,7 @@ const CompleteModal = ({ orderId, onClose, onDone }) => {
     setLoading(true);
     try {
       const res = await shipperUpdateOrderStatus({ orderId, statusId: 'S6', image: img });
-      if (res?.errCode === 0) { toast.success('✅ Giao hàng thành công!'); onDone(); }
+      if (res?.errCode === 0) { toast.success('Giao hàng thành công!'); onDone(); }
       else toast.error(res?.errMessage || 'Lỗi');
     } catch { toast.error('Lỗi kết nối'); }
     finally { setLoading(false); }
@@ -86,20 +87,29 @@ const CompleteModal = ({ orderId, onClose, onDone }) => {
     <div className="sp-modal-backdrop" onClick={onClose}>
       <div className="sp-modal" onClick={(e) => e.stopPropagation()}>
         <div className="sp-modal-header">
-          <span className="sp-modal-title">📸 Xác nhận giao hàng</span>
+          <span className="sp-modal-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Xác nhận giao hàng
+          </span>
           <button className="sp-modal-close" onClick={onClose}>×</button>
         </div>
         <div className="sp-modal-body">
           <label className="sp-form-label">Ảnh xác nhận (bắt buộc)</label>
           <label className="sp-file-label">
             <input type="file" accept="image/*" onChange={handleImg} />
-            {img ? <img src={img} alt="preview" className="sp-img-preview" /> : <div style={{ color: 'var(--sp-text-dim)', fontSize: 13 }}>📷 Nhấn để chọn ảnh</div>}
+            {img ? <img src={img} alt="preview" className="sp-img-preview" /> : (
+              <div style={{ color: 'var(--sp-text-dim)', fontSize: 13, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                Nhấn để chụp ảnh hoặc chọn ảnh
+              </div>
+            )}
           </label>
         </div>
         <div className="sp-modal-footer">
           <button className="sp-btn sp-btn-ghost" onClick={onClose}>Hủy</button>
-          <button className="sp-btn sp-btn-success" onClick={handleConfirm} disabled={loading || !img}>
-            {loading ? '⏳ Đang xác nhận...' : '✅ Xác nhận giao'}
+          <button className="sp-btn sp-btn-success" onClick={handleConfirm} disabled={loading || !img} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            {loading ? 'Đang xác nhận...' : 'Xác nhận hoàn thành'}
           </button>
         </div>
       </div>
@@ -127,7 +137,10 @@ const FailModal = ({ orderId, onClose, onDone }) => {
     <div className="sp-modal-backdrop" onClick={onClose}>
       <div className="sp-modal" onClick={(e) => e.stopPropagation()}>
         <div className="sp-modal-header">
-          <span className="sp-modal-title">❌ Báo giao thất bại</span>
+          <span className="sp-modal-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            Báo giao thất bại
+          </span>
           <button className="sp-modal-close" onClick={onClose}>×</button>
         </div>
         <div className="sp-modal-body">
@@ -144,8 +157,9 @@ const FailModal = ({ orderId, onClose, onDone }) => {
         </div>
         <div className="sp-modal-footer">
           <button className="sp-btn sp-btn-ghost" onClick={onClose}>Đóng</button>
-          <button className="sp-btn sp-btn-danger" onClick={handleConfirm} disabled={loading || !reason.trim()}>
-            {loading ? '⏳ Đang xử lý...' : '❌ Xác nhận'}
+          <button className="sp-btn sp-btn-danger" onClick={handleConfirm} disabled={loading || !reason.trim()} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            {loading ? 'Đang xử lý...' : 'Xác nhận thất bại'}
           </button>
         </div>
       </div>
@@ -181,7 +195,7 @@ const OrdersActive = () => {
     setActionLoading(orderId);
     try {
       const res = await shipperUpdateOrderStatus({ orderId, statusId: 'S5' });
-      if (res?.errCode === 0) { toast.success('🚚 Đã bắt đầu giao!'); load(); }
+      if (res?.errCode === 0) { toast.success('Đã bắt đầu giao!'); load(); }
       else toast.error(res?.errMessage || 'Lỗi');
     } catch { toast.error('Lỗi kết nối'); }
     finally { setActionLoading(null); }
@@ -205,8 +219,11 @@ const OrdersActive = () => {
   return (
     <div className="sp-page">
       <div className="sp-page-header">
-        <div className="sp-page-title">📦 Đơn của tôi</div>
-        <div className="sp-page-subtitle">Quản lý và cập nhật trạng thái đơn hàng</div>
+        <div className="sp-page-title">
+          <svg className="sp-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Đơn của tôi
+        </div>
+        <div className="sp-page-subtitle">Quản lý và cập nhật trạng thái đơn hàng thời gian thực</div>
       </div>
 
       {/* Tabs */}
@@ -214,7 +231,8 @@ const OrdersActive = () => {
         <div className="sp-tabs">
           {TABS.map((t) => (
             <button key={t.key} className={`sp-tab${tab === t.key ? ' active' : ''}`} onClick={() => setTab(t.key)}>
-              {t.label}
+              {t.icon}
+              <span>{t.label}</span>
               <span className="sp-tab-badge">{counts[t.key]}</span>
             </button>
           ))}
@@ -226,11 +244,11 @@ const OrdersActive = () => {
           <table className="sp-table">
             <thead>
               <tr>
-                <th>Mã đơn</th>
-                <th>Ngày</th>
-                <th>Địa chỉ giao</th>
-                <th>Tiến trình</th>
-                <th style={{ textAlign: 'center' }}>Thao tác</th>
+                <th style={{ width: 100 }}>Mã đơn</th>
+                <th style={{ width: 100 }}>Thời gian</th>
+                <th>Thông tin khách hàng</th>
+                <th style={{ width: 150 }}>Trạng thái</th>
+                <th style={{ textAlign: 'center' }}>Thao tác nhanh</th>
               </tr>
             </thead>
             <tbody>
@@ -240,7 +258,9 @@ const OrdersActive = () => {
                 <tr>
                   <td colSpan={5} style={{ padding: 0, border: 'none' }}>
                     <div className="sp-empty">
-                      <div className="sp-empty-icon">📭</div>
+                      <div className="sp-empty-icon">
+                        <svg className="sp-title-icon" style={{ opacity: 0.5 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z"/><path d="M2 9.5 12 15l10-5.5"/></svg>
+                      </div>
                       <div className="sp-empty-title">Không có đơn hàng nào</div>
                       <div className="sp-empty-desc">Chuyển sang tab khác hoặc nhận thêm đơn</div>
                     </div>
@@ -248,7 +268,7 @@ const OrdersActive = () => {
                 </tr>
               ) : (
                 filtered.map((o, i) => {
-                  const cfg = STATUS_CONFIG[o.statusId] || { label: o.statusId, badge: 'sp-badge-gray', icon: '📋' };
+                  const cfg = STATUS_CONFIG[o.statusId] || { label: o.statusId, badge: 'sp-badge-gray', icon: (<svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /><path d="M9 12h6M9 16h4" /></svg>) };
                   const isActing = actionLoading === o.id;
                   return (
                     <tr key={o.id} className="sp-row-enter" style={{ animationDelay: `${i * 40}ms` }}>
@@ -257,39 +277,62 @@ const OrdersActive = () => {
                         {moment(o.createdAt).format('DD/MM')}<br />
                         <span style={{ color: 'var(--sp-text-dim)' }}>{moment(o.createdAt).format('HH:mm')}</span>
                       </td>
-                      <td style={{ maxWidth: 180 }}>
-                        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13 }}>
-                          📍 {o.addressUser?.shipAdress || '—'}
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#fff', fontWeight: 600 }}>
+                            <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                            {o.addressUser?.shipAdress || '—'}
+                          </div>
+                          <div style={{ fontSize: 12, color: 'var(--sp-text-dim)', paddingLeft: 20 }}>
+                            Người nhận: {o.addressUser?.shipName || 'Khách hàng'}
+                          </div>
                         </div>
-                        <span className={`sp-badge ${cfg.badge}`} style={{ marginTop: 4 }}>
-                          {cfg.icon} {cfg.label}
-                        </span>
                       </td>
                       <td>
-                        {['S4', 'S5', 'S6'].includes(o.statusId)
-                          ? <Stepper statusId={o.statusId} />
-                          : <span style={{ fontSize: 12, color: 'var(--sp-text-dim)' }}>{cfg.icon} {cfg.label}</span>
-                        }
+                        <span className={`sp-badge ${cfg.badge}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                          {cfg.icon}
+                          {cfg.label}
+                        </span>
+                        <div style={{ marginTop: 8 }}>
+                          {['S4', 'S5', 'S6'].includes(o.statusId) && <Stepper statusId={o.statusId} />}
+                        </div>
                       </td>
                       <td style={{ textAlign: 'center' }}>
                         <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap' }}>
                           {o.statusId === 'S4' && (
-                            <button className="sp-btn sp-btn-success sp-btn-sm" onClick={() => handleStartDelivery(o.id)} disabled={isActing}>
-                              {isActing ? '⏳' : '🚚'} {isActing ? 'Đang xử lý' : 'Bắt đầu giao'}
+                            <button className="sp-btn sp-btn-success sp-btn-sm" onClick={() => handleStartDelivery(o.id)} disabled={isActing} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              {isActing ? (
+                                <svg className="sp-icon-xs spinning" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                              ) : (
+                                <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                              )}
+                              {isActing ? 'Đang xử lý' : 'Bắt đầu giao'}
                             </button>
                           )}
                           {o.statusId === 'S5' && (
                             <>
-                              <button className="sp-btn sp-btn-primary sp-btn-sm" onClick={() => setCompleteModal(o.id)}>📸 Hoàn thành</button>
-                              <button className="sp-btn sp-btn-warning sp-btn-sm" onClick={() => setCancelModal({ show: true, orderId: o.id })}>🚫 Hủy đơn</button>
-                              <button className="sp-btn sp-btn-danger sp-btn-sm" onClick={() => setFailModal(o.id)}>❌ Thất bại</button>
+                              <button className="sp-btn sp-btn-primary sp-btn-sm" onClick={() => setCompleteModal(o.id)} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                Hoàn thành
+                              </button>
+                              <button className="sp-btn sp-btn-warning sp-btn-sm" onClick={() => setCancelModal({ show: true, orderId: o.id })} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                                Hủy đơn
+                              </button>
+                              <button className="sp-btn sp-btn-danger sp-btn-sm" onClick={() => setFailModal(o.id)} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                Thất bại
+                              </button>
                             </>
                           )}
                           {o.statusId === 'S6' && (
-                            <span style={{ color: 'var(--sp-success)', fontSize: 13, fontWeight: 600 }}>✅ Đã giao</span>
+                            <span style={{ color: 'var(--sp-success)', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                              Đã giao
+                            </span>
                           )}
                           {(o.statusId === 'S7' || o.statusId === 'S8') && (
-                            <span style={{ color: 'var(--sp-danger)', fontSize: 13, fontWeight: 600 }}>{cfg.icon} {cfg.label}</span>
+                            <span style={{ color: 'var(--sp-danger)', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>{cfg.icon} {cfg.label}</span>
                           )}
                         </div>
                       </td>

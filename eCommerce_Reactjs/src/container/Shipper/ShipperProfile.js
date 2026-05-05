@@ -76,8 +76,11 @@ const ShipperProfile = () => {
       <div className="sp-page-header">
         <div className="sp-page-header-row">
           <div>
-            <div className="sp-page-title">👤 Thông tin cá nhân</div>
-            <div className="sp-page-subtitle">Xem và cập nhật thông tin tài khoản Shipper</div>
+            <div className="sp-page-title">
+              <svg className="sp-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Thông tin cá nhân
+            </div>
+            <div className="sp-page-subtitle">Xem và cập nhật thông tin tài khoản Shipper của bạn</div>
           </div>
           <Link to="/shipper" className="sp-btn sp-btn-ghost">← Dashboard</Link>
         </div>
@@ -97,20 +100,29 @@ const ShipperProfile = () => {
                 </div>
               )}
               <label style={{ position: 'absolute', bottom: 4, right: 4, width: 28, height: 28, borderRadius: '50%', background: 'var(--sp-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '2px solid var(--sp-bg)', fontSize: 13 }}>
-                📷<input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange} />
+                <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange} />
               </label>
             </div>
             <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--sp-text)', marginBottom: 4 }}>
               {[values.firstName, values.lastName].filter(Boolean).join(' ') || 'Shipper'}
             </div>
             <div style={{ fontSize: 12, color: 'var(--sp-text-muted)', marginBottom: 12 }}>{values.email}</div>
-            <span className="sp-badge sp-badge-blue">🚚 Shipper</span>
+            <span className="sp-badge sp-badge-blue" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              Shipper Chuyên Nghiệp
+            </span>
           </div>
         </div>
 
         {/* Info form */}
         <div className="sp-card">
-          <div className="sp-card-header"><span className="sp-card-title">📋 Thông tin cơ bản</span></div>
+          <div className="sp-card-header">
+            <span className="sp-card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              Thông tin cơ bản
+            </span>
+          </div>
           <div className="sp-card-body">
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[
@@ -165,11 +177,15 @@ const ShipperProfile = () => {
                 style={{ width: '100%', background: 'var(--sp-surface2)', border: '1px solid var(--sp-border)', borderRadius: 8, padding: '9px 13px', color: 'var(--sp-text)', fontSize: 13, fontFamily: 'inherit', outline: 'none' }} />
             </div>
 
-            <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-              <button className="sp-btn sp-btn-primary" onClick={handleSave} disabled={loading}>
-                {loading ? '⏳ Đang lưu...' : '💾 Lưu thay đổi'}
+            <div style={{ display: 'flex', gap: 10, marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--sp-border)' }}>
+              <button className="sp-btn sp-btn-primary" onClick={handleSave} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                {loading ? 'Đang lưu...' : 'Lưu thay đổi'}
               </button>
-              <Link to="/shipper/change-password" className="sp-btn sp-btn-ghost">🔐 Đổi mật khẩu</Link>
+              <Link to="/shipper/change-password" className="sp-btn sp-btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Đổi mật khẩu
+              </Link>
             </div>
           </div>
         </div>

@@ -54,7 +54,7 @@ const OrderQuickAcceptModal = ({
       <div className="sp-quick-accept-container">
         <div className="sp-qa-header">
           <div className="sp-qa-title">
-            <span>🔔</span>
+            <svg className="sp-icon-sm" style={{ color: 'var(--sp-primary)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             Đơn mới có thể nhận
             {unskipped.length > 0 && <span className="sp-qa-count">{unskipped.length}</span>}
           </div>
@@ -64,7 +64,9 @@ const OrderQuickAcceptModal = ({
         <div className="sp-qa-list">
           {unskipped.length === 0 && skipped.length === 0 ? (
             <div className="sp-qa-empty">
-              <div className="sp-qa-empty-icon">📭</div>
+              <div className="sp-qa-empty-icon">
+                <svg className="sp-title-icon" style={{ opacity: 0.5 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z"/><path d="M2 9.5 12 15l10-5.5"/></svg>
+              </div>
               <div style={{ color: '#fff', fontWeight: 600 }}>Không có đơn hàng mới</div>
               <div style={{ color: 'var(--sp-text-dim)', fontSize: 12 }}>Vui lòng quay lại sau ít phút</div>
             </div>
@@ -99,7 +101,8 @@ const OrderQuickAcceptModal = ({
                       Bỏ qua
                     </button>
                     <button className="sp-qa-btn sp-qa-btn-accept" onClick={() => onAccept(order.id)}>
-                      ✋ Nhận ngay
+                      <svg className="sp-icon-xs" style={{ marginRight: 6 }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                      Nhận ngay
                     </button>
                   </div>
                 </div>

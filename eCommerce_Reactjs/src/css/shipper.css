@@ -1125,3 +1125,14 @@ svg.lucide { width:20px; height:20px; stroke-width:2; stroke:currentColor; fill:
   }
 }
 
+/* ---- ICON UTILITIES ---- */
+.sp-icon-sm { width: 16px; height: 16px; flex-shrink: 0; }
+.sp-icon-xs { width: 14px; height: 14px; flex-shrink: 0; }
+.sp-title-icon { width: 24px; height: 24px; color: var(--sp-primary); }
+
+.sp-tabs .sp-icon-xs { margin-right: 8px; opacity: 0.7; }
+.sp-tab.active .sp-icon-xs { opacity: 1; }
+
+.sp-badge .sp-icon-sm, .sp-badge .sp-icon-xs {
+  stroke-width: 2.5;
+}

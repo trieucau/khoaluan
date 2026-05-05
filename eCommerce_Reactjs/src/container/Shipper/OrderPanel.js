@@ -135,8 +135,9 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
         }}>
           <div>
-            <div style={{ fontWeight: 800, fontSize: 15, color: '#fff', letterSpacing: 0.3 }}>
-              📦 Danh sách đơn đang giao
+            <div style={{ fontWeight: 800, fontSize: 15, color: '#fff', letterSpacing: 0.3, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              Danh sách đơn đang giao
             </div>
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#34d399', display: 'inline-block', animation: 'spPulse 1.5s infinite' }} />
@@ -155,7 +156,9 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
         <div style={{ overflowY: 'auto', flex: 1 }}>
           {sortedOrders.length === 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#475569' }}>
-              <div style={{ fontSize: 48, marginBottom: 12, opacity: 0.4 }}>📭</div>
+              <div style={{ fontSize: 48, marginBottom: 12, opacity: 0.4 }}>
+                <svg className="sp-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z"/><path d="M2 9.5 12 15l10-5.5"/></svg>
+              </div>
               <div style={{ fontSize: 14, fontWeight: 600 }}>Không có đơn hàng nào</div>
               <div style={{ fontSize: 12, marginTop: 4 }}>Bật GPS để tải dữ liệu</div>
             </div>
@@ -199,7 +202,10 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
                     <td style={{ padding: '9px 10px', color: '#f472b6', fontWeight: 600 }}>{formatPrice(order.shippingFee)}</td>
                     <td style={{ padding: '9px 10px' }}>
                       <div style={{ fontWeight: 600, color: '#e2e8f0', fontSize: 12 }}>{order.name}</div>
-                      <div style={{ color: '#64748b', fontSize: 11, marginTop: 2 }}>📞 {order.phone}</div>
+                      <div style={{ color: '#64748b', fontSize: 11, marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        {order.phone}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -210,10 +216,19 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
 
         {/* Footer */}
         {sortedOrders.length > 0 && (
-          <div style={{ padding: '10px 16px', background: '#1e293b', borderTop: '1px solid #334155', display: 'flex', gap: 20, flexShrink: 0, fontSize: 12, color: '#64748b', flexWrap: 'wrap' }}>
-            <span>🗺️ Tổng KM: <strong style={{ color: '#34d399' }}>{formatDistance(sortedOrders.reduce((s, o) => s + (o.distKm || 0), 0))}</strong></span>
-            <span>⏱️ Tổng TG: <strong style={{ color: '#a78bfa' }}>{formatDuration(sortedOrders.reduce((s, o) => s + (o.durationSeconds || 0), 0))}</strong></span>
-            <span>💰 Tổng GT: <strong style={{ color: '#fbbf24' }}>{formatPrice(sortedOrders.reduce((s, o) => s + (o.totalPrice || 0), 0))}</strong></span>
+          <div style={{ padding: '10px 16px', background: '#1e293b', borderTop: '1px solid #334155', display: 'flex', gap: 20, flexShrink: 0, fontSize: 11, color: '#94a3b8', flexWrap: 'wrap' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              Tổng KM: <strong style={{ color: '#34d399' }}>{formatDistance(sortedOrders.reduce((s, o) => s + (o.distKm || 0), 0))}</strong>
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Tổng TG: <strong style={{ color: '#a78bfa' }}>{formatDuration(sortedOrders.reduce((s, o) => s + (o.durationSeconds || 0), 0))}</strong>
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Tổng GT: <strong style={{ color: '#fbbf24' }}>{formatPrice(sortedOrders.reduce((s, o) => s + (o.totalPrice || 0), 0))}</strong>
+            </span>
           </div>
         )}
       </div>

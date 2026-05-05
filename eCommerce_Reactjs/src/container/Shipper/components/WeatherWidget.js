@@ -8,7 +8,9 @@ const WeatherWidget = ({ dragHandleClass }) => {
         cursor: 'grab'
       }} />
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, marginTop: 4 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🌦️</div>
+        <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fbbf24' }}>
+          <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2v2"/><path d="m4.93 4.93.7.7"/><path d="M20 12h2"/><path d="m19.07 4.93-.7.7"/><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></svg>
+        </div>
         <div>
           <div style={{ fontSize: 'clamp(10px, 0.9vw, 12px)', fontWeight: 700 }}>28°C • Bình Dương</div>
           <div style={{ fontSize: 'clamp(8px, 0.7vw, 10px)', color: 'var(--sp-text-dim)' }}>Trời nhiều mây, ít mưa</div>

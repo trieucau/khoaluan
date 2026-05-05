@@ -18,6 +18,8 @@ import RankWidget from './components/RankWidget';
 import ActiveOrderWidget from './components/ActiveOrderWidget';
 import ShipperStatusBar from './components/ShipperStatusBar';
 import OrderQuickAcceptModal from './components/OrderQuickAcceptModal';
+import HorizontalMenu from './components/HorizontalMenu';
+
 
 
 
@@ -317,6 +319,7 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
             dailyStats={dailyStats} 
             formatMoney={formatMoney} 
           />
+          <HorizontalMenu />
         </div>
 
         <div className="sp-float-middle">
