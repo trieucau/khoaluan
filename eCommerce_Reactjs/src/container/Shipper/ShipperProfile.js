@@ -35,8 +35,9 @@ const ShipperProfile = () => {
         let imageBase64 = d.image || DEFAULT_AVATAR;
         
         // Handle Buffer if backend returns binary BLOB as Buffer object
-        if (d.image && d.image.data) {
-          imageBase64 = new Buffer(d.image.data, 'base64').toString('binary');
+        if (d.image && typeof d.image === 'object' && d.image.data) {
+          const base64String = Buffer.from(d.image.data).toString('base64');
+          imageBase64 = base64String.startsWith('data:image') ? base64String : `data:image/png;base64,${base64String}`;
         }
 
         setValues({
@@ -89,7 +90,7 @@ const ShipperProfile = () => {
         <aside className="sp-profile-aside">
           <div className="sp-card avatar-section">
             <div className="avatar-wrapper">
-              {displayImg && displayImg !== DEFAULT_AVATAR ? (
+              {displayImg && (displayImg.length > 100 || displayImg.startsWith('blob:')) ? (
                 <img src={displayImg} alt="avatar" className="avatar-img" />
               ) : (
                 <div className="avatar-placeholder">{initials}</div>
@@ -180,7 +181,7 @@ const ShipperProfile = () => {
         .avatar-section { padding: 32px 20px; text-align: center; margin-bottom: 16px; }
         .avatar-wrapper { position: relative; display: inline-block; margin-bottom: 16px; }
         .avatar-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--sp-primary); box-shadow: 0 8px 24px rgba(59,130,246,0.2); }
-        .avatar-placeholder { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--sp-primary), #06b6d4); display: flex; alignItems: center; justify-content: center; font-size: 40px; font-weight: 800; color: #fff; border: 4px solid rgba(255,255,255,0.1); }
+        .avatar-placeholder { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--sp-primary), #06b6d4); display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 800; color: #fff; border: 4px solid rgba(255,255,255,0.1); }
         
         .avatar-upload-btn { 
           position: absolute; bottom: 4px; right: 4px; width: 32px; height: 32px; 

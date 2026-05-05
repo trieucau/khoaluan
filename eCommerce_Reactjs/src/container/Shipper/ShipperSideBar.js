@@ -31,8 +31,10 @@ const ShipperSideBar = ({ onLinkClick, availableCount = 0, activeCount = 0 }) =>
       getDetailUserById(userData.id).then(res => {
         if (res?.errCode === 0 && res.data?.image) {
           let img = res.data.image;
-          if (res.data.image.data) {
-            img = new Buffer(res.data.image.data, 'base64').toString('binary');
+          // Handle Buffer/Binary data from backend
+          if (img && typeof img === 'object' && img.data) {
+            const base64String = Buffer.from(img.data).toString('base64');
+            img = base64String.startsWith('data:image') ? base64String : `data:image/png;base64,${base64String}`;
           }
           setAvatar(img);
         }
