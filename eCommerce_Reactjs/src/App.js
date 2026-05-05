@@ -67,41 +67,61 @@ function App() {
         <Route
           path="/shopcart"
           element={
-            <>
-              <Header />
-              <ShopCartPage />
-              <Footer />
-            </>
+            JSON.parse(localStorage.getItem('userData')) &&
+            JSON.parse(localStorage.getItem('userData')).roleId !== 'R2' ? (
+              <Navigate to="/login" />
+            ) : (
+              <>
+                <Header />
+                <ShopCartPage />
+                <Footer />
+              </>
+            )
           }
         />
         <Route
           path="/payment/success"
           element={
-            <>
-              <Header />
-              <PaymentSuccess />
-              <Footer />
-            </>
+            JSON.parse(localStorage.getItem('userData')) &&
+            JSON.parse(localStorage.getItem('userData')).roleId !== 'R2' ? (
+              <Navigate to="/login" />
+            ) : (
+              <>
+                <Header />
+                <PaymentSuccess />
+                <Footer />
+              </>
+            )
           }
         />
         <Route
           path="/payment/vnpay"
           element={
-            <>
-              <TopMenu />
-              <VnpayPaymentPage />
-              <Footer />
-            </>
+            JSON.parse(localStorage.getItem('userData')) &&
+            JSON.parse(localStorage.getItem('userData')).roleId !== 'R2' ? (
+              <Navigate to="/login" />
+            ) : (
+              <>
+                <TopMenu />
+                <VnpayPaymentPage />
+                <Footer />
+              </>
+            )
           }
         />
         <Route
           path="/payment/vnpay_return"
           element={
-            <>
-              <TopMenu />
-              <VnpayPaymentSuccess />
-              <Footer />
-            </>
+            JSON.parse(localStorage.getItem('userData')) &&
+            JSON.parse(localStorage.getItem('userData')).roleId !== 'R2' ? (
+              <Navigate to="/login" />
+            ) : (
+              <>
+                <TopMenu />
+                <VnpayPaymentSuccess />
+                <Footer />
+              </>
+            )
           }
         />
         <Route
@@ -201,7 +221,7 @@ function App() {
         <Route
           path="/user/*"
           element={
-            JSON.parse(localStorage.getItem('userData')) ? (
+            JSON.parse(localStorage.getItem('userData'))?.roleId === 'R2' ? (
               <>
                 <Header />
                 <UserHomePage />
@@ -215,11 +235,15 @@ function App() {
         <Route
           path="/order/:userId"
           element={
-            <>
-              <Header />
-              <OrderHomePage />
-              <Footer />
-            </>
+            JSON.parse(localStorage.getItem('userData'))?.roleId === 'R2' ? (
+              <>
+                <Header />
+                <OrderHomePage />
+                <Footer />
+              </>
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
       </Routes>
