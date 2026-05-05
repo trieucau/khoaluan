@@ -8,6 +8,7 @@ import ShipperProfile from './ShipperProfile';
 import ShipperChangePassword from './ShipperChangePassword';
 import OrdersAvailable from './OrdersAvailable';
 import OrdersActive from './OrdersActive';
+import OrdersReturn from './OrdersReturn';
 import '../../css/shipper.css';
 
 
@@ -125,6 +126,7 @@ const HomePageShipper = () => {
 
             <Route path="/orders-available" element={<OrdersAvailable />} />
             <Route path="/my-orders"        element={<OrdersActive />} />
+            <Route path="/returns"          element={<OrdersReturn />} />
             <Route path="/profile"          element={<ShipperProfile />} />
             <Route path="/change-password"  element={<ShipperChangePassword />} />
           </Routes>
