@@ -20,9 +20,12 @@ const LoginWebPage = () => {
   useEffect(() => {
     setIsRegister(location.pathname === '/register');
   }, [location.pathname]);
+  const [isShowPassword, setIsShowPassword] = useState(false);
+  const [isShowPasswordRegister, setIsShowPasswordRegister] = useState(false);
+
   const [inputValues, setInputValues] = useState({
     email: '',
-    password: 'passwordsecrect',
+    password: '',
     lastName: '',
     phonenumber: '',
     isOpen: false,
@@ -202,15 +205,22 @@ const LoginWebPage = () => {
                         required
                       />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group password-group">
                       <label htmlFor="loginPassword">Mật khẩu</label>
                       <input
                         name="password"
                         onChange={(event) => handleOnChange(event)}
-                        type="password"
+                        type={isShowPassword ? 'text' : 'password'}
                         id="loginPassword"
                         required
                       />
+                      <span className="password-toggle" onClick={() => setIsShowPassword(!isShowPassword)}>
+                        {isShowPassword ? (
+                          <i className="fa-solid fa-eye-slash"></i>
+                        ) : (
+                          <i className="fa-solid fa-eye"></i>
+                        )}
+                      </span>
                     </div>
                     <div className="CTA">
                       <input onClick={() => handleLogin()} type="submit" value="Đăng nhập" />
@@ -285,21 +295,28 @@ const LoginWebPage = () => {
                         id="phone"
                       />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group password-group">
                       <label htmlFor="password">Mật khẩu</label>
                       <input
-                        type="password"
+                        type={isShowPasswordRegister ? 'text' : 'password'}
                         name="password"
                         onChange={(event) => handleOnChange(event)}
                         id="password"
                         className="pass"
                       />
+                      <span className="password-toggle" onClick={() => setIsShowPasswordRegister(!isShowPasswordRegister)}>
+                        {isShowPasswordRegister ? (
+                          <i className="fa-solid fa-eye-slash"></i>
+                        ) : (
+                          <i className="fa-solid fa-eye"></i>
+                        )}
+                      </span>
                       <span className="error" />
                     </div>
                     <div className="form-group">
                       <label htmlFor="passwordCon">Xác nhận mật khẩu</label>
                       <input
-                        type="password"
+                        type={isShowPasswordRegister ? 'text' : 'password'}
                         name="passwordCon"
                         id="passwordCon"
                         className="passConfirm"
