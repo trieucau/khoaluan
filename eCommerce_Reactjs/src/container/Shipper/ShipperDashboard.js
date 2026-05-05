@@ -82,9 +82,10 @@ const ShipperDashboard = ({
 
   const [isMinimized, setIsMinimized] = useState(false);
   const [isHubExpanded, setIsHubExpanded] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   const isMobile = window.innerWidth <= 1024;
-
+  
   // DRAG & DROP STATE
   const [sidePos, setSidePos] = useState({ right: 20, y: 80 });
   const [hubPos, setHubPos] = useState({ x: window.innerWidth - 80, y: window.innerHeight - 150 });
@@ -257,14 +258,20 @@ const ShipperDashboard = ({
 
   const sortedDestinations = useMemo(() => {
     if (!shipperPos) return [];
-    return activeOrders
+    
+    // Filter by selected order if applicable
+    const filteredOrders = selectedOrderId 
+      ? activeOrders.filter(o => o.id === selectedOrderId)
+      : activeOrders;
+
+    return filteredOrders
       .filter(o => o.addressUser?.lat && o.addressUser?.lng)
       .map(o => ({ lat: parseFloat(o.addressUser.lat), lng: parseFloat(o.addressUser.lng), id: o.id }))
       .sort((a, b) => 
         getDistance(shipperPos[0], shipperPos[1], a.lat, a.lng) - 
         getDistance(shipperPos[0], shipperPos[1], b.lat, b.lng)
       );
-  }, [activeOrders, shipperPos]);
+  }, [activeOrders, shipperPos, selectedOrderId]);
 
   const waypoints = useMemo(() => {
     if (!shipperPos) return [];
@@ -276,11 +283,18 @@ const ShipperDashboard = ({
   const mapData = useMemo(() => {
     const markers = [];
     markers.push({ pos: shipperPos, icon: truckIcon, label: 'Bạn' });
-    sortedDestinations.forEach((dest, idx) => {
-      markers.push({ pos: [dest.lat, dest.lng], icon: createNumberIcon(idx + 1), label: `Đơn #${dest.id}` });
+    
+    // In markers, we also filter or highlight if needed, but showing all active markers is fine
+    // as long as the route is filtered. Or we could filter markers too:
+    const visibleDestinations = selectedOrderId 
+      ? sortedDestinations.filter(d => d.id === selectedOrderId)
+      : sortedDestinations;
+
+    visibleDestinations.forEach((dest, idx) => {
+      markers.push({ pos: [dest.lat, dest.lng], icon: createNumberIcon(selectedOrderId ? '!' : idx + 1), label: `Đơn #${dest.id}` });
     });
     return { markers, route: routeCoords };
-  }, [shipperPos, sortedDestinations, routeCoords]);
+  }, [shipperPos, sortedDestinations, routeCoords, selectedOrderId]);
 
   if (loading) return <div className="sp-page"><div className="sp-skeleton" style={{ height: '80vh' }} /></div>;
 
@@ -312,7 +326,13 @@ const ShipperDashboard = ({
       </div>
 
       {/* TOP PRIORITY COMPONENTS */}
-      <OrderPanel orders={activeOrders} shipperLoc={{ lat: shipperPos[0], lng: shipperPos[1] }} osrmDurations={{}} />
+      <OrderPanel 
+        orders={activeOrders} 
+        shipperLoc={{ lat: shipperPos[0], lng: shipperPos[1] }} 
+        osrmDurations={{}} 
+        selectedOrderId={selectedOrderId}
+        onSelectOrder={setSelectedOrderId}
+      />
 
       <div className="sp-overlay-container" style={{ position: 'absolute', inset: 0, zIndex: 100, pointerEvents: 'none' }}>
         <div style={{ pointerEvents: 'auto' }}>

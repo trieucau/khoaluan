@@ -25,7 +25,7 @@ const SortIcon = ({ column, sortKey, sortDir }) => {
   );
 };
 
-const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
+const OrderPanel = ({ orders, shipperLoc, osrmDurations, selectedOrderId, onSelectOrder }) => {
   const [open, setOpen] = useState(false);
   const [sortKey, setSortKey] = useState(null);
   const [sortDir, setSortDir] = useState('asc');
@@ -96,7 +96,8 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
     { label: 'Thời gian', key: 'durationSeconds', w: '13%', sortable: true },
     { label: 'Giá trị', key: null, w: '15%' },
     { label: 'Phí ship', key: null, w: '13%' },
-    { label: 'Tên – SĐT', key: null, w: '35%' },
+    { label: 'Tên – SĐT', key: null, w: '25%' },
+    { label: 'Chi tiết', key: null, w: '10%' },
   ];
 
   return (
@@ -142,6 +143,14 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#34d399', display: 'inline-block', animation: 'spPulse 1.5s infinite' }} />
               {sortedOrders.length} đơn đang giao
+              {selectedOrderId && (
+                <button 
+                  onClick={() => onSelectOrder(null)} 
+                  style={{ background: 'rgba(59,130,246,0.3)', border: '1px solid rgba(59,130,246,0.5)', color: '#bfdbfe', borderRadius: 4, padding: '2px 6px', cursor: 'pointer', fontSize: 10, marginLeft: 6 }}
+                >
+                  ✕ Bỏ lọc
+                </button>
+              )}
             </div>
           </div>
           <button
@@ -206,6 +215,20 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations }) => {
                         <svg className="sp-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                         {order.phone}
                       </div>
+                    </td>
+                    <td style={{ padding: '9px 10px' }}>
+                      <button 
+                        onClick={() => onSelectOrder(selectedOrderId === order.id ? null : order.id)} 
+                        style={{ 
+                          background: selectedOrderId === order.id ? '#3b82f6' : 'transparent', 
+                          border: '1px solid #3b82f6', 
+                          color: selectedOrderId === order.id ? '#fff' : '#38bdf8', 
+                          borderRadius: 4, padding: '3px 8px', cursor: 'pointer', fontSize: 11, fontWeight: 600,
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {selectedOrderId === order.id ? '✓ Đang xem' : '⌖ Lộ trình'}
+                      </button>
                     </td>
                   </tr>
                 ))}
