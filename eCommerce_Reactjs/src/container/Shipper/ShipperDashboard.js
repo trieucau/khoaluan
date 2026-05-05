@@ -17,6 +17,8 @@ import WeatherWidget from './components/WeatherWidget';
 import RankWidget from './components/RankWidget';
 import ActiveOrderWidget from './components/ActiveOrderWidget';
 import ShipperStatusBar from './components/ShipperStatusBar';
+import OrderQuickAcceptModal from './components/OrderQuickAcceptModal';
+
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6969';
 
@@ -61,7 +63,7 @@ const createNumberIcon = (number) =>
     iconAnchor: [12, 12],
   });
 
-const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNotifications }) => {
+const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNotifications, skippedOrders, setSkippedOrders }) => {
   const socketRef = React.useRef(null);
   const [activeOrders, setActiveOrders] = useState([]);
   const [availableOrders, setAvailableOrders] = useState([]);
@@ -69,6 +71,8 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
   const [osrmDurations] = useState({});
   const [ignoredOrders, setIgnoredOrders] = useState(new Set());
   const [showOrderItems, setShowOrderItems] = useState(false);
+
+
   const [isMinimized, setIsMinimized] = useState(false);
   const [isHubExpanded, setIsHubExpanded] = useState(false);
 
@@ -174,7 +178,13 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
     setIgnoredOrders(prev => new Set(prev).add(orderId));
   };
 
+  const handleSkipOrder = (orderId) => {
+    setSkippedOrders(prev => new Set(prev).add(orderId));
+  };
+
+
   const visibleAvailable = useMemo(() => {
+
     return availableOrders.filter(o => !ignoredOrders.has(o.id));
   }, [availableOrders, ignoredOrders]);
 
@@ -403,7 +413,19 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
               </div>
             </div>
           )}
+
+          {showNotifications && (
+            <OrderQuickAcceptModal 
+              orders={availableOrders}
+              shipperPos={shipperPos}
+              skippedIds={skippedOrders}
+              onAccept={handleAcceptOrder}
+              onSkip={handleSkipOrder}
+              onClose={() => setShowNotifications(false)}
+            />
+          )}
         </div>
+
       </div>
     </div>
   );

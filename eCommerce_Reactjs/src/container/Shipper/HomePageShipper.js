@@ -30,6 +30,8 @@ const HomePageShipper = () => {
   // --- GPS Tracking Logic ---
   const [gpsData, setGpsData] = useState({ isOnline: false, gpsStartTime: null, gpsTotalMs: 0 });
   const [showNotifications, setShowNotifications] = useState(false);
+  const [skippedOrders, setSkippedOrders] = useState(new Set());
+
 
   useEffect(() => {
     const savedDate = localStorage.getItem('gpsDate');
@@ -115,11 +117,12 @@ const HomePageShipper = () => {
       </div>
 
       <div className="sp-layout">
-        <div className="sp-header"><ShipperHeader onToggleSidebar={toggleSidebar} availableCount={availableCount} isOnline={gpsData.isOnline} onToggleGps={toggleGps} onToggleNotifications={() => setShowNotifications(!showNotifications)} /></div>
-        <div className="sp-sidebar"><ShipperSideBar availableCount={availableCount} activeCount={activeCount} /></div>
+        <div className="sp-header"><ShipperHeader onToggleSidebar={toggleSidebar} availableCount={Math.max(0, availableCount - skippedOrders.size)} isOnline={gpsData.isOnline} onToggleGps={toggleGps} onToggleNotifications={() => setShowNotifications(!showNotifications)} /></div>
+        <div className="sp-sidebar"><ShipperSideBar availableCount={Math.max(0, availableCount - skippedOrders.size)} activeCount={activeCount} /></div>
         <main className="sp-main">
           <Routes>
-            <Route path="/"                 element={<ShipperDashboard gpsData={gpsData} onToggleGps={toggleGps} showNotifications={showNotifications} setShowNotifications={setShowNotifications} />} />
+            <Route path="/"                 element={<ShipperDashboard gpsData={gpsData} onToggleGps={toggleGps} showNotifications={showNotifications} setShowNotifications={setShowNotifications} skippedOrders={skippedOrders} setSkippedOrders={setSkippedOrders} />} />
+
             <Route path="/orders-available" element={<OrdersAvailable />} />
             <Route path="/my-orders"        element={<OrdersActive />} />
             <Route path="/stats"            element={<ShipperStats />} />
