@@ -993,6 +993,20 @@ svg.lucide { width:20px; height:20px; stroke-width:2; stroke:currentColor; fill:
   display: flex;
   flex-direction: column;
   gap: 12px;
+  /* Hide scrollbar but allow scrolling */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.sp-qa-list::-webkit-scrollbar {
+  display: none;
+}
+
+.sp-hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.sp-hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Staggered Items Animation */
