@@ -100,34 +100,34 @@ const ActivityRate = () => {
   const rankDetails = useMemo(() => {
     const s = stats.score;
     if (s >= 95) return { 
-      label: 'Xế Xịn Hạng S+', 
-      color: '#10b981', 
-      badge: 'sp-badge-green', 
+      label: 'Bạch Kim (Legend)', 
+      color: '#06b6d4', 
+      badge: 'sp-badge-cyan', 
       desc: 'Ưu tiên nhận đơn cao nhất & Thưởng 10% doanh thu' 
     };
     if (s >= 90) return { 
-      label: 'Xế Xịn Hạng S', 
-      color: '#34d399', 
-      badge: 'sp-badge-green', 
+      label: 'Kim Cương', 
+      color: '#3b82f6', 
+      badge: 'sp-badge-blue', 
       desc: 'Ưu tiên nhận đơn & Thưởng 5% doanh thu' 
     };
     if (s >= 80) return { 
-      label: 'Tài Xế Hạng A', 
-      color: '#3b82f6', 
-      badge: 'sp-badge-blue', 
+      label: 'Hạng Vàng', 
+      color: '#f59e0b', 
+      badge: 'sp-badge-amber', 
       desc: 'Tài xế chuyên nghiệp, hoạt động ổn định' 
     };
     if (s >= 70) return { 
-      label: 'Tài Xế Hạng B', 
-      color: '#f59e0b', 
-      badge: 'sp-badge-amber', 
+      label: 'Hạng Bạc', 
+      color: '#10b981', 
+      badge: 'sp-badge-green', 
       desc: 'Tài xế tiềm năng, cần cố gắng thêm' 
     };
     return { 
-      label: 'Hạng C (Cảnh báo)', 
+      label: 'Hạng Đồng', 
       color: '#ef4444', 
       badge: 'sp-badge-red', 
-      desc: 'Tỉ lệ hoạt động thấp, nguy cơ hạn chế nhận đơn' 
+      desc: 'Tỉ lệ hoạt động thấp, cần cải thiện hiệu suất' 
     };
   }, [stats.score]);
 

@@ -4,11 +4,11 @@ import { getAllOrdersByShipper } from '../../services/userService';
 
 // --- CONSTANTS ---
 const TIER_CONFIG = [
-  { min: 95, label: 'Bạch Kim (Legend)', next: 'Hết cấp', color: 'cyan', icon: '🏆' },
-  { min: 90, label: 'Kim Cương (S+)', next: 'Bạch Kim', color: 'blue', icon: '💎' },
-  { min: 80, label: 'Vàng (S)', next: 'Kim Cương', color: 'amber', icon: '🥇' },
-  { min: 70, label: 'Bạc (A)', next: 'Vàng', color: 'green', icon: '🥈' },
-  { min: 0, label: 'Đồng (B)', next: 'Bạc', color: 'red', icon: '🥉' },
+  { min: 95, label: 'Bạch Kim', next: 'Hết cấp', color: 'cyan', icon: '🏆' },
+  { min: 90, label: 'Kim Cương', next: 'Bạch Kim', color: 'blue', icon: '💎' },
+  { min: 80, label: 'Vàng', next: 'Kim Cương', color: 'amber', icon: '🥇' },
+  { min: 70, label: 'Bạc', next: 'Vàng', color: 'green', icon: '🥈' },
+  { min: 0, label: 'Đồng', next: 'Bạc', color: 'red', icon: '🥉' },
 ];
 
 const REWARDS = [

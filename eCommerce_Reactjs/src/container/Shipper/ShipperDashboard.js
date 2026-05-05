@@ -293,11 +293,11 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
 
             // Calculate Next Rank
             let nextGoal = 70;
-            let nextRank = 'Hạng B';
-            if (score >= 95) { nextGoal = 100; nextRank = 'Huyền Thoại'; }
-            else if (score >= 90) { nextGoal = 95; nextRank = 'Hạng S+'; }
-            else if (score >= 80) { nextGoal = 90; nextRank = 'Hạng S'; }
-            else if (score >= 70) { nextGoal = 80; nextRank = 'Hạng A'; }
+            let nextRank = 'Hạng Bạc';
+            if (score >= 95) { nextGoal = 100; nextRank = 'Bạch Kim (Legend)'; }
+            else if (score >= 90) { nextGoal = 95; nextRank = 'Bạch Kim'; }
+            else if (score >= 80) { nextGoal = 90; nextRank = 'Kim Cương'; }
+            else if (score >= 70) { nextGoal = 80; nextRank = 'Hạng Vàng'; }
             
             setRankProgress({ score, nextGoal, nextRank, total });
           }

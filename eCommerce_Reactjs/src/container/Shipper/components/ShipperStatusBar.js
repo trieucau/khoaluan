@@ -26,7 +26,7 @@ const ShipperStatusBar = ({ isOnline, sessionTimeMs, formatMs, firstName, dailyS
       if (score < 95) {
         msg.push(`🏆 Mục tiêu: Chỉ cần thêm ${nextGoal - score}% tin cậy để đạt ${nextRank}!`);
       } else {
-        msg.push('👑 Bạn đang là tài xế Huyền Thoại! Duy trì phong độ để nhận ưu đãi tối đa.');
+        msg.push('👑 Bạn đang là tài xế Bạch Kim! Duy trì phong độ để nhận ưu đãi tối đa.');
       }
     }
 

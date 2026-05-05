@@ -2,11 +2,11 @@ import React, { useMemo } from 'react';
 
 const RankWidget = ({ dragHandleClass, score = 0 }) => {
   const rank = useMemo(() => {
-    if (score >= 95) return { label: 'XẾ XỊN HẠNG S+', color: '#10b981', target: 1000 };
-    if (score >= 90) return { label: 'XẾ XỊN HẠNG S', color: '#34d399', target: 1000 };
-    if (score >= 80) return { label: 'TÀI XẾ HẠNG A', color: '#3b82f6', target: 1000 };
-    if (score >= 70) return { label: 'TÀI XẾ HẠNG B', color: '#f59e0b', target: 1000 };
-    return { label: 'HẠNG C (CẢNH BÁO)', color: '#ef4444', target: 1000 };
+    if (score >= 95) return { label: 'BẠCH KIM (LEGEND)', color: '#06b6d4', target: 1000 };
+    if (score >= 90) return { label: 'HẠNG KIM CƯƠNG', color: '#3b82f6', target: 1000 };
+    if (score >= 80) return { label: 'HẠNG VÀNG', color: '#f59e0b', target: 1000 };
+    if (score >= 70) return { label: 'HẠNG BẠC', color: '#10b981', target: 1000 };
+    return { label: 'HẠNG ĐỒNG', color: '#ef4444', target: 1000 };
   }, [score]);
 
   // Points calculation: score * 10 (simple visualization)
