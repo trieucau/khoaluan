@@ -918,21 +918,20 @@ let paymentOrderVnpay = (req) => {
         vnp_Params['vnp_BankCode'] = bankCode;
       }
 
-      vnp_Params = sortObject(vnp_Params);
+      let sortedParams = sortObject(vnp_Params);
+      let signData = querystring.stringify(sortedParams, { encode: false });
 
-      var signData = querystring.stringify(vnp_Params, { encode: false });
+      let hmac = crypto.createHmac('sha512', secretKey);
+      let signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+      sortedParams['vnp_SecureHash'] = signed;
 
-      var hmac = crypto.createHmac('sha512', secretKey);
-      // FIX 1: Buffer.from -> Buffer.from
-      var signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
-      vnp_Params['vnp_SecureHash'] = signed;
-
-      vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
+      vnpUrl += '?' + querystring.stringify(sortedParams, { encode: false });
       resolve({
         errCode: 200,
         link: vnpUrl,
       });
     } catch (error) {
+      console.error('paymentOrderVnpay error:', error);
       reject(error);
     }
   });
@@ -940,35 +939,39 @@ let paymentOrderVnpay = (req) => {
 let confirmOrderVnpay = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      var vnp_Params = data;
-
-      var secureHash = vnp_Params['vnp_SecureHash'];
+      let vnp_Params = { ...data };
+      let secureHash = vnp_Params['vnp_SecureHash'];
 
       delete vnp_Params['vnp_SecureHash'];
       delete vnp_Params['vnp_SecureHashType'];
 
-      vnp_Params = sortObjectForVerify(vnp_Params);
+      vnp_Params = sortObject(vnp_Params);
 
-      var secretKey = process.env.VNP_HASHSECRET;
-
-      var signData = querystring.stringify(vnp_Params, { encode: false });
-
-      var hmac = crypto.createHmac('sha512', secretKey);
-
-      var signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+      let secretKey = process.env.VNP_HASHSECRET;
+      let signData = querystring.stringify(vnp_Params, { encode: false });
+      let hmac = crypto.createHmac('sha512', secretKey);
+      let signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
       if (secureHash === signed) {
-        resolve({
-          errCode: 0,
-          errMessage: 'Success',
-        });
+        if (vnp_Params['vnp_ResponseCode'] === '00' || vnp_Params['vnp_TransactionStatus'] === '00') {
+          resolve({
+            errCode: 0,
+            errMessage: 'Success',
+          });
+        } else {
+          resolve({
+            errCode: 2,
+            errMessage: 'Giao dịch thất bại (VNP_ResponseCode: ' + vnp_Params['vnp_ResponseCode'] + ')',
+          });
+        }
       } else {
         resolve({
           errCode: 1,
-          errMessage: 'failed',
+          errMessage: 'Sai chữ ký xác thực (Checksum failed)',
         });
       }
     } catch (error) {
+      console.error('confirmOrderVnpay error:', error);
       reject(error);
     }
   });
@@ -976,27 +979,12 @@ let confirmOrderVnpay = (data) => {
 
 // Hàm sortObject dùng khi TẠO payment (encode value để ký)
 function sortObject(obj) {
-  var sorted = {};
-  var str = [];
-  var key;
-  for (key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      str.push(encodeURIComponent(key));
+  let sorted = {};
+  let keys = Object.keys(obj).sort();
+  for (let key of keys) {
+    if (obj[key] !== null && obj[key] !== undefined && obj[key] !== '') {
+      sorted[key] = encodeURIComponent(obj[key]).replace(/%20/g, '+');
     }
-  }
-  str.sort();
-  for (key = 0; key < str.length; key++) {
-    sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, '+');
-  }
-  return sorted;
-}
-
-// FIX 3: Hàm sortObject dùng khi VERIFY callback từ VNPAY (không encode key/value)
-function sortObjectForVerify(obj) {
-  var sorted = {};
-  var keys = Object.keys(obj).sort();
-  for (var i = 0; i < keys.length; i++) {
-    sorted[keys[i]] = obj[keys[i]];
   }
   return sorted;
 }

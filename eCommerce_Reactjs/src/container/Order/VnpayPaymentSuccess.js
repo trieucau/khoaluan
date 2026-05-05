@@ -19,20 +19,12 @@ function VnpayPaymentSuccess(props) {
     if (hasRun.current) return;
     hasRun.current = true;
 
-    let objectParam = {
-      vnp_Amount: query.get('vnp_Amount'),
-      vnp_BankCode: query.get('vnp_BankCode'),
-      vnp_BankTranNo: query.get('vnp_BankTranNo'),
-      vnp_CardType: query.get('vnp_CardType'),
-      vnp_OrderInfo: query.get('vnp_OrderInfo'),
-      vnp_PayDate: query.get('vnp_PayDate'),
-      vnp_ResponseCode: query.get('vnp_ResponseCode'),
-      vnp_TmnCode: query.get('vnp_TmnCode'),
-      vnp_TransactionNo: query.get('vnp_TransactionNo'),
-      vnp_TransactionStatus: query.get('vnp_TransactionStatus'),
-      vnp_TxnRef: query.get('vnp_TxnRef'),
-      vnp_SecureHash: query.get('vnp_SecureHash'),
-    };
+    const objectParam = {};
+    for (const [key, value] of query.entries()) {
+      if (key.startsWith('vnp_')) {
+        objectParam[key] = value;
+      }
+    }
 
     setPaymentInfo(objectParam);
 
@@ -41,14 +33,24 @@ function VnpayPaymentSuccess(props) {
       localStorage.removeItem('orderData');
 
       if (orderData) {
-        let res = await confirmOrderVnpay(objectParam);
-        if (res && res.errCode == 0) {
-          await createNewOrder(orderData);
-        } else {
+        try {
+          let res = await confirmOrderVnpay(objectParam);
+          if (res && res.errCode === 0) {
+            await createNewOrder(orderData);
+          } else {
+            console.error('VNPay Verification Failed:', res);
+            setStatus('failed');
+            toast.error(res?.errMessage || 'Xác thực giao dịch thất bại');
+          }
+        } catch (error) {
+          console.error('Error confirming VNPay order:', error);
           setStatus('failed');
+          toast.error('Có lỗi xảy ra khi xác thực giao dịch');
         }
       } else {
+        console.error('No order data found in localStorage');
         setStatus('failed');
+        toast.error('Không tìm thấy thông tin đơn hàng');
       }
     };
     confirm();
