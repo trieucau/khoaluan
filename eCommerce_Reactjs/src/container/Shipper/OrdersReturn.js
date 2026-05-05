@@ -102,10 +102,10 @@ const OrdersReturn = () => {
       </div>
 
       <div className="sp-card">
-        <div className="sp-table-wrap">
+        <div className="sp-table-wrap sp-hide-scrollbar" style={{ maxHeight: 'calc(100vh - 400px)', overflowY: 'auto' }}>
           <table className="sp-table">
             <thead>
-              <tr>
+              <tr style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--sp-surface)', boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
                 <th style={{ width: 100 }}>Mã đơn</th>
                 <th style={{ width: 120 }}>Thời gian</th>
                 <th>Thông tin giao hàng</th>

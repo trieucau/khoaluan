@@ -1366,3 +1366,12 @@ svg.lucide { width:20px; height:20px; stroke-width:2; stroke:currentColor; fill:
 .sp-reward-card div:first-child {
   animation: spRewardFloat 3s ease-in-out infinite;
 }
+
+/* Hide scrollbar but keep functionality */
+.sp-hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.sp-hide-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari and Opera */
+}
