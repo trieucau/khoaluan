@@ -1286,3 +1286,48 @@ svg.lucide { width:20px; height:20px; stroke-width:2; stroke:currentColor; fill:
     font-size: 12px;
   }
 }
+
+/* ============================================================
+   REWARDS & GAMIFICATION
+   ============================================================ */
+.sp-reward-card {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(31, 41, 55, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.sp-reward-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: var(--sp-primary);
+  border-radius: 16px 16px 0 0;
+  opacity: 0.5;
+}
+
+.sp-reward-card.blue::before { background: #3b82f6; }
+.sp-reward-card.green::before { background: #22c55e; }
+.sp-reward-card.amber::before { background: #f59e0b; }
+.sp-reward-card.red::before { background: #ef4444; }
+.sp-reward-card.cyan::before { background: #06b6d4; }
+
+.sp-reward-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.sp-reward-card:hover .sp-btn-primary {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px var(--sp-primary);
+}
+
+@keyframes spRewardFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.sp-reward-card div:first-child {
+  animation: spRewardFloat 3s ease-in-out infinite;
+}
