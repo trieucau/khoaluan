@@ -18,6 +18,7 @@ import RankWidget from './components/RankWidget';
 import ActiveOrderWidget from './components/ActiveOrderWidget';
 import ShipperStatusBar from './components/ShipperStatusBar';
 import OrderQuickAcceptModal from './components/OrderQuickAcceptModal';
+import CompleteModal from './components/CompleteModal';
 
 
 
@@ -73,6 +74,7 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
   const [osrmDurations] = useState({});
   const [ignoredOrders, setIgnoredOrders] = useState(new Set());
   const [showOrderItems, setShowOrderItems] = useState(false);
+  const [completeModal, setCompleteModal] = useState(null);
 
 
   const [isMinimized, setIsMinimized] = useState(false);
@@ -205,6 +207,11 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
 
   const handleSkipOrder = (orderId) => {
     setSkippedOrders(prev => new Set(prev).add(orderId));
+  };
+
+  const handleDeliveryDone = () => {
+    setCompleteModal(null);
+    window.location.reload(); // Refresh to show next order
   };
 
 
@@ -407,7 +414,7 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
               isMinimized={isMinimized} 
               toggleMinimize={() => setIsMinimized(!isMinimized)}
               onShowItems={() => setShowOrderItems(true)}
-              onComplete={handleAcceptOrder}
+              onComplete={(id) => setCompleteModal(id)}
               formatMoney={formatMoney}
             />
           </section>
@@ -449,17 +456,112 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
                   <button onClick={() => setShowOrderItems(false)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: 20, cursor: 'pointer' }}>✕</button>
                 </div>
                 <div style={{ padding: 24, overflowY: 'auto' }}>
+                  {/* Section 1: Logistics & Customer */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
+                    <div style={{ padding: 16, borderRadius: 16, background: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.1)' }}>
+                      <div style={{ fontSize: 9, fontWeight: 800, color: '#3b82f6', letterSpacing: 1, marginBottom: 8 }}>KHÁCH HÀNG</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
+                        {heroOrder.addressUser?.firstName} {heroOrder.addressUser?.lastName}
+                      </div>
+                      <div style={{ fontSize: 11, color: '#94a3b8' }}>{heroOrder.addressUser?.phoneNumber}</div>
+                    </div>
+                    <div style={{ padding: 16, borderRadius: 16, background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
+                      <div style={{ fontSize: 9, fontWeight: 800, color: '#10b981', letterSpacing: 1, marginBottom: 8 }}>THANH TOÁN</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: '#10b981', marginBottom: 4 }}>
+                        {heroOrder.paymentData?.value === 'Tiền mặt' ? 'Thu hộ (COD)' : 'Đã thanh toán'}
+                      </div>
+                      <div style={{ fontSize: 11, color: '#94a3b8' }}>Qua {heroOrder.paymentData?.value || 'Ví/Thẻ'}</div>
+                    </div>
+                  </div>
+
+                  {/* Section 2: Delivery Timeline */}
+                  <div style={{ marginBottom: 24, padding: '0 8px' }}>
+                     <div style={{ fontSize: 10, fontWeight: 800, color: '#64748b', letterSpacing: 1, marginBottom: 16 }}>TRẠNG THÁI VẬN CHUYỂN</div>
+                     <div style={{ position: 'relative', paddingLeft: 24, borderLeft: '2px dashed rgba(255,255,255,0.1)' }}>
+                        <div style={{ position: 'absolute', left: -7, top: 0, width: 12, height: 12, borderRadius: '50%', background: '#3b82f6', boxShadow: '0 0 10px #3b82f6' }} />
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', marginBottom: 2 }}>Đã lấy hàng</div>
+                        <div style={{ fontSize: 11, color: '#64748b', marginBottom: 16 }}>{moment(heroOrder.updatedAt).format('HH:mm - DD/MM/YYYY')}</div>
+
+                        <div style={{ position: 'absolute', left: -7, top: 45, width: 12, height: 12, borderRadius: '50%', background: '#fbbf24', animation: 'pulse-amber 2s infinite' }} />
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#fbbf24', marginBottom: 2 }}>Đang giao đến khách</div>
+                        <div style={{ fontSize: 11, color: '#64748b' }}>Đang trên lộ trình tối ưu</div>
+                     </div>
+                  </div>
+
+                  {/* Section 3: Note */}
+                  {heroOrder.note && (
+                    <div style={{ marginBottom: 24, padding: 12, borderRadius: 12, background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.2)', display: 'flex', gap: 10 }}>
+                      <svg style={{ color: '#f59e0b', flexShrink: 0, marginTop: 2 }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z"/><polyline points="15 3 15 9 21 9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                      <div style={{ fontSize: 12, color: '#f59e0b', lineHeight: 1.5 }}>
+                        <span style={{ fontWeight: 800 }}>Ghi chú: </span>
+                        {heroOrder.note}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Section 4: Items List */}
                   <div style={{ marginBottom: 20 }}>
-                    <div style={{ fontSize: 11, fontWeight: 800, color: '#64748b', marginBottom: 10, letterSpacing: 1 }}>DANH SÁCH MÓN HÀNG</div>
+                    <div style={{ 
+                      display: 'grid', gridTemplateColumns: '1.5fr 0.5fr 1fr', 
+                      fontSize: 10, fontWeight: 800, color: '#64748b', 
+                      paddingBottom: 10, borderBottom: '1px solid rgba(255,255,255,0.1)',
+                      letterSpacing: 1, marginBottom: 10
+                    }}>
+                      <div>SẢN PHẨM</div>
+                      <div style={{ textAlign: 'center' }}>SL</div>
+                      <div style={{ textAlign: 'right' }}>THÀNH TIỀN</div>
+                    </div>
                     {(() => {
                       const rawDetails = heroOrder.orderDetail || heroOrder.orderDetails || [];
                       const details = Array.isArray(rawDetails) ? rawDetails : rawDetails ? [rawDetails] : [];
-                      return details.map((item, idx) => (
-                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{item.productDetailData?.productData?.name || 'Sản phẩm'} x{item.quantity}</div>
-                          <div style={{ fontSize: 13, color: '#cbd5e1' }}>{formatMoney(item.realPrice)}</div>
-                        </div>
-                      ));
+                      let totalProductPrice = 0;
+                      
+                      const itemsList = details.map((item, idx) => {
+                        const price = item.realPrice || 0;
+                        totalProductPrice += (price * item.quantity);
+                        return (
+                          <div key={idx} style={{ 
+                            display: 'grid', gridTemplateColumns: '1.5fr 0.5fr 1fr', 
+                            padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.03)',
+                            alignItems: 'center'
+                          }}>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: '#fff', paddingRight: 10 }}>
+                              {item.productDetailData?.productData?.name || 'Sản phẩm'}
+                            </div>
+                            <div style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', fontWeight: 700 }}>
+                              x{item.quantity}
+                            </div>
+                            <div style={{ fontSize: 13, color: '#fff', textAlign: 'right', fontWeight: 700 }}>
+                              {formatMoney(price * item.quantity)}
+                            </div>
+                          </div>
+                        );
+                      });
+
+                      return (
+                        <>
+                          {itemsList}
+                          <div style={{ marginTop: 24, padding: '20px', borderRadius: 20, background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1))', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                              <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Tạm tính</span>
+                              <span style={{ fontSize: 13, color: '#fff', fontWeight: 700 }}>{formatMoney(totalProductPrice)}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+                              <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 600 }}>Phí vận chuyển</span>
+                              <span style={{ fontSize: 13, color: '#fff', fontWeight: 700 }}>{formatMoney(heroOrder.typeShipData?.price || 0)}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                              <span style={{ fontSize: 14, fontWeight: 900, color: '#fff' }}>TỔNG CỘNG</span>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: 20, fontWeight: 900, color: '#10b981', textShadow: '0 0 15px rgba(16, 185, 129, 0.3)' }}>
+                                  {formatMoney(totalProductPrice + (heroOrder.typeShipData?.price || 0))}
+                                </div>
+                                <div style={{ fontSize: 9, color: '#64748b', fontWeight: 800, marginTop: 4 }}>ĐÃ BAO GỒM VAT</div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      );
                     })()}
                   </div>
                 </div>
@@ -475,6 +577,14 @@ const ShipperDashboard = ({ gpsData, onToggleGps, showNotifications, setShowNoti
               onAccept={handleAcceptOrder}
               onSkip={handleSkipOrder}
               onClose={() => setShowNotifications(false)}
+            />
+          )}
+
+          {completeModal && (
+            <CompleteModal
+              orderId={completeModal}
+              onClose={() => setCompleteModal(null)}
+              onDone={handleDeliveryDone}
             />
           )}
         </div>

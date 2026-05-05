@@ -3,6 +3,7 @@ import { getAllOrdersByShipper, shipperUpdateOrderStatus } from '../../services/
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import ModalCancelOrder from '../../component/ModalCancelOrder/ModalCancelOrder';
+import CompleteModal from './components/CompleteModal';
 
 const STATUS_CONFIG = {
   S4: { label: 'Chờ lấy hàng', badge: 'sp-badge-amber', icon: (<svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>) },
@@ -59,63 +60,7 @@ const SkeletonRows = () => (
   </>
 );
 
-// Modal xác nhận giao hàng (ảnh)
-const CompleteModal = ({ orderId, onClose, onDone }) => {
-  const [img, setImg] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleImg = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => setImg(reader.result);
-    reader.readAsDataURL(file);
-  };
-
-  const handleConfirm = async () => {
-    if (!img) { toast.warning('Vui lòng chụp ảnh xác nhận.'); return; }
-    setLoading(true);
-    try {
-      const res = await shipperUpdateOrderStatus({ orderId, statusId: 'S6', image: img });
-      if (res?.errCode === 0) { toast.success('Giao hàng thành công!'); onDone(); }
-      else toast.error(res?.errMessage || 'Lỗi');
-    } catch { toast.error('Lỗi kết nối'); }
-    finally { setLoading(false); }
-  };
-
-  return (
-    <div className="sp-modal-backdrop" onClick={onClose}>
-      <div className="sp-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="sp-modal-header">
-          <span className="sp-modal-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            Xác nhận giao hàng
-          </span>
-          <button className="sp-modal-close" onClick={onClose}>×</button>
-        </div>
-        <div className="sp-modal-body">
-          <label className="sp-form-label">Ảnh xác nhận (bắt buộc)</label>
-          <label className="sp-file-label">
-            <input type="file" accept="image/*" onChange={handleImg} />
-            {img ? <img src={img} alt="preview" className="sp-img-preview" /> : (
-              <div style={{ color: 'var(--sp-text-dim)', fontSize: 13, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                Nhấn để chụp ảnh hoặc chọn ảnh
-              </div>
-            )}
-          </label>
-        </div>
-        <div className="sp-modal-footer">
-          <button className="sp-btn sp-btn-ghost" onClick={onClose}>Hủy</button>
-          <button className="sp-btn sp-btn-success" onClick={handleConfirm} disabled={loading || !img} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <svg className="sp-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            {loading ? 'Đang xác nhận...' : 'Xác nhận hoàn thành'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 // Modal giao thất bại
 const FailModal = ({ orderId, onClose, onDone }) => {
