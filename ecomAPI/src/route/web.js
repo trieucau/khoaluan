@@ -277,7 +277,11 @@ let initwebRoutes = (app) => {
     middlewareControllers.verifyTokenUser,
     voucherController.saveUserVoucher
   );
-  router.get('/api/get-all-voucher-by-userid', voucherController.getAllVoucherByUserId);
+  router.get(
+    '/api/get-all-voucher-by-userid',
+    middlewareControllers.verifyTokenUser,
+    voucherController.getAllVoucherByUserId
+  );
   //=================API REVIEW=============================//
   router.post(
     '/api/create-new-review',
