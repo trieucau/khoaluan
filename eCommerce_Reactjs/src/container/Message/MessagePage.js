@@ -52,7 +52,7 @@ function MessagePage() {
   };
 
   return (
-    <div className="user-page">
+    <div className="user-page container">
       <div className="container-fluid px-0">
         <div className="messenger-layout">
           {/* Sidebar danh sách phòng */}

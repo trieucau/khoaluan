@@ -20,7 +20,7 @@ function UserHomePage(props) {
 
 
   return (
-    <div className="user-dashboard-wrapper">
+    <div className="container user-dashboard-wrapper">
       <CategoryUser id={user.id} />
       <div className="user-dashboard-content">
         <Routes>

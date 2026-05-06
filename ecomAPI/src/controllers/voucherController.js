@@ -139,8 +139,8 @@ let saveUserVoucher = async (req, res) => {
   try {
     // Force use of authenticated user ID to prevent IDOR
     let data = await voucherService.saveUserVoucher({
-        ...req.body,
-        userId: req.user.id
+      ...req.body,
+      userId: req.user.id
     });
     return res.status(200).json(data);
   } catch (error) {
@@ -155,8 +155,8 @@ let getAllVoucherByUserId = async (req, res) => {
   try {
     // Ignore id from query, use authenticated user ID
     let data = await voucherService.getAllVoucherByUserId({
-        ...req.query,
-        id: req.user.id
+      ...req.query,
+      id: req.user.id
     });
     return res.status(200).json(data);
   } catch (error) {
