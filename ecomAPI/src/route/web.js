@@ -35,6 +35,7 @@ let initwebRoutes = (app) => {
     userController.handleDeleteUser
   );
   router.post('/api/login', userController.handleLogin);
+  router.post('/api/login-social', userController.handleLoginSocial);
   router.post(
     '/api/changepassword',
     middlewareControllers.verifyTokenUser,

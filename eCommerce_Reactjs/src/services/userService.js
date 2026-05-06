@@ -28,6 +28,9 @@ const getDetailUserByEmail = (email) => {
 const handleLoginService = (data) => {
   return axios.post(`/api/login`, data);
 };
+const handleLoginSocialService = (data) => {
+  return axios.post(`/api/login-social`, data);
+};
 const handleSendVerifyEmail = (data) => {
   return axios.post(`/api/send-verify-email`, data);
 };
@@ -473,6 +476,7 @@ export {
   UpdateAllcodeService,
   DeleteAllcodeService,
   handleLoginService,
+  handleLoginSocialService,
   handleSendVerifyEmail,
   handleVerifyEmail,
   handleChangePassword,

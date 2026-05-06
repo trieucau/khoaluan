@@ -4,6 +4,8 @@ import emailService from './emailService';
 import { v4 as uuidv4 } from 'uuid';
 import CommonUtils from '../utils/CommonUtils';
 const { Op } = require('sequelize');
+import admin from '../config/firebaseAdmin';
+import fetch from 'node-fetch';
 require('dotenv').config();
 const salt = bcrypt.genSaltSync(10);
 
@@ -198,6 +200,99 @@ let handleLogin = (data) => {
         }
         resolve(userData);
       }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+let handleLoginSocial = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.idToken) {
+        return resolve({
+          errCode: 1,
+          errMessage: 'Missing idToken!',
+        });
+      }
+
+      // 1. Verify Firebase ID Token
+      let decodedToken;
+      try {
+        decodedToken = await admin.auth().verifyIdToken(data.idToken);
+      } catch (error) {
+        console.error('Error verifying Firebase token:', error);
+        return resolve({
+          errCode: 2,
+          errMessage: 'Invalid or expired token!',
+        });
+      }
+
+      const { email, name, picture, phone_number } = decodedToken;
+
+      if (!email) {
+        return resolve({
+          errCode: 3,
+          errMessage: 'Email not provided by social provider!',
+        });
+      }
+
+      // 2. Check if user exists
+      let user = await db.User.findOne({
+        where: { email: email },
+        attributes: ['email', 'roleId', 'password', 'firstName', 'lastName', 'id'],
+        raw: true,
+      });
+
+      // 3. If user doesn't exist, create one
+      if (!user) {
+        let avatarBlob = null;
+        if (picture) {
+          try {
+            const response = await fetch(picture);
+            const arrayBuffer = await response.arrayBuffer();
+            avatarBlob = Buffer.from(arrayBuffer);
+          } catch (e) {
+            console.error('Error fetching social avatar:', e);
+          }
+        }
+
+        const newUser = await db.User.create({
+          email: email,
+          password: 'social_login_no_password', // Placeholder
+          firstName: '',
+          lastName: name || 'Social User',
+          roleId: 'R2',
+          statusId: 'S1',
+          isActiveEmail: true,
+          image: avatarBlob,
+          phonenumber: phone_number || '',
+        });
+
+        user = {
+          email: newUser.email,
+          roleId: newUser.roleId,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          id: newUser.id,
+        };
+      }
+
+      // 4. Generate Access Token
+      const accessToken = CommonUtils.encodeToken(user.id);
+
+      resolve({
+        errCode: 0,
+        errMessage: 'OK',
+        user: {
+          email: user.email,
+          roleId: user.roleId,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          id: user.id,
+        },
+        accessToken: accessToken,
+      });
     } catch (error) {
       reject(error);
     }
@@ -566,4 +661,5 @@ module.exports = {
   handleSendEmailForgotPassword: handleSendEmailForgotPassword,
   handleForgotPassword: handleForgotPassword,
   checkPhonenumberEmail: checkPhonenumberEmail,
+  handleLoginSocial: handleLoginSocial,
 };
