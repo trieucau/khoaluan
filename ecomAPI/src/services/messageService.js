@@ -1,9 +1,10 @@
 import db from '../models/index';
 import { Op } from 'sequelize';
+
 let createNewRoom = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.userId1) {
+      if (!data.userId) {
         resolve({
           errCode: 1,
           errMessage: 'Missing required parameters !',
@@ -17,8 +18,8 @@ let createNewRoom = (data) => {
           return;
         }
         let [room, created] = await db.RoomMessage.findOrCreate({
-          where: { userOne: data.userId1 },
-          defaults: { userOne: data.userId1, userTwo: userAdmin.id },
+          where: { userOne: data.userId },
+          defaults: { userOne: data.userId, userTwo: userAdmin.id },
         });
         resolve({ errCode: 0, data: room, created: created });
       }
@@ -36,6 +37,21 @@ let sendMessage = (data) => {
           errMessage: 'Missing required parameters !',
         });
       } else {
+        // Participant Check
+        let room = await db.RoomMessage.findOne({
+            where: {
+                id: data.roomId,
+                [Op.or]: [
+                    { userOne: data.userId },
+                    { userTwo: data.userId }
+                ]
+            }
+        });
+
+        if (!room) {
+            return resolve({ errCode: 2, errMessage: 'Bạn không thuộc phòng chat này' });
+        }
+
         let res = await db.Message.create({
           text: data.text,
           userId: data.userId,
@@ -57,12 +73,27 @@ let sendMessage = (data) => {
 let loadMessage = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.roomId) {
+      if (!data.roomId || !data.userId) {
         resolve({
           errCode: 1,
           errMessage: 'Missing required parameters !',
         });
       } else {
+        // Participant Check
+        let room = await db.RoomMessage.findOne({
+            where: {
+                id: data.roomId,
+                [Op.or]: [
+                    { userOne: data.userId },
+                    { userTwo: data.userId }
+                ]
+            }
+        });
+
+        if (!room) {
+            return resolve({ errCode: 2, errMessage: 'Bạn không thuộc phòng chat này' });
+        }
+
         await db.Message.update(
           {
             unRead: false,
@@ -86,7 +117,7 @@ let loadMessage = (data) => {
           message[i].userData = await db.User.findOne({
             where: { id: message[i].userId },
           });
-          if (message[i].userData.image) {
+          if (message[i].userData && message[i].userData.image) {
             message[i].userData.image = Buffer.from(message[i].userData.image, 'base64').toString(
               'binary'
             );
@@ -123,7 +154,7 @@ let listRoomOfUser = (userId) => {
           room[i].userOneData = await db.User.findOne({
             where: { id: room[i].userOne },
           });
-          if (room[i].userOneData.image) {
+          if (room[i].userOneData && room[i].userOneData.image) {
             room[i].userOneData.image = Buffer.from(room[i].userOneData.image, 'base64').toString(
               'binary'
             );
@@ -131,7 +162,7 @@ let listRoomOfUser = (userId) => {
           room[i].userTwoData = await db.User.findOne({
             where: { id: room[i].userTwo },
           });
-          if (room[i].userTwoData.image) {
+          if (room[i].userTwoData && room[i].userTwoData.image) {
             room[i].userTwoData.image = Buffer.from(room[i].userTwoData.image, 'base64').toString(
               'binary'
             );
@@ -151,7 +182,6 @@ let listRoomOfAdmin = () => {
   return new Promise(async (resolve, reject) => {
     try {
       let user = await db.User.findOne({ where: { roleId: 'R1', statusId: 'S1' } });
-      console.log('Admin chat:', user?.id, user?.email);
       if (user) {
         let room = await db.RoomMessage.findAll({
           where: { userTwo: user.id },
@@ -163,7 +193,7 @@ let listRoomOfAdmin = () => {
           room[i].userOneData = await db.User.findOne({
             where: { id: room[i].userOne },
           });
-          if (room[i].userOneData.image) {
+          if (room[i].userOneData && room[i].userOneData.image) {
             room[i].userOneData.image = Buffer.from(room[i].userOneData.image, 'base64').toString(
               'binary'
             );
@@ -171,7 +201,7 @@ let listRoomOfAdmin = () => {
           room[i].userTwoData = await db.User.findOne({
             where: { id: room[i].userTwo },
           });
-          if (room[i].userTwoData.image) {
+          if (room[i].userTwoData && room[i].userTwoData.image) {
             room[i].userTwoData.image = Buffer.from(room[i].userTwoData.image, 'base64').toString(
               'binary'
             );

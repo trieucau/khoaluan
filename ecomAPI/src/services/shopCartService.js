@@ -36,7 +36,7 @@ let addShopCart = (data) => {
               let order = await db.OrderProduct.findOne({
                 where: { id: orderDetail[k].orderId },
               });
-              if (order.statusId != 'S7') {
+              if (order && order.statusId != 'S7') {
                 quantity = quantity - orderDetail[k].quantity;
               }
             }
@@ -85,7 +85,7 @@ let addShopCart = (data) => {
               let order = await db.OrderProduct.findOne({
                 where: { id: orderDetail[k].orderId },
               });
-              if (order.statusId != 'S7') {
+              if (order && order.statusId != 'S7') {
                 quantity = quantity - orderDetail[k].quantity;
               }
             }
@@ -175,22 +175,27 @@ let getAllShopCartByUserId = (id) => {
 let deleteItemShopCart = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.id) {
+      if (!data.id || !data.userId) {
         resolve({
           errCode: 1,
           errMessage: 'Missing required parameter !',
         });
       } else {
         let res = await db.ShopCart.findOne({
-          where: { id: data.id, statusId: 0 },
+          where: { id: data.id, userId: data.userId, statusId: 0 },
         });
         if (res) {
           await db.ShopCart.destroy({
-            where: { id: data.id },
+            where: { id: data.id, userId: data.userId },
           });
           resolve({
             errCode: 0,
             errMessage: 'ok',
+          });
+        } else {
+           resolve({
+            errCode: 2,
+            errMessage: 'Sản phẩm không tồn tại trong giỏ hàng của bạn',
           });
         }
       }

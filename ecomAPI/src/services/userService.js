@@ -284,7 +284,7 @@ let getAllUser = (data) => {
     }
   });
 };
-let getDetailUserById = (userid) => {
+let getDetailUserById = (userid, requesterId, requesterRole) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!userid) {
@@ -293,6 +293,14 @@ let getDetailUserById = (userid) => {
           errMessage: 'Missing required parameters!',
         });
       } else {
+        // Ownership check: User can only see their own info, unless they are Admin (R1/R4)
+        if (requesterRole !== 'R1' && requesterRole !== 'R4' && userid != requesterId) {
+          return resolve({
+            errCode: 2,
+            errMessage: 'Bạn không có quyền xem thông tin này',
+          });
+        }
+
         let res = await db.User.findOne({
           where: { id: userid, statusId: 'S1' },
           attributes: {
@@ -313,7 +321,7 @@ let getDetailUserById = (userid) => {
           raw: true,
           nest: true,
         });
-        if (res.image) {
+        if (res && res.image) {
           res.image = Buffer.from(res.image, 'base64').toString('binary');
         }
         resolve({
@@ -336,8 +344,10 @@ let getDetailUserByEmail = (email) => {
         });
       } else {
         let res = await db.User.findOne({
-          where: { id: userid, statusId: 'S1' },
-          attributes: ['password'],
+          where: { email: email, statusId: 'S1' },
+          attributes: {
+            exclude: ['password'],
+          },
         });
         resolve({
           errCode: 0,

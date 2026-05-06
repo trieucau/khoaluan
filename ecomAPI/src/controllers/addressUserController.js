@@ -2,7 +2,10 @@ import addressUserService from '../services/addressUserService';
 
 let createNewAddressUser = async (req, res) => {
   try {
-    let data = await addressUserService.createNewAddressUser(req.body);
+    let data = await addressUserService.createNewAddressUser({
+        ...req.body,
+        userId: req.user.id
+    });
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -14,7 +17,7 @@ let createNewAddressUser = async (req, res) => {
 };
 let getAllAddressUserByUserId = async (req, res) => {
   try {
-    let data = await addressUserService.getAllAddressUserByUserId(req.query.userId);
+    let data = await addressUserService.getAllAddressUserByUserId(req.user.id);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -26,7 +29,10 @@ let getAllAddressUserByUserId = async (req, res) => {
 };
 let deleteAddressUser = async (req, res) => {
   try {
-    let data = await addressUserService.deleteAddressUser(req.body);
+    let data = await addressUserService.deleteAddressUser({
+        ...req.body,
+        userId: req.user.id
+    });
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -38,7 +44,10 @@ let deleteAddressUser = async (req, res) => {
 };
 let editAddressUser = async (req, res) => {
   try {
-    let data = await addressUserService.editAddressUser(req.body);
+    let data = await addressUserService.editAddressUser({
+        ...req.body,
+        userId: req.user.id
+    });
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -50,7 +59,7 @@ let editAddressUser = async (req, res) => {
 };
 let getDetailAddressUserById = async (req, res) => {
   try {
-    let data = await addressUserService.getDetailAddressUserById(req.query.id);
+    let data = await addressUserService.getDetailAddressUserById(req.query.id, req.user.id);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -62,7 +71,10 @@ let getDetailAddressUserById = async (req, res) => {
 };
 let updateLocationAddressUser = async (req, res) => {
   try {
-    let data = await addressUserService.updateLocationAddressUser(req.body);
+    let data = await addressUserService.updateLocationAddressUser({
+        ...req.body,
+        userId: req.user.id
+    });
     return res.status(200).json(data);
   } catch (e) {
     return res.status(500).json({

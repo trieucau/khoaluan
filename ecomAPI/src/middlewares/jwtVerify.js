@@ -27,8 +27,16 @@ const middlewareControllers = {
           });
         }
 
-        req.user = user;
-        next();
+        if (user && user.roleId === 'R2') {
+          req.user = user;
+          next();
+        } else {
+          return res.status(403).json({
+            status: false,
+            errMessage: 'Bạn không có quyền khách hàng',
+            refresh: true,
+          });
+        }
       });
     } else {
       return res.status(401).json({

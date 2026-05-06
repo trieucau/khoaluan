@@ -27,6 +27,7 @@ import VnpayPaymentSuccess from './container/Order/VnpayPaymentSuccess';
 import HomePageShipper from './container/Shipper/HomePageShipper';
 import ChatWidget from './component/Chatbot/ChatWidget';
 import RippleEffect from './component/Effects/RippleEffect';
+import PageNotFound from './container/System/Error/PageNotFound';
 
 function App() {
   return (
@@ -246,6 +247,8 @@ function App() {
             )
           }
         />
+        {/* Catch-all route for unsupported links */}
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
       <ChatWidget />
     </Router>

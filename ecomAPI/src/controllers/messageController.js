@@ -2,7 +2,10 @@ import messageService from '../services/messageService';
 
 let createNewRoom = async (req, res) => {
   try {
-    let data = await messageService.createNewRoom(req.body);
+    let data = await messageService.createNewRoom({
+        ...req.body,
+        userId: req.user.id
+    });
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -14,7 +17,10 @@ let createNewRoom = async (req, res) => {
 };
 let sendMessage = async (req, res) => {
   try {
-    let data = await messageService.sendMessage(req.body);
+    let data = await messageService.sendMessage({
+        ...req.body,
+        userId: req.user.id
+    });
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);

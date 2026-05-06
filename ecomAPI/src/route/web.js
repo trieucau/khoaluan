@@ -45,7 +45,11 @@ let initwebRoutes = (app) => {
     middlewareControllers.verifyTokenAdmin,
     userController.getAllUser
   );
-  router.get('/api/get-detail-user-by-id', userController.getDetailUserById);
+  router.get(
+    '/api/get-detail-user-by-id',
+    middlewareControllers.verifyTokenUser,
+    userController.getDetailUserById
+  );
   router.post(
     '/api/send-verify-email',
     middlewareControllers.verifyTokenUser,
@@ -59,7 +63,11 @@ let initwebRoutes = (app) => {
   router.post('/api/send-forgotpassword-email', userController.handleSendEmailForgotPassword);
   router.post('/api/forgotpassword-email', userController.handleForgotPassword);
   router.get('/api/check-phonenumber-email', userController.checkPhonenumberEmail);
-  router.get('/api/get-detail-user-by-email', userController.getDetailUserByEmail);
+  router.get(
+    '/api/get-detail-user-by-email',
+    middlewareControllers.verifyTokenAdmin,
+    userController.getDetailUserByEmail
+  );
   //===================API ALLCODE========================//
   router.post(
     '/api/create-new-all-code',
@@ -312,7 +320,11 @@ let initwebRoutes = (app) => {
     orderController.createNewOrder
   );
   router.get('/api/get-all-order', orderController.getAllOrders);
-  router.get('/api/get-detail-order', orderController.getDetailOrderById);
+  router.get(
+    '/api/get-detail-order',
+    middlewareControllers.verifyTokenUser,
+    orderController.getDetailOrderById
+  );
   router.put(
     '/api/update-status-order',
     middlewareControllers.verifyTokenUser,

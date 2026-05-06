@@ -53,7 +53,7 @@ let getAllAddressUserByUserId = (userId) => {
 let deleteAddressUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.id) {
+      if (!data.id || !data.userId) {
         resolve({
           errCode: 1,
           errMessage: 'Missing required parameter !',
@@ -62,12 +62,14 @@ let deleteAddressUser = (data) => {
         let addressUser = await db.AddressUser.findOne({
           where: {
             id: data.id,
+            userId: data.userId
           },
         });
         if (addressUser) {
           await db.AddressUser.destroy({
             where: {
               id: data.id,
+              userId: data.userId
             },
           });
           resolve({
@@ -76,8 +78,8 @@ let deleteAddressUser = (data) => {
           });
         } else {
           resolve({
-            errCode: -1,
-            errMessage: 'Địa chỉ user không tìm thấy',
+            errCode: 2,
+            errMessage: 'Địa chỉ user không tìm thấy hoặc bạn không có quyền',
           });
         }
       }
@@ -91,6 +93,7 @@ let editAddressUser = (data) => {
     try {
       if (
         !data.id ||
+        !data.userId ||
         !data.shipName ||
         !data.shipAdress ||
         !data.shipEmail ||
@@ -102,7 +105,7 @@ let editAddressUser = (data) => {
         });
       } else {
         let addressUser = await db.AddressUser.findOne({
-          where: { id: data.id },
+          where: { id: data.id, userId: data.userId },
           raw: false,
         });
         if (addressUser) {
@@ -121,7 +124,7 @@ let editAddressUser = (data) => {
         } else {
           resolve({
             errCode: 2,
-            errMessage: 'Địa chỉ người dùng không tồn tại',
+            errMessage: 'Địa chỉ người dùng không tồn tại hoặc bạn không có quyền',
           });
         }
       }
@@ -130,22 +133,29 @@ let editAddressUser = (data) => {
     }
   });
 };
-let getDetailAddressUserById = (id) => {
+let getDetailAddressUserById = (id, userId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!id) {
+      if (!id || !userId) {
         resolve({
           errCode: 1,
           errMessage: 'Missing required parameter !',
         });
       } else {
         let res = await db.AddressUser.findOne({
-          where: { id: id },
+          where: { id: id, userId: userId },
         });
-        resolve({
-          errCode: 0,
-          data: res,
-        });
+        if (res) {
+            resolve({
+                errCode: 0,
+                data: res,
+              });
+        } else {
+            resolve({
+                errCode: 2,
+                errMessage: 'Địa chỉ không tồn tại hoặc bạn không có quyền',
+              });
+        }
       }
     } catch (error) {
       reject(error);
@@ -156,7 +166,7 @@ let getDetailAddressUserById = (id) => {
 let updateLocationAddressUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.id || !data.lat || !data.lng || !data.shipAdress) {
+      if (!data.id || !data.userId || !data.lat || !data.lng || !data.shipAdress) {
         resolve({
           errCode: 1,
           errMessage: 'Missing required parameter!',
@@ -165,6 +175,7 @@ let updateLocationAddressUser = (data) => {
         let addressUser = await db.AddressUser.findOne({
           where: {
             id: data.id,
+            userId: data.userId
           },
           raw: false,
         });
@@ -183,7 +194,7 @@ let updateLocationAddressUser = (data) => {
         } else {
           resolve({
             errCode: 2,
-            errMessage: 'Address user not found',
+            errMessage: 'Address user not found or you don\'t have permission',
           });
         }
       }

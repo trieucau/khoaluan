@@ -74,7 +74,7 @@ let getAllUser = async (req, res) => {
 };
 let getDetailUserById = async (req, res) => {
   try {
-    let data = await userService.getDetailUserById(req.query.id);
+    let data = await userService.getDetailUserById(req.query.id, req.user.id, req.user.roleId);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);

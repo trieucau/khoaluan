@@ -26,7 +26,7 @@ let getAllOrders = async (req, res) => {
 };
 let getDetailOrderById = async (req, res) => {
   try {
-    let data = await orderService.getDetailOrderById(req.query.id);
+    let data = await orderService.getDetailOrderById(req.query.id, req.user.id, req.user.roleId);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -38,7 +38,11 @@ let getDetailOrderById = async (req, res) => {
 };
 let updateStatusOrder = async (req, res) => {
   try {
-    let data = await orderService.updateStatusOrder(req.body);
+    let data = await orderService.updateStatusOrder({
+      ...req.body,
+      userId: req.user.id,
+      roleId: req.user.roleId
+    });
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -50,7 +54,7 @@ let updateStatusOrder = async (req, res) => {
 };
 let getAllOrdersByUser = async (req, res) => {
   try {
-    let data = await orderService.getAllOrdersByUser(req.query.userId);
+    let data = await orderService.getAllOrdersByUser(req.user.id);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);

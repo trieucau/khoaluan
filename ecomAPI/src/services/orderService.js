@@ -134,7 +134,7 @@ let getAllOrders = (data) => {
     }
   });
 };
-let getDetailOrderById = (id) => {
+let getDetailOrderById = (id, requesterId, requesterRole) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!id) {
@@ -153,19 +153,33 @@ let getDetailOrderById = (id) => {
           raw: true,
           nest: true,
         });
+
+        if (!order) {
+           return resolve({ errCode: 2, errMessage: 'Order not found' });
+        }
+
+        let addressUser = await db.AddressUser.findOne({
+          where: { id: order.addressUserId },
+        });
+
+        // Ownership Check: User must own the order or be Admin
+        if (requesterRole !== 'R1' && requesterRole !== 'R4' && addressUser.userId != requesterId) {
+            return resolve({ errCode: 3, errMessage: 'Bạn không có quyền xem đơn hàng này' });
+        }
+
         if (order.image) {
           // FIX 1: Buffer.from -> Buffer.from
           order.image = Buffer.from(order.image, 'base64').toString('binary');
         }
-        order.voucherData.typeVoucherOfVoucherData = await db.TypeVoucher.findOne({
-          where: { id: order.voucherData.typeVoucherId },
-        });
+        if (order.voucherData && order.voucherData.typeVoucherId) {
+            order.voucherData.typeVoucherOfVoucherData = await db.TypeVoucher.findOne({
+                where: { id: order.voucherData.typeVoucherId },
+            });
+        }
         let orderDetail = await db.OrderDetail.findAll({
           where: { orderId: id },
         });
-        let addressUser = await db.AddressUser.findOne({
-          where: { id: order.addressUserId },
-        });
+        
         order.addressUser = addressUser;
         let user = await db.User.findOne({
           where: { id: addressUser.userId },
@@ -237,13 +251,20 @@ let updateStatusOrder = (data) => {
           where: { id: data.id },
           raw: false,
         });
-        order.statusId = data.statusId;
-
-        // FIX 1: lưu statusReason nếu có
-        if (data.statusReason) {
-          order.statusReason = data.statusReason;
+        if (!order) {
+            return resolve({ errCode: 2, errMessage: 'Order not found' });
         }
 
+        let addressUser = await db.AddressUser.findOne({
+          where: { id: order.addressUserId },
+        });
+
+        // Ownership Check: Only owner can update (cancel) OR Admin/Shipper
+        if (data.roleId !== 'R1' && data.roleId !== 'R4' && data.roleId !== 'R3' && addressUser.userId != data.userId) {
+             return resolve({ errCode: 3, errMessage: 'Bạn không có quyền cập nhật đơn hàng này' });
+        }
+
+        order.statusId = data.statusId;
         await order.save();
 
         if (
