@@ -6,18 +6,18 @@ const instance = axios.create({
 
   //  withCredentials: true
 });
-if (localStorage.getItem('token')) {
-  instance.interceptors.request.use(
-    (config) => {
-      config.headers.authorization = 'Bearer ' + localStorage.getItem('token').replaceAll('"', '');
-
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
+instance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.authorization = 'Bearer ' + token.replaceAll('"', '');
     }
-  );
-}
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 instance.interceptors.response.use((response) => {
   // Thrown error for request with OK status code
