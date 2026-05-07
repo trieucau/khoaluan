@@ -320,12 +320,14 @@ let getAllOrdersByUser = (userId) => {
             nest: true,
           });
           for (let j = 0; j < addressUser[i].order.length; j++) {
-            addressUser[i].order[j].voucherData.typeVoucherOfVoucherData =
-              await db.TypeVoucher.findOne({
-                where: {
-                  id: addressUser[i].order[j].voucherData.typeVoucherId,
-                },
-              });
+            if (addressUser[i].order[j].voucherData && addressUser[i].order[j].voucherData.typeVoucherId) {
+              addressUser[i].order[j].voucherData.typeVoucherOfVoucherData =
+                await db.TypeVoucher.findOne({
+                  where: {
+                    id: addressUser[i].order[j].voucherData.typeVoucherId,
+                  },
+                });
+            }
             let orderDetail = await db.OrderDetail.findAll({
               where: { orderId: addressUser[i].order[j].id },
             });

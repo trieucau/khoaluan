@@ -14,19 +14,21 @@ function NewProductFeature(props) {
             <div className="row">
               {props.data &&
                 props.data.length > 0 &&
-                props.data.map((item, index) => {
-                  return (
-                    <ItemProduct
-                      key={item.id || index}
-                      id={item.id}
-                      type="col-lg-3 col-md-3"
-                      name={item.name}
-                      img={item.productDetail[0].productImage[0].image}
-                      price={item.productDetail[0].originalPrice}
-                      discountPrice={item.productDetail[0].discountPrice}
-                    />
-                  );
-                })}
+                props.data
+                  .filter((item) => item.productDetail && item.productDetail.length > 0 && item.productDetail[0].productImage && item.productDetail[0].productImage.length > 0)
+                  .map((item, index) => {
+                    return (
+                      <ItemProduct
+                        key={item.id || index}
+                        id={item.id}
+                        type="col-lg-3 col-md-3"
+                        name={item.name}
+                        img={item.productDetail[0].productImage[0].image}
+                        price={item.productDetail[0].originalPrice}
+                        discountPrice={item.productDetail[0].discountPrice}
+                      />
+                    );
+                  })}
             </div>
           </div>
         </div>

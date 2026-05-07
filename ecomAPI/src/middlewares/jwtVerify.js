@@ -27,13 +27,13 @@ const middlewareControllers = {
           });
         }
 
-        if (user && user.roleId === 'R2') {
+        if (user && (user.roleId === 'R2' || user.roleId === 'R1' || user.roleId === 'R4')) {
           req.user = user;
           next();
         } else {
           return res.status(403).json({
             status: false,
-            errMessage: 'Bạn không có quyền khách hàng',
+            errMessage: 'Bạn không có quyền truy cập',
             refresh: true,
           });
         }
@@ -72,7 +72,7 @@ const middlewareControllers = {
           req.user = user;
           next();
         } else {
-          return res.status(404).json({
+          return res.status(403).json({
             status: false,
             errMessage: 'Bạn không có đủ quyền',
             refresh: true,
