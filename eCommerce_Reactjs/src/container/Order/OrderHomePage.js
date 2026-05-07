@@ -219,99 +219,103 @@ function OrderHomePage(props) {
         <div className="wrap-heading-order">{/* <span>Hóa đơn thanh toán</span> */}</div>
         <div className="wrap-address-order">
           <div className="border-top-address-order"></div>
-          <div className="wrap-content-address">
-            <div className="content-up">
-              <div className="content-left">
-                <i className="fas fa-map-marker-alt"></i>
-                <span>Địa Chỉ Nhận Hàng</span>
-              </div>
-              {isChangeAdress === true && (
-                <div className="content-right">
-                  <i
-                    className="fas fa-map-marked-alt"
-                    style={{ cursor: 'pointer', color: '#ee4d2d', marginLeft: '15px' }}
-                    onClick={() => setIsOpenMapModal(true)}
-                  ></i>
-                  <div className="wrap-add-address">
-                    <i className="fas fa-plus"></i>
-                    <span onClick={() => handleOpenAddressUserModal()}>Thêm địa chỉ mới</span>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="content-down">
-              {isChangeAdress === false ? (
-                <>
+          <div className="container">
+            <div className="address_inner">
+              <div className="wrap-content-address">
+                <div className="content-up">
                   <div className="content-left">
-                    <span>
-                      {dataAddressUser &&
-                        dataAddressUser.length > 0 &&
-                        dataAddressUser[stt].shipName}{' '}
-                      (
-                      {dataAddressUser &&
-                        dataAddressUser.length > 0 &&
-                        dataAddressUser[0].shipPhonenumber}
-                      )
-                    </span>
+                    <i className="fas fa-map-marker-alt"></i>
+                    <span>Địa Chỉ Nhận Hàng</span>
                   </div>
-                  <div className="content-center">
-                    <span>
-                      {dataAddressUser &&
-                        dataAddressUser.length > 0 &&
-                        dataAddressUser[stt].shipAdress}
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <div>
-                  {dataAddressUser &&
-                    dataAddressUser.length > 0 &&
-                    dataAddressUser.map((item, index) => {
-                      return (
-                        <div key={index} className="form-check ">
-                          <input
-                            className="form-check-input"
-                            checked={item.id === addressUserId ? true : false}
-                            onChange={() => handleOnChange(item.id, index)}
-                            type="radio"
-                            name="addressRadios"
-                            id={`addressRadios${index}`}
-                          />
-                          <label
-                            className="form-check-label wrap-radio-address"
-                            for={`addressRadios${index}`}
-                          >
-                            <div className="content-left">
-                              <span>
-                                {item.shipName} ({item.shipPhonenumber})
-                              </span>
-                            </div>
-                            <div className="content-center">
-                              <span>{item.shipAdress}</span>
-                            </div>
-                          </label>
-                        </div>
-                      );
-                    })}
+                  {isChangeAdress === true && (
+                    <div className="content-right">
+                      <i
+                        className="fas fa-map-marked-alt"
+                        style={{ cursor: 'pointer', color: '#ee4d2d', marginLeft: '15px' }}
+                        onClick={() => setIsOpenMapModal(true)}
+                      ></i>
+                      <div className="wrap-add-address">
+                        <i className="fas fa-plus"></i>
+                        <span onClick={() => handleOpenAddressUserModal()}>Thêm địa chỉ mới</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
+                <div className="content-down">
+                  {isChangeAdress === false ? (
+                    <>
+                      <div className="content-left">
+                        <span>
+                          {dataAddressUser &&
+                            dataAddressUser.length > 0 &&
+                            dataAddressUser[stt].shipName}{' '}
+                          (
+                          {dataAddressUser &&
+                            dataAddressUser.length > 0 &&
+                            dataAddressUser[0].shipPhonenumber}
+                          )
+                        </span>
+                      </div>
+                      <div className="content-center">
+                        <span>
+                          {dataAddressUser &&
+                            dataAddressUser.length > 0 &&
+                            dataAddressUser[stt].shipAdress}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div>
+                      {dataAddressUser &&
+                        dataAddressUser.length > 0 &&
+                        dataAddressUser.map((item, index) => {
+                          return (
+                            <div key={index} className="form-check ">
+                              <input
+                                className="form-check-input"
+                                checked={item.id === addressUserId ? true : false}
+                                onChange={() => handleOnChange(item.id, index)}
+                                type="radio"
+                                name="addressRadios"
+                                id={`addressRadios${index}`}
+                              />
+                              <label
+                                className="form-check-label wrap-radio-address"
+                                for={`addressRadios${index}`}
+                              >
+                                <div className="content-left">
+                                  <span>
+                                    {item.shipName} ({item.shipPhonenumber})
+                                  </span>
+                                </div>
+                                <div className="content-center">
+                                  <span>{item.shipAdress}</span>
+                                </div>
+                              </label>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  )}
 
-              <div className="content-right">
-                <span className="text-default">Mặc định</span>
-                {isChangeAdress === false && (
-                  <span onClick={() => setisChangeAdress(true)} className="text-change">
-                    Thay đổi
-                  </span>
+                  <div className="content-right">
+                    <span className="text-default">Mặc định</span>
+                    {isChangeAdress === false && (
+                      <span onClick={() => setisChangeAdress(true)} className="text-change">
+                        Thay đổi
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {isChangeAdress === true && (
+                  <div className="box-action">
+                    <div onClick={() => setisChangeAdress(false)} className="wrap-back">
+                      <span>Trở về</span>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
-            {isChangeAdress === true && (
-              <div className="box-action">
-                <div onClick={() => setisChangeAdress(false)} className="wrap-back">
-                  <span>Trở về</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
         <div className="wrap-order-item">
@@ -433,79 +437,82 @@ function OrderHomePage(props) {
           </section>
         </div>
         <div className="wrap-payment">
-          <div className="content-top">
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <span>Phương Thức Thanh Toán</span>
-              <div
-                onClick={() => setactiveTypePayment(1)}
-                className={activeTypePayment === 1 ? 'box-type-payment active' : 'box-type-payment'}
-              >
-                Thanh toán Online
+          <div className="container">
+            <div className="payment_inner">
+              <div className="content-top">
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <span>Phương Thức Thanh Toán</span>
+                  <div
+                    onClick={() => setactiveTypePayment(1)}
+                    className={activeTypePayment === 1 ? 'box-type-payment active' : 'box-type-payment'}
+                  >
+                    Thanh toán Online
+                  </div>
+
+                  <div
+                    onClick={() => setactiveTypePayment(0)}
+                    className={activeTypePayment === 0 ? 'box-type-payment active' : 'box-type-payment'}
+                  >
+                    Thanh toán khi nhận hàng
+                  </div>
+                </div>
+                {activeTypePayment != 0 && (
+                  <div className="box-payment">
+                    <div
+                      onClick={() => setactiveTypeOnlPayment(1)}
+                      className={
+                        activeTypeOnlPayment === 1 ? 'box-type-payment activeOnl' : 'box-type-payment'
+                      }
+                    >
+                      Thanh toán PAYPAL
+                    </div>
+                    <div
+                      onClick={() => setactiveTypeOnlPayment(2)}
+                      className={
+                        activeTypeOnlPayment === 2 ? 'box-type-payment activeOnl' : 'box-type-payment'
+                      }
+                    >
+                      Thanh toán VNPAY
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div
-                onClick={() => setactiveTypePayment(0)}
-                className={activeTypePayment === 0 ? 'box-type-payment active' : 'box-type-payment'}
-              >
-                Thanh toán khi nhận hàng
-              </div>
-            </div>
-            {activeTypePayment != 0 && (
-              <div className="box-payment">
-                <div
-                  onClick={() => setactiveTypeOnlPayment(1)}
-                  className={
-                    activeTypeOnlPayment === 1 ? 'box-type-payment activeOnl' : 'box-type-payment'
-                  }
-                >
-                  Thanh toán PAYPAL
-                </div>
-                <div
-                  onClick={() => setactiveTypeOnlPayment(2)}
-                  className={
-                    activeTypeOnlPayment === 2 ? 'box-type-payment activeOnl' : 'box-type-payment'
-                  }
-                >
-                  Thanh toán VNPAY
-                </div>
-              </div>
-            )}
-          </div>
+              <div className="content-bottom">
+                <div className="wrap-bottom">
+                  <div className="box-flex">
+                    <div className="head">Tổng tiền hàng</div>
+                    <div>{CommonUtils.formatter.format(price)}</div>
+                  </div>
+                  <div className="box-flex">
+                    <div className="head">Tổng giảm giá</div>
+                    <div>
+                      {dataVoucher && dataVoucher.voucherData
+                        ? CommonUtils.formatter.format(price - totalPriceDiscount(price, dataVoucher))
+                        : CommonUtils.formatter.format(0)}
+                    </div>
+                  </div>
+                  <div className="box-flex">
+                    <div className="head">Phí vận chuyển</div>
+                    <div>{CommonUtils.formatter.format(priceShip)}</div>
+                  </div>
 
-          <div className="content-bottom">
-            <div className="wrap-bottom">
-              <div className="box-flex">
-                <div className="head">Tổng tiền hàng</div>
-                <div>{CommonUtils.formatter.format(price)}</div>
-              </div>
-              <div className="box-flex">
-                <div className="head">Tổng giảm giá</div>
-                <div>
-                  {dataVoucher && dataVoucher.voucherData
-                    ? CommonUtils.formatter.format(price - totalPriceDiscount(price, dataVoucher))
-                    : CommonUtils.formatter.format(0)}
+                  <div className="box-flex">
+                    <div className="head">Tổng thanh toán:</div>
+                    <div className="money">
+                      {dataVoucher && dataVoucher.voucherData
+                        ? CommonUtils.formatter.format(
+                            totalPriceDiscount(price, dataVoucher) + priceShip
+                          )
+                        : CommonUtils.formatter.format(price + +priceShip)}
+                    </div>
+                  </div>
+                  <div className="box-flex">
+                    <a onClick={() => handleSaveOrder()} className="main_btn">
+                      Đặt hàng
+                    </a>
+                  </div>
                 </div>
-              </div>
-              <div className="box-flex">
-                <div className="head">Phí vận chuyển</div>
-                <div>{CommonUtils.formatter.format(priceShip)}</div>
-              </div>
-
-              <div className="box-flex">
-                <div className="head">Tổng thanh toán:</div>
-                <div className="money">
-                  $
-                  {dataVoucher && dataVoucher.voucherData
-                    ? CommonUtils.formatter.format(
-                        totalPriceDiscount(price, dataVoucher) + priceShip
-                      )
-                    : CommonUtils.formatter.format(price + +priceShip)}
-                </div>
-              </div>
-              <div className="box-flex">
-                <a onClick={() => handleSaveOrder()} className="main_btn">
-                  Đặt hàng
-                </a>
               </div>
             </div>
           </div>

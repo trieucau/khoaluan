@@ -37,26 +37,22 @@ function StoreVoucher(props) {
         });
         let arrTemp = [];
         if (arrData && arrData.errCode === 0) {
-          let nowDate = moment.unix(Date.now() / 1000).format('DD/MM/YYYY');
+          let nowDate = moment().startOf('day');
 
-          for (let i = 0; i < arrData.data.length; i++) {
-            let fromDate = moment
-              .unix(arrData.data[i].voucherData.fromDate / 1000)
-              .format('DD/MM/YYYY');
-            let toDate = moment
-              .unix(arrData.data[i].voucherData.toDate / 1000)
-              .format('DD/MM/YYYY');
-            let amount = arrData.data[i].voucherData.amount;
-            let usedAmount = arrData.data[i].voucherData.usedAmount;
-            if (
+          let filteredVouchers = arrData.data.filter(item => {
+            let toDate = moment.unix(item.voucherData.toDate / 1000).endOf('day');
+            let fromDate = moment.unix(item.voucherData.fromDate / 1000).startOf('day');
+            let amount = item.voucherData.amount;
+            let usedAmount = item.voucherData.usedAmount;
+
+            return (
               amount !== usedAmount &&
-              compareDates(toDate, nowDate) === false &&
-              compareDates(fromDate, nowDate) === true
-            ) {
-              arrTemp[i] = arrData.data[i];
-            }
-          }
-          setdataVoucher(arrTemp);
+              toDate.isSameOrAfter(nowDate) &&
+              fromDate.isSameOrBefore(nowDate)
+            );
+          });
+          
+          setdataVoucher(filteredVouchers);
           setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
         }
       };
@@ -65,48 +61,59 @@ function StoreVoucher(props) {
   }, [props.id]);
 
   return (
-    <div className="container rounded bg-white mt-5 mb-5">
-      <div className="row">
-        <div className="col-md-12 border-right border-left">
-          <div className="box-heading">
-            <div className="content-left">
-              <span>Ví voucher</span>
+    <div className="store-voucher-container">
+      <div className="container">
+        <div className="row">
+          <div className="col-md-12">
+            <div className="voucher-wallet-card">
+              <div className="wallet-header">
+                <div className="header-title">
+                  <i className="fa-solid fa-ticket-simple" />
+                  <h2>Ví Voucher của tôi</h2>
+                </div>
+                <div className="header-subtitle">
+                  Lưu trữ và quản lý tất cả mã giảm giá của bạn tại đây
+                </div>
+              </div>
+
+              <div className="voucher-content">
+                {dataVoucher && dataVoucher.length > 0 ? (
+                  <div className="voucher-grid">
+                    {dataVoucher.map((item, index) => {
+                      let percent = '';
+                      if (item.voucherData.typeVoucherOfVoucherData.typeVoucher === 'percent') {
+                        percent = item.voucherData.typeVoucherOfVoucherData.value + '%';
+                      } else {
+                        percent = CommonUtils.formatter.format(item.voucherData.typeVoucherOfVoucherData.value);
+                      }
+                      
+                      let MaxValue = CommonUtils.formatter.format(item.voucherData.typeVoucherOfVoucherData.maxValue);
+
+                      return (
+                        <VoucherItemSmall
+                          id={item.id}
+                          key={index}
+                          name={item.voucherData.codeVoucher}
+                          widthPercent={(item.voucherData.usedAmount * 100) / item.voucherData.amount}
+                          maxValue={MaxValue}
+                          usedAmount={Math.round(((item.voucherData.usedAmount * 100) / item.voucherData.amount) * 10) / 10}
+                          typeVoucher={percent}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="voucher-empty-state">
+                    <div className="empty-icon">
+                      <i className="fa-solid fa-tags" />
+                    </div>
+                    <h3>Chưa có voucher nào</h3>
+                    <p>Hãy khám phá thêm nhiều ưu đãi hấp dẫn tại cửa hàng</p>
+                    <Link to="/voucher" className="btn-explore">Khám phá ngay</Link>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-
-          <div className="container-voucher">
-            {dataVoucher &&
-              dataVoucher.length > 0 &&
-              dataVoucher.map((item, index) => {
-                let percent = '';
-                if (item.voucherData.typeVoucherOfVoucherData.typeVoucher === 'percent') {
-                  percent = item.voucherData.typeVoucherOfVoucherData.value + '%';
-                }
-                if (item.voucherData.typeVoucherOfVoucherData.typeVoucher === 'money') {
-                  percent = CommonUtils.formatter.format(
-                    item.voucherData.typeVoucherOfVoucherData.value
-                  );
-                }
-                let MaxValue = CommonUtils.formatter.format(
-                  item.voucherData.typeVoucherOfVoucherData.maxValue
-                );
-
-                return (
-                  <VoucherItemSmall
-                    id={item.id}
-                    key={index}
-                    name={item.voucherData.codeVoucher}
-                    widthPercent={(item.voucherData.usedAmount * 100) / item.voucherData.amount}
-                    maxValue={MaxValue}
-                    usedAmount={
-                      Math.round(
-                        ((item.voucherData.usedAmount * 100) / item.voucherData.amount) * 10
-                      ) / 10
-                    }
-                    typeVoucher={percent}
-                  />
-                );
-              })}
           </div>
         </div>
       </div>
