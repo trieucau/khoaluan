@@ -37,33 +37,35 @@ let sendMessage = (data) => {
           errMessage: 'Missing required parameters !',
         });
       } else {
-        // Participant Check
-        let room = await db.RoomMessage.findOne({
-            where: {
-                id: data.roomId,
-                [Op.or]: [
-                    { userOne: data.userId },
-                    { userTwo: data.userId }
-                ]
-            }
-        });
-
-        if (!room) {
-            return resolve({ errCode: 2, errMessage: 'Bạn không thuộc phòng chat này' });
+        let userRole = data.roleId;
+        if (!userRole) {
+          let user = await db.User.findOne({ where: { id: data.userId } });
+          userRole = user ? user.roleId : null;
         }
 
-        let res = await db.Message.create({
+        if (userRole !== 'R1' && userRole !== 'R4') {
+          let room = await db.RoomMessage.findOne({
+            where: {
+              id: data.roomId,
+              [Op.or]: [{ userOne: data.userId }, { userTwo: data.userId }],
+            },
+          });
+
+          if (!room) {
+            return resolve({ errCode: 2, errMessage: 'Bạn không thuộc phòng chat này' });
+          }
+        }
+
+        await db.Message.create({
           text: data.text,
           userId: data.userId,
           roomId: data.roomId,
           unRead: true,
         });
-        if (res) {
-          resolve({
-            errCode: 0,
-            errMessage: 'ok',
-          });
-        }
+        resolve({
+          errCode: 0,
+          errMessage: 'ok',
+        });
       }
     } catch (error) {
       reject(error);
@@ -79,19 +81,23 @@ let loadMessage = (data) => {
           errMessage: 'Missing required parameters !',
         });
       } else {
-        // Participant Check
-        let room = await db.RoomMessage.findOne({
-            where: {
-                id: data.roomId,
-                [Op.or]: [
-                    { userOne: data.userId },
-                    { userTwo: data.userId }
-                ]
-            }
-        });
+        let userRole = data.roleId;
+        if (!userRole) {
+          let user = await db.User.findOne({ where: { id: data.userId } });
+          userRole = user ? user.roleId : null;
+        }
 
-        if (!room) {
+        if (userRole !== 'R1' && userRole !== 'R4') {
+          let room = await db.RoomMessage.findOne({
+            where: {
+              id: data.roomId,
+              [Op.or]: [{ userOne: data.userId }, { userTwo: data.userId }],
+            },
+          });
+
+          if (!room) {
             return resolve({ errCode: 2, errMessage: 'Bạn không thuộc phòng chat này' });
+          }
         }
 
         await db.Message.update(
@@ -178,14 +184,10 @@ let listRoomOfUser = (userId) => {
     }
   });
 };
-let listRoomOfAdmin = () => {
+let listRoomOfAdmin = (userId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      let user = await db.User.findOne({ where: { roleId: 'R1', statusId: 'S1' } });
-      if (user) {
-        let room = await db.RoomMessage.findAll({
-          where: { userTwo: user.id },
-        });
+      let room = await db.RoomMessage.findAll();
         for (let i = 0; i < room.length; i++) {
           room[i].messageData = await db.Message.findAll({
             where: { roomId: room[i].id },
@@ -207,15 +209,10 @@ let listRoomOfAdmin = () => {
             );
           }
         }
-        resolve({
-          errCode: 0,
-          data: room,
-        });
-      }
-      if (!user) {
-        resolve({ errCode: 3, errMessage: 'Không tìm thấy admin chat' });
-        return;
-      }
+      resolve({
+        errCode: 0,
+        data: room,
+      });
     } catch (error) {
       reject(error);
     }

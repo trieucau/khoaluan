@@ -19,7 +19,8 @@ let sendMessage = async (req, res) => {
   try {
     let data = await messageService.sendMessage({
         ...req.body,
-        userId: req.user.id
+        userId: req.user.id,
+        roleId: req.user.roleId
     });
     return res.status(200).json(data);
   } catch (error) {
@@ -35,6 +36,7 @@ let loadMessage = async (req, res) => {
     let data = await messageService.loadMessage({
       roomId: req.query.roomId,
       userId: req.user.id,
+      roleId: req.user.roleId,
       limit: req.query.limit,
       offset: req.query.offset,
     });
@@ -61,7 +63,7 @@ let listRoomOfUser = async (req, res) => {
 };
 let listRoomOfAdmin = async (req, res) => {
   try {
-    let data = await messageService.listRoomOfAdmin();
+    let data = await messageService.listRoomOfAdmin(req.user.id);
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
