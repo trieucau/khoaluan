@@ -27,7 +27,7 @@ const middlewareControllers = {
           });
         }
 
-        if (user && (user.roleId === 'R2' || user.roleId === 'R1' || user.roleId === 'R4')) {
+        if (user && (user.roleId === 'R2' || user.roleId === 'R1' || user.roleId === 'R4' || user.roleId === 'R3')) {
           req.user = user;
           next();
         } else {

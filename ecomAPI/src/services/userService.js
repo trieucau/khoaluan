@@ -388,8 +388,8 @@ let getDetailUserById = (userid, requesterId, requesterRole) => {
           errMessage: 'Missing required parameters!',
         });
       } else {
-        // Ownership check: User can only see their own info, unless they are Admin (R1/R4)
-        if (requesterRole !== 'R1' && requesterRole !== 'R4' && userid != requesterId) {
+        // Ownership check: User can only see their own info, unless they are Admin (R1/R4) or Shipper (R3)
+        if (requesterRole !== 'R1' && requesterRole !== 'R4' && requesterRole !== 'R3' && userid != requesterId) {
           return resolve({
             errCode: 2,
             errMessage: 'Bạn không có quyền xem thông tin này',

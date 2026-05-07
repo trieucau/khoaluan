@@ -162,8 +162,8 @@ let getDetailOrderById = (id, requesterId, requesterRole) => {
           where: { id: order.addressUserId },
         });
 
-        // Ownership Check: User must own the order or be Admin
-        if (requesterRole !== 'R1' && requesterRole !== 'R4' && addressUser.userId != requesterId) {
+        // Ownership Check: User must own the order or be Admin/Shipper
+        if (requesterRole !== 'R1' && requesterRole !== 'R4' && requesterRole !== 'R3' && addressUser.userId != requesterId) {
             return resolve({ errCode: 3, errMessage: 'Bạn không có quyền xem đơn hàng này' });
         }
 
