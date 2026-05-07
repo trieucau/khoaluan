@@ -10,6 +10,7 @@ import {
 } from '../../services/userService';
 import AddressUsersModal from '../ShopCart/AdressUserModal';
 import MapAddressModal from '../Map/MapAddressModal';
+import ReactPaginate from 'react-paginate';
 import '../../css/user-pages.css';
 import '../ShopCart/AddressModal.css';
 
@@ -21,25 +22,36 @@ function AddressUser(props) {
   const [userInfo, setUserInfo] = useState(null);
   const [usedAddressIds, setUsedAddressIds] = useState([]);
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
+  const [count, setCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const limit = 4;
 
   const loadUserInfo = async () => {
     const res = await getDetailUserById(props.id);
     if (res?.errCode === 0) setUserInfo(res.data);
   };
 
-  const loadDataAddress = async () => {
-    const res = await getAllAddressUserByUserIdService(props.id);
-    if (res?.errCode === 0) setDataAddressUser(res.data);
+  const loadDataAddress = async (page = 0) => {
+    const res = await getAllAddressUserByUserIdService(props.id, limit, page * limit);
+    if (res?.errCode === 0) {
+      setDataAddressUser(res.data);
+      setCount(Math.ceil(res.count / limit));
+    }
+  };
+
+  const handlePageClick = (event) => {
+    setCurrentPage(event.selected);
+    loadDataAddress(event.selected);
   };
 
   const loadUsedAddressIds = async () => {
-    const res = await getAllOrdersByUser(props.id);
+    // Fetch all orders (limit 1000) to check used addresses across all pages
+    const res = await getAllOrdersByUser(props.id, 1000, 0, 'ALL', '');
     if (res?.errCode === 0) {
       const ids = [
         ...new Set(
           res.data
-            .filter((item) => item.order?.length > 0)
-            .map((item) => item.id)
+            .map((item) => item.addressUserId)
         ),
       ];
       setUsedAddressIds(ids);
@@ -48,11 +60,14 @@ function AddressUser(props) {
 
   useEffect(() => {
     if (props.id) {
-      loadDataAddress();
+      loadDataAddress(0);
       loadUserInfo();
       loadUsedAddressIds();
     }
   }, [props.id]);
+
+  // Keep a ref to dataAddressUser for the delete logic
+  const dataLength = dataAddressUser.length;
 
   const sendDataFromModalAddress = async (data) => {
     setIsOpenModalAddressUser(false);
@@ -68,7 +83,11 @@ function AddressUser(props) {
         lat: data.lat,
         lng: data.lng,
       });
-      if (res?.errCode === 0) { toast.success('Thêm địa chỉ thành công!'); await loadDataAddress(); }
+      if (res?.errCode === 0) {
+        toast.success('Thêm địa chỉ thành công!');
+        setCurrentPage(0);
+        await loadDataAddress(0);
+      }
       else toast.error(res?.errMessage);
     } else {
       const res = await editAddressUserService({
@@ -81,7 +100,10 @@ function AddressUser(props) {
         lat: data.lat,
         lng: data.lng,
       });
-      if (res?.errCode === 0) { toast.success('Cập nhật địa chỉ thành công!'); await loadDataAddress(); }
+      if (res?.errCode === 0) {
+        toast.success('Cập nhật địa chỉ thành công!');
+        await loadDataAddress(currentPage);
+      }
       else toast.error(res?.errMessage);
     }
   };
@@ -96,7 +118,13 @@ function AddressUser(props) {
       const res = await deleteAddressUserService({ data: { id: pendingDeleteId } });
       if (res?.errCode === 0) {
         toast.success('Đã xóa địa chỉ thành công!');
-        await loadDataAddress();
+        // If it was the last item on the page and not the first page, go to previous page
+        let targetPage = currentPage;
+        if (dataLength === 1 && currentPage > 0) {
+          targetPage = currentPage - 1;
+          setCurrentPage(targetPage);
+        }
+        await loadDataAddress(targetPage);
       } else {
         toast.error(res?.errMessage || 'Xóa địa chỉ thất bại');
       }
@@ -215,6 +243,24 @@ function AddressUser(props) {
               );
             })}
           </div>
+
+          {/* PAGINATION */}
+          {count > 1 && (
+            <div className="box-pagination" style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
+              <ReactPaginate
+                previousLabel={'<'}
+                nextLabel={'>'}
+                breakLabel={'...'}
+                pageCount={count}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={3}
+                onPageChange={handlePageClick}
+                containerClassName={'pagination-order'}
+                activeClassName={'active'}
+                forcePage={currentPage}
+              />
+            </div>
+          )}
         </div>
       </div>
 

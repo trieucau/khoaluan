@@ -296,79 +296,107 @@ let updateStatusOrder = (data) => {
     }
   });
 };
-let getAllOrdersByUser = (userId) => {
+let getAllOrdersByUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!userId) {
+      if (!data.userId) {
         resolve({
           errCode: 1,
           errMessage: 'Missing required parameter !',
         });
       } else {
-        let addressUser = await db.AddressUser.findAll({
-          where: { userId: userId },
-        });
-        for (let i = 0; i < addressUser.length; i++) {
-          addressUser[i].order = await db.OrderProduct.findAll({
-            where: { addressUserId: addressUser[i].id },
-            include: [
-              { model: db.TypeShip, as: 'typeShipData' },
-              { model: db.Voucher, as: 'voucherData' },
-              { model: db.Allcode, as: 'statusOrderData' },
-            ],
-            raw: true,
-            nest: true,
-          });
-          for (let j = 0; j < addressUser[i].order.length; j++) {
-            if (addressUser[i].order[j].voucherData && addressUser[i].order[j].voucherData.typeVoucherId) {
-              addressUser[i].order[j].voucherData.typeVoucherOfVoucherData =
-                await db.TypeVoucher.findOne({
-                  where: {
-                    id: addressUser[i].order[j].voucherData.typeVoucherId,
-                  },
-                });
-            }
-            let orderDetail = await db.OrderDetail.findAll({
-              where: { orderId: addressUser[i].order[j].id },
-            });
-            for (let k = 0; k < orderDetail.length; k++) {
-              orderDetail[k].productDetailSize = await db.ProductDetailSize.findOne({
-                where: { id: orderDetail[k].productId },
-                include: [{ model: db.Allcode, as: 'sizeData' }],
-                raw: true,
-                nest: true,
-              });
-              orderDetail[k].productDetail = await db.ProductDetail.findOne({
-                where: {
-                  id: orderDetail[k].productDetailSize.productdetailId,
-                },
-              });
-              orderDetail[k].product = await db.Product.findOne({
-                where: {
-                  id: orderDetail[k].productDetail.productId,
-                },
-              });
-              orderDetail[k].productImage = await db.ProductImage.findAll({
-                where: {
-                  productdetailId: orderDetail[k].productDetail.id,
-                },
-              });
-              for (let f = 0; f < orderDetail[k].productImage.length; f++) {
-                // FIX 1: Buffer.from -> Buffer.from
-                orderDetail[k].productImage[f].image = Buffer.from(
-                  orderDetail[k].productImage[f].image,
-                  'base64'
-                ).toString('binary');
-              }
-            }
+        let limit = parseInt(data.limit) || 10;
+        let offset = parseInt(data.offset) || 0;
+        let statusId = data.statusId;
+        let keyword = data.keyword;
 
-            addressUser[i].order[j].orderDetail = orderDetail;
+        let addressUser = await db.AddressUser.findAll({
+          where: { userId: data.userId },
+          attributes: ['id'],
+          raw: true
+        });
+
+        const addressIds = addressUser.map(item => item.id);
+
+        let whereClause = {
+          addressUserId: { [Op.in]: addressIds }
+        };
+
+        if (statusId && statusId !== 'ALL') {
+          whereClause.statusId = statusId;
+        }
+
+        if (keyword) {
+          // Simplified keyword search for Order ID
+          // For complex product name search, we would need complex joins
+          whereClause[Op.or] = [
+            { id: { [Op.like]: `%${keyword}%` } }
+          ];
+        }
+
+        let { count, rows: orders } = await db.OrderProduct.findAndCountAll({
+          where: whereClause,
+          include: [
+            { model: db.TypeShip, as: 'typeShipData' },
+            { model: db.Voucher, as: 'voucherData' },
+            { model: db.Allcode, as: 'statusOrderData' },
+          ],
+          limit: limit,
+          offset: offset,
+          order: [['createdAt', 'DESC']],
+          raw: true,
+          nest: true,
+        });
+
+        for (let j = 0; j < orders.length; j++) {
+          if (orders[j].voucherData && orders[j].voucherData.typeVoucherId) {
+            orders[j].voucherData.typeVoucherOfVoucherData =
+              await db.TypeVoucher.findOne({
+                where: {
+                  id: orders[j].voucherData.typeVoucherId,
+                },
+              });
           }
+          let orderDetail = await db.OrderDetail.findAll({
+            where: { orderId: orders[j].id },
+          });
+          for (let k = 0; k < orderDetail.length; k++) {
+            orderDetail[k].productDetailSize = await db.ProductDetailSize.findOne({
+              where: { id: orderDetail[k].productId },
+              include: [{ model: db.Allcode, as: 'sizeData' }],
+              raw: true,
+              nest: true,
+            });
+            orderDetail[k].productDetail = await db.ProductDetail.findOne({
+              where: {
+                id: orderDetail[k].productDetailSize.productdetailId,
+              },
+            });
+            orderDetail[k].product = await db.Product.findOne({
+              where: {
+                id: orderDetail[k].productDetail.productId,
+              },
+            });
+            orderDetail[k].productImage = await db.ProductImage.findAll({
+              where: {
+                productdetailId: orderDetail[k].productDetail.id,
+              },
+            });
+            for (let f = 0; f < orderDetail[k].productImage.length; f++) {
+              orderDetail[k].productImage[f].image = Buffer.from(
+                orderDetail[k].productImage[f].image,
+                'base64'
+              ).toString('binary');
+            }
+          }
+
+          orders[j].orderDetail = orderDetail;
         }
 
         resolve({
           errCode: 0,
-          data: addressUser,
+          data: orders,
+          count: count
         });
       }
     } catch (error) {

@@ -17,7 +17,11 @@ let createNewAddressUser = async (req, res) => {
 };
 let getAllAddressUserByUserId = async (req, res) => {
   try {
-    let data = await addressUserService.getAllAddressUserByUserId(req.user.id);
+    let data = await addressUserService.getAllAddressUserByUserId({
+      userId: req.user.id,
+      limit: req.query.limit,
+      offset: req.query.offset
+    });
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);

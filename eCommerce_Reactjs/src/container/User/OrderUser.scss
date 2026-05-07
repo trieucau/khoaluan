@@ -292,10 +292,73 @@
   color: var(--c-text-soft);
 }
 
+/* ── Pagination ─────────────────────────────────────────── */
+.box-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+  margin-top: 8px;
+}
+
+.pagination-order {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.pagination-order .ap-page-item,
+.pagination-order li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-order a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text-soft);
+  font-family: var(--font-accent);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--t-base);
+  text-decoration: none;
+}
+
+.pagination-order a:hover {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+  background: rgba(255,107,157,0.05);
+}
+
+.pagination-order .active a {
+  background: var(--grad-primary);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.pagination-order .disabled a {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 @media (max-width: 576px) {
   .box-item-order img { width: 56px; height: 72px; }
   .box-price { font-size: 13px; }
   .box-list-order .content-top { padding: 12px 14px; }
   .content-center { padding: 0 14px; }
   .content-bottom { padding: 12px 14px; }
+  .pagination-order a { width: 34px; height: 34px; font-size: 13px; }
 }

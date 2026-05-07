@@ -5,6 +5,7 @@ import './OrderUser.scss';
 import { getAllOrdersByUser, updateStatusOrderService } from '../../services/userService';
 import CommonUtils from '../../utils/CommonUtils';
 import ModalCancelOrder from '../../component/ModalCancelOrder/ModalCancelOrder';
+import ReactPaginate from 'react-paginate';
 
 function OrderUser() {
   const { id } = useParams();
@@ -13,22 +14,28 @@ function OrderUser() {
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [cancelModal, setCancelModal] = useState({ show: false, order: null });
+  const [count, setCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const limit = 4;
 
   useEffect(() => {
-    loadDataOrder();
-  }, []);
+    setCurrentPage(0);
+    loadDataOrder(0, statusFilter, searchText);
+  }, [statusFilter, searchText]);
 
-  const loadDataOrder = async () => {
+  const loadDataOrder = async (page = 0, status = statusFilter, search = searchText) => {
     if (!id) return;
 
-    let order = await getAllOrdersByUser(id);
-    if (order && order.errCode === 0) {
-      let orderArray = [];
-      order.data.forEach((item) => {
-        orderArray = [...orderArray, ...item.order];
-      });
-      setDataOrder(orderArray);
+    let res = await getAllOrdersByUser(id, limit, page * limit, status, search);
+    if (res && res.errCode === 0) {
+      setDataOrder(res.data);
+      setCount(Math.ceil(res.count / limit));
     }
+  };
+
+  const handlePageClick = (event) => {
+    setCurrentPage(event.selected);
+    loadDataOrder(event.selected, statusFilter, searchText);
   };
 
   const handleCancelOrder = async (reason) => {
@@ -68,21 +75,8 @@ function OrderUser() {
     return price - discount.typeVoucherOfVoucherData.maxValue;
   };
 
-  // ===== FILTER SEARCH + STATUS =====
-  const filteredOrders = DataOrder.filter((order) => {
-    const keyword = searchText.toLowerCase();
-
-    const matchId = order.id?.toString().toLowerCase().includes(keyword);
-    const matchShop = order.shopData?.name?.toLowerCase().includes(keyword);
-    const matchProduct =
-      order.orderDetail &&
-      order.orderDetail.some((detail) => detail.product?.name?.toLowerCase().includes(keyword));
-
-    const matchSearch = matchId || matchShop || matchProduct;
-    const matchStatus = statusFilter === 'ALL' || order.statusId === statusFilter;
-
-    return matchSearch && matchStatus;
-  });
+  // Server-side filtering now, so we use DataOrder directly
+  const filteredOrders = DataOrder;
 
   return (
     <div className="container container-list-order rounded mt-5 mb-5">
@@ -207,6 +201,23 @@ function OrderUser() {
             })
           ) : (
             <div className="mt-4 text-center">Không tìm thấy đơn hàng phù hợp</div>
+          )}
+          {/* PAGINATION */}
+          {count > 1 && (
+            <div className="box-pagination">
+              <ReactPaginate
+                previousLabel={'<'}
+                nextLabel={'>'}
+                breakLabel={'...'}
+                pageCount={count}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={3}
+                onPageChange={handlePageClick}
+                containerClassName={'pagination-order'}
+                activeClassName={'active'}
+                forcePage={currentPage}
+              />
+            </div>
           )}
         </div>
       </div>

@@ -28,21 +28,28 @@ let createNewAddressUser = (data) => {
     }
   });
 };
-let getAllAddressUserByUserId = (userId) => {
+let getAllAddressUserByUserId = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!userId) {
+      if (!data.userId) {
         resolve({
           errCode: 1,
           errMessage: 'Missing required parameter !',
         });
       } else {
-        let res = await db.AddressUser.findAll({
-          where: { userId: userId },
+        let limit = parseInt(data.limit) || 10;
+        let offset = parseInt(data.offset) || 0;
+
+        let { count, rows } = await db.AddressUser.findAndCountAll({
+          where: { userId: data.userId },
+          limit: limit,
+          offset: offset,
+          order: [['createdAt', 'DESC']],
         });
         resolve({
           errCode: 0,
-          data: res,
+          data: rows,
+          count: count
         });
       }
     } catch (error) {

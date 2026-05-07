@@ -305,8 +305,8 @@ const updateStatusOrderService = (data) => {
   return axios.put(`/api/update-status-order`, data);
 };
 
-const getAllOrdersByUser = (userId) => {
-  return axios.get(`/api/get-all-order-by-user?userId=${userId}`);
+const getAllOrdersByUser = (userId, limit, offset, statusId, keyword) => {
+  return axios.get(`/api/get-all-order-by-user?userId=${userId}&limit=${limit}&offset=${offset}&statusId=${statusId}&keyword=${keyword}`);
 };
 const paymentOrderService = (data) => {
   return axios.post(`/api/payment-order`, data);
@@ -333,8 +333,8 @@ const deleteAddressUserService = (data) => {
 const editAddressUserService = (data) => {
   return axios.put(`/api/edit-address-user`, data);
 };
-const getAllAddressUserByUserIdService = (userId) => {
-  return axios.get(`/api/get-all-address-user?userId=${userId}`);
+const getAllAddressUserByUserIdService = (userId, limit, offset) => {
+  return axios.get(`/api/get-all-address-user?userId=${userId}&limit=${limit}&offset=${offset}`);
 };
 const getDetailAddressUserByIdService = (id) => {
   return axios.get(`/api/get-detail-address-user-by-id?id=${id}`);

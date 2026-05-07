@@ -54,7 +54,13 @@ let updateStatusOrder = async (req, res) => {
 };
 let getAllOrdersByUser = async (req, res) => {
   try {
-    let data = await orderService.getAllOrdersByUser(req.user.id);
+    let data = await orderService.getAllOrdersByUser({
+      userId: req.user.id,
+      limit: req.query.limit,
+      offset: req.query.offset,
+      statusId: req.query.statusId,
+      keyword: req.query.keyword
+    });
     return res.status(200).json(data);
   } catch (error) {
     console.log(error);
