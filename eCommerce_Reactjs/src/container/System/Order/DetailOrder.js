@@ -63,6 +63,14 @@ function DetailOrder() {
   );
 
   const shipPrice = Number(order.typeShipData?.price) || 0;
+  
+  // Calculate subtotal before computing discount
+  if (order.orderDetail) {
+    order.orderDetail.forEach(item => {
+      subtotal += item.quantity * item.productDetail.discountPrice;
+    });
+  }
+
   const discount = order.voucherId ? calcDiscount(subtotal, order.voucherData) : 0;
 
   return (
@@ -89,7 +97,6 @@ function DetailOrder() {
                 <thead><tr><th>Sản phẩm</th><th>Đơn giá</th><th style={{textAlign:'center'}}>SL</th><th style={{textAlign:'right'}}>Tổng</th></tr></thead>
                 <tbody>
                   {order.orderDetail?.map((item, idx) => {
-                    subtotal += item.quantity * item.productDetail.discountPrice;
                     const name = `${item.product.name} - ${item.productDetail.nameDetail} - ${item.productDetailSize?.sizeData?.value}`;
                     return (
                       <tr key={idx}>
