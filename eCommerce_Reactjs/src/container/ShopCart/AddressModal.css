@@ -19,8 +19,12 @@
 }
 
 @keyframes overlayIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* ── Modal card ──────────────────────────────────────────── */
@@ -31,7 +35,9 @@
   max-width: 580px;
   max-height: 92vh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(196, 69, 105, 0.18), 0 4px 20px rgba(0,0,0,0.12);
+  box-shadow:
+    0 20px 60px rgba(196, 69, 105, 0.18),
+    0 4px 20px rgba(0, 0, 0, 0.12);
   animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   display: flex;
   flex-direction: column;
@@ -43,14 +49,27 @@
 }
 
 @keyframes modalIn {
-  from { opacity: 0; transform: translateY(24px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* Scrollbar */
-.addr-modal::-webkit-scrollbar { width: 4px; }
-.addr-modal::-webkit-scrollbar-track { background: transparent; }
-.addr-modal::-webkit-scrollbar-thumb { background: #F0E6EE; border-radius: 4px; }
+.addr-modal::-webkit-scrollbar {
+  width: 4px;
+}
+.addr-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+.addr-modal::-webkit-scrollbar-thumb {
+  background: #f0e6ee;
+  border-radius: 4px;
+}
 
 /* ── Header ──────────────────────────────────────────────── */
 .addr-modal__header {
@@ -58,7 +77,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 22px 24px 18px;
-  border-bottom: 1px solid #F0E6EE;
+  border-bottom: 1px solid #f0e6ee;
   flex-shrink: 0;
 }
 
@@ -72,7 +91,7 @@
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #FF6B9D 0%, #F8B195 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #f8b195 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,20 +101,20 @@
 }
 
 .addr-modal__icon--map {
-  background: linear-gradient(135deg, #C44569 0%, #FF6B9D 100%);
+  background: linear-gradient(135deg, #c44569 0%, #ff6b9d 100%);
 }
 
 .addr-modal__title {
   font-size: 17px;
   font-weight: 800;
-  color: #2D1B2E;
+  color: #2d1b2e;
   margin: 0 0 2px;
   line-height: 1.2;
 }
 
 .addr-modal__subtitle {
   font-size: 12px;
-  color: #9B8EA4;
+  color: #9b8ea4;
   margin: 0;
 }
 
@@ -103,9 +122,9 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1.5px solid #F0E6EE;
+  border: 1.5px solid #f0e6ee;
   background: #fff;
-  color: #9B8EA4;
+  color: #9b8ea4;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -116,8 +135,8 @@
 }
 
 .addr-modal__close:hover {
-  background: #FF6B9D;
-  border-color: #FF6B9D;
+  background: #ff6b9d;
+  border-color: #ff6b9d;
   color: #fff;
 }
 
@@ -136,7 +155,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.6px;
-  color: #FF6B9D;
+  color: #ff6b9d;
   margin-bottom: 14px;
 }
 
@@ -171,14 +190,14 @@
 .addr-modal__field label {
   font-size: 12px;
   font-weight: 700;
-  color: #6B5670;
+  color: #6b5670;
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
 
 /* Required star */
 .addr-required {
-  color: #FF6B9D;
+  color: #ff6b9d;
   margin-left: 2px;
 }
 
@@ -186,30 +205,34 @@
 .addr-input {
   width: 100%;
   padding: 11px 14px;
-  border: 1.5px solid #F0E6EE;
+  border: 1.5px solid #f0e6ee;
   border-radius: 12px;
   font-size: 14px;
-  color: #2D1B2E;
+  color: #2d1b2e;
   background: #fff;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   font-family: inherit;
   -webkit-appearance: none;
   appearance: none;
 }
 
 .addr-input:focus {
-  border-color: #FF6B9D;
+  border-color: #ff6b9d;
   box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.12);
 }
 
 .addr-input:disabled {
-  background: #F9F5F9;
-  color: #9B8EA4;
+  background: #f9f5f9;
+  color: #9b8ea4;
   cursor: not-allowed;
 }
 
-.addr-input::placeholder { color: #BEB0C6; }
+.addr-input::placeholder {
+  color: #beb0c6;
+}
 
 /* Select wrapper */
 .addr-select-wrap {
@@ -226,7 +249,7 @@
   right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9B8EA4;
+  color: #9b8ea4;
   font-size: 12px;
   pointer-events: none;
 }
@@ -236,19 +259,19 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: linear-gradient(135deg, rgba(255,107,157,0.08) 0%, rgba(248,177,149,0.08) 100%);
-  border: 1px solid rgba(255,107,157,0.2);
+  background: linear-gradient(135deg, rgba(255, 107, 157, 0.08) 0%, rgba(248, 177, 149, 0.08) 100%);
+  border: 1px solid rgba(255, 107, 157, 0.2);
   border-radius: 12px;
   padding: 12px 16px;
   font-size: 13px;
-  color: #C44569;
+  color: #c44569;
   font-weight: 500;
   margin: 0 24px 0;
 }
 
 .addr-map-hint i {
   font-size: 15px;
-  color: #FF6B9D;
+  color: #ff6b9d;
   flex-shrink: 0;
 }
 
@@ -257,8 +280,8 @@
   margin: 16px 24px 0;
   border-radius: 16px;
   overflow: hidden;
-  border: 1.5px solid #F0E6EE;
-  box-shadow: 0 2px 12px rgba(196,69,105,0.08);
+  border: 1.5px solid #f0e6ee;
+  box-shadow: 0 2px 12px rgba(196, 69, 105, 0.08);
 }
 
 .addr-map-container .leaflet-container {
@@ -268,8 +291,8 @@
 /* ── Address preview ─────────────────────────────────────── */
 .addr-map-preview {
   margin: 16px 24px 0;
-  background: #FFF9FB;
-  border: 1.5px solid #F0E6EE;
+  background: #fff9fb;
+  border: 1.5px solid #f0e6ee;
   border-radius: 14px;
   padding: 14px 16px;
 }
@@ -282,19 +305,19 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #FF6B9D;
+  color: #ff6b9d;
   margin-bottom: 8px;
 }
 
 .addr-map-preview__value {
   font-size: 13px;
-  color: #2D1B2E;
+  color: #2d1b2e;
   line-height: 1.6;
   font-weight: 500;
 }
 
 .addr-map-preview__empty {
-  color: #9B8EA4;
+  color: #9b8ea4;
   font-style: italic;
   font-weight: 400;
 }
@@ -306,7 +329,7 @@
   justify-content: flex-end;
   gap: 12px;
   padding: 18px 24px 22px;
-  border-top: 1px solid #F0E6EE;
+  border-top: 1px solid #f0e6ee;
   margin-top: 20px;
   flex-shrink: 0;
 }
@@ -314,9 +337,9 @@
 .addr-btn-cancel {
   padding: 11px 24px;
   border-radius: 50px;
-  border: 1.5px solid #F0E6EE;
+  border: 1.5px solid #f0e6ee;
   background: #fff;
-  color: #6B5670;
+  color: #6b5670;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -325,8 +348,8 @@
 }
 
 .addr-btn-cancel:hover {
-  border-color: #9B8EA4;
-  color: #2D1B2E;
+  border-color: #9b8ea4;
+  color: #2d1b2e;
 }
 
 .addr-btn-save {
@@ -336,12 +359,15 @@
   padding: 11px 28px;
   border-radius: 50px;
   border: none;
-  background: linear-gradient(135deg, #FF6B9D 0%, #F8B195 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #f8b195 100%);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    opacity 0.2s;
   font-family: inherit;
 }
 
@@ -375,8 +401,14 @@
   }
 
   @keyframes modalInMobile {
-    from { opacity: 0; transform: translateY(100%); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .addr-modal__header {
@@ -446,7 +478,7 @@
   max-width: 380px;
   padding: 32px 28px 24px;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.16);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16);
   animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -454,7 +486,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -467,13 +499,13 @@
 .addr-confirm-title {
   font-size: 18px;
   font-weight: 800;
-  color: #2D1B2E;
+  color: #2d1b2e;
   margin: 0 0 10px;
 }
 
 .addr-confirm-desc {
   font-size: 14px;
-  color: #9B8EA4;
+  color: #9b8ea4;
   margin: 0 0 24px;
   line-height: 1.6;
 }
@@ -491,12 +523,14 @@
   padding: 11px 24px;
   border-radius: 50px;
   border: none;
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   font-family: inherit;
 }
 

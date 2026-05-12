@@ -59,10 +59,7 @@ function MapAddressModal({ isOpen, onClose, userId, onCreateAddress, currentAddr
 
         {/* Map */}
         <div className="addr-map-container">
-          <CheckoutMap
-            setLocation={setSelectedLocation}
-            setAddress={setSelectedAddress}
-          />
+          <CheckoutMap setLocation={setSelectedLocation} setAddress={setSelectedAddress} />
         </div>
 
         {/* Selected address preview */}
@@ -72,10 +69,13 @@ function MapAddressModal({ isOpen, onClose, userId, onCreateAddress, currentAddr
             Địa chỉ đã chọn
           </div>
           <div className="addr-map-preview__value">
-            {selectedAddress
-              ? selectedAddress
-              : <span className="addr-map-preview__empty">Chưa chọn vị trí — nhấn vào bản đồ phía trên</span>
-            }
+            {selectedAddress ? (
+              selectedAddress
+            ) : (
+              <span className="addr-map-preview__empty">
+                Chưa chọn vị trí — nhấn vào bản đồ phía trên
+              </span>
+            )}
           </div>
         </div>
 
@@ -89,10 +89,15 @@ function MapAddressModal({ isOpen, onClose, userId, onCreateAddress, currentAddr
             onClick={handleConfirm}
             disabled={loading || !selectedLocation}
           >
-            {loading
-              ? <><i className="fa-solid fa-spinner fa-spin" /> Đang lưu...</>
-              : <><i className="fa-solid fa-check" /> Xác nhận vị trí</>
-            }
+            {loading ? (
+              <>
+                <i className="fa-solid fa-spinner fa-spin" /> Đang lưu...
+              </>
+            ) : (
+              <>
+                <i className="fa-solid fa-check" /> Xác nhận vị trí
+              </>
+            )}
           </button>
         </div>
       </div>

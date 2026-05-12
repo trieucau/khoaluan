@@ -17,7 +17,7 @@ const ShipperHistory = () => {
       try {
         const res = await getAllOrdersByShipper({ shipperId });
         if (res?.errCode === 0) {
-          const finished = (res.data || []).filter(o => ['S6', 'S7', 'S8'].includes(o.statusId));
+          const finished = (res.data || []).filter((o) => ['S6', 'S7', 'S8'].includes(o.statusId));
           finished.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
           setOrders(finished);
         }
@@ -34,7 +34,7 @@ const ShipperHistory = () => {
     if (filterDate === 'all') return orders;
     const today = moment().startOf('day');
     const lastWeek = moment().subtract(7, 'days').startOf('day');
-    return orders.filter(o => {
+    return orders.filter((o) => {
       const orderDate = moment(o.updatedAt);
       if (filterDate === 'today') return orderDate.isSameOrAfter(today);
       if (filterDate === 'week') return orderDate.isSameOrAfter(lastWeek);
@@ -43,13 +43,19 @@ const ShipperHistory = () => {
   }, [orders, filterDate]);
 
   const stats = useMemo(() => {
-    const totalEarned = filteredOrders.reduce((sum, o) => sum + (o.statusId === 'S6' ? 20000 : 0), 0);
+    const totalEarned = filteredOrders.reduce(
+      (sum, o) => sum + (o.statusId === 'S6' ? 20000 : 0),
+      0
+    );
     return { totalEarned, count: filteredOrders.length };
   }, [filteredOrders]);
 
-  if (loading) return (
-    <div className="sp-page"><div className="sp-loading-shimmer" /></div>
-  );
+  if (loading)
+    return (
+      <div className="sp-page">
+        <div className="sp-loading-shimmer" />
+      </div>
+    );
 
   return (
     <div className="sp-page sp-history-page">
@@ -72,10 +78,12 @@ const ShipperHistory = () => {
       </section>
 
       <div className="sp-history-filters">
-        {['all', 'today', 'week'].map(f => (
-          <button key={f} 
+        {['all', 'today', 'week'].map((f) => (
+          <button
+            key={f}
             className={`sp-history-filter-btn ${filterDate === f ? 'active' : ''}`}
-            onClick={() => setFilterDate(f)}>
+            onClick={() => setFilterDate(f)}
+          >
             {f === 'all' ? 'Tất cả' : f === 'today' ? 'Hôm nay' : '7 ngày qua'}
           </button>
         ))}
@@ -89,8 +97,10 @@ const ShipperHistory = () => {
         ) : (
           filteredOrders.map((order, idx) => {
             const dateLabel = moment(order.updatedAt).format('DD/MM/YYYY');
-            const showDate = idx === 0 || moment(filteredOrders[idx-1].updatedAt).format('DD/MM/YYYY') !== dateLabel;
-            
+            const showDate =
+              idx === 0 ||
+              moment(filteredOrders[idx - 1].updatedAt).format('DD/MM/YYYY') !== dateLabel;
+
             return (
               <React.Fragment key={order.id}>
                 {showDate && <div className="sp-history-date-divider">{dateLabel}</div>}
@@ -103,12 +113,17 @@ const ShipperHistory = () => {
                     <div className="card-row">
                       <span className="order-id">#{order.id}</span>
                       <span className={`badge badge-${order.statusId}`}>
-                        {order.statusId === 'S6' ? 'Thành công' : order.statusId === 'S7' ? 'Đã hoàn trả' : 'Thất bại'}
+                        {order.statusId === 'S6'
+                          ? 'Thành công'
+                          : order.statusId === 'S7'
+                            ? 'Đã hoàn trả'
+                            : 'Thất bại'}
                       </span>
                     </div>
                     <div className="address">{order.addressUser?.shipAdress || 'N/A'}</div>
                     <div className="meta">
-                      {order.addressUser?.shipName} • {order.paymentId === 'PAY1' ? 'Tiền mặt' : 'Đã thanh toán'}
+                      {order.addressUser?.shipName} •{' '}
+                      {order.paymentId === 'PAY1' ? 'Tiền mặt' : 'Đã thanh toán'}
                     </div>
                   </div>
                   <div className="card-right">

@@ -12,13 +12,13 @@ import { getDistance } from '../../utils/MapUtils';
 import OrderPanel from '../Shipper/OrderPanel';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6969';
-const OSRM_BASE   = 'https://router.project-osrm.org/route/v1/driving';
+const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving';
 
 /* ── Auto-fit map to markers ── */
 const FitBounds = ({ positions }) => {
   const map = useMap();
   useEffect(() => {
-    const valid = positions.filter(p => p && p[0] != null && p[1] != null);
+    const valid = positions.filter((p) => p && p[0] != null && p[1] != null);
     if (valid.length > 0) map.fitBounds(L.latLngBounds(valid), { padding: [60, 60] });
   }, [positions, map]);
   return null;
@@ -43,7 +43,7 @@ const createNumberIcon = (number) =>
 /* ── OSRM ETA helper ── */
 const fetchOSRMDuration = async (fromLat, fromLng, toLat, toLng) => {
   try {
-    const res  = await fetch(`${OSRM_BASE}/${fromLng},${fromLat};${toLng},${toLat}?overview=false`);
+    const res = await fetch(`${OSRM_BASE}/${fromLng},${fromLat};${toLng},${toLat}?overview=false`);
     const data = await res.json();
     if (data?.routes?.[0]?.duration != null) return data.routes[0].duration;
   } catch {}
@@ -52,18 +52,18 @@ const fetchOSRMDuration = async (fromLat, fromLng, toLat, toLng) => {
 
 /* ── Main component ── */
 const ShipperMap = () => {
-  const socketRef   = useRef(null);
+  const socketRef = useRef(null);
   const intervalRef = useRef(null);
 
-  const [orderIds,     setOrderIds]     = useState([]);
-  const [orders,       setOrders]       = useState([]);
-  const [sending,      setSending]      = useState(false);
-  const [shipperLoc,   setShipperLoc]   = useState(null);
-  const [customers,    setCustomers]    = useState([]);
-  const [osrmDurations,setOsrmDurations]= useState({});
-  const [lastUpdate,   setLastUpdate]   = useState(null);
+  const [orderIds, setOrderIds] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [sending, setSending] = useState(false);
+  const [shipperLoc, setShipperLoc] = useState(null);
+  const [customers, setCustomers] = useState([]);
+  const [osrmDurations, setOsrmDurations] = useState({});
+  const [lastUpdate, setLastUpdate] = useState(null);
 
-  const userData  = JSON.parse(localStorage.getItem('userData') || '{}');
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   const shipperId = userData?.id;
 
   /* Fetch active orders */
@@ -72,11 +72,15 @@ const ShipperMap = () => {
     const res = await getAllOrdersByShipper({ shipperId, status: 'working' });
     if (res?.errCode === 0 && res?.data?.length) {
       setOrders(res.data);
-      setOrderIds(res.data.map(o => o.id));
+      setOrderIds(res.data.map((o) => o.id));
       setCustomers(
         res.data
-          .filter(o => o?.addressUser?.lat && o?.addressUser?.lng)
-          .map(o => ({ orderId: o.id, lat: parseFloat(o.addressUser.lat), lng: parseFloat(o.addressUser.lng) }))
+          .filter((o) => o?.addressUser?.lat && o?.addressUser?.lng)
+          .map((o) => ({
+            orderId: o.id,
+            lat: parseFloat(o.addressUser.lat),
+            lng: parseFloat(o.addressUser.lng),
+          }))
       );
     }
   };
@@ -84,7 +88,10 @@ const ShipperMap = () => {
   useEffect(() => {
     socketRef.current = socketIOClient.connect(BACKEND_URL);
     fetchOrders();
-    return () => { clearInterval(intervalRef.current); socketRef.current?.disconnect(); };
+    return () => {
+      clearInterval(intervalRef.current);
+      socketRef.current?.disconnect();
+    };
   }, []);
 
   /* Fetch ETA for each customer when shipper location updates */
@@ -93,8 +100,13 @@ const ShipperMap = () => {
     const fetchAll = async () => {
       const results = {};
       await Promise.all(
-        customers.map(async c => {
-          results[c.orderId] = await fetchOSRMDuration(shipperLoc.lat, shipperLoc.lng, c.lat, c.lng);
+        customers.map(async (c) => {
+          results[c.orderId] = await fetchOSRMDuration(
+            shipperLoc.lat,
+            shipperLoc.lng,
+            c.lat,
+            c.lng
+          );
         })
       );
       setOsrmDurations(results);
@@ -105,30 +117,35 @@ const ShipperMap = () => {
   /* Sort customers by distance from shipper */
   const sortedCustomers = useMemo(() => {
     if (!shipperLoc) return [];
-    return [...customers].sort((a, b) =>
-      getDistance(shipperLoc.lat, shipperLoc.lng, a.lat, a.lng) -
-      getDistance(shipperLoc.lat, shipperLoc.lng, b.lat, b.lng)
+    return [...customers].sort(
+      (a, b) =>
+        getDistance(shipperLoc.lat, shipperLoc.lng, a.lat, a.lng) -
+        getDistance(shipperLoc.lat, shipperLoc.lng, b.lat, b.lng)
     );
   }, [shipperLoc, customers]);
 
   /* OSRM route (single polyline, no territory check) */
-  const waypoints = shipperLoc && sortedCustomers.length > 0 ? [shipperLoc, ...sortedCustomers] : [];
+  const waypoints =
+    shipperLoc && sortedCustomers.length > 0 ? [shipperLoc, ...sortedCustomers] : [];
   const { routeCoords } = useOSRMRoute(waypoints);
 
   /* FitBounds positions */
   const fitPositions = useMemo(() => {
     const pts = [];
     if (shipperLoc) pts.push([shipperLoc.lat, shipperLoc.lng]);
-    sortedCustomers.forEach(c => pts.push([c.lat, c.lng]));
+    sortedCustomers.forEach((c) => pts.push([c.lat, c.lng]));
     return pts;
   }, [shipperLoc, sortedCustomers]);
 
   /* GPS controls */
   const startSendingLocation = () => {
-    if (!navigator.geolocation) { toast.error('Trình duyệt không hỗ trợ GPS'); return; }
+    if (!navigator.geolocation) {
+      toast.error('Trình duyệt không hỗ trợ GPS');
+      return;
+    }
     setSending(true);
     const send = () => {
-      navigator.geolocation.getCurrentPosition(pos => {
+      navigator.geolocation.getCurrentPosition((pos) => {
         const { latitude: lat, longitude: lng } = pos.coords;
         setShipperLoc({ lat, lng });
         setLastUpdate(moment().format('HH:mm:ss'));
@@ -188,11 +205,23 @@ const ShipperMap = () => {
       </div>
 
       {/* Map */}
-      <div style={{ position:'relative', height:540, borderRadius:'var(--sp-radius)', overflow:'hidden', border:'1px solid var(--sp-border)' }}>
+      <div
+        style={{
+          position: 'relative',
+          height: 540,
+          borderRadius: 'var(--sp-radius)',
+          overflow: 'hidden',
+          border: '1px solid var(--sp-border)',
+        }}
+      >
         <OrderPanel orders={orders} shipperLoc={shipperLoc} osrmDurations={osrmDurations} />
 
-        <MapContainer center={[16, 108]} zoom={6} style={{ height:'100%', width:'100%' }}
-          preferCanvas={true}>
+        <MapContainer
+          center={[16, 108]}
+          zoom={6}
+          style={{ height: '100%', width: '100%' }}
+          preferCanvas={true}
+        >
           <TileLayer
             attribution="© OpenStreetMap"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -218,7 +247,13 @@ const ShipperMap = () => {
           {routeCoords.length > 1 && (
             <Polyline
               positions={routeCoords}
-              pathOptions={{ color: '#3b82f6', weight: 5, opacity: 0.9, lineJoin: 'round', lineCap: 'round' }}
+              pathOptions={{
+                color: '#3b82f6',
+                weight: 5,
+                opacity: 0.9,
+                lineJoin: 'round',
+                lineCap: 'round',
+              }}
             />
           )}
 

@@ -9,7 +9,9 @@ const ShipperSupport = () => {
     setLoading(true);
     // Feature not yet integrated notification
     setTimeout(() => {
-      alert('Tính năng "Gửi yêu cầu hỗ trợ" hiện đang trong quá trình tích hợp hệ thống. Vui lòng liên hệ qua Hotline hoặc Zalo để được hỗ trợ ngay lập tức!');
+      alert(
+        'Tính năng "Gửi yêu cầu hỗ trợ" hiện đang trong quá trình tích hợp hệ thống. Vui lòng liên hệ qua Hotline hoặc Zalo để được hỗ trợ ngay lập tức!'
+      );
       setLoading(false);
     }, 800);
   };
@@ -17,33 +19,80 @@ const ShipperSupport = () => {
   return (
     <div className="sp-page" style={{ maxWidth: 800, margin: '0 auto', paddingBottom: 100 }}>
       <div className="sp-page-header">
-        <div className="sp-page-title">
-          Hỗ trợ trực tuyến
+        <div className="sp-page-title">Hỗ trợ trực tuyến</div>
+        <div className="sp-page-subtitle">
+          Liên hệ ngay để được giải đáp thắc mắc và xử lý sự cố nhanh chóng
         </div>
-        <div className="sp-page-subtitle">Liên hệ ngay để được giải đáp thắc mắc và xử lý sự cố nhanh chóng</div>
       </div>
 
       {/* Primary Contact Cards */}
       <div className="sp-quick-grid" style={{ marginBottom: 32 }}>
-        <a href="tel:19006868" className="sp-card sp-support-card" style={{ textDecoration: 'none' }}>
+        <a
+          href="tel:19006868"
+          className="sp-card sp-support-card"
+          style={{ textDecoration: 'none' }}
+        >
           <div className="sp-card-body" style={{ textAlign: 'center', padding: '32px 20px' }}>
             <div className="sp-support-icon-circle blue">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
             </div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Hotline 24/7</div>
-            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--sp-primary-light)', letterSpacing: 1 }}>1900 6868</div>
-            <div style={{ fontSize: 12, color: 'var(--sp-text-dim)', marginTop: 8 }}>Gọi ngay để xử lý sự cố khẩn cấp</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
+              Hotline 24/7
+            </div>
+            <div
+              style={{
+                fontSize: 24,
+                fontWeight: 900,
+                color: 'var(--sp-primary-light)',
+                letterSpacing: 1,
+              }}
+            >
+              1900 6868
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--sp-text-dim)', marginTop: 8 }}>
+              Gọi ngay để xử lý sự cố khẩn cấp
+            </div>
           </div>
         </a>
 
-        <a href="https://zalo.me" target="_blank" rel="noreferrer" className="sp-card sp-support-card" style={{ textDecoration: 'none' }}>
+        <a
+          href="https://zalo.me"
+          target="_blank"
+          rel="noreferrer"
+          className="sp-card sp-support-card"
+          style={{ textDecoration: 'none' }}
+        >
           <div className="sp-card-body" style={{ textAlign: 'center', padding: '32px 20px' }}>
             <div className="sp-support-icon-circle cyan">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" /></svg>
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+              >
+                <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" />
+              </svg>
             </div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Chat Zalo</div>
-            <div style={{ fontSize: 24, fontWeight: 900, color: '#06b6d4', letterSpacing: 1 }}>Hỗ trợ Chat</div>
-            <div style={{ fontSize: 12, color: 'var(--sp-text-dim)', marginTop: 8 }}>Nhắn tin cho điều phối viên</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>
+              Chat Zalo
+            </div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: '#06b6d4', letterSpacing: 1 }}>
+              Hỗ trợ Chat
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--sp-text-dim)', marginTop: 8 }}>
+              Nhắn tin cho điều phối viên
+            </div>
           </div>
         </a>
       </div>
@@ -92,10 +141,22 @@ const ShipperSupport = () => {
             >
               {loading ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <svg className="sp-refresh-icon spinning" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                  <svg
+                    className="sp-refresh-icon spinning"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                  >
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                  </svg>
                   Đang gửi...
                 </span>
-              ) : 'Gửi yêu cầu ngay'}
+              ) : (
+                'Gửi yêu cầu ngay'
+              )}
             </button>
           </form>
         </div>

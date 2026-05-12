@@ -68,9 +68,9 @@ function MessagePage() {
           {/* Chat window */}
           <div className={`messenger-chatbox-wrapper ${!selectedRoom ? 'hidden-on-mobile' : ''}`}>
             {selectedRoom ? (
-              <UserChatWindow 
-                userId={dataUser.id} 
-                roomId={selectedRoom} 
+              <UserChatWindow
+                userId={dataUser.id}
+                roomId={selectedRoom}
                 onBack={() => setselectedRoom('')}
               />
             ) : (

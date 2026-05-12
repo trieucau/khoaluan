@@ -255,11 +255,15 @@ const DetailReceipt = (props) => {
                     return (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td><span className="ap-badge ap-badge-indigo">#{item.receiptId}</span></td>
+                        <td>
+                          <span className="ap-badge ap-badge-indigo">#{item.receiptId}</span>
+                        </td>
                         <td className="fw-bold">{name}</td>
                         <td>{item.quantity}</td>
                         <td>{CommonUtils.formatter.format(item.price)}</td>
-                        <td className="text-warning fw-bold">{CommonUtils.formatter.format(item.price * item.quantity)}</td>
+                        <td className="text-warning fw-bold">
+                          {CommonUtils.formatter.format(item.price * item.quantity)}
+                        </td>
                       </tr>
                     );
                   })

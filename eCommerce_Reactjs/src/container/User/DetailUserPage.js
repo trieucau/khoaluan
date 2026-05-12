@@ -61,11 +61,17 @@ function DetailUserPage() {
       email: data.email,
       id: data.id,
       dob: data.dob,
-      image: data.image ||
+      image:
+        data.image ||
         'https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg',
       isActiveEmail: data.isActiveEmail,
     });
-    setbirthday(moment.unix(+data.dob / 1000).locale('vi').toDate());
+    setbirthday(
+      moment
+        .unix(+data.dob / 1000)
+        .locale('vi')
+        .toDate()
+    );
   };
 
   const handleOnChange = (e) => {
@@ -103,7 +109,10 @@ function DetailUserPage() {
   const handleOnChangeImage = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 31312281) { toast.error('File phải nhỏ hơn 30MB'); return; }
+    if (file.size > 31312281) {
+      toast.error('File phải nhỏ hơn 30MB');
+      return;
+    }
     const base64 = await CommonUtils.getBase64(file);
     const objectUrl = URL.createObjectURL(file);
     setInputValues({ ...inputValues, image: base64, imageReview: objectUrl });
@@ -113,14 +122,14 @@ function DetailUserPage() {
     setInputValues({ ...inputValues, isOpen: true, imageReview: url });
   };
 
-  const displayName = `${inputValues.firstName || ''} ${inputValues.lastName || ''}`.trim() || 'Người dùng';
+  const displayName =
+    `${inputValues.firstName || ''} ${inputValues.lastName || ''}`.trim() || 'Người dùng';
 
   return (
     <div className="user-page">
       <div className="container-fluid px-0">
         <div className="user-card">
           <div className="row g-0" style={{ minHeight: 500 }}>
-
             {/* ── Left: Avatar panel ── */}
             <div className="col-md-3 col-sm-12">
               <div className="user-profile-avatar">
@@ -234,7 +243,9 @@ function DetailUserPage() {
                         onChange={handleOnChange}
                       >
                         {dataGender?.map((item) => (
-                          <option key={item.code} value={item.code}>{item.value}</option>
+                          <option key={item.code} value={item.code}>
+                            {item.value}
+                          </option>
                         ))}
                       </select>
                     </div>

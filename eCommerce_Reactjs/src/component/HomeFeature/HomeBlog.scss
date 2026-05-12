@@ -10,7 +10,10 @@
   border: 1px solid var(--c-border);
   overflow: hidden;
   margin-bottom: 28px;
-  transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base),
+    border-color var(--t-base);
 }
 
 .blog-card:hover {
@@ -43,11 +46,7 @@
 .blog-card__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(196,69,105,0.3) 0%,
-    transparent 60%
-  );
+  background: linear-gradient(to top, rgba(196, 69, 105, 0.3) 0%, transparent 60%);
   opacity: 0;
   transition: opacity var(--t-base);
 }
@@ -132,7 +131,9 @@
   font-weight: 700;
   color: var(--c-primary);
   text-decoration: none;
-  transition: gap var(--t-base), color var(--t-base);
+  transition:
+    gap var(--t-base),
+    color var(--t-base);
 }
 
 .blog-card__cta:hover {

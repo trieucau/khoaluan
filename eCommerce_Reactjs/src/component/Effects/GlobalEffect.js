@@ -17,7 +17,7 @@ const GlobalEffect = () => {
       '#39FF14', // Xanh Neon phản quang
       '#B026FF', // Tím điện (Electric Purple)
       '#FF00FF', // Đỏ tươi (Magenta)
-      '#FFA500'  // Cam chói
+      '#FFA500', // Cam chói
     ];
 
     const generatedStars = Array.from({ length: STAR_COUNT }).map((_, i) => {

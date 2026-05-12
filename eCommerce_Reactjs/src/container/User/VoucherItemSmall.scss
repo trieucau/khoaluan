@@ -28,12 +28,12 @@
       1px 0/100% 42px repeat-y;
   display: flex;
   position: relative;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   margin-bottom: 15px;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
   }
 
@@ -45,7 +45,7 @@
     min-width: 110px;
     justify-content: center;
     margin: -12px 10px 0 15px;
-    
+
     img {
       width: 45px;
       height: 45px;
@@ -91,7 +91,7 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-      
+
       .use-voucher {
         position: absolute;
         top: 15px;
@@ -110,7 +110,7 @@
           color: #fff;
         }
       }
-      
+
       .max-value-voucher {
         color: #666;
         font-size: 13px;
@@ -120,12 +120,12 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-      
+
       .box-percent {
         display: flex;
         flex-direction: column;
         margin-top: auto;
-        
+
         .wrap-percent {
           height: 6px;
           border-radius: 3px;
@@ -133,14 +133,14 @@
           background: #f0f0f0;
           overflow: hidden;
           margin-top: 4px;
-          
+
           .percent {
             height: 100%;
             background: linear-gradient(270deg, rgb(238, 77, 45) 0%, #ff7337 100%);
             border-radius: 3px;
           }
         }
-        
+
         .used-percent {
           color: rgb(238, 77, 45);
           font-size: 12px;
@@ -170,16 +170,16 @@
 
     .content-right {
       width: 65%;
-      
+
       .box-content-right {
         margin: 10px 10px;
-        
+
         .name-voucher {
           font-size: 14px;
           margin-right: 0;
           margin-bottom: 5px;
         }
-        
+
         .max-value-voucher {
           font-size: 12px;
         }

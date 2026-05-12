@@ -21,7 +21,7 @@
   width: 480px;
   height: 480px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,107,157,0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 107, 157, 0.15) 0%, transparent 70%);
   top: -120px;
   right: -100px;
   pointer-events: none;
@@ -34,7 +34,7 @@
   width: 350px;
   height: 350px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(248,177,149,0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(248, 177, 149, 0.12) 0%, transparent 70%);
   bottom: -80px;
   left: -80px;
   pointer-events: none;
@@ -80,7 +80,7 @@
   width: 300px;
   height: 300px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   bottom: -100px;
   right: -80px;
   pointer-events: none;
@@ -92,7 +92,7 @@
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.07);
+  background: rgba(255, 255, 255, 0.07);
   top: 40px;
   right: 40px;
   pointer-events: none;
@@ -125,7 +125,7 @@
 .brand .heading p {
   font-family: var(--font-body);
   font-size: 16px;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
   margin: 0;
   line-height: 1.6;
 }
@@ -146,13 +146,13 @@
   gap: 12px;
   font-family: var(--font-body);
   font-size: 14px;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .brand-features li i {
   width: 28px;
   height: 28px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -172,8 +172,9 @@
 .form-peice {
   padding: 48px 44px;
   background: var(--c-surface);
-  transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1),
-              opacity 0.4s ease;
+  transition:
+    transform 0.5s cubic-bezier(0.77, 0, 0.175, 1),
+    opacity 0.4s ease;
 }
 
 .form-peice.switched {
@@ -206,8 +207,12 @@
   margin-bottom: 28px;
 }
 
-.login-form::before { content: 'Chào mừng trở lại'; }
-.signup-form::before { content: 'Tạo tài khoản mới'; }
+.login-form::before {
+  content: 'Chào mừng trở lại';
+}
+.signup-form::before {
+  content: 'Tạo tài khoản mới';
+}
 
 /* ── Form Groups ─────────────────────────────────────────── */
 .form-group {
@@ -225,9 +230,9 @@
   letter-spacing: 0.3px;
 }
 
-.form-group input[type="email"],
-.form-group input[type="password"],
-.form-group input[type="text"] {
+.form-group input[type='email'],
+.form-group input[type='password'],
+.form-group input[type='text'] {
   width: 100%;
   padding: 12px 16px;
   background: var(--c-surface-2);
@@ -237,13 +242,16 @@
   font-size: 15px;
   color: var(--c-text);
   outline: none;
-  transition: border-color var(--t-base), box-shadow var(--t-base), background var(--t-base);
+  transition:
+    border-color var(--t-base),
+    box-shadow var(--t-base),
+    background var(--t-base);
 }
 
 .form-group input:focus {
   border-color: var(--c-primary);
   background: var(--c-surface);
-  box-shadow: 0 0 0 3px rgba(255,107,157,0.12);
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.12);
 }
 
 .password-group {
@@ -279,7 +287,7 @@
   flex-wrap: wrap;
 }
 
-.CTA input[type="submit"] {
+.CTA input[type='submit'] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -292,11 +300,13 @@
   border-radius: var(--r-full);
   border: none;
   cursor: pointer;
-  transition: transform var(--t-base), box-shadow var(--t-base);
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base);
   letter-spacing: 0.3px;
 }
 
-.CTA input[type="submit"]:hover {
+.CTA input[type='submit']:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
@@ -317,8 +327,8 @@
 }
 
 /* Social login buttons */
-.login-form > div[class*="social"],
-.login-form > button[class*="social"],
+.login-form > div[class*='social'],
+.login-form > button[class*='social'],
 .login-form > .kep-login-facebook,
 .CTA ~ * {
   margin-top: 20px !important;
@@ -331,7 +341,9 @@
   font-family: var(--font-body) !important;
   font-size: 14px !important;
   font-weight: 600 !important;
-  transition: transform var(--t-base), box-shadow var(--t-base) !important;
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base) !important;
 }
 
 .login-form button:hover {
@@ -386,7 +398,7 @@
 
 .otp-input:focus {
   border-color: var(--c-primary) !important;
-  box-shadow: 0 0 0 3px rgba(255,107,157,0.12) !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.12) !important;
   background: var(--c-surface) !important;
 }
 
@@ -402,12 +414,23 @@
   .brand .heading h2 {
     font-size: 28px !important;
   }
-  .brand-features { display: none; }
-  .box-login { padding: 40px 12px; }
+  .brand-features {
+    display: none;
+  }
+  .box-login {
+    padding: 40px 12px;
+  }
 }
 
 @media (max-width: 480px) {
-  .form-peice { padding: 28px 16px; }
-  .CTA { flex-direction: column; align-items: stretch; }
-  .CTA input[type="submit"] { width: 100%; }
+  .form-peice {
+    padding: 28px 16px;
+  }
+  .CTA {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .CTA input[type='submit'] {
+    width: 100%;
+  }
 }

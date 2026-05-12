@@ -38,7 +38,7 @@ function HomePage(props) {
     autoplay: true,
     cssEase: 'linear', // Trượt đều không bị giật hay chậm lại
     variableWidth: true, // Chiều rộng của mỗi slide sẽ tự động bằng với chiều rộng thực của ảnh
-    pauseOnHover: false
+    pauseOnHover: false,
   };
 
   useEffect(() => {
@@ -111,18 +111,18 @@ function HomePage(props) {
         </div>
 
         {/* Text nổi lên trên, hoàn toàn đứng im không trượt theo Slider */}
-        <div 
-          className="banner_inner" 
-          style={{ 
-            position: 'absolute', 
-            top: 0, 
-            left: 0, 
-            width: '100%', 
-            height: '100%', 
-            display: 'flex', 
-            alignItems: 'center', 
+        <div
+          className="banner_inner"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
             pointerEvents: 'none',
-            zIndex: 10 
+            zIndex: 10,
           }}
         >
           <div className="container" style={{ width: '100%' }}>

@@ -11,7 +11,11 @@ function HomeBlogItem({ data }) {
 
   // Format date
   const date = data.createdAt
-    ? new Date(data.createdAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    ? new Date(data.createdAt).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
     : '';
 
   return (
@@ -19,11 +23,7 @@ function HomeBlogItem({ data }) {
       <div className="blog-card">
         {/* Thumbnail */}
         <Link to={`/blog-detail/${data.id}`} className="blog-card__thumb">
-          <img
-            src={data.image}
-            alt={data.title}
-            loading="lazy"
-          />
+          <img src={data.image} alt={data.title} loading="lazy" />
           <div className="blog-card__overlay" />
         </Link>
 

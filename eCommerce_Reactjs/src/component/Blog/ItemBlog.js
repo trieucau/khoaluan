@@ -16,11 +16,7 @@ function ItemBlog({ data }) {
     <article className="blog-list-item">
       {/* Thumbnail */}
       <div className="blog-list-item__thumb">
-        <img
-          src={data.image}
-          alt={data.title}
-          loading="lazy"
-        />
+        <img src={data.image} alt={data.title} loading="lazy" />
         {data.createdAt && (
           <div className="blog-list-item__date">
             <span className="blog-list-item__date-day">{dateDay}</span>
@@ -50,9 +46,7 @@ function ItemBlog({ data }) {
         </Link>
 
         {/* Description */}
-        <p className="blog-list-item__desc">
-          {data.shortdescription || data.description}
-        </p>
+        <p className="blog-list-item__desc">{data.shortdescription || data.description}</p>
 
         <Link to={`/blog-detail/${data.id}`} className="blog-list-item__cta">
           Đọc tiếp

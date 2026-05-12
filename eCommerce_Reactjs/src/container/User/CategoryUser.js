@@ -21,7 +21,7 @@ function CategoryUser({ id }) {
       // Get basic data from localStorage immediately for fast render
       const localData = JSON.parse(localStorage.getItem('userData'));
       if (localData) setUser(localData);
-      
+
       // Fetch fresh data from API to get the latest avatar/info
       if (id) {
         const res = await getDetailUserById(id);
@@ -42,9 +42,7 @@ function CategoryUser({ id }) {
     window.location.href = '/login';
   };
 
-  const displayName = user
-    ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
-    : 'Khách hàng';
+  const displayName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : 'Khách hàng';
 
   return (
     <aside className="user-sidebar">
@@ -72,15 +70,10 @@ function CategoryUser({ id }) {
       {/* Navigation */}
       <ul className="user-sidebar__nav">
         {navItems.map((item) => {
-          const to = item.withId
-            ? `/user/${item.path}/${id || ''}`
-            : `/user/${item.path}`;
+          const to = item.withId ? `/user/${item.path}/${id || ''}` : `/user/${item.path}`;
           return (
             <li key={item.path} className="user-sidebar__nav-item">
-              <NavLink
-                to={to}
-                className={({ isActive }) => (isActive ? 'active' : '')}
-              >
+              <NavLink to={to} className={({ isActive }) => (isActive ? 'active' : '')}>
                 <i className={item.icon} />
                 {item.label}
               </NavLink>

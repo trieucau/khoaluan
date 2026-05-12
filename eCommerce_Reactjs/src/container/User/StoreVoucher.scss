@@ -7,9 +7,9 @@
 .voucher-wallet-card {
   background: #fff;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .wallet-header {
@@ -48,7 +48,7 @@
 
 .voucher-content {
   padding: 40px;
-  
+
   .voucher-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));

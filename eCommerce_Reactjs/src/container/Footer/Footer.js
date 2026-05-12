@@ -62,21 +62,45 @@ function Footer() {
                   <img src="/resources/img/logo.png" alt="Solana Shop" />
                 </Link>
                 <p className="footer-brand__desc">
-                  Solana Shop — thương hiệu thời trang trẻ trung, hiện đại. 
-                  Chúng tôi mang đến những thiết kế độc đáo, chất lượng cao với mức giá phải chăng.
+                  Solana Shop — thương hiệu thời trang trẻ trung, hiện đại. Chúng tôi mang đến những
+                  thiết kế độc đáo, chất lượng cao với mức giá phải chăng.
                 </p>
                 {/* Social Links */}
                 <div className="footer-social">
-                  <a href="https://facebook.com" className="social-btn" aria-label="Facebook" target="_blank" rel="noreferrer">
+                  <a
+                    href="https://facebook.com"
+                    className="social-btn"
+                    aria-label="Facebook"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <i className="fa-brands fa-facebook-f" />
                   </a>
-                  <a href="https://instagram.com" className="social-btn" aria-label="Instagram" target="_blank" rel="noreferrer">
+                  <a
+                    href="https://instagram.com"
+                    className="social-btn"
+                    aria-label="Instagram"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <i className="fa-brands fa-instagram" />
                   </a>
-                  <a href="https://tiktok.com" className="social-btn" aria-label="TikTok" target="_blank" rel="noreferrer">
+                  <a
+                    href="https://tiktok.com"
+                    className="social-btn"
+                    aria-label="TikTok"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <i className="fa-brands fa-tiktok" />
                   </a>
-                  <a href="https://youtube.com" className="social-btn" aria-label="YouTube" target="_blank" rel="noreferrer">
+                  <a
+                    href="https://youtube.com"
+                    className="social-btn"
+                    aria-label="YouTube"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <i className="fa-brands fa-youtube" />
                   </a>
                 </div>
@@ -88,11 +112,21 @@ function Footer() {
               <div className="footer-col">
                 <h5 className="footer-col__title">Khám phá</h5>
                 <ul className="footer-col__list">
-                  <li><Link to="/">Trang chủ</Link></li>
-                  <li><Link to="/shop">Cửa hàng</Link></li>
-                  <li><Link to="/blog">Tin tức</Link></li>
-                  <li><Link to="/voucher">Giảm giá</Link></li>
-                  <li><Link to="/about">Giới thiệu</Link></li>
+                  <li>
+                    <Link to="/">Trang chủ</Link>
+                  </li>
+                  <li>
+                    <Link to="/shop">Cửa hàng</Link>
+                  </li>
+                  <li>
+                    <Link to="/blog">Tin tức</Link>
+                  </li>
+                  <li>
+                    <Link to="/voucher">Giảm giá</Link>
+                  </li>
+                  <li>
+                    <Link to="/about">Giới thiệu</Link>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -102,10 +136,18 @@ function Footer() {
               <div className="footer-col">
                 <h5 className="footer-col__title">Tài khoản</h5>
                 <ul className="footer-col__list">
-                  <li><Link to="/login">Đăng nhập</Link></li>
-                  <li><Link to="/register">Đăng ký</Link></li>
-                  <li><Link to="/shopcart">Giỏ hàng</Link></li>
-                  <li><Link to="/voucher">Kho voucher</Link></li>
+                  <li>
+                    <Link to="/login">Đăng nhập</Link>
+                  </li>
+                  <li>
+                    <Link to="/register">Đăng ký</Link>
+                  </li>
+                  <li>
+                    <Link to="/shopcart">Giỏ hàng</Link>
+                  </li>
+                  <li>
+                    <Link to="/voucher">Kho voucher</Link>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -151,14 +193,25 @@ function Footer() {
         <div className="container">
           <div className="footer-bottom__inner">
             <p className="footer-bottom__copy">
-              Bản quyền &copy;{new Date().getFullYear()}
-              {' '}— Đồ án tốt nghiệp của{' '}
+              Bản quyền &copy;{new Date().getFullYear()} — Đồ án tốt nghiệp của{' '}
               <strong>Phan Thành Triều</strong> &amp; <strong>Võ Quang Tuấn Trí</strong>
             </p>
             <div className="footer-bottom__payment">
-              <img src="/resources/img/payment/visa.png" alt="Visa" onError={(e) => e.target.style.display='none'} />
-              <img src="/resources/img/payment/mastercard.png" alt="Mastercard" onError={(e) => e.target.style.display='none'} />
-              <img src="/resources/img/payment/paypal.png" alt="PayPal" onError={(e) => e.target.style.display='none'} />
+              <img
+                src="/resources/img/payment/visa.png"
+                alt="Visa"
+                onError={(e) => (e.target.style.display = 'none')}
+              />
+              <img
+                src="/resources/img/payment/mastercard.png"
+                alt="Mastercard"
+                onError={(e) => (e.target.style.display = 'none')}
+              />
+              <img
+                src="/resources/img/payment/paypal.png"
+                alt="PayPal"
+                onError={(e) => (e.target.style.display = 'none')}
+              />
               <span className="footer-vnpay">VNPay</span>
             </div>
           </div>

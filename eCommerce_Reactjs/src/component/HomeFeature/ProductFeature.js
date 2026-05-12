@@ -27,7 +27,13 @@ function ProductFeature(props) {
             {props.data &&
               props.data.length > 3 &&
               props.data
-                .filter((item) => item.productDetail && item.productDetail.length > 0 && item.productDetail[0].productImage && item.productDetail[0].productImage.length > 0)
+                .filter(
+                  (item) =>
+                    item.productDetail &&
+                    item.productDetail.length > 0 &&
+                    item.productDetail[0].productImage &&
+                    item.productDetail[0].productImage.length > 0
+                )
                 .map((item, index) => {
                   return (
                     <ItemProduct

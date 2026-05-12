@@ -2,10 +2,26 @@ import React, { useRef } from 'react';
 import './Header.scss';
 
 const BRANDS = [
-  'GUCCI', 'CHANEL', 'LOUIS VUITTON', 'PRADA', 'DIOR',
-  'HERMÈS', 'BURBERRY', 'ARMANI', 'BALENCIAGA', 'GIVENCHY',
-  'YVES SAINT LAURENT', 'VERSACE', 'VALENTINO', 'FENDI', 'BOTTEGA VENETA',
-  'TOM FORD', 'RALPH LAUREN', 'CALVIN KLEIN', 'TOMMY HILFIGER', 'HUGO BOSS'
+  'GUCCI',
+  'CHANEL',
+  'LOUIS VUITTON',
+  'PRADA',
+  'DIOR',
+  'HERMÈS',
+  'BURBERRY',
+  'ARMANI',
+  'BALENCIAGA',
+  'GIVENCHY',
+  'YVES SAINT LAURENT',
+  'VERSACE',
+  'VALENTINO',
+  'FENDI',
+  'BOTTEGA VENETA',
+  'TOM FORD',
+  'RALPH LAUREN',
+  'CALVIN KLEIN',
+  'TOMMY HILFIGER',
+  'HUGO BOSS',
 ];
 
 const TopMenu = (props) => {
@@ -16,14 +32,20 @@ const TopMenu = (props) => {
           {/* Mảng 1 */}
           {BRANDS.map((brand, index) => (
             <div key={`brand1-${index}`} className="brand-item">
-              <i className="fa-solid fa-star" style={{ fontSize: '10px', marginRight: '10px', color: '#F8B195' }}></i>
+              <i
+                className="fa-solid fa-star"
+                style={{ fontSize: '10px', marginRight: '10px', color: '#F8B195' }}
+              ></i>
               {brand}
             </div>
           ))}
           {/* Mảng 2 (Bản sao để lặp vô tận) */}
           {BRANDS.map((brand, index) => (
             <div key={`brand2-${index}`} className="brand-item">
-              <i className="fa-solid fa-star" style={{ fontSize: '10px', marginRight: '10px', color: '#F8B195' }}></i>
+              <i
+                className="fa-solid fa-star"
+                style={{ fontSize: '10px', marginRight: '10px', color: '#F8B195' }}
+              ></i>
               {brand}
             </div>
           ))}

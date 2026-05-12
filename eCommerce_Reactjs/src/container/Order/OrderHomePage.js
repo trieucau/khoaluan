@@ -397,14 +397,13 @@ function OrderHomePage(props) {
               </div>
               <div className="box-shopcart-bottom">
                 <div className="content-left">
-                  <div className="wrap-voucher" onClick={() => handleOpenModal()} style={{ cursor: 'pointer' }}>
+                  <div
+                    className="wrap-voucher"
+                    onClick={() => handleOpenModal()}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <div className="voucher-icon-wrapper">
-                      <img
-                        width="24px"
-                        height="24px"
-                        src={storeVoucherLogo}
-                        alt="Voucher Icon"
-                      />
+                      <img width="24px" height="24px" src={storeVoucherLogo} alt="Voucher Icon" />
                     </div>
                     <div className="voucher-text-wrapper">
                       <span className="name-easier">Easier Voucher</span>
@@ -413,13 +412,13 @@ function OrderHomePage(props) {
                           Đã áp dụng mã: <strong>{dataVoucher.voucherData.codeVoucher}</strong>
                         </span>
                       ) : (
-                        <span className="choose-voucher">
-                          Chọn Hoặc Nhập Mã
-                        </span>
+                        <span className="choose-voucher">Chọn Hoặc Nhập Mã</span>
                       )}
                     </div>
                     <div className="voucher-action">
-                      <span style={{ fontSize: '14px', color: '#ee4d2d', fontWeight: 'bold' }}>Thay đổi &gt;</span>
+                      <span style={{ fontSize: '14px', color: '#ee4d2d', fontWeight: 'bold' }}>
+                        Thay đổi &gt;
+                      </span>
                     </div>
                   </div>
                   <div className="wrap-note">
@@ -444,14 +443,18 @@ function OrderHomePage(props) {
                   <span>Phương Thức Thanh Toán</span>
                   <div
                     onClick={() => setactiveTypePayment(1)}
-                    className={activeTypePayment === 1 ? 'box-type-payment active' : 'box-type-payment'}
+                    className={
+                      activeTypePayment === 1 ? 'box-type-payment active' : 'box-type-payment'
+                    }
                   >
                     Thanh toán Online
                   </div>
 
                   <div
                     onClick={() => setactiveTypePayment(0)}
-                    className={activeTypePayment === 0 ? 'box-type-payment active' : 'box-type-payment'}
+                    className={
+                      activeTypePayment === 0 ? 'box-type-payment active' : 'box-type-payment'
+                    }
                   >
                     Thanh toán khi nhận hàng
                   </div>
@@ -461,7 +464,9 @@ function OrderHomePage(props) {
                     <div
                       onClick={() => setactiveTypeOnlPayment(1)}
                       className={
-                        activeTypeOnlPayment === 1 ? 'box-type-payment activeOnl' : 'box-type-payment'
+                        activeTypeOnlPayment === 1
+                          ? 'box-type-payment activeOnl'
+                          : 'box-type-payment'
                       }
                     >
                       Thanh toán PAYPAL
@@ -469,7 +474,9 @@ function OrderHomePage(props) {
                     <div
                       onClick={() => setactiveTypeOnlPayment(2)}
                       className={
-                        activeTypeOnlPayment === 2 ? 'box-type-payment activeOnl' : 'box-type-payment'
+                        activeTypeOnlPayment === 2
+                          ? 'box-type-payment activeOnl'
+                          : 'box-type-payment'
                       }
                     >
                       Thanh toán VNPAY
@@ -488,7 +495,9 @@ function OrderHomePage(props) {
                     <div className="head">Tổng giảm giá</div>
                     <div>
                       {dataVoucher && dataVoucher.voucherData
-                        ? CommonUtils.formatter.format(price - totalPriceDiscount(price, dataVoucher))
+                        ? CommonUtils.formatter.format(
+                            price - totalPriceDiscount(price, dataVoucher)
+                          )
                         : CommonUtils.formatter.format(0)}
                     </div>
                   </div>

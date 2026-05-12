@@ -12,7 +12,10 @@
   border: 1px solid var(--c-border);
   border-radius: var(--r-lg);
   padding: 24px 20px;
-  transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base),
+    border-color var(--t-base);
   cursor: default;
   height: 100%;
 }

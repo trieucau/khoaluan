@@ -231,7 +231,7 @@
   padding: 12px 20px;
   border-radius: var(--r-md);
   transition: all var(--t-base);
-  
+
   &:hover {
     background-color: #fef0ef;
     border-color: #f9c0b1;
@@ -247,7 +247,7 @@
     height: 40px;
     background: #fff;
     border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   }
 
   .voucher-text-wrapper {
@@ -268,7 +268,7 @@
       font-family: var(--font-body);
       font-size: 13px;
       color: var(--c-text-soft);
-      
+
       &.applied {
         color: #00bfa5;
         strong {
@@ -356,12 +356,12 @@
     white-space: nowrap;
     padding: 14px 24px !important;
   }
-  
+
   /* Chuyển table thành card layout trên mobile */
   .cart_inner .table thead {
     display: none; /* Ẩn header của table */
   }
-  
+
   .cart_inner .table tbody,
   .cart_inner .table tr,
   .cart_inner .table td {
@@ -391,9 +391,21 @@
   }
 
   /* Các thẻ TD khác (Giá, Số lượng, Tổng tiền) */
-  .cart_inner .table td:nth-child(2)::before { content: "Giá:"; font-weight: bold; color: var(--c-text-soft); }
-  .cart_inner .table td:nth-child(3)::before { content: "Số lượng:"; font-weight: bold; color: var(--c-text-soft); }
-  .cart_inner .table td:nth-child(4)::before { content: "Tổng tiền:"; font-weight: bold; color: var(--c-text-soft); }
+  .cart_inner .table td:nth-child(2)::before {
+    content: 'Giá:';
+    font-weight: bold;
+    color: var(--c-text-soft);
+  }
+  .cart_inner .table td:nth-child(3)::before {
+    content: 'Số lượng:';
+    font-weight: bold;
+    color: var(--c-text-soft);
+  }
+  .cart_inner .table td:nth-child(4)::before {
+    content: 'Tổng tiền:';
+    font-weight: bold;
+    color: var(--c-text-soft);
+  }
 
   /* Đưa nút xóa lên góc trên phải của mỗi thẻ */
   .cart_inner .table td.link-delete {
@@ -403,7 +415,7 @@
     width: auto;
     padding: 0 !important;
     background: rgba(231, 76, 60, 0.1);
-    color: #E74C3C;
+    color: #e74c3c;
     border-radius: 8px;
     padding: 4px 10px !important;
     font-size: 13px;

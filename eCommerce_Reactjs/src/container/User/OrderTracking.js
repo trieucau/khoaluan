@@ -6,19 +6,24 @@ import './OrderTracking.css';
 
 /* ── Status config ─────────────────────────────────────────── */
 const STATUS_CONFIG = {
-  S3: { label: 'Chờ xác nhận',     icon: 'fa-solid fa-clock',              color: '#F8B195', step: 1 },
-  S4: { label: 'Chờ lấy hàng',     icon: 'fa-solid fa-box',                 color: '#FF6B9D', step: 2 },
-  S5: { label: 'Đang giao hàng',   icon: 'fa-solid fa-truck-fast',          color: '#3498DB', step: 3 },
-  S6: { label: 'Đã giao hàng',     icon: 'fa-solid fa-circle-check',        color: '#2ECC71', step: 4 },
-  S7: { label: 'Hủy đơn',          icon: 'fa-solid fa-circle-xmark',        color: '#E74C3C', step: -1 },
-  S8: { label: 'Giao thất bại',    icon: 'fa-solid fa-triangle-exclamation',color: '#E67E22', step: -1 },
+  S3: { label: 'Chờ xác nhận', icon: 'fa-solid fa-clock', color: '#F8B195', step: 1 },
+  S4: { label: 'Chờ lấy hàng', icon: 'fa-solid fa-box', color: '#FF6B9D', step: 2 },
+  S5: { label: 'Đang giao hàng', icon: 'fa-solid fa-truck-fast', color: '#3498DB', step: 3 },
+  S6: { label: 'Đã giao hàng', icon: 'fa-solid fa-circle-check', color: '#2ECC71', step: 4 },
+  S7: { label: 'Hủy đơn', icon: 'fa-solid fa-circle-xmark', color: '#E74C3C', step: -1 },
+  S8: {
+    label: 'Giao thất bại',
+    icon: 'fa-solid fa-triangle-exclamation',
+    color: '#E67E22',
+    step: -1,
+  },
 };
 
 const STEPS = [
-  { key: 'S3', label: 'Chờ xác nhận',   icon: 'fa-solid fa-clock' },
-  { key: 'S4', label: 'Chờ lấy hàng',   icon: 'fa-solid fa-box' },
+  { key: 'S3', label: 'Chờ xác nhận', icon: 'fa-solid fa-clock' },
+  { key: 'S4', label: 'Chờ lấy hàng', icon: 'fa-solid fa-box' },
   { key: 'S5', label: 'Đang giao hàng', icon: 'fa-solid fa-truck-fast' },
-  { key: 'S6', label: 'Đã giao hàng',   icon: 'fa-solid fa-circle-check' },
+  { key: 'S6', label: 'Đã giao hàng', icon: 'fa-solid fa-circle-check' },
 ];
 
 const OrderTracking = () => {
@@ -57,9 +62,7 @@ const OrderTracking = () => {
   const isFailed = order.statusId === 'S7' || order.statusId === 'S8';
 
   /* ── Active step index ────────────────────────────────────── */
-  const currentStepIdx = isFailed
-    ? -1
-    : STEPS.findIndex((s) => s.key === order.statusId);
+  const currentStepIdx = isFailed ? -1 : STEPS.findIndex((s) => s.key === order.statusId);
 
   return (
     <div className="ot-page">
@@ -82,7 +85,11 @@ const OrderTracking = () => {
         </div>
         <div
           className="ot-status-badge"
-          style={{ background: `${statusCfg.color}18`, color: statusCfg.color, border: `1.5px solid ${statusCfg.color}40` }}
+          style={{
+            background: `${statusCfg.color}18`,
+            color: statusCfg.color,
+            border: `1.5px solid ${statusCfg.color}40`,
+          }}
         >
           <i className={statusCfg.icon} />
           {statusCfg.label}
@@ -93,21 +100,27 @@ const OrderTracking = () => {
       {!isFailed && (
         <div className="ot-stepper">
           {STEPS.map((step, idx) => {
-            const isDone    = idx < currentStepIdx;
-            const isActive  = idx === currentStepIdx;
+            const isDone = idx < currentStepIdx;
+            const isActive = idx === currentStepIdx;
             return (
-              <div key={step.key} className={`ot-step ${isDone ? 'ot-step--done' : ''} ${isActive ? 'ot-step--active' : ''}`}>
+              <div
+                key={step.key}
+                className={`ot-step ${isDone ? 'ot-step--done' : ''} ${isActive ? 'ot-step--active' : ''}`}
+              >
                 {/* Connector line */}
                 {idx > 0 && (
-                  <div className={`ot-step__line ${isDone || isActive ? 'ot-step__line--filled' : ''}`} />
+                  <div
+                    className={`ot-step__line ${isDone || isActive ? 'ot-step__line--filled' : ''}`}
+                  />
                 )}
                 <div className="ot-step__dot">
-                  {isDone
-                    ? <i className="fa-solid fa-check" />
-                    : isActive
-                      ? <i className={step.icon} />
-                      : <span>{idx + 1}</span>
-                  }
+                  {isDone ? (
+                    <i className="fa-solid fa-check" />
+                  ) : isActive ? (
+                    <i className={step.icon} />
+                  ) : (
+                    <span>{idx + 1}</span>
+                  )}
                 </div>
                 <span className="ot-step__label">{step.label}</span>
               </div>
@@ -178,10 +191,7 @@ const OrderTracking = () => {
                   <i className="fa-solid fa-phone" />
                   {shipper.phonenumber}
                 </p>
-                <a
-                  href={`tel:${shipper.phonenumber}`}
-                  className="ot-call-btn"
-                >
+                <a href={`tel:${shipper.phonenumber}`} className="ot-call-btn">
                   <i className="fa-solid fa-phone" />
                   Gọi cho shipper
                 </a>
@@ -213,10 +223,10 @@ const OrderTracking = () => {
 
         {showMap ? (
           <div className="ot-map-wrapper">
-            <TrackingMap 
-              shipperLoc={shipperLoc} 
-              deliveryCoords={deliveryCoords} 
-              statusId={order.statusId} 
+            <TrackingMap
+              shipperLoc={shipperLoc}
+              deliveryCoords={deliveryCoords}
+              statusId={order.statusId}
             />
           </div>
         ) : (

@@ -306,7 +306,9 @@ const ManageProductImage = () => {
                       <div className="ap-empty">
                         <i className="fas fa-images ap-empty-icon"></i>
                         <div className="ap-empty-title">Chưa có hình ảnh nào</div>
-                        <div className="ap-empty-desc">Vui lòng thêm hình ảnh mới cho sản phẩm này</div>
+                        <div className="ap-empty-desc">
+                          Vui lòng thêm hình ảnh mới cho sản phẩm này
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -369,11 +371,21 @@ const ManageProductImage = () => {
                     return (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td><span className="ap-badge ap-badge-indigo">{item.sizeData.value}</span></td>
+                        <td>
+                          <span className="ap-badge ap-badge-indigo">{item.sizeData.value}</span>
+                        </td>
                         <td>{item.width}</td>
                         <td>{item.height}</td>
                         <td>{item.weight}</td>
-                        <td><span className={item.stock > 0 ? 'text-success fw-bold' : 'text-danger fw-bold'}>{item.stock}</span></td>
+                        <td>
+                          <span
+                            className={
+                              item.stock > 0 ? 'text-success fw-bold' : 'text-danger fw-bold'
+                            }
+                          >
+                            {item.stock}
+                          </span>
+                        </td>
                         <td>
                           <div className="d-flex gap-2">
                             <button
@@ -399,7 +411,9 @@ const ManageProductImage = () => {
                       <div className="ap-empty">
                         <i className="fas fa-box-open ap-empty-icon"></i>
                         <div className="ap-empty-title">Chưa có kích thước nào</div>
-                        <div className="ap-empty-desc">Vui lòng thêm kích thước mới cho sản phẩm này</div>
+                        <div className="ap-empty-desc">
+                          Vui lòng thêm kích thước mới cho sản phẩm này
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -446,9 +460,7 @@ const ManageProductImage = () => {
         productSizeId={productSizeId}
       />
 
-      {isOpen === true && (
-        <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />
-      )}
+      {isOpen === true && <Lightbox mainSrc={imgPreview} onCloseRequest={() => setisOpen(false)} />}
     </div>
   );
 };

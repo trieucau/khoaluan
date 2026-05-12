@@ -98,9 +98,16 @@ const AddImageModal = (props) => {
   };
   return (
     <div className="">
-      <Modal isOpen={props.isOpenModal} className={'booking-modal-container ap-modal-custom'} size="md" centered>
+      <Modal
+        isOpen={props.isOpenModal}
+        className={'booking-modal-container ap-modal-custom'}
+        size="md"
+        centered
+      >
         <div className="modal-header border-bottom-0 pb-0">
-          <h5 className="modal-title ap-page-title fs-5">{inputValues.isActionUpdate ? 'Cập nhật hình ảnh' : 'Thêm hình ảnh chi tiết sản phẩm'}</h5>
+          <h5 className="modal-title ap-page-title fs-5">
+            {inputValues.isActionUpdate ? 'Cập nhật hình ảnh' : 'Thêm hình ảnh chi tiết sản phẩm'}
+          </h5>
           <button
             onClick={handleCloseModal}
             type="button"
@@ -126,7 +133,7 @@ const AddImageModal = (props) => {
               <div
                 style={{
                   backgroundImage: `url(${inputValues.imageReview})`,
-                  display: inputValues.imageReview ? 'block' : 'none'
+                  display: inputValues.imageReview ? 'block' : 'none',
                 }}
                 onClick={() => openPreviewImage()}
                 className="img-review rounded shadow-sm border border-secondary"
@@ -148,7 +155,9 @@ const AddImageModal = (props) => {
           </div>
         </ModalBody>
         <ModalFooter className="border-top-0 pt-0">
-          <button className="ap-btn ap-btn-ghost" onClick={handleCloseModal}>Hủy</button>
+          <button className="ap-btn ap-btn-ghost" onClick={handleCloseModal}>
+            Hủy
+          </button>
           <button className="ap-btn ap-btn-primary" onClick={HandleSendDataFromModal}>
             Lưu thông tin
           </button>

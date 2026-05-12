@@ -39,7 +39,10 @@ function MainFeature() {
         <div className="row g-4">
           {features.map((item, i) => (
             <div key={i} className="col-lg-3 col-md-6 col-sm-6">
-              <div className="single-feature-card scroll-reveal" style={{ animationDelay: `${i * 0.1}s` }}>
+              <div
+                className="single-feature-card scroll-reveal"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              >
                 <div className="feature-icon-wrap" style={{ background: item.bg }}>
                   <i className={item.icon} style={{ color: item.color }} />
                 </div>

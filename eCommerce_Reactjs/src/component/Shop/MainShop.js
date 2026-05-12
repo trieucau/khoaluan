@@ -91,10 +91,38 @@ function MainShop(props) {
   };
   return (
     <div className="col-lg-9">
-      <div className="product_top_bar" style={{ padding: '15px 0', background: 'transparent', borderBottom: '1px solid #F0E6EE', marginBottom: '25px' }}>
-        <div className="left_dorp" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', width: '100%' }}>
+      <div
+        className="product_top_bar"
+        style={{
+          padding: '15px 0',
+          background: 'transparent',
+          borderBottom: '1px solid #F0E6EE',
+          marginBottom: '25px',
+        }}
+      >
+        <div
+          className="left_dorp"
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '12px',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
           <select
-            style={{ outline: 'none', padding: '10px 16px', borderRadius: '8px', border: '1px solid #E4D8E1', background: '#fff', color: '#2D1B2E', fontSize: '14px', cursor: 'pointer', flex: '0 0 auto', minWidth: '140px' }}
+            style={{
+              outline: 'none',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              border: '1px solid #E4D8E1',
+              background: '#fff',
+              color: '#2D1B2E',
+              fontSize: '14px',
+              cursor: 'pointer',
+              flex: '0 0 auto',
+              minWidth: '140px',
+            }}
             onChange={(event) => handleSelectSort(event)}
           >
             <option value={1}>Sắp xếp mặc định</option>
@@ -102,7 +130,18 @@ function MainShop(props) {
             <option value={3}>Theo tên</option>
           </select>
           <select
-            style={{ outline: 'none', padding: '10px 16px', borderRadius: '8px', border: '1px solid #E4D8E1', background: '#fff', color: '#2D1B2E', fontSize: '14px', cursor: 'pointer', flex: '0 0 auto', minWidth: '120px' }}
+            style={{
+              outline: 'none',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              border: '1px solid #E4D8E1',
+              background: '#fff',
+              color: '#2D1B2E',
+              fontSize: '14px',
+              cursor: 'pointer',
+              flex: '0 0 auto',
+              minWidth: '120px',
+            }}
             onChange={(event) => handleSelectLimitPage(event)}
           >
             <option value={6}>Hiển thị 6</option>
@@ -112,7 +151,7 @@ function MainShop(props) {
           <div
             style={{
               flex: '1 1 200px',
-              margin: 0
+              margin: 0,
             }}
           >
             <FormSearch

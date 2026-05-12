@@ -123,7 +123,7 @@ const EditProductDetail = (props) => {
                 />
               </div>
             </div>
-            
+
             <div className="ap-form-group mt-2">
               <label className="ap-label">Mô tả chi tiết</label>
               <textarea

@@ -6,13 +6,18 @@ import ReactPaginate from 'react-paginate';
  */
 export const SkeletonRows = ({ cols = 5 }) => (
   <>
-    {[1, 2, 3, 4, 5].map(i => (
+    {[1, 2, 3, 4, 5].map((i) => (
       <tr key={i}>
-        {Array(cols).fill(0).map((_, j) => (
-          <td key={j} style={{ padding: '13px 14px' }}>
-            <div className="ap-skeleton ap-skeleton-text" style={{ width: j === 0 ? '30%' : j === 1 ? '70%' : '55%' }} />
-          </td>
-        ))}
+        {Array(cols)
+          .fill(0)
+          .map((_, j) => (
+            <td key={j} style={{ padding: '13px 14px' }}>
+              <div
+                className="ap-skeleton ap-skeleton-text"
+                style={{ width: j === 0 ? '30%' : j === 1 ? '70%' : '55%' }}
+              />
+            </td>
+          ))}
       </tr>
     ))}
   </>
@@ -21,7 +26,11 @@ export const SkeletonRows = ({ cols = 5 }) => (
 /**
  * Empty state for admin table pages
  */
-export const EmptyState = ({ icon = 'fa-solid fa-box-open', title = 'Không có dữ liệu', desc = 'Thử thay đổi từ khóa tìm kiếm' }) => (
+export const EmptyState = ({
+  icon = 'fa-solid fa-box-open',
+  title = 'Không có dữ liệu',
+  desc = 'Thử thay đổi từ khóa tìm kiếm',
+}) => (
   <tr>
     <td colSpan={99} style={{ padding: 0, border: 'none' }}>
       <div className="ap-empty">
@@ -41,7 +50,15 @@ export const EmptyState = ({ icon = 'fa-solid fa-box-open', title = 'Không có 
 export const AdminPagination = ({ count, onPageChange }) => {
   if (!count || count <= 1) return null;
   return (
-    <div style={{ padding: '12px 16px', borderTop: '1px solid var(--ap-border)', display: 'flex', justifyContent: 'center', overflowX: 'auto' }}>
+    <div
+      style={{
+        padding: '12px 16px',
+        borderTop: '1px solid var(--ap-border)',
+        display: 'flex',
+        justifyContent: 'center',
+        overflowX: 'auto',
+      }}
+    >
       <ReactPaginate
         previousLabel="←"
         nextLabel="→"
@@ -71,18 +88,33 @@ export const AdminPagination = ({ count, onPageChange }) => {
 export const SearchBar = ({ value, onChange, onSearch, placeholder = 'Tìm kiếm...', actions }) => (
   <div className="ap-toolbar">
     <div className="ap-search-bar" style={{ flex: 1 }}>
-      <span style={{ color: 'var(--ap-text-dim)', flexShrink: 0 }}><i className="fa-solid fa-magnifying-glass"></i></span>
+      <span style={{ color: 'var(--ap-text-dim)', flexShrink: 0 }}>
+        <i className="fa-solid fa-magnifying-glass"></i>
+      </span>
       <input
         value={value}
-        onChange={e => onChange(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && onSearch(value)}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && onSearch(value)}
         placeholder={placeholder}
       />
       {value && (
         <button
-          onClick={() => { onChange(''); onSearch(''); }}
-          style={{ background: 'none', border: 'none', color: 'var(--ap-text-dim)', cursor: 'pointer', fontSize: 18, padding: '0 2px', flexShrink: 0 }}
-        >×</button>
+          onClick={() => {
+            onChange('');
+            onSearch('');
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--ap-text-dim)',
+            cursor: 'pointer',
+            fontSize: 18,
+            padding: '0 2px',
+            flexShrink: 0,
+          }}
+        >
+          ×
+        </button>
       )}
     </div>
     <button className="ap-btn ap-btn-primary ap-btn-sm" onClick={() => onSearch(value)}>

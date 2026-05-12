@@ -13,16 +13,28 @@ const EyeBtn = ({ show, onToggle }) => (
 const StrengthBar = ({ password }) => {
   if (!password) return null;
   let label, color, width;
-  if (password.length < 6)   { label = 'Yếu';       color = '#ef4444'; width = '30%'; }
-  else if (password.length < 10) { label = 'Trung bình'; color = '#f59e0b'; width = '65%'; }
-  else                        { label = 'Mạnh';      color = '#10b981'; width = '100%'; }
+  if (password.length < 6) {
+    label = 'Yếu';
+    color = '#ef4444';
+    width = '30%';
+  } else if (password.length < 10) {
+    label = 'Trung bình';
+    color = '#f59e0b';
+    width = '65%';
+  } else {
+    label = 'Mạnh';
+    color = '#10b981';
+    width = '100%';
+  }
 
   return (
     <div style={{ marginTop: 8 }}>
       <div className="pw-strength-bar">
         <div className="pw-strength-bar__fill" style={{ width, background: color }} />
       </div>
-      <div className="pw-strength-label" style={{ color }}>{label}</div>
+      <div className="pw-strength-label" style={{ color }}>
+        {label}
+      </div>
     </div>
   );
 };
@@ -33,20 +45,23 @@ const ChangePassword = () => {
   const [values, setValues] = useState({ oldpassword: '', newpassword: '', confirmpassword: '' });
   const [show, setShow] = useState({ old: false, new: false, confirm: false });
 
-  const toggle = (field) => setShow(s => ({ ...s, [field]: !s[field] }));
-  const handleChange = (e) => setValues(v => ({ ...v, [e.target.name]: e.target.value }));
+  const toggle = (field) => setShow((s) => ({ ...s, [field]: !s[field] }));
+  const handleChange = (e) => setValues((v) => ({ ...v, [e.target.name]: e.target.value }));
 
   const mismatch = values.confirmpassword && values.newpassword !== values.confirmpassword;
 
   const handleSave = async () => {
     if (!values.oldpassword || !values.newpassword || !values.confirmpassword) {
-      toast.error('Vui lòng điền đầy đủ thông tin'); return;
+      toast.error('Vui lòng điền đầy đủ thông tin');
+      return;
     }
     if (values.newpassword !== values.confirmpassword) {
-      toast.error('Mật khẩu nhập lại không khớp'); return;
+      toast.error('Mật khẩu nhập lại không khớp');
+      return;
     }
     if (values.newpassword.length < 6) {
-      toast.error('Mật khẩu phải có ít nhất 6 ký tự'); return;
+      toast.error('Mật khẩu phải có ít nhất 6 ký tự');
+      return;
     }
     setLoading(true);
     try {
@@ -153,10 +168,15 @@ const ChangePassword = () => {
                 disabled={loading || !!mismatch}
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                {loading
-                  ? <><i className="fa-solid fa-spinner fa-spin" /> Đang cập nhật...</>
-                  : <><i className="fa-solid fa-shield-halved" /> Đổi mật khẩu</>
-                }
+                {loading ? (
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin" /> Đang cập nhật...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-shield-halved" /> Đổi mật khẩu
+                  </>
+                )}
               </button>
             </div>
           </div>

@@ -63,7 +63,9 @@ function HomePageAdmin() {
 
       {/* Mobile sidebar drawer */}
       <div className={`ap-sidebar-drawer${sidebarOpen ? ' open' : ''}`}>
-        <button className="ap-sidebar-close" onClick={closeSidebar} aria-label="Đóng menu">✕</button>
+        <button className="ap-sidebar-close" onClick={closeSidebar} aria-label="Đóng menu">
+          ✕
+        </button>
         <SideBar onLinkClick={closeSidebar} />
       </div>
 

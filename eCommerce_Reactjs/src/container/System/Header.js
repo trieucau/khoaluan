@@ -34,13 +34,15 @@ const Header = ({ onToggleSidebar }) => {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     setUser(userData || {});
-    
+
     if (userData.id) {
-      getDetailUserById(userData.id).then(res => {
-        if (res?.errCode === 0 && res.data?.image) {
-          setUser(prev => ({ ...prev, image: res.data.image }));
-        }
-      }).catch(() => {});
+      getDetailUserById(userData.id)
+        .then((res) => {
+          if (res?.errCode === 0 && res.data?.image) {
+            setUser((prev) => ({ ...prev, image: res.data.image }));
+          }
+        })
+        .catch(() => {});
     }
   }, []);
 
@@ -70,8 +72,15 @@ const Header = ({ onToggleSidebar }) => {
       </button>
 
       <Link className="ap-logo" to="/admin" style={{ marginLeft: 8 }}>
-        <div className="ap-logo-icon" style={{ background: 'transparent', padding: 0, overflow: 'hidden' }}>
-          <img src="/favicon.ico" alt="AdminHub" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 6 }} />
+        <div
+          className="ap-logo-icon"
+          style={{ background: 'transparent', padding: 0, overflow: 'hidden' }}
+        >
+          <img
+            src="/favicon.ico"
+            alt="AdminHub"
+            style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 6 }}
+          />
         </div>
         <span className="ap-logo-text">AdminHub</span>
       </Link>
@@ -90,10 +99,14 @@ const Header = ({ onToggleSidebar }) => {
 
       <div className="ap-header-right">
         <div ref={dropRef} style={{ position: 'relative' }}>
-          <div className="ap-user-btn" onClick={() => setOpen(v => !v)}>
+          <div className="ap-user-btn" onClick={() => setOpen((v) => !v)}>
             <div className="ap-avatar" style={{ overflow: 'hidden' }}>
               {user.image ? (
-                <img src={user.image} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img
+                  src={user.image}
+                  alt="avatar"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
               ) : (
                 initials
               )}
@@ -103,19 +116,38 @@ const Header = ({ onToggleSidebar }) => {
           </div>
           {open && (
             <div className="ap-dropdown">
-              <div className="ap-dropdown-item" style={{ cursor: 'default', fontSize: 11, opacity: 0.6 }}>
-                <span><i className="fa-solid fa-user" style={{marginRight: 8}}></i></span><span>{user.roleId === 'R1' ? 'Super Admin' : 'Nhân viên'}</span>
+              <div
+                className="ap-dropdown-item"
+                style={{ cursor: 'default', fontSize: 11, opacity: 0.6 }}
+              >
+                <span>
+                  <i className="fa-solid fa-user" style={{ marginRight: 8 }}></i>
+                </span>
+                <span>{user.roleId === 'R1' ? 'Super Admin' : 'Nhân viên'}</span>
               </div>
               <div className="ap-dropdown-divider" />
-              <Link to={`/admin/infor/${user.id}`} className="ap-dropdown-item" onClick={() => setOpen(false)}>
-                <span><i className="fa-solid fa-list-check" style={{marginRight: 8}}></i></span><span>Thông tin cá nhân</span>
+              <Link
+                to={`/admin/infor/${user.id}`}
+                className="ap-dropdown-item"
+                onClick={() => setOpen(false)}
+              >
+                <span>
+                  <i className="fa-solid fa-list-check" style={{ marginRight: 8 }}></i>
+                </span>
+                <span>Thông tin cá nhân</span>
               </Link>
-              <Link to={`/admin/change-password/${user.id}`} className="ap-dropdown-item" onClick={() => setOpen(false)}>
-                <span>🔑</span><span>Đổi mật khẩu</span>
+              <Link
+                to={`/admin/change-password/${user.id}`}
+                className="ap-dropdown-item"
+                onClick={() => setOpen(false)}
+              >
+                <span>🔑</span>
+                <span>Đổi mật khẩu</span>
               </Link>
               <div className="ap-dropdown-divider" />
               <div className="ap-dropdown-item" onClick={handleLogout} style={{ color: '#fca5a5' }}>
-                <span>🚪</span><span>Đăng xuất</span>
+                <span>🚪</span>
+                <span>Đăng xuất</span>
               </div>
             </div>
           )}

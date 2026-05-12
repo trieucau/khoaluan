@@ -191,14 +191,13 @@ function ShopCartPage(props) {
         </div>
         <div className="box-shopcart-bottom">
           <div className="content-left">
-            <div className="wrap-voucher" onClick={() => handleOpenModal()} style={{ cursor: 'pointer' }}>
+            <div
+              className="wrap-voucher"
+              onClick={() => handleOpenModal()}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="voucher-icon-wrapper">
-                <img
-                  width="24px"
-                  height="24px"
-                  src={storeVoucherLogo}
-                  alt="Voucher Icon"
-                />
+                <img width="24px" height="24px" src={storeVoucherLogo} alt="Voucher Icon" />
               </div>
               <div className="voucher-text-wrapper">
                 <span className="name-easier">Easier Voucher</span>
@@ -207,13 +206,13 @@ function ShopCartPage(props) {
                     Đã áp dụng mã: <strong>{dataVoucher.voucherData.codeVoucher}</strong>
                   </span>
                 ) : (
-                  <span className="choose-voucher">
-                    Chọn Hoặc Nhập Mã
-                  </span>
+                  <span className="choose-voucher">Chọn Hoặc Nhập Mã</span>
                 )}
               </div>
               <div className="voucher-action">
-                <span style={{ fontSize: '14px', color: '#ee4d2d', fontWeight: 'bold' }}>Thay đổi &gt;</span>
+                <span style={{ fontSize: '14px', color: '#ee4d2d', fontWeight: 'bold' }}>
+                  Thay đổi &gt;
+                </span>
               </div>
             </div>
           </div>

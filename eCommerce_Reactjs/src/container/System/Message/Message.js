@@ -22,14 +22,14 @@ const Message = () => {
     socketRef.current = socketIOClient.connect(host);
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     setDataUser(userData);
-    socketRef.current.on('getId', data => setSocketId(data));
+    socketRef.current.on('getId', (data) => setSocketId(data));
     fetchListRoom();
     socketRef.current.on('sendDataServer', () => fetchListRoom());
     socketRef.current.on('loadRoomServer', () => fetchListRoom());
-    
+
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       socketRef.current.disconnect();
       window.removeEventListener('resize', handleResize);
@@ -42,28 +42,51 @@ const Message = () => {
   };
 
   return (
-    <div className="ap-page" style={{ padding: 0, height: 'calc(100vh - 64px)', overflow: 'hidden' }}>
+    <div
+      className="ap-page"
+      style={{ padding: 0, height: 'calc(100vh - 64px)', overflow: 'hidden' }}
+    >
       {/* Header */}
       {!(isMobile && selectedRoom) && (
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--ap-border)', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--ap-surface)' }}>
+        <div
+          style={{
+            padding: '16px 24px',
+            borderBottom: '1px solid var(--ap-border)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            background: 'var(--ap-surface)',
+          }}
+        >
           <div style={{ fontSize: 20 }}>💬</div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 16 }}>Tin nhắn khách hàng</div>
-            <div style={{ fontSize: 12, color: 'var(--ap-text-muted)' }}>{dataRoom.length} cuộc trò chuyện</div>
+            <div style={{ fontSize: 12, color: 'var(--ap-text-muted)' }}>
+              {dataRoom.length} cuộc trò chuyện
+            </div>
           </div>
         </div>
       )}
 
       {/* Chat layout */}
-      <div style={{ 
-        display: isMobile ? 'block' : 'grid', 
-        gridTemplateColumns: '300px 1fr', 
-        height: isMobile && selectedRoom ? '100%' : 'calc(100% - 75px)', 
-        overflow: 'hidden' 
-      }}>
+      <div
+        style={{
+          display: isMobile ? 'block' : 'grid',
+          gridTemplateColumns: '300px 1fr',
+          height: isMobile && selectedRoom ? '100%' : 'calc(100% - 75px)',
+          overflow: 'hidden',
+        }}
+      >
         {/* Room list */}
         {(!isMobile || !selectedRoom) && (
-          <div style={{ borderRight: '1px solid var(--ap-border)', height: '100%', overflowY: 'auto', background: 'var(--ap-surface)' }}>
+          <div
+            style={{
+              borderRight: '1px solid var(--ap-border)',
+              height: '100%',
+              overflowY: 'auto',
+              background: 'var(--ap-surface)',
+            }}
+          >
             <MessageDisscution
               userId={dataUser.id}
               isAdmin={true}
@@ -78,9 +101,23 @@ const Message = () => {
         {(!isMobile || selectedRoom) && (
           <div style={{ background: 'var(--ap-bg)', height: '100%', overflow: 'hidden' }}>
             {selectedRoom ? (
-              <ChatWindow userId={dataUser.id} roomId={selectedRoom} onBack={() => setSelectedRoom('')} />
+              <ChatWindow
+                userId={dataUser.id}
+                roomId={selectedRoom}
+                onBack={() => setSelectedRoom('')}
+              />
             ) : (
-              <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: 'var(--ap-text-muted)' }}>
+              <div
+                style={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 12,
+                  color: 'var(--ap-text-muted)',
+                }}
+              >
                 <div style={{ fontSize: 64, opacity: 0.3 }}>💬</div>
                 <div style={{ fontWeight: 600, fontSize: 16 }}>Chọn cuộc trò chuyện</div>
                 <div style={{ fontSize: 13 }}>Nhấn vào một phòng chat bên trái để bắt đầu</div>

@@ -306,7 +306,9 @@ const updateStatusOrderService = (data) => {
 };
 
 const getAllOrdersByUser = (userId, limit, offset, statusId, keyword) => {
-  return axios.get(`/api/get-all-order-by-user?userId=${userId}&limit=${limit}&offset=${offset}&statusId=${statusId}&keyword=${keyword}`);
+  return axios.get(
+    `/api/get-all-order-by-user?userId=${userId}&limit=${limit}&offset=${offset}&statusId=${statusId}&keyword=${keyword}`
+  );
 };
 const paymentOrderService = (data) => {
   return axios.post(`/api/payment-order`, data);

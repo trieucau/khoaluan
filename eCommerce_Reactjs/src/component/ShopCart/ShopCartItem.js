@@ -64,7 +64,9 @@ function ShopCartItem(props) {
             />
           </div>
           <div className="media-body">
-            <p className="cart-item-name" style={{ margin: 0 }}>{props.name} </p>
+            <p className="cart-item-name" style={{ margin: 0 }}>
+              {props.name}{' '}
+            </p>
           </div>
         </div>
       </td>

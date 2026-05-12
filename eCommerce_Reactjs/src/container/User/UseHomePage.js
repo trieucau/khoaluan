@@ -18,7 +18,6 @@ function UserHomePage(props) {
     setUser(userData);
   }, []);
 
-
   return (
     <div className="container user-dashboard-wrapper">
       <CategoryUser id={user.id} />

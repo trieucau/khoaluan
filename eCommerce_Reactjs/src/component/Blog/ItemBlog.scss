@@ -9,7 +9,10 @@
   border: 1px solid var(--c-border);
   overflow: hidden;
   margin-bottom: 28px;
-  transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base),
+    border-color var(--t-base);
 }
 
 .blog-list-item:hover {
@@ -42,11 +45,7 @@
 .blog-list-item__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(196,69,105,0.25) 0%,
-    transparent 50%
-  );
+  background: linear-gradient(to top, rgba(196, 69, 105, 0.25) 0%, transparent 50%);
   opacity: 0;
   transition: opacity var(--t-base);
 }
@@ -113,7 +112,9 @@
   color: var(--c-primary);
 }
 
-.blog-list-item__title-link { text-decoration: none; }
+.blog-list-item__title-link {
+  text-decoration: none;
+}
 
 .blog-list-item__title {
   font-family: var(--font-heading) !important;
@@ -225,12 +226,14 @@
   font-size: 13px;
   color: var(--c-text);
   outline: none;
-  transition: border-color var(--t-base), box-shadow var(--t-base);
+  transition:
+    border-color var(--t-base),
+    box-shadow var(--t-base);
 }
 
 .search_widget input:focus {
   border-color: var(--c-primary);
-  box-shadow: 0 0 0 3px rgba(255,107,157,0.1);
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
 }
 
 .search_widget button {
@@ -290,7 +293,9 @@
   border-bottom: 1px solid var(--c-border);
 }
 
-.popular_post_widget .popular-post:last-child { border-bottom: none; }
+.popular_post_widget .popular-post:last-child {
+  border-bottom: none;
+}
 
 .popular-post img {
   width: 60px;
@@ -346,7 +351,9 @@
   border-bottom: 1px solid var(--c-border);
 }
 
-.comment-item:last-child { border-bottom: none; }
+.comment-item:last-child {
+  border-bottom: none;
+}
 
 .comment-avatar {
   width: 44px;
@@ -414,13 +421,15 @@
   color: var(--c-text);
   outline: none;
   resize: vertical;
-  transition: border-color var(--t-base), box-shadow var(--t-base);
+  transition:
+    border-color var(--t-base),
+    box-shadow var(--t-base);
   margin-bottom: 12px;
 }
 
 .comment-form textarea:focus {
   border-color: var(--c-primary);
-  box-shadow: 0 0 0 3px rgba(255,107,157,0.1);
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
 }
 
 .comment-form button {

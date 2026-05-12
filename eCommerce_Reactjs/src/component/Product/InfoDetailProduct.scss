@@ -73,7 +73,7 @@
   top: 50%;
   transform: translateY(-50%);
   border-radius: 50%;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   margin: 0 8px;
 }
 
@@ -192,7 +192,7 @@
   letter-spacing: 0.5px;
 }
 
-.product_count input[type="number"] {
+.product_count input[type='number'] {
   width: 80px;
   padding: 9px 12px;
   border: 1.5px solid var(--c-border);
@@ -203,12 +203,14 @@
   color: var(--c-text);
   text-align: center;
   outline: none;
-  transition: border-color var(--t-base), box-shadow var(--t-base);
+  transition:
+    border-color var(--t-base),
+    box-shadow var(--t-base);
 }
 
-.product_count input[type="number"]:focus {
+.product_count input[type='number']:focus {
   border-color: var(--c-primary);
-  box-shadow: 0 0 0 3px rgba(255,107,157,0.1);
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
 }
 
 /* Type select */
@@ -364,12 +366,14 @@ select.sorting:focus {
   color: var(--c-text) !important;
   padding: 12px 14px !important;
   resize: vertical !important;
-  transition: border-color var(--t-base), box-shadow var(--t-base) !important;
+  transition:
+    border-color var(--t-base),
+    box-shadow var(--t-base) !important;
 }
 
 .review_item .form-control:focus {
   border-color: var(--c-primary) !important;
-  box-shadow: 0 0 0 3px rgba(255,107,157,0.1) !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1) !important;
 }
 
 .content-review {
@@ -393,7 +397,9 @@ select.sorting:focus {
   transition: color var(--t-base);
 }
 
-.content-left label:hover i { color: var(--c-primary); }
+.content-left label:hover i {
+  color: var(--c-primary);
+}
 
 /* Star rating boxes */
 .box-star {
@@ -475,7 +481,10 @@ select.sorting:focus {
   margin: 0 0 4px !important;
 }
 
-.media-body .fa-star { color: #fbbf24; font-size: 12px; }
+.media-body .fa-star {
+  color: #fbbf24;
+  font-size: 12px;
+}
 
 .reply_btn {
   font-family: var(--font-body) !important;
@@ -525,7 +534,9 @@ select.sorting:focus {
   transition: opacity var(--t-base);
 }
 
-.btn-delete-reply:hover { opacity: 0.7; }
+.btn-delete-reply:hover {
+  opacity: 0.7;
+}
 
 .img-cmt {
   width: 80px;
@@ -538,7 +549,9 @@ select.sorting:focus {
   border: 1px solid var(--c-border);
 }
 
-.img-cmt:hover { transform: scale(1.05); }
+.img-cmt:hover {
+  transform: scale(1.05);
+}
 
 /* Payment Success / Failure pages */
 .payment-success-wrap,
@@ -599,7 +612,14 @@ select.sorting:focus {
 }
 
 @media (max-width: 768px) {
-  .s_product_text { padding-left: 0; margin-top: 20px; }
-  .s_product_text h3 { font-size: 20px !important; }
-  .payment-card { padding: 32px 20px; }
+  .s_product_text {
+    padding-left: 0;
+    margin-top: 20px;
+  }
+  .s_product_text h3 {
+    font-size: 20px !important;
+  }
+  .payment-card {
+    padding: 32px 20px;
+  }
 }

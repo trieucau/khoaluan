@@ -26,7 +26,7 @@ const RippleEffect = () => {
         id: new Date().getTime() + Math.random(),
         x,
         y,
-        className: rippleClass
+        className: rippleClass,
       };
 
       setRipples((prev) => [...prev, newRipple]);
@@ -61,13 +61,7 @@ const RippleEffect = () => {
           height: '8vw',
         };
 
-        return (
-          <div
-            key={ripple.id}
-            className={`ripple ${ripple.className}`}
-            style={style}
-          />
-        );
+        return <div key={ripple.id} className={`ripple ${ripple.className}`} style={style} />;
       })}
     </div>
   );

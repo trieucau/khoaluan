@@ -22,7 +22,7 @@
   width: 400px;
   height: 400px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   top: -150px;
   right: -80px;
   pointer-events: none;
@@ -56,7 +56,7 @@
 .voucher-banner-content p {
   font-family: var(--font-body);
   font-size: 16px;
-  color: rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.85);
   margin: 0;
 }
 
@@ -72,8 +72,8 @@
 }
 
 .voucher-feature-box {
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: var(--r-lg);
   padding: 14px 24px;
   text-align: center;
@@ -84,7 +84,7 @@
 }
 
 .voucher-feature-box:hover {
-  background: rgba(255,255,255,0.28);
+  background: rgba(255, 255, 255, 0.28);
   transform: translateY(-2px);
 }
 
@@ -138,7 +138,7 @@
     grid-template-columns: 1fr;
     padding: 0 12px;
   }
-  .voucher-banner { 
+  .voucher-banner {
     padding: 120px 0; /* Tăng padding để banner dài rộng hơn rất nhiều */
     min-height: 400px; /* Chiều cao tối thiểu lớn hơn */
     display: flex;
@@ -160,9 +160,15 @@
 
 /* Float animation for Banner */
 @keyframes floatUpAndDown {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .floating-animation {

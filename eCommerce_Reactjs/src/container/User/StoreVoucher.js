@@ -39,7 +39,7 @@ function StoreVoucher(props) {
         if (arrData && arrData.errCode === 0) {
           let nowDate = moment().startOf('day');
 
-          let filteredVouchers = arrData.data.filter(item => {
+          let filteredVouchers = arrData.data.filter((item) => {
             let toDate = moment.unix(item.voucherData.toDate / 1000).endOf('day');
             let fromDate = moment.unix(item.voucherData.fromDate / 1000).startOf('day');
             let amount = item.voucherData.amount;
@@ -51,7 +51,7 @@ function StoreVoucher(props) {
               fromDate.isSameOrBefore(nowDate)
             );
           });
-          
+
           setdataVoucher(filteredVouchers);
           setCount(Math.ceil(arrData.count / PAGINATION.pagerow));
         }
@@ -84,19 +84,29 @@ function StoreVoucher(props) {
                       if (item.voucherData.typeVoucherOfVoucherData.typeVoucher === 'percent') {
                         percent = item.voucherData.typeVoucherOfVoucherData.value + '%';
                       } else {
-                        percent = CommonUtils.formatter.format(item.voucherData.typeVoucherOfVoucherData.value);
+                        percent = CommonUtils.formatter.format(
+                          item.voucherData.typeVoucherOfVoucherData.value
+                        );
                       }
-                      
-                      let MaxValue = CommonUtils.formatter.format(item.voucherData.typeVoucherOfVoucherData.maxValue);
+
+                      let MaxValue = CommonUtils.formatter.format(
+                        item.voucherData.typeVoucherOfVoucherData.maxValue
+                      );
 
                       return (
                         <VoucherItemSmall
                           id={item.id}
                           key={index}
                           name={item.voucherData.codeVoucher}
-                          widthPercent={(item.voucherData.usedAmount * 100) / item.voucherData.amount}
+                          widthPercent={
+                            (item.voucherData.usedAmount * 100) / item.voucherData.amount
+                          }
                           maxValue={MaxValue}
-                          usedAmount={Math.round(((item.voucherData.usedAmount * 100) / item.voucherData.amount) * 10) / 10}
+                          usedAmount={
+                            Math.round(
+                              ((item.voucherData.usedAmount * 100) / item.voucherData.amount) * 10
+                            ) / 10
+                          }
                           typeVoucher={percent}
                         />
                       );
@@ -109,7 +119,9 @@ function StoreVoucher(props) {
                     </div>
                     <h3>Chưa có voucher nào</h3>
                     <p>Hãy khám phá thêm nhiều ưu đãi hấp dẫn tại cửa hàng</p>
-                    <Link to="/voucher" className="btn-explore">Khám phá ngay</Link>
+                    <Link to="/voucher" className="btn-explore">
+                      Khám phá ngay
+                    </Link>
                   </div>
                 )}
               </div>

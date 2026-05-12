@@ -10,7 +10,10 @@
   border-radius: var(--r-lg);
   border: 1px solid var(--c-border);
   overflow: hidden;
-  transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base),
+    border-color var(--t-base);
   position: relative;
 }
 
@@ -44,7 +47,7 @@
 .product-badge--sale {
   background: var(--grad-primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(255,107,157,0.4);
+  box-shadow: 0 2px 8px rgba(255, 107, 157, 0.4);
 }
 
 .product-badge--new {
@@ -79,8 +82,8 @@
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(45,27,46,0.85) 0%,
-    rgba(45,27,46,0.2) 60%,
+    rgba(45, 27, 46, 0.85) 0%,
+    rgba(45, 27, 46, 0.2) 60%,
     transparent 100%
   );
   display: flex;
@@ -178,8 +181,12 @@
   background: var(--c-primary) !important;
   border-color: var(--c-primary) !important;
 }
-.box-productFeature .slick-prev { left: -20px !important; }
-.box-productFeature .slick-next { right: -20px !important; }
+.box-productFeature .slick-prev {
+  left: -20px !important;
+}
+.box-productFeature .slick-next {
+  right: -20px !important;
+}
 .box-productFeature .slick-prev::before,
 .box-productFeature .slick-next::before {
   color: var(--c-text-soft) !important;
@@ -187,6 +194,10 @@
 }
 
 @media (max-width: 768px) {
-  .product-card { margin-bottom: 0; }
-  .product-card-link { margin-bottom: 16px; }
+  .product-card {
+    margin-bottom: 0;
+  }
+  .product-card-link {
+    margin-bottom: 16px;
+  }
 }

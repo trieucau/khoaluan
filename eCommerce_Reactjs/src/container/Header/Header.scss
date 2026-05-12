@@ -37,12 +37,12 @@
 
 /* ─── TOP BAR MARQUEE ─────────────────────────────────────────── */
 .top_menu {
-  background: #2D1B2E;
+  background: #2d1b2e;
   height: 36px;
   position: relative;
   z-index: 600;
   overflow: hidden;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .top-marquee-container {
@@ -69,7 +69,7 @@
 }
 
 .brand-item {
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 2px;
@@ -81,12 +81,16 @@
 }
 
 .brand-item:hover {
-  color: #FF6B9D;
+  color: #ff6b9d;
 }
 
 @keyframes scroll-right {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0%); }
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
 }
 
 /* ─── MAIN NAV ──────────────────────────────────────────────── */
@@ -97,7 +101,7 @@
 
 .main_menu {
   background: #ffffff;
-  border-bottom: 1px solid #F0E6EE;
+  border-bottom: 1px solid #f0e6ee;
   position: relative;
   z-index: 499;
 }
@@ -110,11 +114,11 @@
 }
 
 .main_menu.sticky {
-  background: rgba(255,255,255,0.94) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
   backdrop-filter: blur(18px) !important;
   -webkit-backdrop-filter: blur(18px) !important;
-  box-shadow: 0 2px 20px rgba(196,69,105,0.1) !important;
-  border-bottom: 1px solid #F0E6EE !important;
+  box-shadow: 0 2px 20px rgba(196, 69, 105, 0.1) !important;
+  border-bottom: 1px solid #f0e6ee !important;
 }
 
 .main_menu .navbar {
@@ -158,7 +162,7 @@ ul.center_nav .nav-item a.nav-link {
   display: block !important;
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: #6B5670 !important;
+  color: #6b5670 !important;
   padding: 8px 15px !important;
   transition: color 0.2s !important;
   text-decoration: none !important;
@@ -171,7 +175,7 @@ ul.center_nav .nav-item a.nav-link {
 
 ul.center_nav .nav-item a.nav-link:hover,
 ul.center_nav .nav-item a.nav-link.selected {
-  color: #FF6B9D !important;
+  color: #ff6b9d !important;
   background: none !important;
 }
 
@@ -182,7 +186,7 @@ ul.center_nav .nav-item a.nav-link:hover::after {
   content: '' !important;
   width: 100% !important;
   height: 2px !important;
-  background: #FF6B9D !important;
+  background: #ff6b9d !important;
   position: absolute !important;
   bottom: -1px !important;
   left: 0 !important;
@@ -214,16 +218,16 @@ ul.right_nav .nav-item {
   width: 38px !important;
   height: 38px !important;
   border-radius: 50% !important;
-  border: 1.5px solid #F0E6EE !important;
-  color: #6B5670 !important;
+  border: 1.5px solid #f0e6ee !important;
+  color: #6b5670 !important;
   background: #fff !important;
   text-decoration: none !important;
   transition: all 0.2s !important;
 }
 
 .header_area a.icons:hover {
-  background: #FF6B9D !important;
-  border-color: #FF6B9D !important;
+  background: #ff6b9d !important;
+  border-color: #ff6b9d !important;
   color: #fff !important;
   transform: translateY(-1px) !important;
 }
@@ -240,7 +244,7 @@ ul.right_nav .nav-item {
   position: absolute !important;
   top: -3px !important;
   right: -3px !important;
-  background: #FF6B9D !important;
+  background: #ff6b9d !important;
   color: #fff !important;
   font-size: 10px !important;
   font-weight: 700 !important;
@@ -259,7 +263,7 @@ ul.right_nav .nav-item {
 
 /* ─── HAMBURGER ─────────────────────────────────────────────── */
 .d-lg-none.navbar-toggler {
-  border: 1.5px solid #F0E6EE !important;
+  border: 1.5px solid #f0e6ee !important;
   border-radius: 6px !important;
   padding: 8px 10px !important;
   background: transparent !important;
@@ -269,16 +273,22 @@ ul.right_nav .nav-item {
   display: block;
   width: 22px;
   height: 2px;
-  background: #6B5670;
+  background: #6b5670;
   border-radius: 2px;
 }
-.icon-bar + .icon-bar { margin-top: 5px; }
+.icon-bar + .icon-bar {
+  margin-top: 5px;
+}
 
 /* ─── MOBILE COLLAPSE ───────────────────────────────────────── */
-.mobile-only { display: none !important; }
+.mobile-only {
+  display: none !important;
+}
 
 @media (max-width: 991px) {
-  .mobile-only { display: list-item !important; }
+  .mobile-only {
+    display: list-item !important;
+  }
 
   #navbarSupportedContent {
     position: absolute;
@@ -286,9 +296,9 @@ ul.right_nav .nav-item {
     left: 0;
     right: 0;
     background: #fff;
-    border-top: 1px solid #F0E6EE;
+    border-top: 1px solid #f0e6ee;
     padding: 12px 0 16px;
-    box-shadow: 0 8px 24px rgba(45,27,46,0.1);
+    box-shadow: 0 8px 24px rgba(45, 27, 46, 0.1);
     z-index: 998;
   }
 
@@ -313,16 +323,16 @@ ul.right_nav .nav-item {
 
   ul.center_nav .nav-item .nav-link {
     padding: 10px 8px !important;
-    border-bottom: 1px solid #F0E6EE;
+    border-bottom: 1px solid #f0e6ee;
     width: 100%;
     text-align: left; /* Ensure button text is aligned */
     background: transparent;
     border: none;
-    border-bottom: 1px solid #F0E6EE; /* Override button border */
+    border-bottom: 1px solid #f0e6ee; /* Override button border */
     font-family: 'Roboto', sans-serif !important;
     font-size: 13px !important;
     font-weight: 400 !important;
-    color: #2D1B2E !important;
+    color: #2d1b2e !important;
     text-transform: uppercase !important;
     line-height: 40px !important;
     display: block !important;
@@ -336,13 +346,13 @@ ul.right_nav .nav-item {
 
   ul.center_nav .nav-item .nav-link.selected,
   ul.center_nav .nav-item .nav-link:hover {
-    color: #FF6B9D !important;
-    background: rgba(255,107,157,0.05) !important;
+    color: #ff6b9d !important;
+    background: rgba(255, 107, 157, 0.05) !important;
   }
 
   ul.right_nav {
     padding: 10px 16px !important;
-    border-top: 1px solid #F0E6EE;
+    border-top: 1px solid #f0e6ee;
     margin-top: 4px !important;
     justify-content: flex-start !important;
   }
@@ -368,6 +378,10 @@ ul.right_nav .nav-item {
   .marquee-track {
     animation-duration: 20s !important; /* Trượt nhanh hơn một chút trên mobile */
   }
-  .main_menu .navbar { min-height: 56px; }
-  .navbar-brand.logo_h img { height: 32px !important; }
+  .main_menu .navbar {
+    min-height: 56px;
+  }
+  .navbar-brand.logo_h img {
+    height: 32px !important;
+  }
 }

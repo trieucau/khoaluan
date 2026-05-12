@@ -61,7 +61,6 @@ const LoginWebPage = () => {
     }
   };
 
-
   let handleSaveUser = async () => {
     const element = document.querySelector('form');
     element.addEventListener('submit', (event) => {
@@ -175,7 +174,10 @@ const LoginWebPage = () => {
                         id="loginPassword"
                         required
                       />
-                      <span className="password-toggle" onClick={() => setIsShowPassword(!isShowPassword)}>
+                      <span
+                        className="password-toggle"
+                        onClick={() => setIsShowPassword(!isShowPassword)}
+                      >
                         {isShowPassword ? (
                           <i className="fa-solid fa-eye-slash"></i>
                         ) : (
@@ -265,7 +267,10 @@ const LoginWebPage = () => {
                         id="password"
                         className="pass"
                       />
-                      <span className="password-toggle" onClick={() => setIsShowPasswordRegister(!isShowPasswordRegister)}>
+                      <span
+                        className="password-toggle"
+                        onClick={() => setIsShowPasswordRegister(!isShowPasswordRegister)}
+                      >
                         {isShowPasswordRegister ? (
                           <i className="fa-solid fa-eye-slash"></i>
                         ) : (

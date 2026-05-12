@@ -48,12 +48,7 @@ function AddressUser(props) {
     // Fetch all orders (limit 1000) to check used addresses across all pages
     const res = await getAllOrdersByUser(props.id, 1000, 0, 'ALL', '');
     if (res?.errCode === 0) {
-      const ids = [
-        ...new Set(
-          res.data
-            .map((item) => item.addressUserId)
-        ),
-      ];
+      const ids = [...new Set(res.data.map((item) => item.addressUserId))];
       setUsedAddressIds(ids);
     }
   };
@@ -87,8 +82,7 @@ function AddressUser(props) {
         toast.success('Thêm địa chỉ thành công!');
         setCurrentPage(0);
         await loadDataAddress(0);
-      }
-      else toast.error(res?.errMessage);
+      } else toast.error(res?.errMessage);
     } else {
       const res = await editAddressUserService({
         id: data.id,
@@ -103,8 +97,7 @@ function AddressUser(props) {
       if (res?.errCode === 0) {
         toast.success('Cập nhật địa chỉ thành công!');
         await loadDataAddress(currentPage);
-      }
-      else toast.error(res?.errMessage);
+      } else toast.error(res?.errMessage);
     }
   };
 
@@ -136,7 +129,10 @@ function AddressUser(props) {
   };
 
   const handleCreateAddressFromMap = async (mapData) => {
-    if (!userInfo) { toast.error('Không lấy được thông tin người dùng'); return; }
+    if (!userInfo) {
+      toast.error('Không lấy được thông tin người dùng');
+      return;
+    }
     const res = await createNewAddressUserrService({
       shipName: `${userInfo.firstName} ${userInfo.lastName}`,
       shipPhonenumber: userInfo.phonenumber,
@@ -157,19 +153,18 @@ function AddressUser(props) {
     <div className="user-page">
       <div className="container-fluid px-0">
         <div className="user-card">
-
           {/* Header */}
           <div className="address-header">
             <h2 className="address-header__title">
-              <i className="fa-solid fa-location-dot" style={{ color: '#FF6B9D', marginRight: 10 }} />
+              <i
+                className="fa-solid fa-location-dot"
+                style={{ color: '#FF6B9D', marginRight: 10 }}
+              />
               Địa chỉ của tôi
             </h2>
             <div className="address-header__actions">
               {/* Map button */}
-              <button
-                className="address-map-btn"
-                onClick={() => setIsOpenMapModal(true)}
-              >
+              <button className="address-map-btn" onClick={() => setIsOpenMapModal(true)}>
                 <i className="fa-solid fa-map-location-dot" />
                 Chọn từ bản đồ
               </button>
@@ -177,7 +172,10 @@ function AddressUser(props) {
               <button
                 className="user-btn-primary"
                 style={{ fontSize: 13, padding: '10px 20px' }}
-                onClick={() => { setAddressUserId(''); setIsOpenModalAddressUser(true); }}
+                onClick={() => {
+                  setAddressUserId('');
+                  setIsOpenModalAddressUser(true);
+                }}
               >
                 <i className="fa-solid fa-plus" />
                 Thêm địa chỉ mới
@@ -189,8 +187,13 @@ function AddressUser(props) {
           <div className="address-list">
             {dataAddressUser.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 20px', color: '#9B8EA4' }}>
-                <i className="fa-solid fa-map-pin" style={{ fontSize: 36, color: '#F0E6EE', marginBottom: 12, display: 'block' }} />
-                <p style={{ margin: 0, fontSize: 14 }}>Bạn chưa có địa chỉ nào. Hãy thêm địa chỉ mới!</p>
+                <i
+                  className="fa-solid fa-map-pin"
+                  style={{ fontSize: 36, color: '#F0E6EE', marginBottom: 12, display: 'block' }}
+                />
+                <p style={{ margin: 0, fontSize: 14 }}>
+                  Bạn chưa có địa chỉ nào. Hãy thêm địa chỉ mới!
+                </p>
               </div>
             )}
 
@@ -224,7 +227,10 @@ function AddressUser(props) {
                       <>
                         <button
                           className="address-action-btn address-action-btn--edit"
-                          onClick={() => { setAddressUserId(item.id); setIsOpenModalAddressUser(true); }}
+                          onClick={() => {
+                            setAddressUserId(item.id);
+                            setIsOpenModalAddressUser(true);
+                          }}
                         >
                           <i className="fa-solid fa-pen" style={{ marginRight: 5 }} />
                           Sửa
@@ -246,7 +252,10 @@ function AddressUser(props) {
 
           {/* PAGINATION */}
           {count > 1 && (
-            <div className="box-pagination" style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
+            <div
+              className="box-pagination"
+              style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}
+            >
               <ReactPaginate
                 previousLabel={'<'}
                 nextLabel={'>'}
@@ -269,7 +278,10 @@ function AddressUser(props) {
         addressUserId={addressUserId}
         sendDataFromModalAddress={sendDataFromModalAddress}
         isOpenModal={isOpenModalAddressUser}
-        closeModaAddressUser={() => { setIsOpenModalAddressUser(false); setAddressUserId(''); }}
+        closeModaAddressUser={() => {
+          setIsOpenModalAddressUser(false);
+          setAddressUserId('');
+        }}
       />
 
       {/* Modal Map */}
@@ -296,16 +308,10 @@ function AddressUser(props) {
               Hành động này không thể hoàn tác. Địa chỉ sẽ bị xóa vĩnh viễn.
             </p>
             <div className="addr-confirm-actions">
-              <button
-                className="addr-btn-cancel"
-                onClick={() => setPendingDeleteId(null)}
-              >
+              <button className="addr-btn-cancel" onClick={() => setPendingDeleteId(null)}>
                 Hủy bỏ
               </button>
-              <button
-                className="addr-btn-delete-confirm"
-                onClick={confirmDelete}
-              >
+              <button className="addr-btn-delete-confirm" onClick={confirmDelete}>
                 <i className="fa-solid fa-trash" />
                 Xóa địa chỉ
               </button>

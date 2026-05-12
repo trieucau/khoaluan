@@ -6,14 +6,11 @@ const DeleteShopCartModal = ({ isOpenModal, closeModal, handleDeleteShopCart, na
 
   return (
     <div className="addr-modal-overlay" onClick={closeModal}>
-      <div 
-        className="addr-confirm-dialog" 
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="addr-confirm-dialog" onClick={(e) => e.stopPropagation()}>
         <div className="addr-confirm-icon">
           <i className="fa-solid fa-trash-can" />
         </div>
-        
+
         <h3 className="addr-confirm-title">Xóa sản phẩm?</h3>
         <p className="addr-confirm-desc">
           Bạn có chắc chắn muốn bỏ sản phẩm <strong>{name}</strong> khỏi giỏ hàng không?

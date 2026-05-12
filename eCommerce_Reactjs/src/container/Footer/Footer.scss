@@ -16,7 +16,7 @@
   width: 350px;
   height: 350px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.07);
+  background: rgba(255, 255, 255, 0.07);
   top: -120px;
   right: 10%;
   pointer-events: none;
@@ -41,7 +41,7 @@
 .footer-newsletter__text p {
   font-family: var(--font-body);
   font-size: var(--fs-sm);
-  color: rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.85);
   margin: 0;
 }
 
@@ -61,13 +61,13 @@
   font-family: var(--font-body);
   font-size: var(--fs-sm);
   color: var(--c-text);
-  background: rgba(255,255,255,0.95);
+  background: rgba(255, 255, 255, 0.95);
   outline: none;
   transition: box-shadow var(--t-base);
 }
 
 .footer-newsletter__form input:focus {
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
 .btn-subscribe {
@@ -110,12 +110,14 @@
   transition: opacity var(--t-base);
 }
 
-.footer-logo:hover img { opacity: 1; }
+.footer-logo:hover img {
+  opacity: 1;
+}
 
 .footer-brand__desc {
   font-family: var(--font-body);
   font-size: 13.5px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   line-height: 1.7;
   margin: 0 0 24px;
 }
@@ -133,8 +135,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.75);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
   font-size: 15px;
   transition: all var(--t-base);
   text-decoration: none;
@@ -144,7 +146,7 @@
   background: var(--c-primary);
   color: #fff;
   transform: translateY(-3px);
-  box-shadow: 0 4px 16px rgba(255,107,157,0.4);
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.4);
 }
 
 /* Footer columns */
@@ -179,7 +181,7 @@
 .footer-col__list li a {
   font-family: var(--font-body);
   font-size: 13.5px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
   transition: all var(--t-base);
   display: inline-flex;
@@ -221,7 +223,7 @@
   gap: 12px;
   font-family: var(--font-body);
   font-size: 13.5px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   line-height: 1.5;
 }
 
@@ -229,7 +231,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(255,107,157,0.15);
+  background: rgba(255, 107, 157, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,8 +245,8 @@
 
 /* ── Footer Bottom ──────────────────────────────────────── */
 .footer-bottom {
-  background: rgba(0,0,0,0.2);
-  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding: 20px 0;
 }
 
@@ -259,12 +261,12 @@
 .footer-bottom__copy {
   font-family: var(--font-body);
   font-size: 13px;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255, 255, 255, 0.45);
   margin: 0;
 }
 
 .footer-bottom__copy strong {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 600;
 }
 
@@ -282,14 +284,16 @@
   filter: brightness(0) invert(1);
 }
 
-.footer-bottom__payment img:hover { opacity: 0.9; }
+.footer-bottom__payment img:hover {
+  opacity: 0.9;
+}
 
 .footer-vnpay {
   font-family: var(--font-accent);
   font-size: 12px;
   font-weight: 800;
-  color: rgba(255,255,255,0.5);
-  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   padding: 2px 10px;
   border-radius: var(--r-sm);
   letter-spacing: 1px;
@@ -306,14 +310,24 @@
     width: 100%;
     max-width: 100%;
   }
-  .footer-main { padding: 40px 0 28px; }
-  .footer-bottom__inner { flex-direction: column; text-align: center; }
+  .footer-main {
+    padding: 40px 0 28px;
+  }
+  .footer-bottom__inner {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
 @media (max-width: 576px) {
-  .footer-newsletter { padding: 28px 0; }
+  .footer-newsletter {
+    padding: 28px 0;
+  }
   .footer-newsletter__form {
     flex-direction: column;
   }
-  .btn-subscribe { width: 100%; justify-content: center; }
+  .btn-subscribe {
+    width: 100%;
+    justify-content: center;
+  }
 }

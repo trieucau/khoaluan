@@ -121,43 +121,41 @@ function OrderUser() {
 
               return (
                 <div key={index} className="box-list-order">
-                    {/* HEADER */}
-                    <div className="content-top">
-                      <div className="content-left">
-                        <div className="label-favorite">Yêu thích</div>
-                        <span className="label-name-shop">
-                          {item.shopData?.name || 'Eiser shop'}
-                        </span>
-                        <div className="order-id">
-                          Mã đơn: <strong>#{item.id}</strong>
-                        </div>
-                      </div>
-
-                      <div className="content-right">
-                        {item.statusOrderData?.value}
-                        {item.isPaymentOnlien == 1 && ' | Đã thanh toán | '}
+                  {/* HEADER */}
+                  <div className="content-top">
+                    <div className="content-left">
+                      <div className="label-favorite">Yêu thích</div>
+                      <span className="label-name-shop">{item.shopData?.name || 'Eiser shop'}</span>
+                      <div className="order-id">
+                        Mã đơn: <strong>#{item.id}</strong>
                       </div>
                     </div>
 
-                    {/* PRODUCTS */}
-                    {item.orderDetail?.map((detail, idx) => (
-                      <div className="content-center" key={idx}>
-                        <div className="box-item-order">
-                          <img src={detail.productImage[0]?.image} alt="" />
-                          <div className="box-des">
-                            <span className="name">{detail.product?.name}</span>
-                            <span className="type">
-                              Phân loại: {detail.productDetail?.nameDetail} |{' '}
-                              {detail.productDetailSize?.sizeData?.value}
-                            </span>
-                            <span>x{detail.quantity}</span>
-                          </div>
-                          <div className="box-price">
-                            {CommonUtils.formatter.format(detail.productDetail.discountPrice)}
-                          </div>
+                    <div className="content-right">
+                      {item.statusOrderData?.value}
+                      {item.isPaymentOnlien == 1 && ' | Đã thanh toán | '}
+                    </div>
+                  </div>
+                  {/* PRODUCTS */}
+                  {item.orderDetail?.map((detail, idx) => (
+                    <div className="content-center" key={idx}>
+                      <div className="box-item-order">
+                        <img src={detail.productImage[0]?.image} alt="" />
+                        <div className="box-des">
+                          <span className="name">{detail.product?.name}</span>
+                          <span className="type">
+                            Phân loại: {detail.productDetail?.nameDetail} |{' '}
+                            {detail.productDetailSize?.sizeData?.value}
+                          </span>
+                          <span>x{detail.quantity}</span>
+                        </div>
+                        <div className="box-price">
+                          {CommonUtils.formatter.format(detail.productDetail.discountPrice)}
                         </div>
                       </div>
-                    ))}                  {/* FOOTER */}
+                    </div>
+                  ))}{' '}
+                  {/* FOOTER */}
                   <div className="content-bottom">
                     <div className="up">
                       <span>Tổng số tiền: </span>

@@ -16,13 +16,15 @@
   border: 1.5px solid var(--c-border);
   border-radius: var(--r-full);
   padding: 11px 20px;
-  transition: border-color var(--t-base), box-shadow var(--t-base);
+  transition:
+    border-color var(--t-base),
+    box-shadow var(--t-base);
   margin-bottom: 16px;
 }
 
 .box-search-order:focus-within {
   border-color: var(--c-primary);
-  box-shadow: 0 0 0 3px rgba(255,107,157,0.12);
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.12);
 }
 
 .box-search-order i {
@@ -56,12 +58,14 @@
   background-color: var(--c-surface) !important;
   outline: none !important;
   cursor: pointer;
-  transition: border-color var(--t-base), box-shadow var(--t-base) !important;
+  transition:
+    border-color var(--t-base),
+    box-shadow var(--t-base) !important;
 }
 
 .form-select:focus {
   border-color: var(--c-primary) !important;
-  box-shadow: 0 0 0 3px rgba(255,107,157,0.12) !important;
+  box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.12) !important;
 }
 
 /* ── Order Box ─────────────────────────────────────────── */
@@ -71,7 +75,9 @@
   border: 1px solid var(--c-border);
   margin-bottom: 16px;
   overflow: hidden;
-  transition: box-shadow var(--t-base), border-color var(--t-base);
+  transition:
+    box-shadow var(--t-base),
+    border-color var(--t-base);
 }
 
 .box-list-order:hover {
@@ -140,7 +146,9 @@
   border-bottom: 1px solid var(--c-border);
 }
 
-.content-center:last-of-type { border-bottom: none; }
+.content-center:last-of-type {
+  border-bottom: none;
+}
 
 .box-item-order {
   display: flex;
@@ -338,7 +346,7 @@
 .pagination-order a:hover {
   border-color: var(--c-primary);
   color: var(--c-primary);
-  background: rgba(255,107,157,0.05);
+  background: rgba(255, 107, 157, 0.05);
 }
 
 .pagination-order .active a {
@@ -355,10 +363,25 @@
 }
 
 @media (max-width: 576px) {
-  .box-item-order img { width: 56px; height: 72px; }
-  .box-price { font-size: 13px; }
-  .box-list-order .content-top { padding: 12px 14px; }
-  .content-center { padding: 0 14px; }
-  .content-bottom { padding: 12px 14px; }
-  .pagination-order a { width: 34px; height: 34px; font-size: 13px; }
+  .box-item-order img {
+    width: 56px;
+    height: 72px;
+  }
+  .box-price {
+    font-size: 13px;
+  }
+  .box-list-order .content-top {
+    padding: 12px 14px;
+  }
+  .content-center {
+    padding: 0 14px;
+  }
+  .content-bottom {
+    padding: 12px 14px;
+  }
+  .pagination-order a {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
 }
