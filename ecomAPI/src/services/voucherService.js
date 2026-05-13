@@ -1,6 +1,6 @@
-import db from '../models/index';
-require('dotenv').config();
-const { Op } = require('sequelize');
+import db from '../models/index.js';
+import 'dotenv/config';
+import { Op } from 'sequelize';
 //==================TYPE VOUCHER====================//
 let createNewTypeVoucher = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -432,7 +432,7 @@ let getAllVoucherByUserId = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   createNewTypeVoucher: createNewTypeVoucher,
   getDetailTypeVoucherById: getDetailTypeVoucherById,
   getAllTypeVoucher: getAllTypeVoucher,
@@ -447,3 +447,4 @@ module.exports = {
   saveUserVoucher: saveUserVoucher,
   getAllVoucherByUserId: getAllVoucherByUserId,
 };
+

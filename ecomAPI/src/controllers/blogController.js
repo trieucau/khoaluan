@@ -1,4 +1,4 @@
-import blogService from '../services/blogService';
+import blogService from '../services/blogService.js';
 
 let createNewBlog = async (req, res) => {
   try {
@@ -84,7 +84,7 @@ let getNewBlog = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   createNewBlog: createNewBlog,
   getDetailBlogById: getDetailBlogById,
   getAllBlog: getAllBlog,
@@ -93,3 +93,4 @@ module.exports = {
   getFeatureBlog: getFeatureBlog,
   getNewBlog: getNewBlog,
 };
+

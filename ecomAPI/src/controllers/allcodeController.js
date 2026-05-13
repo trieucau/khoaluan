@@ -1,4 +1,4 @@
-import allcodeService from '../services/allcodeService';
+import allcodeService from '../services/allcodeService.js';
 
 let handleCreateNewAllCode = async (req, res) => {
   try {
@@ -84,7 +84,7 @@ let getListAllCodeService = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   handleCreateNewAllCode: handleCreateNewAllCode,
   getAllCodeService: getAllCodeService,
   handleUpdateAllCode: handleUpdateAllCode,
@@ -93,3 +93,4 @@ module.exports = {
   getListAllCodeService: getListAllCodeService,
   getAllCategoryBlog: getAllCategoryBlog,
 };
+

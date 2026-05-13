@@ -16,3 +16,4 @@ module.exports = {
     await queryInterface.removeColumn('AddressUsers', 'lng');
   },
 };
+

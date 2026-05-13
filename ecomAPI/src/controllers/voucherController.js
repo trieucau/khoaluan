@@ -1,4 +1,4 @@
-import voucherService from '../services/voucherService';
+import voucherService from '../services/voucherService.js';
 
 //========================TYPE VOUCHER=====================//
 let createNewTypeVoucher = async (req, res) => {
@@ -167,7 +167,7 @@ let getAllVoucherByUserId = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   createNewTypeVoucher: createNewTypeVoucher,
   getDetailTypeVoucherById: getDetailTypeVoucherById,
   getAllTypeVoucher: getAllTypeVoucher,
@@ -182,3 +182,4 @@ module.exports = {
   saveUserVoucher: saveUserVoucher,
   getAllVoucherByUserId: getAllVoucherByUserId,
 };
+

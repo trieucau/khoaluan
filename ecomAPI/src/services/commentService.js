@@ -1,5 +1,5 @@
-import db from '../models/index';
-require('dotenv').config();
+import db from '../models/index.js';
+import 'dotenv/config';
 
 let createNewReview = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -255,7 +255,7 @@ let deleteComment = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   createNewReview: createNewReview,
   getAllReviewByProductId: getAllReviewByProductId,
   ReplyReview: ReplyReview,
@@ -265,3 +265,4 @@ module.exports = {
   deleteComment: deleteComment,
   ReplyComment: ReplyComment,
 };
+

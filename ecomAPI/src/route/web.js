@@ -1,21 +1,21 @@
 import express from 'express';
-import userController from '../controllers/userController';
-import allcodeController from '../controllers/allcodeController';
-import productController from '../controllers/productController';
-import bannerController from '../controllers/bannerController';
-import blogController from '../controllers/blogController';
-import typeshipController from '../controllers/typeshipController';
-import voucherController from '../controllers/voucherController';
-import commentController from '../controllers/commentController';
-import shopCartController from '../controllers/shopCartController';
-import orderController from '../controllers/orderController';
-import addressUserController from '../controllers/addressUserController';
-import messageController from '../controllers/messageController';
-import statisticController from '../controllers/statisticController';
-import middlewareControllers from '../middlewares/jwtVerify';
-import supplierController from '../controllers/supplierController';
-import receiptController from '../controllers/receiptController';
-import chatbotController from '../controllers/chatbotController';
+import userController from '../controllers/userController.js';
+import allcodeController from '../controllers/allcodeController.js';
+import productController from '../controllers/productController.js';
+import bannerController from '../controllers/bannerController.js';
+import blogController from '../controllers/blogController.js';
+import typeshipController from '../controllers/typeshipController.js';
+import voucherController from '../controllers/voucherController.js';
+import commentController from '../controllers/commentController.js';
+import shopCartController from '../controllers/shopCartController.js';
+import orderController from '../controllers/orderController.js';
+import addressUserController from '../controllers/addressUserController.js';
+import messageController from '../controllers/messageController.js';
+import statisticController from '../controllers/statisticController.js';
+import middlewareControllers from '../middlewares/jwtVerify.js';
+import supplierController from '../controllers/supplierController.js';
+import receiptController from '../controllers/receiptController.js';
+import chatbotController from '../controllers/chatbotController.js';
 let router = express.Router();
 
 let initwebRoutes = (app) => {
@@ -551,4 +551,4 @@ let initwebRoutes = (app) => {
   return app.use('/', router);
 };
 
-module.exports = initwebRoutes;
+export default initwebRoutes;

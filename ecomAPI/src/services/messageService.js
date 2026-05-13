@@ -1,4 +1,4 @@
-import db from '../models/index';
+import db from '../models/index.js';
 import { Op } from 'sequelize';
 
 let createNewRoom = (data) => {
@@ -28,7 +28,7 @@ let createNewRoom = (data) => {
     }
   });
 };
-let sendMessage = (data) => {
+export let sendMessage = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.userId || !data.roomId || !data.text) {
@@ -218,10 +218,11 @@ let listRoomOfAdmin = (userId) => {
     }
   });
 };
-module.exports = {
+export default {
   createNewRoom: createNewRoom,
   sendMessage: sendMessage,
   loadMessage: loadMessage,
   listRoomOfUser: listRoomOfUser,
   listRoomOfAdmin: listRoomOfAdmin,
 };
+

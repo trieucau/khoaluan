@@ -1,7 +1,7 @@
-import db from '../models/index';
+import db from '../models/index.js';
 import jsrecommender from 'js-recommender';
-require('dotenv').config();
-const { Op } = require('sequelize');
+import 'dotenv/config';
+import { Op } from 'sequelize';
 function dynamicSort(property) {
   var sortOrder = 1;
   if (property[0] === '-') {
@@ -1295,7 +1295,7 @@ let getProductRecommend = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   createNewProduct: createNewProduct,
   getAllProductAdmin: getAllProductAdmin,
   getAllProductUser: getAllProductUser,
@@ -1323,3 +1323,4 @@ module.exports = {
   getProductShopCart: getProductShopCart,
   getProductRecommend: getProductRecommend,
 };
+

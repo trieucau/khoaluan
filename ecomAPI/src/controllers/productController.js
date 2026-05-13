@@ -1,4 +1,4 @@
-import productService from '../services/productService';
+import productService from '../services/productService.js';
 
 let createNewProduct = async (req, res) => {
   try {
@@ -312,7 +312,7 @@ let getProductRecommend = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   createNewProduct: createNewProduct,
   getAllProductAdmin: getAllProductAdmin,
   getAllProductUser: getAllProductUser,
@@ -340,3 +340,4 @@ module.exports = {
   getProductShopCart: getProductShopCart,
   getProductRecommend: getProductRecommend,
 };
+

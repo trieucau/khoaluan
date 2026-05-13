@@ -1,31 +1,29 @@
 'use strict';
 
-const { sequelize } = require('../models');
+
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('ProductDetailSizes', {
+    await queryInterface.createTable('Messages', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      productdetailId: {
+      text: {
+        type: Sequelize.TEXT('long'),
+      },
+      userId: {
         type: Sequelize.INTEGER,
       },
-      width: {
-        type: Sequelize.STRING,
+      roomId: {
+        type: Sequelize.INTEGER,
       },
-      height: {
-        type: Sequelize.STRING,
+      unRead: {
+        type: Sequelize.BOOLEAN,
       },
-      weight: {
-        type: Sequelize.STRING,
-      },
-      sizeId: {
-        type: Sequelize.STRING,
-      },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -37,6 +35,7 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('ProductDetailSizes');
+    await queryInterface.dropTable('Messages');
   },
 };
+

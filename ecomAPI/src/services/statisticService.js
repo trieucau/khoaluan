@@ -1,5 +1,5 @@
-const { Op } = require('sequelize');
-import db from '../models/index';
+import { Op } from 'sequelize';
+import db from '../models/index.js';
 import moment from 'moment';
 function compareDates(d1, d2) {
   var parts = d1.split('/');
@@ -550,7 +550,7 @@ let getStatisticStockProduct = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   getCountCardStatistic: getCountCardStatistic,
   getCountStatusOrder: getCountStatusOrder,
   getStatisticByMonth: getStatisticByMonth,
@@ -559,3 +559,4 @@ module.exports = {
   getStatisticProfit: getStatisticProfit,
   getStatisticStockProduct: getStatisticStockProduct,
 };
+

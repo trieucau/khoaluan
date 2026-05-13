@@ -2,10 +2,11 @@
   "name": "ecomapi",
   "version": "1.0.0",
   "description": "backend nodejs ecom",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec ./node_modules/.bin/babel-node src/server.js",
+    "start": "nodemon src/server.js",
     "format": "prettier --write .",
     "lint": "eslint ."
   },

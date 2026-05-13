@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
-import db from '../models/index';
-require('dotenv').config();
+import jwt from 'jsonwebtoken';
+import db from '../models/index.js';
+import 'dotenv/config';
 const secretString = process.env.JWT_SECRET;
 
 const middlewareControllers = {
@@ -136,4 +136,4 @@ const middlewareControllers = {
   },
 };
 
-module.exports = middlewareControllers;
+export default middlewareControllers;

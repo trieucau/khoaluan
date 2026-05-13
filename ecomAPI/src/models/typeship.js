@@ -1,6 +1,6 @@
 'use strict';
-const { Model } = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
+import { Model } from 'sequelize';
+export default (sequelize, DataTypes) => {
   class TypeShip extends Model {
     static associate(models) {
       TypeShip.hasMany(models.OrderProduct, {
@@ -22,3 +22,4 @@ module.exports = (sequelize, DataTypes) => {
   );
   return TypeShip;
 };
+

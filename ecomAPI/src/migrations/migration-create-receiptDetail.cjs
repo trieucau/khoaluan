@@ -1,27 +1,27 @@
 'use strict';
 
-const { sequelize } = require('../models');
+
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Suppliers', {
+    await queryInterface.createTable('ReceiptDetails', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      name: {
-        type: Sequelize.STRING,
+      receiptId: {
+        type: Sequelize.INTEGER,
       },
-      address: {
-        type: Sequelize.STRING,
+      productDetailSizeId: {
+        type: Sequelize.INTEGER,
       },
-      phonenumber: {
-        type: Sequelize.STRING,
+      quantity: {
+        type: Sequelize.INTEGER,
       },
-      email: {
-        type: Sequelize.STRING,
+      price: {
+        type: Sequelize.BIGINT,
       },
       createdAt: {
         allowNull: false,
@@ -34,6 +34,7 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Suppliers');
+    await queryInterface.dropTable('ReceiptDetails');
   },
 };
+

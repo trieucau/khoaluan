@@ -1,5 +1,5 @@
-require('dotenv').config();
-const nodemailer = require('nodemailer');
+import 'dotenv/config';
+import nodemailer from 'nodemailer';
 
 let sendSimpleEmail = async (dataSend) => {
   let transporter = nodemailer.createTransport({
@@ -54,6 +54,7 @@ let getBodyHTMLEmailForgotPassword = (dataSend) => {
 
   return result;
 };
-module.exports = {
+export default {
   sendSimpleEmail: sendSimpleEmail,
 };
+

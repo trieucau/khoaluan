@@ -1,4 +1,4 @@
-import receiptService from '../services/receiptService';
+import receiptService from '../services/receiptService.js';
 
 let createNewReceipt = async (req, res) => {
   try {
@@ -72,7 +72,7 @@ let createNewReceiptDetail = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   createNewReceipt: createNewReceipt,
   getDetailReceiptById: getDetailReceiptById,
   getAllReceipt: getAllReceipt,
@@ -80,3 +80,4 @@ module.exports = {
   deleteReceipt: deleteReceipt,
   createNewReceiptDetail: createNewReceiptDetail,
 };
+

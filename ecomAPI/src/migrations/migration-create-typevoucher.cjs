@@ -1,26 +1,26 @@
 'use strict';
 
-const { sequelize } = require('../models');
+
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('ReceiptDetails', {
+    await queryInterface.createTable('Typevouchers', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      receiptId: {
-        type: Sequelize.INTEGER,
+      typeVoucher: {
+        type: Sequelize.STRING,
       },
-      productDetailSizeId: {
-        type: Sequelize.INTEGER,
+      value: {
+        type: Sequelize.BIGINT,
       },
-      quantity: {
-        type: Sequelize.INTEGER,
+      maxValue: {
+        type: Sequelize.BIGINT,
       },
-      price: {
+      minValue: {
         type: Sequelize.BIGINT,
       },
       createdAt: {
@@ -34,6 +34,7 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('ReceiptDetails');
+    await queryInterface.dropTable('Typevouchers');
   },
 };
+

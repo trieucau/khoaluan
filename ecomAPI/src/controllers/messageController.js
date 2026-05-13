@@ -1,4 +1,4 @@
-import messageService from '../services/messageService';
+import messageService from '../services/messageService.js';
 
 let createNewRoom = async (req, res) => {
   try {
@@ -73,10 +73,11 @@ let listRoomOfAdmin = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   createNewRoom: createNewRoom,
   sendMessage: sendMessage,
   loadMessage: loadMessage,
   listRoomOfUser: listRoomOfUser,
   listRoomOfAdmin: listRoomOfAdmin,
 };
+

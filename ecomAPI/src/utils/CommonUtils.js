@@ -1,5 +1,5 @@
 import JWT from 'jsonwebtoken';
-require('dotenv').config();
+import 'dotenv/config';
 
 let encodeToken = (userId) => {
   return JWT.sign(
@@ -12,6 +12,6 @@ let encodeToken = (userId) => {
     process.env.JWT_SECRET
   );
 };
-module.exports = {
+export default {
   encodeToken: encodeToken,
 };

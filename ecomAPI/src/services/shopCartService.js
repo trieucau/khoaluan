@@ -1,4 +1,4 @@
-import db from '../models/index';
+import db from '../models/index.js';
 
 let addShopCart = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -204,8 +204,9 @@ let deleteItemShopCart = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   addShopCart: addShopCart,
   getAllShopCartByUserId: getAllShopCartByUserId,
   deleteItemShopCart: deleteItemShopCart,
 };
+

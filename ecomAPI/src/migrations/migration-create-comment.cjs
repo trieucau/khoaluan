@@ -1,29 +1,41 @@
 'use strict';
 
-const { sequelize } = require('../models');
+
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Messages', {
+    await queryInterface.createTable('Comments', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      text: {
+      content: {
         type: Sequelize.TEXT('long'),
+      },
+      image: {
+        type: Sequelize.BLOB('long'),
+      },
+      parentId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      productId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
       },
       userId: {
         type: Sequelize.INTEGER,
+        allowNull: true,
       },
-      roomId: {
+      blogId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
+      star: {
         type: Sequelize.INTEGER,
       },
-      unRead: {
-        type: Sequelize.BOOLEAN,
-      },
-
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -35,6 +47,7 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Messages');
+    await queryInterface.dropTable('Comments');
   },
 };
+

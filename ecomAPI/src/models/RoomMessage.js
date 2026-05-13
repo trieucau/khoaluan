@@ -1,6 +1,6 @@
 'use strict';
-const { Model } = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
+import { Model } from 'sequelize';
+export default (sequelize, DataTypes) => {
   class RoomMessage extends Model {
     static associate(models) {}
   }
@@ -17,3 +17,4 @@ module.exports = (sequelize, DataTypes) => {
   );
   return RoomMessage;
 };
+

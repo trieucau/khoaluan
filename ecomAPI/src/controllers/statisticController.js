@@ -1,4 +1,4 @@
-import statisticService from '../services/statisticService';
+import statisticService from '../services/statisticService.js';
 
 let getCountCardStatistic = async (req, res) => {
   try {
@@ -84,7 +84,7 @@ let getStatisticStockProduct = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   getCountCardStatistic: getCountCardStatistic,
   getCountStatusOrder: getCountStatusOrder,
   getStatisticByMonth: getStatisticByMonth,
@@ -93,3 +93,4 @@ module.exports = {
   getStatisticProfit: getStatisticProfit,
   getStatisticStockProduct: getStatisticStockProduct,
 };
+

@@ -1,4 +1,4 @@
-import supplierService from '../services/supplierService';
+import supplierService from '../services/supplierService.js';
 
 let createNewSupplier = async (req, res) => {
   try {
@@ -60,10 +60,11 @@ let deleteSupplier = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   createNewSupplier: createNewSupplier,
   getDetailSupplierById: getDetailSupplierById,
   getAllSupplier: getAllSupplier,
   updateSupplier: updateSupplier,
   deleteSupplier: deleteSupplier,
 };
+

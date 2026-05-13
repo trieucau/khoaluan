@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-require('dotenv').config();
+import 'dotenv/config';
 
 // Initialize using environment variables for security
 const serviceAccount = {
@@ -22,3 +22,4 @@ if (!admin.apps.length) {
 }
 
 export default admin;
+

@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
-import db from '../models/index';
+import db from '../models/index.js';
 import { Op } from 'sequelize';
-require('dotenv').config();
+import 'dotenv/config';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -1312,3 +1312,4 @@ const chatWithGemini = async (userId, messages, res) => {
 };
 
 export default { chatWithGemini };
+

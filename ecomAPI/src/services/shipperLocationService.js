@@ -1,6 +1,6 @@
-import db from '../models/index';
+import db from '../models/index.js';
 
-let upsertShipperLocation = async (shipperId, lat, lng) => {
+export let upsertShipperLocation = async (shipperId, lat, lng) => {
   try {
     if (!shipperId || lat == null || lng == null) return;
 
@@ -14,4 +14,5 @@ let upsertShipperLocation = async (shipperId, lat, lng) => {
   }
 };
 
-module.exports = { upsertShipperLocation };
+export default { upsertShipperLocation };
+

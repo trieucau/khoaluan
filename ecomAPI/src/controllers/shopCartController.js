@@ -1,4 +1,4 @@
-import shopCartService from '../services/shopCartService';
+import shopCartService from '../services/shopCartService.js';
 
 let addShopCart = async (req, res) => {
   try {
@@ -43,8 +43,9 @@ let deleteItemShopCart = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   addShopCart: addShopCart,
   getAllShopCartByUserId: getAllShopCartByUserId,
   deleteItemShopCart: deleteItemShopCart,
 };
+

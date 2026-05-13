@@ -1,39 +1,35 @@
 'use strict';
 
-const { sequelize } = require('../models');
+
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Comments', {
+    await queryInterface.createTable('Orderproducts', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      content: {
-        type: Sequelize.TEXT('long'),
-      },
-      image: {
-        type: Sequelize.BLOB('long'),
-      },
-      parentId: {
+      addressUserId: {
         type: Sequelize.INTEGER,
-        allowNull: true,
       },
-      productId: {
+      shipperId: {
         type: Sequelize.INTEGER,
-        allowNull: true,
       },
-      userId: {
+      statusId: {
+        type: Sequelize.STRING,
+      },
+      typeShipId: {
         type: Sequelize.INTEGER,
-        allowNull: true,
       },
-      blogId: {
+      voucherId: {
         type: Sequelize.INTEGER,
-        allowNull: true,
       },
-      star: {
+      note: {
+        type: Sequelize.STRING,
+      },
+      isPaymentOnlien: {
         type: Sequelize.INTEGER,
       },
       createdAt: {
@@ -44,9 +40,13 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
+      image: {
+        type: Sequelize.BLOB('long'),
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Comments');
+    await queryInterface.dropTable('Orderproducts');
   },
 };
+

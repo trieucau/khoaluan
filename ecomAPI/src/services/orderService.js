@@ -1,14 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
-import db from '../models/index';
+import db from '../models/index.js';
 import paypal from 'paypal-rest-sdk';
-const { Op } = require('sequelize');
-var querystring = require('qs');
-var crypto = require('crypto');
+import { Op } from 'sequelize';
+import querystring from 'qs';
+import crypto from 'crypto';
 
-require('dotenv').config();
+import 'dotenv/config';
 import moment from 'moment';
-import localization from 'moment/locale/vi';
-import { EXCHANGE_RATES } from '../utils/constants';
+import localization from 'moment/locale/vi.js';
+import { EXCHANGE_RATES } from '../utils/constants.js';
 moment.updateLocale('vi', localization);
 paypal.configure({
   mode: 'sandbox',
@@ -1077,7 +1077,7 @@ let updateImageOrder = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   createNewOrder: createNewOrder,
   getAllOrders: getAllOrders,
   getDetailOrderById: getDetailOrderById,
@@ -1097,3 +1097,4 @@ module.exports = {
   paymentOrderVnpaySuccess: paymentOrderVnpaySuccess,
   updateImageOrder: updateImageOrder,
 };
+

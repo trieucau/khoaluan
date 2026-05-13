@@ -1,6 +1,6 @@
-import db from '../models/index';
-require('dotenv').config();
-const { Op } = require('sequelize');
+import db from '../models/index.js';
+import 'dotenv/config';
+import { Op } from 'sequelize';
 let createNewBlog = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -276,7 +276,7 @@ let getNewBlog = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   createNewBlog: createNewBlog,
   getDetailBlogById: getDetailBlogById,
   getAllBlog: getAllBlog,
@@ -285,3 +285,4 @@ module.exports = {
   getFeatureBlog: getFeatureBlog,
   getNewBlog: getNewBlog,
 };
+

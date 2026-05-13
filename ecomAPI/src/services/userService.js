@@ -1,12 +1,12 @@
-import db from '../models/index';
+import db from '../models/index.js';
 import bcrypt from 'bcryptjs';
-import emailService from './emailService';
+import emailService from './emailService.js';
 import { v4 as uuidv4 } from 'uuid';
-import CommonUtils from '../utils/CommonUtils';
-const { Op } = require('sequelize');
-import admin from '../config/firebaseAdmin';
+import CommonUtils from '../utils/CommonUtils.js';
+import { Op } from 'sequelize';
+import admin from '../config/firebaseAdmin.js';
 import fetch from 'node-fetch';
-require('dotenv').config();
+import 'dotenv/config';
 const salt = bcrypt.genSaltSync(10);
 
 let buildUrlEmail = (token, userId) => {
@@ -653,7 +653,7 @@ let checkPhonenumberEmail = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   handleCreateNewUser: handleCreateNewUser,
   deleteUser: deleteUser,
   updateUserData: updateUserData,
@@ -668,3 +668,4 @@ module.exports = {
   checkPhonenumberEmail: checkPhonenumberEmail,
   handleLoginSocial: handleLoginSocial,
 };
+

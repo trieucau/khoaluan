@@ -1,5 +1,5 @@
-import db from '../models/index';
-const { Op } = require('sequelize');
+import db from '../models/index.js';
+import { Op } from 'sequelize';
 let handleCreateNewAllCode = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -196,7 +196,7 @@ let getAllCategoryBlog = (typeInput) => {
     }
   });
 };
-module.exports = {
+export default {
   handleCreateNewAllCode: handleCreateNewAllCode,
   getAllCodeService: getAllCodeService,
   handleUpdateAllCode: handleUpdateAllCode,
@@ -205,3 +205,4 @@ module.exports = {
   getListAllCodeService: getListAllCodeService,
   getAllCategoryBlog: getAllCategoryBlog,
 };
+

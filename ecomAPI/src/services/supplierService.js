@@ -1,6 +1,6 @@
-import db from '../models/index';
-require('dotenv').config();
-const { Op } = require('sequelize');
+import db from '../models/index.js';
+import 'dotenv/config';
+import { Op } from 'sequelize';
 
 let createNewSupplier = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -132,10 +132,11 @@ let deleteSupplier = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   createNewSupplier: createNewSupplier,
   getDetailSupplierById: getDetailSupplierById,
   getAllSupplier: getAllSupplier,
   updateSupplier: updateSupplier,
   deleteSupplier: deleteSupplier,
 };
+

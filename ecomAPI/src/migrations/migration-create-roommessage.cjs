@@ -1,28 +1,21 @@
 'use strict';
 
-const { sequelize } = require('../models');
+
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Voucheruseds', {
+    await queryInterface.createTable('RoomMessages', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      voucherId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      userId: {
-        allowNull: false,
+      userOne: {
         type: Sequelize.INTEGER,
       },
-      status: {
-        allowNull: false,
+      userTwo: {
         type: Sequelize.INTEGER,
-        defaultValue: 0,
       },
       createdAt: {
         allowNull: false,
@@ -35,6 +28,7 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Voucheruseds');
+    await queryInterface.dropTable('RoomMessages');
   },
 };
+

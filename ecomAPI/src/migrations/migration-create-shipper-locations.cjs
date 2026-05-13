@@ -38,3 +38,4 @@ module.exports = {
     await queryInterface.dropTable('shipper_locations');
   },
 };
+

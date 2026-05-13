@@ -1,4 +1,4 @@
-import chatbotService from '../services/chatbotService';
+import chatbotService from '../services/chatbotService.js';
 
 const chat = async (req, res) => {
   try {
@@ -46,3 +46,4 @@ const chat = async (req, res) => {
 };
 
 export default { chat };
+

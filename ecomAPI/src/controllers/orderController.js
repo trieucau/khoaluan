@@ -1,4 +1,4 @@
-import orderService from '../services/orderService';
+import orderService from '../services/orderService.js';
 
 let createNewOrder = async (req, res) => {
   try {
@@ -219,7 +219,7 @@ let getAdminShippersOnMap = async (req, res) => {
     return res.status(200).json({ errCode: -1, errMessage: 'Error from server' });
   }
 };
-module.exports = {
+export default {
   createNewOrder: createNewOrder,
   getAllOrders: getAllOrders,
   getDetailOrderById: getDetailOrderById,
@@ -239,3 +239,4 @@ module.exports = {
   paymentOrderVnpaySuccess: paymentOrderVnpaySuccess,
   updateImageOrder: updateImageOrder,
 };
+

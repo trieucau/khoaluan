@@ -1,6 +1,6 @@
-import db from '../models/index';
-require('dotenv').config();
-const { Op } = require('sequelize');
+import db from '../models/index.js';
+import 'dotenv/config';
+import { Op } from 'sequelize';
 let createNewBanner = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -137,10 +137,11 @@ let deleteBanner = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   createNewBanner: createNewBanner,
   getDetailBanner: getDetailBanner,
   getAllBanner: getAllBanner,
   updateBanner: updateBanner,
   deleteBanner: deleteBanner,
 };
+

@@ -1,4 +1,4 @@
-import bannerService from '../services/bannerService';
+import bannerService from '../services/bannerService.js';
 
 let createNewBanner = async (req, res) => {
   try {
@@ -60,10 +60,11 @@ let deleteBanner = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   createNewBanner: createNewBanner,
   getDetailBanner: getDetailBanner,
   getAllBanner: getAllBanner,
   updateBanner: updateBanner,
   deleteBanner: deleteBanner,
 };
+

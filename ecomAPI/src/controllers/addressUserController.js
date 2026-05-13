@@ -1,4 +1,4 @@
-import addressUserService from '../services/addressUserService';
+import addressUserService from '../services/addressUserService.js';
 
 let createNewAddressUser = async (req, res) => {
   try {
@@ -87,7 +87,7 @@ let updateLocationAddressUser = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   createNewAddressUser: createNewAddressUser,
   getAllAddressUserByUserId: getAllAddressUserByUserId,
   deleteAddressUser: deleteAddressUser,
@@ -95,3 +95,4 @@ module.exports = {
   getDetailAddressUserById: getDetailAddressUserById,
   updateLocationAddressUser: updateLocationAddressUser,
 };
+

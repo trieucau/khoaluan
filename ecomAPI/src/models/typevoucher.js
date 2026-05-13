@@ -1,6 +1,6 @@
 'use strict';
-const { Model } = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
+import { Model } from 'sequelize';
+export default (sequelize, DataTypes) => {
   class TypeVoucher extends Model {
     static associate(models) {
       TypeVoucher.belongsTo(models.Allcode, {
@@ -29,3 +29,4 @@ module.exports = (sequelize, DataTypes) => {
   );
   return TypeVoucher;
 };
+

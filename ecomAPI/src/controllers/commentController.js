@@ -1,4 +1,4 @@
-import commentService from '../services/commentService';
+import commentService from '../services/commentService.js';
 
 let createNewReview = async (req, res) => {
   try {
@@ -96,7 +96,7 @@ let deleteComment = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   createNewReview: createNewReview,
   getAllReviewByProductId: getAllReviewByProductId,
   ReplyReview: ReplyReview,
@@ -106,3 +106,4 @@ module.exports = {
   deleteComment: deleteComment,
   ReplyComment: ReplyComment,
 };
+

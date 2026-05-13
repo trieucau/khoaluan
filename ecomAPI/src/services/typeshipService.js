@@ -1,6 +1,6 @@
-import db from '../models/index';
-require('dotenv').config();
-const { Op } = require('sequelize');
+import db from '../models/index.js';
+import 'dotenv/config';
+import { Op } from 'sequelize';
 
 let createNewTypeShip = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -127,10 +127,11 @@ let deleteTypeship = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   createNewTypeShip: createNewTypeShip,
   getDetailTypeshipById: getDetailTypeshipById,
   getAllTypeship: getAllTypeship,
   updateTypeship: updateTypeship,
   deleteTypeship: deleteTypeship,
 };
+

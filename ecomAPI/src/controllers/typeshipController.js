@@ -1,4 +1,4 @@
-import typeshipService from '../services/typeshipService';
+import typeshipService from '../services/typeshipService.js';
 
 let createNewTypeShip = async (req, res) => {
   try {
@@ -60,10 +60,11 @@ let deleteTypeship = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   createNewTypeShip: createNewTypeShip,
   getDetailTypeshipById: getDetailTypeshipById,
   getAllTypeship: getAllTypeship,
   updateTypeship: updateTypeship,
   deleteTypeship: deleteTypeship,
 };
+

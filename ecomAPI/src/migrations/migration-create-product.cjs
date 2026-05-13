@@ -1,53 +1,42 @@
 'use strict';
 
-const { sequelize } = require('../models');
+
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Users', {
+    await queryInterface.createTable('Products', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      email: {
+      name: {
         type: Sequelize.STRING,
       },
-      password: {
-        type: Sequelize.STRING,
+      contentHTML: {
+        type: Sequelize.TEXT('long'),
       },
-      firstName: {
-        type: Sequelize.STRING,
-      },
-      lastName: {
-        type: Sequelize.STRING,
-      },
-      address: {
-        type: Sequelize.STRING,
-      },
-      genderId: {
-        type: Sequelize.STRING,
-      },
-      phonenumber: {
-        type: Sequelize.STRING,
-      },
-      image: {
-        type: Sequelize.BLOB('long'),
-      },
-      dob: {
-        type: Sequelize.STRING,
-      },
-      roleId: {
-        type: Sequelize.STRING,
+      contentMarkdown: {
+        type: Sequelize.TEXT('long'),
       },
       statusId: {
         type: Sequelize.STRING,
       },
-      isActiveEmail: {
-        type: Sequelize.BOOLEAN,
+      categoryId: {
+        type: Sequelize.STRING,
       },
-      usertoken: {
+      view: {
+        type: Sequelize.INTEGER,
+      },
+
+      madeby: {
+        type: Sequelize.STRING,
+      },
+      material: {
+        type: Sequelize.STRING,
+      },
+      brandId: {
         type: Sequelize.STRING,
       },
       createdAt: {
@@ -61,6 +50,7 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('Products');
   },
 };
+

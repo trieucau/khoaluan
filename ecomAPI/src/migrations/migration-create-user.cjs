@@ -1,42 +1,54 @@
 'use strict';
 
-const { sequelize } = require('../models');
+
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Blogs', {
+    await queryInterface.createTable('Users', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      shortdescription: {
-        type: Sequelize.TEXT('long'),
-      },
-      title: {
+      email: {
         type: Sequelize.STRING,
       },
-      subjectId: {
+      password: {
         type: Sequelize.STRING,
       },
-      statusId: {
+      firstName: {
+        type: Sequelize.STRING,
+      },
+      lastName: {
+        type: Sequelize.STRING,
+      },
+      address: {
+        type: Sequelize.STRING,
+      },
+      genderId: {
+        type: Sequelize.STRING,
+      },
+      phonenumber: {
         type: Sequelize.STRING,
       },
       image: {
         type: Sequelize.BLOB('long'),
       },
-      contentMarkdown: {
-        type: Sequelize.TEXT('long'),
+      dob: {
+        type: Sequelize.STRING,
       },
-      contentHTML: {
-        type: Sequelize.TEXT('long'),
+      roleId: {
+        type: Sequelize.STRING,
       },
-      userId: {
-        type: Sequelize.INTEGER,
+      statusId: {
+        type: Sequelize.STRING,
       },
-      view: {
-        type: Sequelize.INTEGER,
+      isActiveEmail: {
+        type: Sequelize.BOOLEAN,
+      },
+      usertoken: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
@@ -49,6 +61,7 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Blogs');
+    await queryInterface.dropTable('Users');
   },
 };
+

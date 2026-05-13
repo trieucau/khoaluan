@@ -1,4 +1,4 @@
-import userService from '../services/userService';
+import userService from '../services/userService.js';
 
 let handleCreateNewUser = async (req, res) => {
   try {
@@ -168,7 +168,7 @@ let checkPhonenumberEmail = async (req, res) => {
     });
   }
 };
-module.exports = {
+export default {
   handleCreateNewUser: handleCreateNewUser,
   handleUpdateUser: handleUpdateUser,
   handleDeleteUser: handleDeleteUser,
@@ -184,3 +184,4 @@ module.exports = {
   getDetailUserByEmail: getDetailUserByEmail,
   handleLoginSocial: handleLoginSocial,
 };
+

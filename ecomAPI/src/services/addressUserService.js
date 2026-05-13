@@ -1,4 +1,4 @@
-import db from '../models/index';
+import db from '../models/index.js';
 
 let createNewAddressUser = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -210,7 +210,7 @@ let updateLocationAddressUser = (data) => {
     }
   });
 };
-module.exports = {
+export default {
   createNewAddressUser: createNewAddressUser,
   getAllAddressUserByUserId: getAllAddressUserByUserId,
   deleteAddressUser: deleteAddressUser,
@@ -218,3 +218,4 @@ module.exports = {
   getDetailAddressUserById: getDetailAddressUserById,
   updateLocationAddressUser: updateLocationAddressUser,
 };
+

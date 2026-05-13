@@ -1,7 +1,7 @@
 'use strict';
-const { Model } = require('sequelize');
+import { Model } from 'sequelize';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   class ShipperLocation extends Model {
     static associate(models) {
       ShipperLocation.belongsTo(models.User, {
@@ -25,3 +25,4 @@ module.exports = (sequelize, DataTypes) => {
   );
   return ShipperLocation;
 };
+
