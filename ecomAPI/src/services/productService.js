@@ -758,46 +758,47 @@ let deleteProductDetail = (data) => {
           let productSizes = await db.ProductDetailSize.findAll({
             where: { productdetailId: data.id },
             attributes: ['id'],
-            raw: true
+            raw: true,
           });
 
-          const sizeIds = productSizes.map(item => item.id);
+          const sizeIds = productSizes.map((item) => item.id);
 
           if (sizeIds.length > 0) {
             // 2. Check if any size is used in OrderDetail or ReceiptDetail
             let usedInOrder = await db.OrderDetail.findOne({
-              where: { productId: { [Op.in]: sizeIds } }
+              where: { productId: { [Op.in]: sizeIds } },
             });
             let usedInReceipt = await db.ReceiptDetail.findOne({
-              where: { productDetailSizeId: { [Op.in]: sizeIds } }
+              where: { productDetailSizeId: { [Op.in]: sizeIds } },
             });
 
             if (usedInOrder || usedInReceipt) {
               return resolve({
                 errCode: 3,
-                errMessage: 'Không thể xóa chi tiết sản phẩm này vì đã có dữ liệu trong đơn hàng hoặc phiếu nhập.'
+                errMessage:
+                  'Không thể xóa chi tiết sản phẩm này vì đã có dữ liệu trong đơn hàng hoặc phiếu nhập.',
               });
             }
 
             // 3. Cleanup ShopCart
             await db.ShopCart.destroy({
-              where: { productdetailsizeId: { [Op.in]: sizeIds } }
+              where: { productdetailsizeId: { [Op.in]: sizeIds } },
             });
 
             // 4. Delete ProductDetailSize
             await db.ProductDetailSize.destroy({
-              where: { productdetailId: data.id }
+              where: { productdetailId: data.id },
             });
           }
 
           // 5. Delete ProductImage
           await db.ProductImage.destroy({
-            where: { productdetailId: data.id }
+            where: { productdetailId: data.id },
           });
 
           // 6. Finally delete ProductDetail
           await db.ProductDetail.destroy({
-            where: { id: data.id }
+            where: { id: data.id },
           });
 
           resolve({

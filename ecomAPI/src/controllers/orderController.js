@@ -41,7 +41,7 @@ let updateStatusOrder = async (req, res) => {
     let data = await orderService.updateStatusOrder({
       ...req.body,
       userId: req.user.id,
-      roleId: req.user.roleId
+      roleId: req.user.roleId,
     });
     return res.status(200).json(data);
   } catch (error) {
@@ -59,7 +59,7 @@ let getAllOrdersByUser = async (req, res) => {
       limit: req.query.limit,
       offset: req.query.offset,
       statusId: req.query.statusId,
-      keyword: req.query.keyword
+      keyword: req.query.keyword,
     });
     return res.status(200).json(data);
   } catch (error) {

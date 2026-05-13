@@ -49,7 +49,7 @@ let getAllAddressUserByUserId = (data) => {
         resolve({
           errCode: 0,
           data: rows,
-          count: count
+          count: count,
         });
       }
     } catch (error) {
@@ -69,14 +69,14 @@ let deleteAddressUser = (data) => {
         let addressUser = await db.AddressUser.findOne({
           where: {
             id: data.id,
-            userId: data.userId
+            userId: data.userId,
           },
         });
         if (addressUser) {
           await db.AddressUser.destroy({
             where: {
               id: data.id,
-              userId: data.userId
+              userId: data.userId,
             },
           });
           resolve({
@@ -153,15 +153,15 @@ let getDetailAddressUserById = (id, userId) => {
           where: { id: id, userId: userId },
         });
         if (res) {
-            resolve({
-                errCode: 0,
-                data: res,
-              });
+          resolve({
+            errCode: 0,
+            data: res,
+          });
         } else {
-            resolve({
-                errCode: 2,
-                errMessage: 'Địa chỉ không tồn tại hoặc bạn không có quyền',
-              });
+          resolve({
+            errCode: 2,
+            errMessage: 'Địa chỉ không tồn tại hoặc bạn không có quyền',
+          });
         }
       }
     } catch (error) {
@@ -182,7 +182,7 @@ let updateLocationAddressUser = (data) => {
         let addressUser = await db.AddressUser.findOne({
           where: {
             id: data.id,
-            userId: data.userId
+            userId: data.userId,
           },
           raw: false,
         });
@@ -201,7 +201,7 @@ let updateLocationAddressUser = (data) => {
         } else {
           resolve({
             errCode: 2,
-            errMessage: 'Address user not found or you don\'t have permission',
+            errMessage: "Address user not found or you don't have permission",
           });
         }
       }

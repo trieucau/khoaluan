@@ -193,7 +193,7 @@ let deleteItemShopCart = (data) => {
             errMessage: 'ok',
           });
         } else {
-           resolve({
+          resolve({
             errCode: 2,
             errMessage: 'Sản phẩm không tồn tại trong giỏ hàng của bạn',
           });

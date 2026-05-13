@@ -188,27 +188,27 @@ let listRoomOfAdmin = (userId) => {
   return new Promise(async (resolve, reject) => {
     try {
       let room = await db.RoomMessage.findAll();
-        for (let i = 0; i < room.length; i++) {
-          room[i].messageData = await db.Message.findAll({
-            where: { roomId: room[i].id },
-          });
-          room[i].userOneData = await db.User.findOne({
-            where: { id: room[i].userOne },
-          });
-          if (room[i].userOneData && room[i].userOneData.image) {
-            room[i].userOneData.image = Buffer.from(room[i].userOneData.image, 'base64').toString(
-              'binary'
-            );
-          }
-          room[i].userTwoData = await db.User.findOne({
-            where: { id: room[i].userTwo },
-          });
-          if (room[i].userTwoData && room[i].userTwoData.image) {
-            room[i].userTwoData.image = Buffer.from(room[i].userTwoData.image, 'base64').toString(
-              'binary'
-            );
-          }
+      for (let i = 0; i < room.length; i++) {
+        room[i].messageData = await db.Message.findAll({
+          where: { roomId: room[i].id },
+        });
+        room[i].userOneData = await db.User.findOne({
+          where: { id: room[i].userOne },
+        });
+        if (room[i].userOneData && room[i].userOneData.image) {
+          room[i].userOneData.image = Buffer.from(room[i].userOneData.image, 'base64').toString(
+            'binary'
+          );
         }
+        room[i].userTwoData = await db.User.findOne({
+          where: { id: room[i].userTwo },
+        });
+        if (room[i].userTwoData && room[i].userTwoData.image) {
+          room[i].userTwoData.image = Buffer.from(room[i].userTwoData.image, 'base64').toString(
+            'binary'
+          );
+        }
+      }
       resolve({
         errCode: 0,
         data: room,

@@ -128,7 +128,7 @@ let getAllReceipt = (data) => {
         let user = await db.User.findOne({
           where: { id: res.rows[i].userId },
           raw: true,
-          nest: true
+          nest: true,
         });
 
         if (user && user.image) {
@@ -136,7 +136,7 @@ let getAllReceipt = (data) => {
         }
 
         res.rows[i].userData = user;
-        
+
         res.rows[i].supplierData = await db.Supplier.findOne({
           where: { id: res.rows[i].supplierId },
         });

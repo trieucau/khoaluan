@@ -112,7 +112,7 @@ let getAllOrders = (data) => {
               id: addressUser.userId,
             },
             raw: true,
-            nest: true
+            nest: true,
           });
 
           if (user && user.image) {
@@ -155,7 +155,7 @@ let getDetailOrderById = (id, requesterId, requesterRole) => {
         });
 
         if (!order) {
-           return resolve({ errCode: 2, errMessage: 'Order not found' });
+          return resolve({ errCode: 2, errMessage: 'Order not found' });
         }
 
         let addressUser = await db.AddressUser.findOne({
@@ -163,8 +163,13 @@ let getDetailOrderById = (id, requesterId, requesterRole) => {
         });
 
         // Ownership Check: User must own the order or be Admin/Shipper
-        if (requesterRole !== 'R1' && requesterRole !== 'R4' && requesterRole !== 'R3' && addressUser.userId != requesterId) {
-            return resolve({ errCode: 3, errMessage: 'Bạn không có quyền xem đơn hàng này' });
+        if (
+          requesterRole !== 'R1' &&
+          requesterRole !== 'R4' &&
+          requesterRole !== 'R3' &&
+          addressUser.userId != requesterId
+        ) {
+          return resolve({ errCode: 3, errMessage: 'Bạn không có quyền xem đơn hàng này' });
         }
 
         if (order.image) {
@@ -172,14 +177,14 @@ let getDetailOrderById = (id, requesterId, requesterRole) => {
           order.image = Buffer.from(order.image, 'base64').toString('binary');
         }
         if (order.voucherData && order.voucherData.typeVoucherId) {
-            order.voucherData.typeVoucherOfVoucherData = await db.TypeVoucher.findOne({
-                where: { id: order.voucherData.typeVoucherId },
-            });
+          order.voucherData.typeVoucherOfVoucherData = await db.TypeVoucher.findOne({
+            where: { id: order.voucherData.typeVoucherId },
+          });
         }
         let orderDetail = await db.OrderDetail.findAll({
           where: { orderId: id },
         });
-        
+
         order.addressUser = addressUser;
         let user = await db.User.findOne({
           where: { id: addressUser.userId },
@@ -252,7 +257,7 @@ let updateStatusOrder = (data) => {
           raw: false,
         });
         if (!order) {
-            return resolve({ errCode: 2, errMessage: 'Order not found' });
+          return resolve({ errCode: 2, errMessage: 'Order not found' });
         }
 
         let addressUser = await db.AddressUser.findOne({
@@ -260,8 +265,13 @@ let updateStatusOrder = (data) => {
         });
 
         // Ownership Check: Only owner can update (cancel) OR Admin/Shipper
-        if (data.roleId !== 'R1' && data.roleId !== 'R4' && data.roleId !== 'R3' && addressUser.userId != data.userId) {
-             return resolve({ errCode: 3, errMessage: 'Bạn không có quyền cập nhật đơn hàng này' });
+        if (
+          data.roleId !== 'R1' &&
+          data.roleId !== 'R4' &&
+          data.roleId !== 'R3' &&
+          addressUser.userId != data.userId
+        ) {
+          return resolve({ errCode: 3, errMessage: 'Bạn không có quyền cập nhật đơn hàng này' });
         }
 
         order.statusId = data.statusId;
@@ -313,13 +323,13 @@ let getAllOrdersByUser = (data) => {
         let addressUser = await db.AddressUser.findAll({
           where: { userId: data.userId },
           attributes: ['id'],
-          raw: true
+          raw: true,
         });
 
-        const addressIds = addressUser.map(item => item.id);
+        const addressIds = addressUser.map((item) => item.id);
 
         let whereClause = {
-          addressUserId: { [Op.in]: addressIds }
+          addressUserId: { [Op.in]: addressIds },
         };
 
         if (statusId && statusId !== 'ALL') {
@@ -329,9 +339,7 @@ let getAllOrdersByUser = (data) => {
         if (keyword) {
           // Simplified keyword search for Order ID
           // For complex product name search, we would need complex joins
-          whereClause[Op.or] = [
-            { id: { [Op.like]: `%${keyword}%` } }
-          ];
+          whereClause[Op.or] = [{ id: { [Op.like]: `%${keyword}%` } }];
         }
 
         let { count, rows: orders } = await db.OrderProduct.findAndCountAll({
@@ -350,12 +358,11 @@ let getAllOrdersByUser = (data) => {
 
         for (let j = 0; j < orders.length; j++) {
           if (orders[j].voucherData && orders[j].voucherData.typeVoucherId) {
-            orders[j].voucherData.typeVoucherOfVoucherData =
-              await db.TypeVoucher.findOne({
-                where: {
-                  id: orders[j].voucherData.typeVoucherId,
-                },
-              });
+            orders[j].voucherData.typeVoucherOfVoucherData = await db.TypeVoucher.findOne({
+              where: {
+                id: orders[j].voucherData.typeVoucherId,
+              },
+            });
           }
           let orderDetail = await db.OrderDetail.findAll({
             where: { orderId: orders[j].id },
@@ -396,7 +403,7 @@ let getAllOrdersByUser = (data) => {
         resolve({
           errCode: 0,
           data: orders,
-          count: count
+          count: count,
         });
       }
     } catch (error) {
@@ -1004,7 +1011,10 @@ let confirmOrderVnpay = (data) => {
       let signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
       if (secureHash === signed) {
-        if (vnp_Params['vnp_ResponseCode'] === '00' || vnp_Params['vnp_TransactionStatus'] === '00') {
+        if (
+          vnp_Params['vnp_ResponseCode'] === '00' ||
+          vnp_Params['vnp_TransactionStatus'] === '00'
+        ) {
           resolve({
             errCode: 0,
             errMessage: 'Success',
@@ -1012,7 +1022,8 @@ let confirmOrderVnpay = (data) => {
         } else {
           resolve({
             errCode: 2,
-            errMessage: 'Giao dịch thất bại (VNP_ResponseCode: ' + vnp_Params['vnp_ResponseCode'] + ')',
+            errMessage:
+              'Giao dịch thất bại (VNP_ResponseCode: ' + vnp_Params['vnp_ResponseCode'] + ')',
           });
         }
       } else {

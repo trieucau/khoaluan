@@ -3,8 +3,8 @@ import addressUserService from '../services/addressUserService';
 let createNewAddressUser = async (req, res) => {
   try {
     let data = await addressUserService.createNewAddressUser({
-        ...req.body,
-        userId: req.user.id
+      ...req.body,
+      userId: req.user.id,
     });
     return res.status(200).json(data);
   } catch (error) {
@@ -20,7 +20,7 @@ let getAllAddressUserByUserId = async (req, res) => {
     let data = await addressUserService.getAllAddressUserByUserId({
       userId: req.user.id,
       limit: req.query.limit,
-      offset: req.query.offset
+      offset: req.query.offset,
     });
     return res.status(200).json(data);
   } catch (error) {
@@ -34,8 +34,8 @@ let getAllAddressUserByUserId = async (req, res) => {
 let deleteAddressUser = async (req, res) => {
   try {
     let data = await addressUserService.deleteAddressUser({
-        ...req.body,
-        userId: req.user.id
+      ...req.body,
+      userId: req.user.id,
     });
     return res.status(200).json(data);
   } catch (error) {
@@ -49,8 +49,8 @@ let deleteAddressUser = async (req, res) => {
 let editAddressUser = async (req, res) => {
   try {
     let data = await addressUserService.editAddressUser({
-        ...req.body,
-        userId: req.user.id
+      ...req.body,
+      userId: req.user.id,
     });
     return res.status(200).json(data);
   } catch (error) {
@@ -76,8 +76,8 @@ let getDetailAddressUserById = async (req, res) => {
 let updateLocationAddressUser = async (req, res) => {
   try {
     let data = await addressUserService.updateLocationAddressUser({
-        ...req.body,
-        userId: req.user.id
+      ...req.body,
+      userId: req.user.id,
     });
     return res.status(200).json(data);
   } catch (e) {

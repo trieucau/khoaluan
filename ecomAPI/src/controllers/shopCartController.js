@@ -3,8 +3,8 @@ import shopCartService from '../services/shopCartService';
 let addShopCart = async (req, res) => {
   try {
     let data = await shopCartService.addShopCart({
-        ...req.body,
-        userId: req.user.id // Force use of authenticated user ID
+      ...req.body,
+      userId: req.user.id, // Force use of authenticated user ID
     });
     return res.status(200).json(data);
   } catch (error) {
@@ -31,8 +31,8 @@ let getAllShopCartByUserId = async (req, res) => {
 let deleteItemShopCart = async (req, res) => {
   try {
     let data = await shopCartService.deleteItemShopCart({
-        ...req.body,
-        userId: req.user.id // Pass for ownership check
+      ...req.body,
+      userId: req.user.id, // Pass for ownership check
     });
     return res.status(200).json(data);
   } catch (error) {
