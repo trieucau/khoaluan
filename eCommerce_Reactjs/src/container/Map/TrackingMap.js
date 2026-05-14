@@ -71,8 +71,8 @@ const TrackingMap = ({ shipperLoc, deliveryCoords, statusId }) => {
       {/* Map legend */}
       <div className="ot-map-legend">
         <div className="ot-legend-item">
-          <span className="ot-legend-dot ot-legend-dot--shipper" />
-          Shipper
+          <span className={`ot-legend-dot ${statusId === 'S4' ? 'ot-legend-dot--warehouse' : 'ot-legend-dot--shipper'}`} />
+          {statusId === 'S4' ? 'Kho hàng' : 'Shipper'}
         </div>
         <div className="ot-legend-item">
           <span className="ot-legend-dot ot-legend-dot--dest" />
