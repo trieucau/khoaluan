@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Tổng Kho Miền Bắc - Bắc Giang International Logistics Center",
+    "phonenumber": "0836298298",
+    "address": "QL1A, Tiền Phong, Bắc Ninh 230000, Vietnam",
+    "lat": 21.1805,
+    "lng": 106.0763
+  },
+  {
+    "id": 2,
+    "name": "Tổng Kho Miền Trung - Việt Thái Logistics Chân Mây",
+    "phonenumber": "0909358136",
+    "address": "Mỹ An, Chân Mây - Lăng Cô, Huế, Vietnam",
+    "lat": 16.3148,
+    "lng": 107.9552
+  },
+  {
+    "id": 3,
+    "name": "Tổng Kho Miền Nam - Quý Long Logistics",
+    "phonenumber": "0979256789",
+    "address": "471A QL1A, An Phú Đông, Hồ Chí Minh, Vietnam",
+    "lat": 10.8578,
+    "lng": 106.6881
+  }
+]

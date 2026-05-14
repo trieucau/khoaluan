@@ -57,4 +57,3 @@ let getBodyHTMLEmailForgotPassword = (dataSend) => {
 export default {
   sendSimpleEmail: sendSimpleEmail,
 };
-

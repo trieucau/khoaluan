@@ -106,4 +106,3 @@ export default {
   deleteComment: deleteComment,
   ReplyComment: ReplyComment,
 };
-

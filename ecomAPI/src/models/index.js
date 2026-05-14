@@ -41,15 +41,14 @@ sequelize = new Sequelize(
   customizeConfig
 );
 
-const files = fs.readdirSync(__dirname)
-  .filter((file) => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
-  });
+const files = fs.readdirSync(__dirname).filter((file) => {
+  return (
+    file.indexOf('.') !== 0 &&
+    file !== basename &&
+    file.slice(-3) === '.js' &&
+    file.indexOf('.test.js') === -1
+  );
+});
 
 for (const file of files) {
   const modelModule = await import(path.join('file://', __dirname, file));

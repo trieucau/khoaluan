@@ -1,11 +1,11 @@
 import { Op } from 'sequelize';
 import db from '../models/index.js';
 import moment from 'moment';
-function compareDates(d1, d2) {
-  var parts = d1.split('/');
-  var d1 = Number(parts[2] + parts[1] + parts[0]);
-  parts = d2.split('/');
-  var d2 = Number(parts[2] + parts[1] + parts[0]);
+function compareDates(dateStr1, dateStr2) {
+  let parts1 = dateStr1.split('/');
+  let d1 = Number(parts1[2] + parts1[1] + parts1[0]);
+  let parts2 = dateStr2.split('/');
+  let d2 = Number(parts2[2] + parts2[1] + parts2[0]);
 
   if (d1 <= d2) return true;
   if (d1 >= d2) return false;
@@ -129,7 +129,6 @@ function DaysOfMonth(thang, nam) {
     case 2:
       if (yar % 4 == 0 && yar % 400 != 0) return 29;
       else return 28;
-      break;
     case 1:
     case 3:
     case 5:
@@ -138,7 +137,6 @@ function DaysOfMonth(thang, nam) {
     case 10:
     case 12:
       return 31;
-      break;
     default:
       return 30;
   }
@@ -559,4 +557,3 @@ export default {
   getStatisticProfit: getStatisticProfit,
   getStatisticStockProduct: getStatisticStockProduct,
 };
-

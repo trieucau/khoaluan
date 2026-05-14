@@ -182,4 +182,3 @@ export default {
   saveUserVoucher: saveUserVoucher,
   getAllVoucherByUserId: getAllVoucherByUserId,
 };
-

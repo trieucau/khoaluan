@@ -45,6 +45,7 @@ import Turnover from './Statistic/Turnover';
 import Profit from './Statistic/Profit';
 import StockProduct from './Statistic/StockProduct';
 import AdminShipperMap from './ShipperMap/AdminShipperMap';
+import ManageWarehouse from './Warehouse/ManageWarehouse';
 
 function HomePageAdmin() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -130,6 +131,7 @@ function HomePageAdmin() {
               <Route path="/profit" element={<Profit />} />
               <Route path="/stock-product" element={<StockProduct />} />
               <Route path="/chat" element={<Message />} />
+              <Route path="/manage-warehouse" element={<ManageWarehouse />} />
             </Route>
           </Routes>
           <Footer />

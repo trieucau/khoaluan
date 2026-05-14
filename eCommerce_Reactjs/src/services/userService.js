@@ -466,6 +466,19 @@ const getAdminShippersOnMap = () => {
 const getExchangeRate = () => {
   return axios.get(`https://tygia.com/json.php?ran=0&gold=0&bank=VIETCOM&date=now`);
 };
+//======================WAREHOUSE==========================//
+const getAllWarehouses = () => {
+  return axios.get(`/api/get-all-warehouses`);
+};
+const createNewWarehouse = (data) => {
+  return axios.post(`/api/create-warehouse`, data);
+};
+const updateWarehouse = (data) => {
+  return axios.put(`/api/update-warehouse`, data);
+};
+const deleteWarehouse = (id) => {
+  return axios.delete(`/api/delete-warehouse?id=${id}`);
+};
 export {
   getAllUsers,
   getAllCodeService,
@@ -599,4 +612,8 @@ export {
   getOrderShipperLocation,
   getAdminShippersOnMap,
   updateLocationAddressUserService,
+  getAllWarehouses,
+  createNewWarehouse,
+  updateWarehouse,
+  deleteWarehouse,
 };

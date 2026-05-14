@@ -134,4 +134,3 @@ export default {
   updateTypeship: updateTypeship,
   deleteTypeship: deleteTypeship,
 };
-

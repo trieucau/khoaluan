@@ -30,4 +30,3 @@ export default (sequelize, DataTypes) => {
   );
   return Voucher;
 };
-

@@ -29,7 +29,8 @@ const STEPS = [
 const OrderTracking = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { order, shipperLoc, deliveryCoords, loading, error } = useOrderTracking(orderId);
+  const { order, shipperLoc, deliveryCoords, warehouse, loading, error } =
+    useOrderTracking(orderId);
 
   /* ── Loading state ────────────────────────────────────────── */
   if (loading) {
@@ -174,14 +175,38 @@ const OrderTracking = () => {
           </div>
         </div>
 
-        {/* Shipper card */}
+        {/* Shipper/Warehouse card */}
         <div className="ot-info-card">
           <div className="ot-info-card__header">
-            <i className="fa-solid fa-truck" />
-            Thông tin shipper
+            {order.statusId === 'S4' ? (
+              <>
+                <i className="fa-solid fa-warehouse" />
+                Thông tin kho hàng
+              </>
+            ) : (
+              <>
+                <i className="fa-solid fa-truck" />
+                Thông tin shipper
+              </>
+            )}
           </div>
           <div className="ot-info-card__body">
-            {shipper ? (
+            {order.statusId === 'S4' && warehouse ? (
+              <>
+                <p className="ot-info-line">
+                  <i className="fa-solid fa-building" />
+                  {warehouse.name}
+                </p>
+                <p className="ot-info-line">
+                  <i className="fa-solid fa-phone" />
+                  {warehouse.phonenumber || 'Chưa có SĐT'}
+                </p>
+                <p className="ot-info-line">
+                  <i className="fa-solid fa-map-pin" />
+                  {warehouse.address}
+                </p>
+              </>
+            ) : shipper ? (
               <>
                 <p className="ot-info-line">
                   <i className="fa-solid fa-user" />
@@ -200,7 +225,7 @@ const OrderTracking = () => {
               <p className="ot-info-empty">
                 <i className="fa-solid fa-circle-info" />
                 {order.statusId === 'S3'
-                  ? 'Shipper chưa được phân công'
+                  ? 'Shop chưa chuẩn bị xong hàng'
                   : 'Không có thông tin shipper'}
               </p>
             )}

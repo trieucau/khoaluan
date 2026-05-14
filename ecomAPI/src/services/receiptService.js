@@ -213,4 +213,3 @@ export default {
   deleteReceipt: deleteReceipt,
   createNewReceiptDetail: createNewReceiptDetail,
 };
-

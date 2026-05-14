@@ -93,4 +93,3 @@ export default {
   getStatisticProfit: getStatisticProfit,
   getStatisticStockProduct: getStatisticStockProduct,
 };
-

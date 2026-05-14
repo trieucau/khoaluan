@@ -144,4 +144,3 @@ export default {
   updateBanner: updateBanner,
   deleteBanner: deleteBanner,
 };
-

@@ -11,4 +11,3 @@ module.exports = {
     await queryInterface.removeColumn('Orderproducts', 'statusReason');
   },
 };
-

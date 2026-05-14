@@ -17,4 +17,3 @@ export default (sequelize, DataTypes) => {
   );
   return Receipt;
 };
-

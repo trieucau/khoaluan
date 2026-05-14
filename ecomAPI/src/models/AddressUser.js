@@ -22,4 +22,3 @@ export default (sequelize, DataTypes) => {
   );
   return AddressUser;
 };
-

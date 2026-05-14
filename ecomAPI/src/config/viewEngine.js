@@ -6,4 +6,3 @@ let configviewEngine = (app) => {
   app.set('views', './src/views');
 };
 export default configviewEngine;
-

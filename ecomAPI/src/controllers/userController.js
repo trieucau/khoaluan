@@ -184,4 +184,3 @@ export default {
   getDetailUserByEmail: getDetailUserByEmail,
   handleLoginSocial: handleLoginSocial,
 };
-

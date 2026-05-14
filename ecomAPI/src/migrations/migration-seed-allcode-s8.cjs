@@ -17,4 +17,3 @@ module.exports = {
     await queryInterface.bulkDelete('Allcodes', { code: 'S8' });
   },
 };
-

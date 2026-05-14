@@ -46,4 +46,3 @@ const chat = async (req, res) => {
 };
 
 export default { chat };
-

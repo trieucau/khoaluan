@@ -15,4 +15,3 @@ export let upsertShipperLocation = async (shipperId, lat, lng) => {
 };
 
 export default { upsertShipperLocation };
-

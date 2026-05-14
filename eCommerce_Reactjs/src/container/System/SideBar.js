@@ -187,6 +187,16 @@ const Icons = {
       }
     />
   ),
+  warehouse: (
+    <Icon
+      d={
+        <>
+          <path d="M4 22V9l8-6 8 6v13H4z" />
+          <path d="M9 22V14h6v8" />
+        </>
+      }
+    />
+  ),
 };
 
 // ---- NAV GROUP (collapsible) ----
@@ -393,6 +403,19 @@ const SideBar = ({ onLinkClick }) => {
           <NavChild
             to="/admin/shipper-map"
             label="Bản đồ shipper"
+            location={location}
+            onClick={lc}
+          />
+        </NavGroup>
+        <NavGroup
+          icon={Icons.warehouse}
+          label="Kho hàng"
+          location={location}
+          defaultOpen={location.pathname.includes('/manage-warehouse')}
+        >
+          <NavChild
+            to="/admin/manage-warehouse"
+            label="Quản lý kho"
             location={location}
             onClick={lc}
           />

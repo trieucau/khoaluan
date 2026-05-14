@@ -36,4 +36,3 @@ let connectDB = async () => {
 };
 
 export default connectDB;
-

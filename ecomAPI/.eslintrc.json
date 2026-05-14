@@ -10,11 +10,11 @@
   },
   "rules": {
     "no-unused-vars": "warn",
-    "no-console": "off",
-    "no-async-promise-executor": "off",
-    "no-undef": "off",
-    "no-redeclare": "off",
-    "no-unreachable": "off",
-    "no-prototype-builtins": "off"
+    "no-console": "warn",
+    "no-async-promise-executor": "warn",
+    "no-undef": "error",
+    "no-redeclare": "error",
+    "no-unreachable": "error",
+    "no-prototype-builtins": "warn"
   }
 }

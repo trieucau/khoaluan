@@ -1,7 +1,5 @@
 'use strict';
 
-
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('Comments', {
@@ -50,4 +48,3 @@ module.exports = {
     await queryInterface.dropTable('Comments');
   },
 };
-

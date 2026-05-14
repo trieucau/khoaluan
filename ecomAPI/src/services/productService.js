@@ -1323,4 +1323,3 @@ export default {
   getProductShopCart: getProductShopCart,
   getProductRecommend: getProductRecommend,
 };
-

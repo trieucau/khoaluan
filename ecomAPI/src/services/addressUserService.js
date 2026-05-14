@@ -218,4 +218,3 @@ export default {
   getDetailAddressUserById: getDetailAddressUserById,
   updateLocationAddressUser: updateLocationAddressUser,
 };
-

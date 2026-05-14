@@ -1097,4 +1097,3 @@ export default {
   paymentOrderVnpaySuccess: paymentOrderVnpaySuccess,
   updateImageOrder: updateImageOrder,
 };
-

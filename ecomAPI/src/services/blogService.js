@@ -285,4 +285,3 @@ export default {
   getFeatureBlog: getFeatureBlog,
   getNewBlog: getNewBlog,
 };
-

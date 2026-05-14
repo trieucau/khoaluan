@@ -668,4 +668,3 @@ export default {
   checkPhonenumberEmail: checkPhonenumberEmail,
   handleLoginSocial: handleLoginSocial,
 };
-

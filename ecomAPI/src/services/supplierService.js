@@ -139,4 +139,3 @@ export default {
   updateSupplier: updateSupplier,
   deleteSupplier: deleteSupplier,
 };
-

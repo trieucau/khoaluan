@@ -25,4 +25,3 @@ export default (sequelize, DataTypes) => {
   );
   return OrderDetail;
 };
-

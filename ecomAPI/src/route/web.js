@@ -16,6 +16,7 @@ import middlewareControllers from '../middlewares/jwtVerify.js';
 import supplierController from '../controllers/supplierController.js';
 import receiptController from '../controllers/receiptController.js';
 import chatbotController from '../controllers/chatbotController.js';
+import warehouseController from '../controllers/warehouseController.js';
 let router = express.Router();
 
 let initwebRoutes = (app) => {
@@ -548,6 +549,29 @@ let initwebRoutes = (app) => {
   );
   //==================API CHATBOT============================//
   router.post('/api/chatbot', middlewareControllers.verifyTokenUser, chatbotController.chat);
+
+  //==================API WAREHOUSE========================//
+  router.get(
+    '/api/get-all-warehouses',
+    middlewareControllers.verifyTokenUser,
+    warehouseController.handleGetAllWarehouses
+  );
+  router.post(
+    '/api/create-warehouse',
+    middlewareControllers.verifyTokenAdmin,
+    warehouseController.handleCreateWarehouse
+  );
+  router.put(
+    '/api/update-warehouse',
+    middlewareControllers.verifyTokenAdmin,
+    warehouseController.handleUpdateWarehouse
+  );
+  router.delete(
+    '/api/delete-warehouse',
+    middlewareControllers.verifyTokenAdmin,
+    warehouseController.handleDeleteWarehouse
+  );
+
   return app.use('/', router);
 };
 

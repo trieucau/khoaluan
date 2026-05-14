@@ -29,4 +29,3 @@ export default (sequelize, DataTypes) => {
   );
   return TypeVoucher;
 };
-

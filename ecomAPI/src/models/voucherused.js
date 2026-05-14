@@ -18,4 +18,3 @@ export default (sequelize, DataTypes) => {
   );
   return VoucherUsed;
 };
-

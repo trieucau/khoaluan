@@ -205,4 +205,3 @@ export default {
   getListAllCodeService: getListAllCodeService,
   getAllCategoryBlog: getAllCategoryBlog,
 };
-

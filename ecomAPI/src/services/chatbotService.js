@@ -1312,4 +1312,3 @@ const chatWithGemini = async (userId, messages, res) => {
 };
 
 export default { chatWithGemini };
-

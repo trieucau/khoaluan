@@ -48,4 +48,3 @@ export default {
   getAllShopCartByUserId: getAllShopCartByUserId,
   deleteItemShopCart: deleteItemShopCart,
 };
-
