@@ -31,4 +31,3 @@ const createCustomIcon = (iconClass, bgColor) => {
 export const warehouseIcon = createCustomIcon('fa-solid fa-warehouse', '#3498db');
 export const truckIcon = createCustomIcon('fa-solid fa-truck-fast', '#c44569');
 export const deliveryIcon = createCustomIcon('fa-solid fa-location-dot', '#ff6b9d');
-
