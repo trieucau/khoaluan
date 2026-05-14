@@ -141,12 +141,19 @@ const Header = ({ onToggleSidebar }) => {
                 className="ap-dropdown-item"
                 onClick={() => setOpen(false)}
               >
-                <span>🔑</span>
+                <span>
+                  <i className="fa-solid fa-key" style={{ marginRight: 8, color: '#fbbf24' }}></i>
+                </span>
                 <span>Đổi mật khẩu</span>
               </Link>
               <div className="ap-dropdown-divider" />
               <div className="ap-dropdown-item" onClick={handleLogout} style={{ color: '#fca5a5' }}>
-                <span>🚪</span>
+                <span>
+                  <i
+                    className="fa-solid fa-right-from-bracket"
+                    style={{ marginRight: 8, color: '#fca5a5' }}
+                  ></i>
+                </span>
                 <span>Đăng xuất</span>
               </div>
             </div>

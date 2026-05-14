@@ -440,37 +440,10 @@ const ShipperDashboard = ({
               background: 'transparent',
               borderRadius: 0,
               paddingBottom: isMobile
-                ? 'calc(env(safe-area-inset-bottom) + var(--sp-bottom-nav-h) + 10px)'
+                ? 'calc(env(safe-area-inset-bottom) + var(--sp-bottom-nav-h) - 30px)'
                 : 0,
             }}
           >
-            {isMobile && (
-              <div
-                style={{
-                  padding: '20px 24px 10px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <h3 style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: -0.5 }}>
-                  Trung tâm điều khiển
-                </h3>
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: 'rgba(255,255,255,0.4)',
-                    background: 'rgba(255,255,255,0.05)',
-                    padding: '4px 10px',
-                    borderRadius: 20,
-                  }}
-                >
-                  SẴN SÀNG
-                </span>
-              </div>
-            )}
-
             <div
               style={{
                 display: isMobile ? 'grid' : 'flex',
@@ -545,8 +518,8 @@ const ShipperDashboard = ({
                 position: 'fixed',
                 top: 0,
                 left: 0,
-                width: '100vw',
-                height: '100vh',
+                right: 0,
+                bottom: 0,
                 background: 'rgba(15,23,42,0.8)',
                 backdropFilter: 'blur(10px)',
                 zIndex: 10001,
@@ -563,7 +536,7 @@ const ShipperDashboard = ({
                 style={{
                   width: '100%',
                   maxWidth: 450,
-                  maxHeight: '80vh',
+                  maxHeight: 'calc(100vh - 40px)',
                   display: 'flex',
                   flexDirection: 'column',
                   padding: 0,
@@ -599,7 +572,7 @@ const ShipperDashboard = ({
                     ✕
                   </button>
                 </div>
-                <div style={{ padding: 24, overflowY: 'auto' }}>
+                <div style={{ padding: 24, overflowY: 'auto', flex: 1, minHeight: 0 }}>
                   {/* Section 1: Logistics & Customer */}
                   <div
                     style={{
