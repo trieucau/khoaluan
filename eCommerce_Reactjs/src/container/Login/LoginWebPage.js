@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './LoginWebPage.css';
@@ -12,10 +12,16 @@ import {
 } from '../../services/userService';
 
 import { authentication } from '../../utils/firebase';
-import { signInWithPopup, FacebookAuthProvider, GoogleAuthProvider } from 'firebase/auth';
+import {
+  signInWithPopup,
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+  linkWithCredential,
+} from 'firebase/auth';
 const LoginWebPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const pendingCredRef = useRef(null);
   const [isRegister, setIsRegister] = useState(location.pathname === '/register');
 
   useEffect(() => {
@@ -90,15 +96,23 @@ const LoginWebPage = () => {
     }
   };
 
-  let signInwithFacebook = () => {
+  let signInwithFacebook = async () => {
     const provider = new FacebookAuthProvider();
-    signInWithPopup(authentication, provider)
-      .then((re) => {
-        LoginWithSocial(re);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+    try {
+      const re = await signInWithPopup(authentication, provider);
+      LoginWithSocial(re);
+    } catch (err) {
+      console.log(err.message);
+      if (err.code === 'auth/account-exists-with-different-credential') {
+        const email = err.customData?.email;
+        toast.info(
+          `Email ${email ? email + ' ' : ''}đã được đăng ký bằng Google. Vui lòng click "Đăng nhập với Google" bên dưới để liên kết tự động.`
+        );
+        pendingCredRef.current = FacebookAuthProvider.credentialFromError(err);
+      } else {
+        toast.error('Đăng nhập Facebook thất bại.');
+      }
+    }
   };
   let LoginWithSocial = async (re) => {
     try {
@@ -125,13 +139,27 @@ const LoginWebPage = () => {
   };
   let signInwithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    signInWithPopup(authentication, provider)
-      .then(async (re) => {
-        LoginWithSocial(re);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+    try {
+      const re = await signInWithPopup(authentication, provider);
+
+      let finalUserResult = re;
+      if (pendingCredRef.current) {
+        try {
+          finalUserResult = await linkWithCredential(re.user, pendingCredRef.current);
+          toast.success('Liên kết tài khoản thành công!');
+        } catch (linkError) {
+          console.error('Lỗi khi liên kết tài khoản:', linkError);
+          toast.error('Không thể liên kết tài khoản Facebook.');
+        } finally {
+          pendingCredRef.current = null;
+        }
+      }
+
+      LoginWithSocial(finalUserResult);
+    } catch (err) {
+      console.log(err.message);
+      pendingCredRef.current = null;
+    }
   };
 
   return (
