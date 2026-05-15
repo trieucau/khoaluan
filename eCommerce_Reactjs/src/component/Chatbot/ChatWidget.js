@@ -27,8 +27,6 @@ const ChatBubble = ({ isOpen, onClick, hasUnread }) => (
 
 // ── Single message bubble ───────────────────────────────────
 const MessageBubble = ({ message }) => {
-  console.log('MESSAGE:', message);
-  console.log('CONTENT:', message.content);
   const isUser = message.role === 'user';
   return (
     <div className={`chat-msg ${isUser ? 'chat-msg--user' : 'chat-msg--bot'}`}>
@@ -51,9 +49,9 @@ const MessageBubble = ({ message }) => {
 const QUICK_ACTIONS = ['Kiểm tra đơn hàng', 'Gợi ý sản phẩm', 'Mã giảm giá', 'Chính sách đổi trả'];
 
 // ── Main Chat Window ────────────────────────────────────────
-const ChatWindow = ({ onClose }) => {
+const ChatWindow = ({ onClose, chatbotState }) => {
   const { messages, isLoading, toolStatus, sendMessage, stopStreaming, clearHistory } =
-    useChatbot();
+    chatbotState;
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -61,7 +59,6 @@ const ChatWindow = ({ onClose }) => {
   // Auto scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    console.log('>>>>>>>>>check messages 1:', messages);
   }, [messages, toolStatus]);
 
   // Focus input khi mở
@@ -82,7 +79,6 @@ const ChatWindow = ({ onClose }) => {
       handleSend();
     }
   };
-  console.log('>>>>>>>>>check messages 2:', messages);
   const showQuickActions = messages.length === 1; // chỉ có welcome
 
   return (
@@ -199,8 +195,9 @@ const ChatWindow = ({ onClose }) => {
 // ── Root Widget ─────────────────────────────────────────────
 const ChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const token = localStorage.getItem('token');
+  const chatbotState = useChatbot();
 
+  const token = localStorage.getItem('token');
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
 
   // Chỉ hiện với customer R2
@@ -208,7 +205,7 @@ const ChatWidget = () => {
 
   return (
     <div className="chat-widget">
-      {isOpen && <ChatWindow onClose={() => setIsOpen(false)} />}
+      {isOpen && <ChatWindow onClose={() => setIsOpen(false)} chatbotState={chatbotState} />}
       <ChatBubble isOpen={isOpen} onClick={() => setIsOpen((v) => !v)} />
     </div>
   );

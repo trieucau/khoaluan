@@ -1230,10 +1230,11 @@ const chatWithGemini = async (userId, messages, res) => {
     const chat = model.startChat({ history });
 
     // SSE headers
-    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('X-Accel-Buffering', 'no'); // Ngăn Nginx buffer SSE
     res.flushHeaders();
 
     const sendSSE = (data) => {
@@ -1302,10 +1303,12 @@ const chatWithGemini = async (userId, messages, res) => {
       userMessage = 'Lỗi cấu hình, vui lòng liên hệ admin.';
     }
 
+    const detailedError = `${userMessage} (Chi tiết server: ${err.message})`;
+
     if (!res.headersSent) {
-      res.status(500).json({ errCode: -1, errMessage: userMessage });
+      res.status(500).json({ errCode: -1, errMessage: detailedError });
     } else {
-      res.write(`data: ${JSON.stringify({ type: 'error', text: userMessage })}\n\n`);
+      res.write(`data: ${JSON.stringify({ type: 'error', text: detailedError })}\n\n`);
       res.end();
     }
   }

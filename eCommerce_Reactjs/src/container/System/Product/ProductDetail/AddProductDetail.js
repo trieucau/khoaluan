@@ -107,7 +107,10 @@ const AddProductDetail = (props) => {
       <div className="ap-card mb-4">
         <div className="ap-card-body">
           <form>
-            <div className="ap-form-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+            <div
+              className="ap-form-row"
+              style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}
+            >
               <div className="ap-form-group">
                 <label className="ap-label">Tên loại sản phẩm</label>
                 <input
@@ -217,10 +220,7 @@ const AddProductDetail = (props) => {
                 onChange={(event) => handleOnChangeImage(event)}
               />
               <div className="d-flex align-items-center gap-3">
-                <label
-                  className="ap-btn ap-btn-ghost"
-                  htmlFor="previewImg"
-                >
+                <label className="ap-btn ap-btn-ghost" htmlFor="previewImg">
                   <i className="fas fa-upload me-2"></i> Tải ảnh
                 </label>
                 {inputValues.imageReview && (
