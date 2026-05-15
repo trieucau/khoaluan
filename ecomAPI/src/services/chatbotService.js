@@ -1205,7 +1205,7 @@ Chính sách shop:
 // ============================================================
 const chatWithGemini = async (userId, messages, res) => {
   try {
-    const model = genAI.getGenerativeModel({
+    const modelConfig = {
       model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
       systemInstruction: buildSystemPrompt(),
       tools: [{ functionDeclarations }],
@@ -1219,7 +1219,14 @@ const chatWithGemini = async (userId, messages, res) => {
           threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
         },
       ],
-    });
+    };
+
+    // Tích hợp Proxy nếu được cấu hình (giải quyết lỗi Region IP bị chặn)
+    const requestOptions = process.env.GEMINI_PROXY_URL
+      ? { baseUrl: process.env.GEMINI_PROXY_URL }
+      : undefined;
+
+    const model = genAI.getGenerativeModel(modelConfig, requestOptions);
 
     // Build Gemini history (bỏ message cuối, đó là message hiện tại)
     const history = messages.slice(0, -1).map((m) => ({
