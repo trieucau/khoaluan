@@ -255,12 +255,14 @@ let handleLoginSocial = (data) => {
 
       // 3. If user doesn't exist, create one
       if (!user) {
-        let avatarBlob = null;
+        let avatarBase64 = null;
         if (picture) {
           try {
             const response = await fetch(picture);
             const arrayBuffer = await response.arrayBuffer();
-            avatarBlob = Buffer.from(arrayBuffer);
+            // Store as base64 data URL — consistent with manual upload (readAsDataURL)
+            const base64 = Buffer.from(arrayBuffer).toString('base64');
+            avatarBase64 = `data:image/jpeg;base64,${base64}`;
           } catch (e) {
             console.error('Error fetching social avatar:', e);
           }
@@ -279,7 +281,7 @@ let handleLoginSocial = (data) => {
           roleId: 'R2',
           statusId: 'S1',
           isActiveEmail: true,
-          image: avatarBlob,
+          image: avatarBase64,
           phonenumber: phone_number || '',
         });
 
@@ -290,16 +292,32 @@ let handleLoginSocial = (data) => {
           lastName: newUser.lastName,
           id: newUser.id,
         };
-      } else if (!user.firstName && name) {
-        // Fix existing users who were saved with empty firstName (old bug)
-        const nameParts = name.trim().split(' ');
-        const fixedFirstName = nameParts[0];
-        const fixedLastName = nameParts.slice(1).join(' ') || nameParts[0];
-        await db.User.update(
-          { firstName: fixedFirstName, lastName: fixedLastName },
-          { where: { id: user.id } }
-        );
-        user = { ...user, firstName: fixedFirstName, lastName: fixedLastName };
+      } else {
+        // Auto-fix for existing social users: repair missing firstName or image
+        const needsUpdate = {};
+
+        if (!user.firstName && name) {
+          const nameParts = name.trim().split(' ');
+          needsUpdate.firstName = nameParts[0];
+          needsUpdate.lastName = nameParts.slice(1).join(' ') || nameParts[0];
+          user = { ...user, firstName: needsUpdate.firstName, lastName: needsUpdate.lastName };
+        }
+
+        if (!user.image && picture) {
+          // Re-fetch Google avatar and store as base64 data URL (fix old raw-binary format)
+          try {
+            const response = await fetch(picture);
+            const arrayBuffer = await response.arrayBuffer();
+            const base64 = Buffer.from(arrayBuffer).toString('base64');
+            needsUpdate.image = `data:image/jpeg;base64,${base64}`;
+          } catch (e) {
+            console.error('[AVATAR] Không thể tải ảnh đại diện:', e.message);
+          }
+        }
+
+        if (Object.keys(needsUpdate).length > 0) {
+          await db.User.update(needsUpdate, { where: { id: user.id } });
+        }
       }
 
       // 4. Generate Access Token
