@@ -2,18 +2,35 @@ import 'dotenv/config';
 import nodemailer from 'nodemailer';
 
 const createTransporter = () => {
+  // Ưu tiên Brevo SMTP nếu có key — Gmail thường bị block trên cloud server
+  if (process.env.BREVO_SMTP_KEY) {
+    return nodemailer.createTransport({
+      host: 'smtp-relay.brevo.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.BREVO_SMTP_LOGIN, // Email đăng ký Brevo
+        pass: process.env.BREVO_SMTP_KEY, // SMTP key từ Brevo dashboard
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
+    });
+  }
+
+  // Fallback: Gmail SMTP (chỉ hoạt động tốt ở local, không khuyến khích production)
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: false, // STARTTLS (not SSL)
+    secure: false,
     auth: {
       user: process.env.EMAIL_APP,
       pass: process.env.EMAIL_APP_PASSWORD,
     },
     tls: {
-      rejectUnauthorized: false, // Fix SSL handshake errors on cloud servers
+      rejectUnauthorized: false,
     },
-    connectionTimeout: 10000, // 10s
+    connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
   });
