@@ -1,24 +1,35 @@
 import 'dotenv/config';
 import nodemailer from 'nodemailer';
 
-const createTransporter = () => {
-  // Ưu tiên Brevo SMTP nếu có key — Gmail thường bị block trên cloud server
-  if (process.env.BREVO_SMTP_KEY) {
-    return nodemailer.createTransport({
-      host: 'smtp-relay.brevo.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.BREVO_SMTP_LOGIN, // Email đăng ký Brevo
-        pass: process.env.BREVO_SMTP_KEY, // SMTP key từ Brevo dashboard
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 15000,
-    });
+// Gửi email qua Brevo HTTP API (port 443 — không bị block bởi cloud hosting)
+const sendViaBrevoAPI = async (to, subject, html) => {
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_APP;
+
+  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'api-key': process.env.BREVO_API_KEY,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({
+      sender: { name: 'SolanaShop', email: senderEmail },
+      to: [{ email: to }],
+      subject: subject,
+      htmlContent: html,
+    }),
+  });
+
+  if (!response.ok) {
+    const errBody = await response.json().catch(() => ({}));
+    throw new Error(`Brevo API ${response.status}: ${errBody.message || response.statusText}`);
   }
 
-  // Fallback: Gmail SMTP (chỉ hoạt động tốt ở local, không khuyến khích production)
+  return response.json();
+};
+
+// Fallback: Gmail SMTP (dùng ở local khi không có BREVO_API_KEY)
+const createGmailTransporter = () => {
   return nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
@@ -27,9 +38,7 @@ const createTransporter = () => {
       user: process.env.EMAIL_APP,
       pass: process.env.EMAIL_APP_PASSWORD,
     },
-    tls: {
-      rejectUnauthorized: false,
-    },
+    tls: { rejectUnauthorized: false },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
@@ -37,29 +46,50 @@ const createTransporter = () => {
 };
 
 let sendSimpleEmail = async (dataSend) => {
-  const transporter = createTransporter();
-  const fromAddress = `"SolanaShop" <${process.env.EMAIL_APP}>`;
+  const useBrevo = !!process.env.BREVO_API_KEY;
 
-  try {
-    if (dataSend.type === 'verifyEmail') {
-      await transporter.sendMail({
-        from: fromAddress,
-        to: dataSend.email,
-        subject: 'Xác thực email | SolanaShop',
-        html: getBodyHTMLEmailVerify(dataSend),
-      });
+  if (dataSend.type === 'verifyEmail') {
+    if (useBrevo) {
+      await sendViaBrevoAPI(
+        dataSend.email,
+        'Xác thực email | SolanaShop',
+        getBodyHTMLEmailVerify(dataSend)
+      );
+    } else {
+      const t = createGmailTransporter();
+      try {
+        await t.sendMail({
+          from: `"SolanaShop" <${process.env.EMAIL_APP}>`,
+          to: dataSend.email,
+          subject: 'Xác thực email | SolanaShop',
+          html: getBodyHTMLEmailVerify(dataSend),
+        });
+      } finally {
+        t.close();
+      }
     }
-    if (dataSend.type === 'forgotpassword') {
-      await transporter.sendMail({
-        from: fromAddress,
-        to: dataSend.email,
-        subject: 'Xác nhận quên mật khẩu | SolanaShop',
-        html: getBodyHTMLEmailForgotPassword(dataSend),
-      });
+  }
+
+  if (dataSend.type === 'forgotpassword') {
+    if (useBrevo) {
+      await sendViaBrevoAPI(
+        dataSend.email,
+        'Xác nhận quên mật khẩu | SolanaShop',
+        getBodyHTMLEmailForgotPassword(dataSend)
+      );
+    } else {
+      const t = createGmailTransporter();
+      try {
+        await t.sendMail({
+          from: `"SolanaShop" <${process.env.EMAIL_APP}>`,
+          to: dataSend.email,
+          subject: 'Xác nhận quên mật khẩu | SolanaShop',
+          html: getBodyHTMLEmailForgotPassword(dataSend),
+        });
+      } finally {
+        t.close();
+      }
     }
-  } finally {
-    // Đóng kết nối SMTP sau khi dùng xong, giải phóng tài nguyên
-    transporter.close();
   }
 };
 
