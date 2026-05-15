@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import CommonUtils from '../../../../utils/CommonUtils';
 import '../AddProduct.scss';
@@ -9,9 +9,12 @@ import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import { useFetchAllcode } from '../../../customize/fetch';
 import { CreateNewProductDetailService } from '../../../../services/userService';
+import { PageHeader } from '../../AdminShared';
+
 const AddProductDetail = (props) => {
   const { data: dataSize } = useFetchAllcode('SIZE');
   const { id } = useParams();
+  const navigate = useNavigate();
   const [inputValues, setInputValues] = useState({
     width: '',
     height: '',
@@ -90,103 +93,94 @@ const AddProductDetail = (props) => {
     }
   };
   return (
-    <div className="container-fluid px-4">
-      <h1 className="mt-4">Quản lý chi tiết sản phẩm</h1>
+    <div className="ap-page">
+      <PageHeader
+        title="➕ Thêm mới chi tiết sản phẩm"
+        subtitle={`Thêm phân loại mới cho sản phẩm #${id}`}
+        actions={
+          <button className="ap-btn ap-btn-ghost" onClick={() => navigate(-1)}>
+            <i className="fas fa-arrow-left me-1"></i> Quay lại
+          </button>
+        }
+      />
 
-      <div className="card mb-4">
-        <div className="card-header">
-          <i className="fas fa-table me-1" />
-          Thêm mới chi tiết sản phẩm
-        </div>
-        <div className="card-body">
+      <div className="ap-card mb-4">
+        <div className="ap-card-body">
           <form>
-            <div className="form-row">
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Tên loại sản phẩm</label>
+            <div className="ap-form-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+              <div className="ap-form-group">
+                <label className="ap-label">Tên loại sản phẩm</label>
                 <input
                   type="text"
                   value={inputValues.nameDetail}
                   name="nameDetail"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
+                  className="ap-input"
+                  placeholder="VD: Phiên bản màu đỏ..."
                 />
               </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputEmail4">Chiều rộng</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Chiều rộng</label>
                 <input
                   type="text"
                   value={inputValues.width}
                   name="width"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
+                  className="ap-input"
+                  placeholder="VD: 10cm"
                 />
               </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">chiều dài</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Chiều dài</label>
                 <input
                   type="text"
                   value={inputValues.height}
                   name="height"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
+                  className="ap-input"
+                  placeholder="VD: 20cm"
                 />
               </div>
-              <div className="form-group col-md-3">
-                <label htmlFor="inputEmail4">Giá gốc</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Giá gốc</label>
                 <input
                   type="number"
                   value={inputValues.originalPrice}
                   name="originalPrice"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputEmail4"
+                  className="ap-input"
+                  placeholder="Giá bán ban đầu"
                 />
               </div>
-              <div className="form-group col-md-3">
-                <label htmlFor="inputPassword4">Giá khuyến mãi</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Giá khuyến mãi</label>
                 <input
                   type="number"
                   value={inputValues.discountPrice}
                   name="discountPrice"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
+                  className="ap-input"
+                  placeholder="Giá sau khi giảm"
                 />
               </div>
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Khối lượng</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Khối lượng</label>
                 <input
                   type="text"
                   value={inputValues.weight}
                   name="weight"
                   onChange={(event) => handleOnChange(event)}
-                  className="form-control"
-                  id="inputPassword4"
+                  className="ap-input"
+                  placeholder="VD: 500g"
                 />
               </div>
-            </div>
-            <div className="form-group">
-              <label htmlFor="inputAddress">Mô tả chi tiết</label>
-              <textarea
-                rows="4"
-                value={inputValues.description}
-                name="description"
-                onChange={(event) => handleOnChange(event)}
-                className="form-control"
-              ></textarea>
-            </div>
-            <div className="form-row">
-              <div className="form-group col-md-4">
-                <label htmlFor="inputPassword4">Kích thước</label>
+              <div className="ap-form-group">
+                <label className="ap-label">Kích thước</label>
                 <select
                   value={inputValues.sizeId}
                   name="sizeId"
                   onChange={(event) => handleOnChange(event)}
-                  id="inputState"
-                  className="form-control"
+                  className="ap-input"
                 >
                   {dataSize &&
                     dataSize.length > 0 &&
@@ -199,45 +193,63 @@ const AddProductDetail = (props) => {
                     })}
                 </select>
               </div>
-              <div className="form-group col-md-3">
-                <label htmlFor="inputPassword4">Chọn hình ảnh</label>
-                <input
-                  type="file"
-                  id="previewImg"
-                  accept=".jpg,.png"
-                  hidden
-                  onChange={(event) => handleOnChangeImage(event)}
-                />
-                <br></br>
+            </div>
+
+            <div className="ap-form-group mt-3">
+              <label className="ap-label">Mô tả chi tiết</label>
+              <textarea
+                rows="4"
+                value={inputValues.description}
+                name="description"
+                onChange={(event) => handleOnChange(event)}
+                className="ap-textarea"
+                placeholder="Nhập thông tin mô tả chi tiết..."
+              ></textarea>
+            </div>
+
+            <div className="ap-form-group mt-3">
+              <label className="ap-label">Chọn hình ảnh</label>
+              <input
+                type="file"
+                id="previewImg"
+                accept=".jpg,.png"
+                hidden
+                onChange={(event) => handleOnChangeImage(event)}
+              />
+              <div className="d-flex align-items-center gap-3">
                 <label
-                  style={{
-                    backgroundColor: '#eee',
-                    borderRadius: '5px',
-                    padding: '6px',
-                    cursor: 'pointer',
-                  }}
-                  className="label-upload"
+                  className="ap-btn ap-btn-ghost"
                   htmlFor="previewImg"
                 >
-                  Tải ảnh <i className="fas fa-upload"></i>
+                  <i className="fas fa-upload me-2"></i> Tải ảnh
                 </label>
-                <div
-                  style={{
-                    backgroundImage: `url(${inputValues.imageReview})`,
-                  }}
-                  onClick={() => openPreviewImage()}
-                  className="box-image"
-                ></div>
+                {inputValues.imageReview && (
+                  <div
+                    style={{
+                      width: '60px',
+                      height: '60px',
+                      backgroundImage: `url(${inputValues.imageReview})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      border: '1px solid var(--ap-border)',
+                    }}
+                    onClick={() => openPreviewImage()}
+                  ></div>
+                )}
               </div>
             </div>
 
-            <button
-              onClick={() => handleSaveProductDetail()}
-              type="button"
-              className="btn btn-primary"
-            >
-              Lưu thông tin
-            </button>
+            <div className="mt-4 text-end">
+              <button
+                onClick={() => handleSaveProductDetail()}
+                type="button"
+                className="ap-btn ap-btn-primary"
+              >
+                <i className="fas fa-save me-2"></i> Lưu thông tin
+              </button>
+            </div>
           </form>
         </div>
       </div>
