@@ -43,7 +43,7 @@ let checkUserEmail = (userEmail) => {
 let handleCreateNewUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!data.email || !data.lastName) {
+      if (!data.email || !data.firstName || !data.lastName) {
         resolve({
           errCode: 2,
           errMessage: 'Missing required parameters !',
@@ -240,7 +240,16 @@ let handleLoginSocial = (data) => {
       // 2. Check if user exists
       let user = await db.User.findOne({
         where: { email: email },
-        attributes: ['email', 'roleId', 'password', 'firstName', 'lastName', 'id'],
+        attributes: [
+          'email',
+          'roleId',
+          'password',
+          'firstName',
+          'lastName',
+          'id',
+          'phonenumber',
+          'address',
+        ],
         raw: true,
       });
 
@@ -257,11 +266,16 @@ let handleLoginSocial = (data) => {
           }
         }
 
+        // Split Firebase full name into firstName (họ) and lastName (tên)
+        const nameParts = (name || 'Social User').trim().split(' ');
+        const socialFirstName = nameParts[0]; // Họ (first word)
+        const socialLastName = nameParts.slice(1).join(' ') || nameParts[0]; // Tên (remaining)
+
         const newUser = await db.User.create({
           email: email,
           password: 'social_login_no_password', // Placeholder
-          firstName: '',
-          lastName: name || 'Social User',
+          firstName: socialFirstName,
+          lastName: socialLastName,
           roleId: 'R2',
           statusId: 'S1',
           isActiveEmail: true,
@@ -276,6 +290,16 @@ let handleLoginSocial = (data) => {
           lastName: newUser.lastName,
           id: newUser.id,
         };
+      } else if (!user.firstName && name) {
+        // Fix existing users who were saved with empty firstName (old bug)
+        const nameParts = name.trim().split(' ');
+        const fixedFirstName = nameParts[0];
+        const fixedLastName = nameParts.slice(1).join(' ') || nameParts[0];
+        await db.User.update(
+          { firstName: fixedFirstName, lastName: fixedLastName },
+          { where: { id: user.id } }
+        );
+        user = { ...user, firstName: fixedFirstName, lastName: fixedLastName };
       }
 
       // 4. Generate Access Token
@@ -463,36 +487,51 @@ let handleSendVerifyEmailUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!data.id) {
-        resolve({
+        return resolve({
           errCode: 1,
           errMessage: 'Missing required parameter!',
         });
-      } else {
-        let user = await db.User.findOne({
-          where: { id: data.id },
-          attributes: {
-            exclude: ['password'],
-          },
-          raw: false,
-        });
+      }
 
-        if (user) {
-          let token = uuidv4();
-          user.usertoken = token;
-          await emailService.sendSimpleEmail({
-            firstName: user.firstName,
-            lastName: user.lastName,
-            redirectLink: buildUrlEmail(token, user.id),
-            email: user.email,
-            type: 'verifyEmail',
-          });
-          await user.save();
-        }
-        resolve({
-          errCode: 0,
-          errMessage: 'ok',
+      let user = await db.User.findOne({
+        where: { id: data.id },
+        attributes: { exclude: ['password'] },
+        raw: false,
+      });
+
+      if (!user) {
+        return resolve({
+          errCode: 2,
+          errMessage: 'User not found!',
         });
       }
+
+      // Lưu token vào DB trước — đảm bảo token tồn tại dù mail có lỗi
+      let token = uuidv4();
+      user.usertoken = token;
+      await user.save();
+
+      // Gửi mail riêng — lỗi SMTP không làm crash toàn bộ request
+      try {
+        await emailService.sendSimpleEmail({
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          redirectLink: buildUrlEmail(token, user.id),
+          email: user.email,
+          type: 'verifyEmail',
+        });
+      } catch (mailError) {
+        console.error('[EMAIL] Gửi email xác thực thất bại:', mailError.message);
+        return resolve({
+          errCode: 3,
+          errMessage: 'Không thể gửi email. Vui lòng thử lại sau!',
+        });
+      }
+
+      resolve({
+        errCode: 0,
+        errMessage: 'ok',
+      });
     } catch (error) {
       reject(error);
     }
@@ -543,44 +582,59 @@ let handleSendEmailForgotPassword = (email) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (!email) {
-        resolve({
+        return resolve({
           errCode: 1,
           errMessage: 'Missing required parameter!',
         });
-      } else {
-        let check = await checkUserEmail(email);
-        if (check === true) {
-          let user = await db.User.findOne({
-            where: { email: email },
-            attributes: {
-              exclude: ['password'],
-            },
-            raw: false,
-          });
-
-          if (user) {
-            let token = uuidv4();
-            user.usertoken = token;
-            await emailService.sendSimpleEmail({
-              firstName: user.firstName,
-              lastName: user.lastName,
-              redirectLink: `${process.env.URL_REACT}/verify-forgotpassword?token=${token}&userId=${user.id}`,
-              email: user.email,
-              type: 'forgotpassword',
-            });
-            await user.save();
-          }
-          resolve({
-            errCode: 0,
-            errMessage: 'ok',
-          });
-        } else {
-          resolve({
-            errCode: 2,
-            errMessage: `Your's email isn't exist in your system. plz try other email`,
-          });
-        }
       }
+
+      let check = await checkUserEmail(email);
+      if (check !== true) {
+        return resolve({
+          errCode: 2,
+          errMessage: 'Email không tồn tại trong hệ thống!',
+        });
+      }
+
+      let user = await db.User.findOne({
+        where: { email: email },
+        attributes: { exclude: ['password'] },
+        raw: false,
+      });
+
+      if (!user) {
+        return resolve({
+          errCode: 2,
+          errMessage: 'User not found!',
+        });
+      }
+
+      // Lưu token vào DB trước — đảm bảo token tồn tại dù mail có lỗi
+      let token = uuidv4();
+      user.usertoken = token;
+      await user.save();
+
+      // Gửi mail riêng — lỗi SMTP không làm crash toàn bộ request
+      try {
+        await emailService.sendSimpleEmail({
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          redirectLink: `${process.env.URL_REACT}/verify-forgotpassword?token=${token}&userId=${user.id}`,
+          email: user.email,
+          type: 'forgotpassword',
+        });
+      } catch (mailError) {
+        console.error('[EMAIL] Gửi email quên mật khẩu thất bại:', mailError.message);
+        return resolve({
+          errCode: 3,
+          errMessage: 'Không thể gửi email. Vui lòng thử lại sau!',
+        });
+      }
+
+      resolve({
+        errCode: 0,
+        errMessage: 'ok',
+      });
     } catch (error) {
       reject(error);
     }

@@ -52,25 +52,27 @@ function DetailUserPage() {
   const setStateUser = (data) => {
     setInputValues({
       ...inputValues,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      address: data.address,
-      phonenumber: data.phonenumber,
-      genderId: data.genderId,
-      roleId: data.roleId,
-      email: data.email,
+      firstName: data.firstName || '',
+      lastName: data.lastName || '',
+      address: data.address || '',
+      phonenumber: data.phonenumber || '',
+      genderId: data.genderId || '',
+      roleId: data.roleId || '',
+      email: data.email || '',
       id: data.id,
-      dob: data.dob,
+      dob: data.dob || '',
       image:
         data.image ||
         'https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg',
       isActiveEmail: data.isActiveEmail,
     });
     setbirthday(
-      moment
-        .unix(+data.dob / 1000)
-        .locale('vi')
-        .toDate()
+      data.dob
+        ? moment
+            .unix(+data.dob / 1000)
+            .locale('vi')
+            .toDate()
+        : new Date()
     );
   };
 

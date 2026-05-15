@@ -33,6 +33,7 @@ const LoginWebPage = () => {
   const [inputValues, setInputValues] = useState({
     email: '',
     password: '',
+    firstName: '',
     lastName: '',
     phonenumber: '',
     isOpen: false,
@@ -79,9 +80,10 @@ const LoginWebPage = () => {
     if (res.isCheck === true) {
       toast.error(res.errMessage);
     } else {
-      const { email, lastName, password, phonenumber } = inputValues;
+      const { email, firstName, lastName, password, phonenumber } = inputValues;
       let res = await createNewUser({
         email,
+        firstName,
         lastName,
         phonenumber,
         password,
@@ -254,16 +256,29 @@ const LoginWebPage = () => {
                 {/* Signup Form */}
                 <div className={`signup form-peice ${isRegister ? '' : 'switched'}`}>
                   <form className="signup-form">
-                    <div className="form-group">
-                      <label htmlFor="name">Họ và tên</label>
-                      <input
-                        type="text"
-                        name="lastName"
-                        onChange={(event) => handleOnChange(event)}
-                        id="name"
-                        className="name"
-                      />
-                      <span className="error" />
+                    <div className="form-group name-row">
+                      <div className="name-group">
+                        <label htmlFor="firstName">Họ</label>
+                        <input
+                          type="text"
+                          name="firstName"
+                          onChange={(event) => handleOnChange(event)}
+                          id="firstName"
+                          className="name"
+                          placeholder="Nguyễn"
+                        />
+                      </div>
+                      <div className="name-group">
+                        <label htmlFor="lastName">Tên</label>
+                        <input
+                          type="text"
+                          name="lastName"
+                          onChange={(event) => handleOnChange(event)}
+                          id="lastName"
+                          className="name"
+                          placeholder="Văn A"
+                        />
+                      </div>
                     </div>
 
                     <div className="form-group">
