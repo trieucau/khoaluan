@@ -131,14 +131,20 @@ const ManageProduct = () => {
             <input
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && loadProduct(keyword)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  setNumberPage(0);
+                  loadProduct(keyword, 0);
+                }
+              }}
               placeholder="Tìm theo tên sản phẩm..."
             />
             {keyword && (
               <button
                 onClick={() => {
                   setKeyword('');
-                  loadProduct('');
+                  setNumberPage(0);
+                  loadProduct('', 0);
                 }}
                 style={{
                   background: 'none',
@@ -152,7 +158,13 @@ const ManageProduct = () => {
               </button>
             )}
           </div>
-          <button className="ap-btn ap-btn-primary ap-btn-sm" onClick={() => loadProduct(keyword)}>
+          <button
+            className="ap-btn ap-btn-primary ap-btn-sm"
+            onClick={() => {
+              setNumberPage(0);
+              loadProduct(keyword, 0);
+            }}
+          >
             Tìm kiếm
           </button>
         </div>
@@ -289,6 +301,7 @@ const ManageProduct = () => {
               nextLabel="Sau →"
               breakLabel="..."
               pageCount={count}
+              forcePage={numberPage}
               marginPagesDisplayed={2}
               containerClassName="ap-pagination"
               pageClassName="ap-page-item"

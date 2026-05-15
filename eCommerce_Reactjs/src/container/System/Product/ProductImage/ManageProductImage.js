@@ -39,9 +39,10 @@ const ManageProductImage = () => {
   const [imgPreview, setimgPreview] = useState('');
   const [productImageId, setproductImageId] = useState('');
   const [productSizeId, setproductSizeId] = useState('');
-  const [count, setCount] = useState('');
-  const [countSize, setcountSizes] = useState('');
-  const [numberPage, setnumberPage] = useState('');
+  const [count, setCount] = useState(0);
+  const [countSize, setcountSizes] = useState(0);
+  const [numberPage, setnumberPage] = useState(0);
+  const [numberPageSize, setnumberPageSize] = useState(0);
   useEffect(() => {
     let fetchProductDetailImage = async () => {
       await loadProductDetailImage();
@@ -220,7 +221,7 @@ const ManageProductImage = () => {
     }
   };
   let handleChangePageProductSize = async (number) => {
-    setnumberPage(number.selected);
+    setnumberPageSize(number.selected);
     let arrSize = await getAllProductDetailSizeByIdService({
       id: id,
       limit: PAGINATION.pagerow,
@@ -324,6 +325,7 @@ const ManageProductImage = () => {
               nextLabel={'>'}
               breakLabel={'...'}
               pageCount={count}
+              forcePage={numberPage}
               marginPagesDisplayed={2}
               pageRangeDisplayed={3}
               containerClassName={'ap-pagination'}
@@ -429,6 +431,7 @@ const ManageProductImage = () => {
               nextLabel={'>'}
               breakLabel={'...'}
               pageCount={countSize}
+              forcePage={numberPageSize}
               marginPagesDisplayed={2}
               pageRangeDisplayed={3}
               containerClassName={'ap-pagination'}

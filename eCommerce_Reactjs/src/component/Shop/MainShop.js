@@ -6,8 +6,8 @@ import ReactPaginate from 'react-paginate';
 import FormSearch from '../Search/FormSearch';
 function MainShop(props) {
   const [dataProduct, setdataProduct] = useState([]);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
+  const [count, setCount] = useState(0);
+  const [numberPage, setnumberPage] = useState(0);
   const [limitPage, setlimitPage] = useState(PAGINATION.pagerow);
   const [sortPrice, setsortPrice] = useState('');
   const [sortName, setsortName] = useState('');
@@ -56,7 +56,9 @@ function MainShop(props) {
   };
   let handleSelectLimitPage = async (event) => {
     setlimitPage(event.target.value);
-    loadProduct(event.target.value, sortName, sortPrice, offset, categoryId, keyword);
+    setnumberPage(0);
+    setoffset(0);
+    loadProduct(event.target.value, sortName, sortPrice, 0, categoryId, keyword);
   };
   let handleChangePage = async (number) => {
     setnumberPage(number.selected);
@@ -66,21 +68,25 @@ function MainShop(props) {
   };
   let handleSelectSort = async (event) => {
     let value = +event.target.value;
+    setnumberPage(0);
+    setoffset(0);
 
     if (value === 1) {
-      loadProduct(limitPage, '', '', offset, categoryId, keyword);
+      loadProduct(limitPage, '', '', 0, categoryId, keyword);
     } else if (value === 2) {
-      loadProduct(limitPage, '', true, offset, categoryId, keyword);
+      loadProduct(limitPage, '', true, 0, categoryId, keyword);
       setsortPrice(true);
       setsortName('');
     } else if (value === 3) {
-      loadProduct(limitPage, true, '', offset, categoryId, keyword);
+      loadProduct(limitPage, true, '', 0, categoryId, keyword);
       setsortPrice('');
       setsortName(true);
     }
   };
   let handleSearch = (keyword) => {
-    loadProduct(limitPage, sortName, sortPrice, offset, categoryId, keyword);
+    setnumberPage(0);
+    setoffset(0);
+    loadProduct(limitPage, sortName, sortPrice, 0, categoryId, keyword);
     setkeyword(keyword);
   };
   let handleOnchangeSearch = (keyword) => {
@@ -187,6 +193,7 @@ function MainShop(props) {
         nextLabel={'Tiếp'}
         breakLabel={'...'}
         pageCount={count}
+        forcePage={numberPage}
         marginPagesDisplayed={3}
         containerClassName={'pagination justify-content-center'}
         pageClassName={'page-item'}

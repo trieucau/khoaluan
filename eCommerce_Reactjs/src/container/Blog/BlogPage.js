@@ -13,8 +13,8 @@ function BlogPage(props) {
   const [dataBlog, setdataBlog] = useState([]);
   const [dataFeatureBlog, setdataFeatureBlog] = useState([]);
   const [dataSubject, setdataSubject] = useState([]);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
+  const [count, setCount] = useState(0);
+  const [numberPage, setnumberPage] = useState(0);
   const [subjectId, setsubjectId] = useState('');
   const [keyword, setkeyword] = useState('');
   useEffect(() => {
@@ -29,6 +29,7 @@ function BlogPage(props) {
   }, []);
 
   let fetchData = async (code, keyword) => {
+    setnumberPage(0);
     let arrData = await getAllBlog({
       subjectId: code,
       limit: PAGINATION.pagerow,
@@ -115,6 +116,7 @@ function BlogPage(props) {
                 nextLabel={'Tiếp'}
                 breakLabel={'...'}
                 pageCount={count}
+                forcePage={numberPage}
                 marginPagesDisplayed={3}
                 containerClassName={'pagination justify-content-center'}
                 pageClassName={'page-item'}

@@ -17,8 +17,8 @@ import CommonUtils from '../../utils/CommonUtils';
 
 function VoucherHomePage(props) {
   const [dataVoucher, setdataVoucher] = useState([]);
-  const [count, setCount] = useState('');
-  const [numberPage, setnumberPage] = useState('');
+  const [count, setCount] = useState(0);
+  const [numberPage, setnumberPage] = useState(0);
   const [user, setUser] = useState({});
 
   function compareDates(date1, date2) {
@@ -142,6 +142,7 @@ function VoucherHomePage(props) {
           nextLabel={'Tiếp'}
           breakLabel={'...'}
           pageCount={count}
+          forcePage={numberPage}
           marginPagesDisplayed={3}
           containerClassName={'pagination justify-content-center'}
           pageClassName={'page-item'}
