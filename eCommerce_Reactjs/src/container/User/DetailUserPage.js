@@ -20,8 +20,7 @@ import './DetailUserPage.scss';
 function DetailUserPage() {
   const { id } = useParams();
   const { data: dataGender } = useFetchAllcode('GENDER');
-  const [birthday, setbirthday] = useState(new Date());
-  const [isChangeDate, setisChangeDate] = useState(false);
+  const [birthday, setbirthday] = useState(null);
   const [inputValues, setInputValues] = useState({
     firstName: '',
     lastName: '',
@@ -37,9 +36,11 @@ function DetailUserPage() {
     isOpen: false,
   });
 
-  if (dataGender && dataGender.length > 0 && inputValues.genderId === null) {
-    setInputValues({ ...inputValues, genderId: dataGender[0].code });
-  }
+  useEffect(() => {
+    if (dataGender && dataGender.length > 0 && !inputValues.genderId) {
+      setInputValues((prev) => ({ ...prev, genderId: dataGender[0].code }));
+    }
+  }, [dataGender, inputValues.genderId]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -72,7 +73,7 @@ function DetailUserPage() {
             .unix(+data.dob / 1000)
             .locale('vi')
             .toDate()
-        : new Date()
+        : null
     );
   };
 
@@ -83,7 +84,6 @@ function DetailUserPage() {
 
   const handleOnChangeDatePicker = (date) => {
     setbirthday(date);
-    setisChangeDate(true);
   };
 
   const handleSaveInfor = async () => {
@@ -95,7 +95,7 @@ function DetailUserPage() {
       roleId: inputValues.roleId,
       genderId: inputValues.genderId,
       phonenumber: inputValues.phonenumber,
-      dob: isChangeDate ? new Date(birthday).getTime() : inputValues.dob,
+      dob: birthday ? new Date(birthday).getTime() : '',
       image: inputValues.image,
     });
     if (res?.errCode === 0) toast.success('Cập nhật thành công!');
@@ -261,6 +261,7 @@ function DetailUserPage() {
                         selected={birthday}
                         dateFormat="dd/MM/yyyy"
                         style={{ width: '100%' }}
+                        placeholderText="Chọn ngày sinh"
                       />
                     </div>
                   </div>
