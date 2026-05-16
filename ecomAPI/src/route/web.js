@@ -57,11 +57,7 @@ let initwebRoutes = (app) => {
     middlewareControllers.verifyTokenUser,
     userController.handleSendVerifyEmailUser
   );
-  router.post(
-    '/api/verify-email',
-    middlewareControllers.verifyTokenUser,
-    userController.handleVerifyEmailUser
-  );
+  router.post('/api/verify-email', userController.handleVerifyEmailUser);
   router.post('/api/send-forgotpassword-email', userController.handleSendEmailForgotPassword);
   router.post('/api/forgotpassword-email', userController.handleForgotPassword);
   router.get('/api/check-phonenumber-email', userController.checkPhonenumberEmail);
