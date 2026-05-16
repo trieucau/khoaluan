@@ -935,7 +935,7 @@ let paymentOrderVnpay = (req) => {
       var tmnCode = process.env.VNP_TMNCODE;
       var secretKey = process.env.VNP_HASHSECRET;
       var vnpUrl = process.env.VNP_URL;
-      var returnUrl = process.env.VNP_RETURNURL;
+      var returnUrl = process.env.URL_REACT + '/payment/vnpay_return';
 
       // FIX 2: tạo createDate động thay vì dùng biến môi trường tĩnh
       var now = new Date();
