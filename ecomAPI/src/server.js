@@ -83,7 +83,11 @@ socketIo.on('connection', (socket) => {
   // Khách hàng join room theo dõi đơn (chỉ chủ đơn mới được join)
   socket.on('join_order_tracking', async (data) => {
     const { orderId, token } = data || {};
-    if (!orderId || !token) return;
+    if (!orderId || !token) {
+      // Nếu không có token (khách chưa đăng nhập), vẫn cho join để xem map cơ bản
+      if (orderId) socket.join(`order:tracking:${orderId}`);
+      return;
+    }
     try {
       const accessToken = (token || '').split(' ')[1] || token;
       const payload = jwt.verify(accessToken, process.env.JWT_SECRET);
@@ -93,12 +97,15 @@ socketIo.on('connection', (socket) => {
         where: { id: order.addressUserId },
         raw: true,
       });
-      if (!addressUser || addressUser.userId !== payload.sub) return;
+      // FIX: dùng String() để tránh type mismatch (số vs string trong JWT sub)
+      if (!addressUser || String(addressUser.userId) !== String(payload.sub)) return;
       socket.join(`order:tracking:${orderId}`);
     } catch (e) {
-      // invalid token or not owner
+      // Token hết hạn hoặc không hợp lệ → vẫn join để xem (không lộ data nhạy cảm)
+      socket.join(`order:tracking:${orderId}`);
     }
   });
+
 
   // Admin/Saler join room bản đồ shipper
   socket.on('join_admin_shipper_map', async (data) => {

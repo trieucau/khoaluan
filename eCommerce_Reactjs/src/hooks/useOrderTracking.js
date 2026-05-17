@@ -4,6 +4,7 @@ import socketIOClient from 'socket.io-client';
 import { getDetailOrder, getOrderShipperLocation, getAllWarehouses } from '../services/userService';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6969';
+const POLL_INTERVAL_MS = 3000; // fallback poll mỗi 3s nếu socket chưa nhận được
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371;
@@ -21,6 +22,8 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 
 export const useOrderTracking = (orderId) => {
   const socketRef = useRef(null);
+  const pollRef = useRef(null);
+  const mountedRef = useRef(true);
 
   const [order, setOrder] = useState(null);
   const [shipperLoc, setShipperLoc] = useState(null);
@@ -30,9 +33,10 @@ export const useOrderTracking = (orderId) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let mounted = true;
+    mountedRef.current = true;
     const token = localStorage.getItem('token');
 
+    /* ── Load initial data ── */
     const loadData = async () => {
       try {
         const [orderRes, locRes] = await Promise.all([
@@ -40,7 +44,7 @@ export const useOrderTracking = (orderId) => {
           getOrderShipperLocation(orderId),
         ]);
 
-        if (!mounted) return;
+        if (!mountedRef.current) return;
 
         let deliveryLat, deliveryLng;
         if (orderRes?.errCode === 0) {
@@ -49,46 +53,28 @@ export const useOrderTracking = (orderId) => {
           if (orderRes.data.addressUser?.lat && orderRes.data.addressUser?.lng) {
             deliveryLat = parseFloat(orderRes.data.addressUser.lat);
             deliveryLng = parseFloat(orderRes.data.addressUser.lng);
-            setDeliveryCoords({
-              lat: deliveryLat,
-              lng: deliveryLng,
-            });
+            setDeliveryCoords({ lat: deliveryLat, lng: deliveryLng });
           }
         } else {
           setError('Không tìm thấy đơn hàng');
         }
 
-        if (locRes?.errCode === 0 && locRes.data && locRes.data.lat && locRes.data.lng) {
+        if (locRes?.errCode === 0 && locRes.data?.lat && locRes.data?.lng) {
           setShipperLoc({
             lat: parseFloat(locRes.data.lat),
             lng: parseFloat(locRes.data.lng),
           });
         } else if (orderRes?.data?.statusId === 'S4') {
-          // Trạng thái Chờ lấy hàng nhưng shipper chưa có vị trí -> Tìm kho gần nhất
           try {
             const whRes = await getAllWarehouses();
             if (whRes?.errCode === 0 && whRes.data?.length > 0) {
               const warehouses = whRes.data;
               let nearest = warehouses[0];
-
               if (deliveryLat && deliveryLng) {
-                let minDistance = calculateDistance(
-                  nearest.lat,
-                  nearest.lng,
-                  deliveryLat,
-                  deliveryLng
-                );
+                let minDist = calculateDistance(nearest.lat, nearest.lng, deliveryLat, deliveryLng);
                 for (let i = 1; i < warehouses.length; i++) {
-                  const dist = calculateDistance(
-                    warehouses[i].lat,
-                    warehouses[i].lng,
-                    deliveryLat,
-                    deliveryLng
-                  );
-                  if (dist < minDistance) {
-                    minDistance = dist;
-                    nearest = warehouses[i];
-                  }
+                  const d = calculateDistance(warehouses[i].lat, warehouses[i].lng, deliveryLat, deliveryLng);
+                  if (d < minDist) { minDist = d; nearest = warehouses[i]; }
                 }
               }
               setWarehouse(nearest);
@@ -99,41 +85,84 @@ export const useOrderTracking = (orderId) => {
           }
         }
       } catch {
-        setError('Lỗi tải dữ liệu');
+        if (mountedRef.current) setError('Lỗi tải dữ liệu');
       } finally {
-        if (mounted) setLoading(false);
+        if (mountedRef.current) setLoading(false);
       }
     };
 
     loadData();
 
-    socketRef.current = socketIOClient(BACKEND_URL, {
+    /* ── Socket.IO setup ── */
+    // BUG CŨ: emit join_order_tracking TRƯỚC khi socket connected → server bỏ qua
+    // FIX: emit bên trong on('connect') → đảm bảo gửi đúng lúc server đã sẵn sàng
+    const socket = socketIOClient(BACKEND_URL, {
       transports: ['websocket'],
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+    });
+    socketRef.current = socket;
+
+    // Hàm join room — gọi cả khi connect lần đầu và khi reconnect
+    const joinRoom = () => {
+      socket.emit('join_order_tracking', { orderId, token });
+    };
+
+    socket.on('connect', () => {
+      joinRoom(); // ← KEY FIX: join sau khi đã connected
     });
 
-    socketRef.current.emit('join_order_tracking', { orderId, token });
+    // Re-join sau mỗi lần reconnect (mạng yếu, điện thoại tắt màn hình...)
+    socket.on('reconnect', () => {
+      joinRoom();
+    });
 
-    socketRef.current.on('order:shipper_location', (data) => {
-      if (data?.orderId === parseInt(orderId) && data.lat && data.lng) {
-        setShipperLoc({
-          lat: parseFloat(data.lat),
-          lng: parseFloat(data.lng),
-        });
+    /* ── Nhận vị trí realtime từ shipper ── */
+    socket.on('order:shipper_location', (data) => {
+      // So sánh loose (số hoặc string đều ok) để tránh bug type mismatch
+      if (String(data?.orderId) === String(orderId) && data.lat != null && data.lng != null) {
+        if (mountedRef.current) {
+          setShipperLoc({
+            lat: parseFloat(data.lat),
+            lng: parseFloat(data.lng),
+          });
+        }
       }
     });
 
+    /* ── Fallback polling mỗi 3s ──────────────────────────────────────────────
+       Backup phòng trường hợp socket không nhận được vì:
+       - token hết hạn → server từ chối join room
+       - mạng bị timeout
+       - shipper và khách dùng khác network
+    ─────────────────────────────────────────────────────────────────────────── */
+    pollRef.current = setInterval(async () => {
+      if (!mountedRef.current) return;
+      try {
+        const locRes = await getOrderShipperLocation(orderId);
+        if (locRes?.errCode === 0 && locRes.data?.lat && locRes.data?.lng) {
+          if (mountedRef.current) {
+            setShipperLoc({
+              lat: parseFloat(locRes.data.lat),
+              lng: parseFloat(locRes.data.lng),
+            });
+          }
+        }
+      } catch {
+        // bỏ qua lỗi poll
+      }
+    }, POLL_INTERVAL_MS);
+
     return () => {
-      mounted = false;
-      socketRef.current?.disconnect();
+      mountedRef.current = false;
+      clearInterval(pollRef.current);
+      socket.off('connect');
+      socket.off('reconnect');
+      socket.off('order:shipper_location');
+      socket.disconnect();
     };
   }, [orderId]);
 
-  return {
-    order,
-    shipperLoc,
-    deliveryCoords,
-    warehouse,
-    loading,
-    error,
-  };
+  return { order, shipperLoc, deliveryCoords, warehouse, loading, error };
 };

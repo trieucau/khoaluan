@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef } from 'react';
 import { Marker, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import BaseMap from '../../component/Map/BaseMap';
@@ -9,17 +9,15 @@ const isInVietnam = ({ lat, lng }) =>
   lat >= 8.18 && lat <= 23.39 && lng >= 102.14 && lng <= 109.46;
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   AutoFit — fit bounds bao gồm cả shipper + điểm giao hàng ngay khi render.
-   Chỉ chạy 1 lần để tránh giật. Sau đó map panner handle pan nhẹ nhàng.
+   AutoFit — zoom vừa khít cả 2 điểm [shipper, điểm giao] ngay khi lần đầu render.
+   Chỉ chạy 1 lần (hasFit flag) → không reset zoom khi shipper di chuyển.
 ───────────────────────────────────────────────────────────────────────────── */
 const AutoFit = ({ shipperLoc, deliveryCoords }) => {
   const map = useMap();
   const hasFit = useRef(false);
 
   useEffect(() => {
-    if (hasFit.current) return;
-    if (!shipperLoc || !deliveryCoords) return;
-
+    if (hasFit.current || !shipperLoc || !deliveryCoords) return;
     const bounds = L.latLngBounds(
       [shipperLoc.lat, shipperLoc.lng],
       [deliveryCoords.lat, deliveryCoords.lng],
@@ -32,48 +30,85 @@ const AutoFit = ({ shipperLoc, deliveryCoords }) => {
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   SmoothShipperMarker — dùng imperative Leaflet API (setLatLng) để di chuyển
-   marker KHÔNG gây re-render React. Khi shipper di chuyển, bản đồ tự pan theo
-   nếu marker sắp ra ngoài viewport. Hoàn toàn mượt mà, không nhấp nháy.
+   SmoothShipperMarker — marker di chuyển MƯỢT MÀ với animation requestAnimationFrame.
+
+   Khi nhận vị trí mới từ socket (mỗi 1s):
+   • Không setLatLng() tức thì → marker sẽ nhảy cục
+   • Thay bằng: interpolate (lerp) từ vị trí cũ → vị trí mới trong 900ms
+   • Easing: ease-out (bắt đầu nhanh, cuối chậm dần) → cảm giác di chuyển tự nhiên
+   • Bản đồ tự pan nhẹ nhàng nếu marker gần rìa viewport → không bao giờ mất dấu shipper
 ───────────────────────────────────────────────────────────────────────────── */
+const ANIM_DURATION = 900; // ms — khớp với tần suất update 1s của shipper
+
 const SmoothShipperMarker = ({ shipperLoc, icon }) => {
   const map = useMap();
   const markerRef = useRef(null);
-  const prevLocRef = useRef(null);
+  const animFrameRef = useRef(null);
 
   useEffect(() => {
     if (!shipperLoc) return;
-    const latlng = L.latLng(shipperLoc.lat, shipperLoc.lng);
+    const targetLat = shipperLoc.lat;
+    const targetLng = shipperLoc.lng;
 
     if (!markerRef.current) {
-      markerRef.current = L.marker(latlng, { icon, zIndexOffset: 1000 }).addTo(map);
+      /* ── Lần đầu: tạo marker ngay tại vị trí hiện tại ── */
+      markerRef.current = L.marker([targetLat, targetLng], {
+        icon,
+        zIndexOffset: 1000,
+      }).addTo(map);
       markerRef.current.bindPopup('🚚 Shipper đang giao hàng');
-    } else {
-      // Di chuyển marker mượt mà bằng imperative API
-      markerRef.current.setLatLng(latlng);
+      return;
     }
 
-    // Pan bản đồ nhẹ nhàng nếu marker tiến gần rìa viewport (giữ nguyên zoom)
-    if (prevLocRef.current) {
-      const mapBounds = map.getBounds();
-      const latSpan = mapBounds.getNorth() - mapBounds.getSouth();
-      const lngSpan = mapBounds.getEast() - mapBounds.getWest();
-      const padRatio = 0.2; // 20% từ mép
+    /* ── Lần sau: animate từ vị trí cũ → vị trí mới ── */
+    // Huỷ animation đang chạy (nếu vị trí mới đến sớm hơn dự kiến)
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
 
-      const innerBounds = L.latLngBounds(
-        [mapBounds.getSouth() + latSpan * padRatio, mapBounds.getWest() + lngSpan * padRatio],
-        [mapBounds.getNorth() - latSpan * padRatio, mapBounds.getEast() - lngSpan * padRatio],
-      );
+    const startPos = markerRef.current.getLatLng();
+    const startLat = startPos.lat;
+    const startLng = startPos.lng;
+    const startTime = performance.now();
 
-      if (!innerBounds.contains(latlng)) {
-        map.panTo(latlng, { animate: true, duration: 0.6, easeLinearity: 0.25 });
+    // Easing function: ease-out cubic → tự nhiên như Google Maps
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+    const animate = (now) => {
+      const elapsed = now - startTime;
+      const rawT = Math.min(elapsed / ANIM_DURATION, 1);
+      const t = easeOut(rawT);
+
+      const lat = startLat + (targetLat - startLat) * t;
+      const lng = startLng + (targetLng - startLng) * t;
+      markerRef.current?.setLatLng([lat, lng]);
+
+      if (rawT < 1) {
+        animFrameRef.current = requestAnimationFrame(animate);
+      } else {
+        // Animation xong → kiểm tra pan
+        const latlng = L.latLng(targetLat, targetLng);
+        const b = map.getBounds();
+        const latSpan = b.getNorth() - b.getSouth();
+        const lngSpan = b.getEast() - b.getWest();
+        const pad = 0.2;
+
+        const inner = L.latLngBounds(
+          [b.getSouth() + latSpan * pad, b.getWest() + lngSpan * pad],
+          [b.getNorth() - latSpan * pad, b.getEast() - lngSpan * pad],
+        );
+
+        if (!inner.contains(latlng)) {
+          map.panTo(latlng, { animate: true, duration: 0.5, easeLinearity: 0.3 });
+        }
       }
-    }
-    prevLocRef.current = latlng;
+    };
+
+    animFrameRef.current = requestAnimationFrame(animate);
   }, [shipperLoc, map, icon]);
 
+  /* Cleanup khi unmount */
   useEffect(() => {
     return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       markerRef.current?.remove();
       markerRef.current = null;
     };
@@ -82,9 +117,7 @@ const SmoothShipperMarker = ({ shipperLoc, icon }) => {
   return null;
 };
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   DeliveryMarker — marker tĩnh (điểm giao hàng), không thay đổi → React thường
-───────────────────────────────────────────────────────────────────────────── */
+/* ── Marker điểm giao hàng (tĩnh) ── */
 const DeliveryMarker = ({ deliveryCoords, icon }) => {
   if (!deliveryCoords) return null;
   return <Marker position={[deliveryCoords.lat, deliveryCoords.lng]} icon={icon} />;
@@ -96,10 +129,7 @@ const TrackingMapInner = ({ shipperLoc, deliveryCoords, statusId, isDomestic, ro
 
   return (
     <>
-      {/* Shipper: mượt mà realtime */}
       {shipperLoc && <SmoothShipperMarker shipperLoc={shipperLoc} icon={shipperIcon} />}
-
-      {/* Điểm giao hàng: tĩnh */}
       <DeliveryMarker deliveryCoords={deliveryCoords} icon={deliveryIcon} />
 
       {/* Nội địa → route OSRM */}
