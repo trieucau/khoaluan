@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import socketIOClient from 'socket.io-client';
@@ -14,13 +14,74 @@ import OrderPanel from '../Shipper/OrderPanel';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6969';
 const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving';
 
-/* ── Auto-fit map to markers ── */
-const FitBounds = ({ positions }) => {
+/* ─────────────────────────────────────────────────────────────────────────────
+   AutoFit — chỉ gọi fitBounds MỘT LẦN DUY NHẤT khi lần đầu có đủ dữ liệu.
+   Sau đó không bao giờ reset zoom/pan nữa → tránh giật khi shipper di chuyển.
+───────────────────────────────────────────────────────────────────────────── */
+const AutoFit = ({ positions }) => {
   const map = useMap();
+  const hasFit = useRef(false);
+
   useEffect(() => {
+    if (hasFit.current) return;                              // đã fit rồi → bỏ qua
     const valid = positions.filter((p) => p && p[0] != null && p[1] != null);
-    if (valid.length > 0) map.fitBounds(L.latLngBounds(valid), { padding: [60, 60] });
+    if (valid.length === 0) return;
+    map.fitBounds(L.latLngBounds(valid), { padding: [60, 60], animate: true, duration: 1 });
+    hasFit.current = true;
   }, [positions, map]);
+
+  return null;
+};
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SmoothShipperMarker — dùng imperative Leaflet API để di chuyển marker
+   mà KHÔNG re-render toàn bộ React tree → mượt mà, không nhấp nháy.
+   Khi shipper di chuyển, bản đồ sẽ pan nhẹ nhàng theo.
+───────────────────────────────────────────────────────────────────────────── */
+const SmoothShipperMarker = ({ position, icon }) => {
+  const map = useMap();
+  const markerRef = useRef(null);
+  const prevPos = useRef(null);
+
+  useEffect(() => {
+    if (!position) return;
+    const latlng = L.latLng(position[0], position[1]);
+
+    if (!markerRef.current) {
+      // Tạo marker lần đầu
+      markerRef.current = L.marker(latlng, { icon }).addTo(map);
+      markerRef.current.bindPopup('🚚 Vị trí của bạn');
+    } else {
+      // Di chuyển marker mượt mà bằng imperative API
+      markerRef.current.setLatLng(latlng);
+    }
+
+    // Pan bản đồ nhẹ nhàng nếu marker ra gần rìa viewport (không reset zoom)
+    const mapBounds = map.getBounds();
+    const padding = 0.15; // 15% từ mép
+    const latPad = (mapBounds.getNorth() - mapBounds.getSouth()) * padding;
+    const lngPad = (mapBounds.getEast() - mapBounds.getWest()) * padding;
+    const innerBounds = L.latLngBounds(
+      [mapBounds.getSouth() + latPad, mapBounds.getWest() + lngPad],
+      [mapBounds.getNorth() - latPad, mapBounds.getEast() - lngPad],
+    );
+
+    if (!innerBounds.contains(latlng) && prevPos.current) {
+      map.panTo(latlng, { animate: true, duration: 0.8 });
+    }
+    prevPos.current = latlng;
+  }, [position, map, icon]);
+
+  // Cleanup khi unmount
+  useEffect(() => {
+    return () => {
+      if (markerRef.current) {
+        markerRef.current.remove();
+        markerRef.current = null;
+      }
+    };
+  }, []);
+
   return null;
 };
 
@@ -53,7 +114,10 @@ const fetchOSRMDuration = async (fromLat, fromLng, toLat, toLng) => {
 /* ── Main component ── */
 const ShipperMap = () => {
   const socketRef = useRef(null);
-  const intervalRef = useRef(null);
+  const watchIdRef = useRef(null);       // watchPosition ID
+  const intervalRef = useRef(null);      // setInterval 1s emit socket
+  const lastLocRef = useRef(null);       // vị trí GPS mới nhất (từ watchPosition)
+  const lastEtaLocRef = useRef(null);    // vị trí lần cuối gọi OSRM ETA
 
   const [orderIds, setOrderIds] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -67,7 +131,7 @@ const ShipperMap = () => {
   const shipperId = userData?.id;
 
   /* Fetch active orders */
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     if (!shipperId) return;
     const res = await getAllOrdersByShipper({ shipperId, status: 'working' });
     if (res?.errCode === 0 && res?.data?.length) {
@@ -80,34 +144,43 @@ const ShipperMap = () => {
             orderId: o.id,
             lat: parseFloat(o.addressUser.lat),
             lng: parseFloat(o.addressUser.lng),
-          }))
+          })),
       );
     }
-  };
+  }, [shipperId]);
 
   useEffect(() => {
     socketRef.current = socketIOClient.connect(BACKEND_URL);
     fetchOrders();
     return () => {
-      clearInterval(intervalRef.current);
+      if (watchIdRef.current != null) navigator.geolocation.clearWatch(watchIdRef.current);
+      if (intervalRef.current != null) clearInterval(intervalRef.current);
       socketRef.current?.disconnect();
     };
-  }, []);
+  }, [fetchOrders]);
 
-  /* Fetch ETA for each customer when shipper location updates */
+  /* ── Fetch ETA khi shipper di chuyển > 50m ── */
   useEffect(() => {
     if (!shipperLoc || customers.length === 0) return;
+
+    // Throttle: chỉ gọi OSRM ETA khi đã di chuyển hơn 50m so với lần trước
+    if (lastEtaLocRef.current) {
+      const moved = getDistance(
+        lastEtaLocRef.current.lat, lastEtaLocRef.current.lng,
+        shipperLoc.lat, shipperLoc.lng,
+      );
+      if (moved < 0.05) return; // < 50m → bỏ qua
+    }
+    lastEtaLocRef.current = shipperLoc;
+
     const fetchAll = async () => {
       const results = {};
       await Promise.all(
         customers.map(async (c) => {
           results[c.orderId] = await fetchOSRMDuration(
-            shipperLoc.lat,
-            shipperLoc.lng,
-            c.lat,
-            c.lng
+            shipperLoc.lat, shipperLoc.lng, c.lat, c.lng,
           );
-        })
+        }),
       );
       setOsrmDurations(results);
     };
@@ -120,16 +193,16 @@ const ShipperMap = () => {
     return [...customers].sort(
       (a, b) =>
         getDistance(shipperLoc.lat, shipperLoc.lng, a.lat, a.lng) -
-        getDistance(shipperLoc.lat, shipperLoc.lng, b.lat, b.lng)
+        getDistance(shipperLoc.lat, shipperLoc.lng, b.lat, b.lng),
     );
   }, [shipperLoc, customers]);
 
-  /* OSRM route (single polyline, no territory check) */
+  /* OSRM route */
   const waypoints =
     shipperLoc && sortedCustomers.length > 0 ? [shipperLoc, ...sortedCustomers] : [];
   const { routeCoords } = useOSRMRoute(waypoints);
 
-  /* FitBounds positions */
+  /* Positions cho AutoFit (chỉ dùng 1 lần) */
   const fitPositions = useMemo(() => {
     const pts = [];
     if (shipperLoc) pts.push([shipperLoc.lat, shipperLoc.lng]);
@@ -137,30 +210,58 @@ const ShipperMap = () => {
     return pts;
   }, [shipperLoc, sortedCustomers]);
 
-  /* GPS controls */
-  const startSendingLocation = () => {
+  /* ── GPS Controls — Hybrid: watchPosition (accuracy) + setInterval 1s (emit) ── */
+  const startSendingLocation = useCallback(() => {
     if (!navigator.geolocation) {
       toast.error('Trình duyệt không hỗ trợ GPS');
       return;
     }
     setSending(true);
-    const send = () => {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const { latitude: lat, longitude: lng } = pos.coords;
-        setShipperLoc({ lat, lng });
-        setLastUpdate(moment().format('HH:mm:ss'));
-        socketRef.current?.emit('shipper:location', { shipperId, lat, lng, orderIds });
-      });
-    };
-    send();
-    intervalRef.current = setInterval(send, 10000);
-  };
 
-  const stopSendingLocation = () => {
+    // watchPosition: cập nhật vị trí ngay khi thiết bị di chuyển, độ chính xác cao
+    // Lưu vị trí mới nhất vào ref (không emit trực tiếp để tránh flood socket)
+    const onSuccess = (pos) => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      lastLocRef.current = { lat, lng };
+      setShipperLoc({ lat, lng }); // cập nhật UI marker ngay lập tức
+    };
+
+    const onError = (err) => console.warn('GPS error:', err.message);
+
+    watchIdRef.current = navigator.geolocation.watchPosition(onSuccess, onError, {
+      enableHighAccuracy: true,
+      maximumAge: 0,   // không dùng cache, luôn lấy vị trí tươi
+      timeout: 5000,
+    });
+
+    // setInterval 1s: mỗi giây đọc vị trí mới nhất từ ref rồi emit socket
+    // Đảm bảo server nhận đúng 1 update/giây, ổn định và có kiểm soát
+    intervalRef.current = setInterval(() => {
+      const loc = lastLocRef.current;
+      if (!loc) return;
+      setLastUpdate(moment().format('HH:mm:ss'));
+      socketRef.current?.emit('shipper:location', {
+        shipperId,
+        lat: loc.lat,
+        lng: loc.lng,
+        orderIds,
+      });
+    }, 1000);
+  }, [shipperId, orderIds]);
+
+  const stopSendingLocation = useCallback(() => {
     setSending(false);
-    clearInterval(intervalRef.current);
+    if (watchIdRef.current != null) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+      watchIdRef.current = null;
+    }
+    if (intervalRef.current != null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    lastLocRef.current = null;
     toast.info('Đã tắt GPS');
-  };
+  }, []);
 
   return (
     <div className="sp-page">
@@ -221,19 +322,21 @@ const ShipperMap = () => {
           zoom={6}
           style={{ height: '100%', width: '100%' }}
           preferCanvas={true}
+          zoomControl={true}
         >
           <TileLayer
             attribution="© OpenStreetMap"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             maxZoom={19}
-            keepBuffer={2}
+            keepBuffer={4}
           />
 
-          {/* Shipper marker */}
+          {/* Shipper marker — mượt mà, không re-render */}
           {shipperLoc && (
-            <Marker position={[shipperLoc.lat, shipperLoc.lng]} icon={truckIcon}>
-              <Popup>🚚 Vị trí của bạn</Popup>
-            </Marker>
+            <SmoothShipperMarker
+              position={[shipperLoc.lat, shipperLoc.lng]}
+              icon={truckIcon}
+            />
           )}
 
           {/* Delivery destination markers */}
@@ -243,7 +346,7 @@ const ShipperMap = () => {
             </Marker>
           ))}
 
-          {/* Route polyline — single unified line, no territory split */}
+          {/* Route polyline */}
           {routeCoords.length > 1 && (
             <Polyline
               positions={routeCoords}
@@ -257,8 +360,8 @@ const ShipperMap = () => {
             />
           )}
 
-          {/* Auto-fit */}
-          {fitPositions.length > 0 && <FitBounds positions={fitPositions} />}
+          {/* AutoFit — chỉ chạy 1 lần khi lần đầu có đủ dữ liệu */}
+          {fitPositions.length > 0 && <AutoFit positions={fitPositions} />}
         </MapContainer>
       </div>
     </div>

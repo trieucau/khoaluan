@@ -1,13 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { formatDistance, formatETA } from '../utils/MapUtils';
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   useOSRMRoute — Fetch đường đi từ OSRM với debounce 2s để tránh spam API.
+   Khi shipper di chuyển liên tục mỗi giây, OSRM chỉ được gọi sau khi waypoints
+   ổn định ít nhất 2 giây hoặc khi đã di chuyển đáng kể (handled by caller).
+───────────────────────────────────────────────────────────────────────────── */
 export const useOSRMRoute = (waypoints) => {
   const [routeCoords, setRouteCoords] = useState([]);
   const [distanceKm, setDistanceKm] = useState(null);
   const [eta, setEta] = useState(null);
 
+  const debounceRef = useRef(null);
+  const controllerRef = useRef(null);
+  const lastKeyRef = useRef('');
+
   useEffect(() => {
-    // Nếu không đủ 2 điểm → reset toàn bộ
     if (!waypoints || waypoints.length < 2) {
       setRouteCoords([]);
       setDistanceKm(null);
@@ -15,18 +23,25 @@ export const useOSRMRoute = (waypoints) => {
       return;
     }
 
-    const controller = new AbortController();
+    // Tạo key để so sánh — chỉ fetch khi waypoints thực sự thay đổi
+    const newKey = waypoints.map((p) => `${p.lat?.toFixed(5)},${p.lng?.toFixed(5)}`).join('|');
+    if (newKey === lastKeyRef.current) return; // không thay đổi → bỏ qua
 
-    const fetchRoute = async () => {
+    // Clear debounce timer cũ
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(async () => {
+      // Hủy request đang chạy (nếu có)
+      if (controllerRef.current) controllerRef.current.abort();
+      controllerRef.current = new AbortController();
+
+      lastKeyRef.current = newKey;
+
       try {
         const formatted = waypoints.map((p) => `${p.lng},${p.lat}`).join(';');
-
         const url = `https://router.project-osrm.org/route/v1/driving/${formatted}?overview=full&geometries=geojson`;
 
-        const res = await fetch(url, {
-          signal: controller.signal,
-        });
-
+        const res = await fetch(url, { signal: controllerRef.current.signal });
         const data = await res.json();
 
         if (!data.routes?.length) {
@@ -37,7 +52,6 @@ export const useOSRMRoute = (waypoints) => {
         }
 
         const route = data.routes[0];
-
         const coords = route.geometry.coordinates.map((c) => [c[1], c[0]]);
 
         setRouteCoords(coords);
@@ -51,13 +65,14 @@ export const useOSRMRoute = (waypoints) => {
           setEta(null);
         }
       }
+    }, 2000); // debounce 2 giây
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (controllerRef.current) controllerRef.current.abort();
     };
-
-    fetchRoute();
-
-    // Cleanup khi unmount hoặc waypoints thay đổi
-    return () => controller.abort();
-  }, [JSON.stringify(waypoints)]); // tránh re-render vô hạn
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(waypoints.map((p) => `${p?.lat?.toFixed(4)},${p?.lng?.toFixed(4)}`))]);
 
   return { routeCoords, distanceKm, eta };
 };
