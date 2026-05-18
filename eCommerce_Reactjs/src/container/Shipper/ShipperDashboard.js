@@ -267,51 +267,49 @@ const ShipperDashboard = ({
   useEffect(() => {
     if (!shipperId) return;
     const today = moment().format('YYYY-MM-DD');
-    getAllOrdersByShipper({ shipperId }).then((res) => {
-      if (res?.errCode === 0) {
-        const allOrders = res.data || [];
-        // Daily Stats
-        const todayDone = allOrders.filter(
-          (o) => o.statusId === 'S6' && moment(o.updatedAt).format('YYYY-MM-DD') === today
-        );
-        setDailyStats({ count: todayDone.length, income: todayDone.length * 20000 });
 
-        // Reliability Score Logic
-        const total = allOrders.length;
-        if (total > 0) {
-          const completed = allOrders.filter((o) => o.statusId === 'S6').length;
-          const failed = allOrders.filter((o) => o.statusId === 'S8').length;
-          const completionRate = Math.round((completed / total) * 100);
-          const successRate =
-            completed + failed > 0 ? Math.round((completed / (completed + failed)) * 100) : 0;
-          const score = Math.max(
-            0,
-            Math.min(100, Math.round(completionRate * 0.7 + successRate * 0.3))
+    // PERF FIX: Delay 3s để tránh thundering herd (HomePageShipper cũng gọi API lúc mount)
+    // Dùng status='all' để lấy đủ S6+S8 cho stats, nhưng backend chỉ trả id+statusId+updatedAt
+    const timer = setTimeout(() => {
+      getAllOrdersByShipper({ shipperId, status: 'stats' }).then((res) => {
+        if (res?.errCode === 0) {
+          const allOrders = res.data || [];
+          // Daily Stats — chỉ dùng statusId và updatedAt
+          const todayDone = allOrders.filter(
+            (o) => o.statusId === 'S6' && moment(o.updatedAt).format('YYYY-MM-DD') === today
           );
-          setReliabilityScore(score);
+          setDailyStats({ count: todayDone.length, income: todayDone.length * 20000 });
 
-          // Calculate Next Rank
-          let nextGoal = 70;
-          let nextRank = 'Hạng Bạc';
-          if (score >= 95) {
-            nextGoal = 100;
-            nextRank = 'Bạch Kim (Legend)';
-          } else if (score >= 90) {
-            nextGoal = 95;
-            nextRank = 'Bạch Kim';
-          } else if (score >= 80) {
-            nextGoal = 90;
-            nextRank = 'Kim Cương';
-          } else if (score >= 70) {
-            nextGoal = 80;
-            nextRank = 'Hạng Vàng';
+          // Reliability Score
+          const total = allOrders.length;
+          if (total > 0) {
+            const completed = allOrders.filter((o) => o.statusId === 'S6').length;
+            const failed = allOrders.filter((o) => o.statusId === 'S8').length;
+            const completionRate = Math.round((completed / total) * 100);
+            const successRate =
+              completed + failed > 0 ? Math.round((completed / (completed + failed)) * 100) : 0;
+            const score = Math.max(
+              0,
+              Math.min(100, Math.round(completionRate * 0.7 + successRate * 0.3))
+            );
+            setReliabilityScore(score);
+
+            let nextGoal = 70;
+            let nextRank = 'Hạng Bạc';
+            if (score >= 95) { nextGoal = 100; nextRank = 'Bạch Kim (Legend)'; }
+            else if (score >= 90) { nextGoal = 95; nextRank = 'Bạch Kim'; }
+            else if (score >= 80) { nextGoal = 90; nextRank = 'Kim Cương'; }
+            else if (score >= 70) { nextGoal = 80; nextRank = 'Hạng Vàng'; }
+
+            setRankProgress({ score, nextGoal, nextRank, total });
           }
-
-          setRankProgress({ score, nextGoal, nextRank, total });
         }
-      }
-    });
+      }).catch(() => {/* ignore stats error */});
+    }, 3000); // delay 3s để không đụng HomePageShipper
+
+    return () => clearTimeout(timer);
   }, [shipperId]);
+
 
   const sortedDestinations = useMemo(() => {
     if (!shipperPos) return [];

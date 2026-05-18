@@ -441,8 +441,20 @@ let getAllOrdersByShipper = (data) => {
       if (data.status && data.status === 'done')
         objectFilter.where = { ...objectFilter.where, statusId: 'S6' };
 
+      // STATS MODE: chỉ lấy id+statusId+updatedAt — không N+1, không include nặng
+      // Dùng cho ShipperDashboard stats calculation (delay 3s sau mount)
+      if (data.status === 'stats') {
+        const statsOrders = await db.OrderProduct.findAll({
+          where: { shipperId: data.shipperId },
+          attributes: ['id', 'statusId', 'updatedAt'],
+          raw: true,
+        });
+        return resolve({ errCode: 0, data: statsOrders });
+      }
+
       // FIX HIỆU NĂNG: Chỉ lấy đơn đang hoạt động (S4, S5) nếu không có filter cụ thể
       // Tránh load toàn bộ lịch sử đơn (S6, S7, S8) gây chậm
+
       if (!data.status) {
         objectFilter.where = {
           ...objectFilter.where,
@@ -499,18 +511,25 @@ let getOrdersAvailableForShipper = () => {
         raw: true,
         nest: true,
       });
-      for (let i = 0; i < orders.length; i++) {
-        const addressUser = await db.AddressUser.findOne({
-          where: { id: orders[i].addressUserId },
-        });
-        if (addressUser) {
-          orders[i].addressUser = addressUser;
-          const user = await db.User.findOne({
-            where: { id: addressUser.userId },
-            attributes: { exclude: ['password', 'image'] },
-          });
-          orders[i].userData = user;
-        }
+      // FIX N+1: batch(3) — max 6 DB connections, không vượt pool Aiven free tier
+      const BATCH = 3;
+      for (let i = 0; i < orders.length; i += BATCH) {
+        const slice = orders.slice(i, i + BATCH);
+        await Promise.all(
+          slice.map(async (item, j) => {
+            const addressUser = await db.AddressUser.findOne({
+              where: { id: item.addressUserId },
+            });
+            if (addressUser) {
+              orders[i + j].addressUser = addressUser;
+              const user = await db.User.findOne({
+                where: { id: addressUser.userId },
+                attributes: { exclude: ['password', 'image'] },
+              });
+              orders[i + j].userData = user;
+            }
+          })
+        );
       }
       resolve({ errCode: 0, data: orders });
     } catch (error) {

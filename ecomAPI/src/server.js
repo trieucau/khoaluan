@@ -3,6 +3,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 import viewEngine from './config/viewEngine.js';
 import initwebRoutes from './route/web.js';
 import connectDB from './config/connectDB.js';
@@ -43,6 +45,22 @@ setInterval(flushLocationCache, DB_FLUSH_INTERVAL_MS);
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 let app = express();
 
+// --- PERFORMANCE MIDDLEWARE ---
+// 1. Compression: giảm response size 60-80%
+app.use(compression());
+
+// 2. Rate limiting: ngăn flood request
+const shipperLimiter = rateLimit({
+  windowMs: 60 * 1000,   // 1 phút
+  max: 60,               // tối đa 60 req/phút/IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { errCode: 429, errMessage: 'Quá nhiều yêu cầu, vui lòng thử lại sau.' },
+  skip: (req) => req.method === 'OPTIONS',
+});
+app.use('/api/get-all-order-by-shipper', shipperLimiter);
+app.use('/api/orders-available-for-shipper', shipperLimiter);
+
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -61,8 +79,9 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+// body size: giảm từ 50mb xuống 5mb — ngăn memory spike
+app.use(bodyParser.json({ limit: '5mb' }));
+app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 
 viewEngine(app);
 initwebRoutes(app);
