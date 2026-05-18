@@ -77,7 +77,7 @@ const ShipperDashboard = ({
   shipperPos,
   activeOrders,
 }) => {
-  const [loading, setLoading] = useState(false); // Data is now passed down, so loading is mostly handled by parent or is fast
+  const [loading, setLoading] = useState(false);
   const [osrmDurations] = useState({});
   const [ignoredOrders, setIgnoredOrders] = useState(new Set());
   const [showOrderItems, setShowOrderItems] = useState(false);
@@ -86,6 +86,9 @@ const ShipperDashboard = ({
   const [isMinimized, setIsMinimized] = useState(false);
   const [isHubExpanded, setIsHubExpanded] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+
+  // Ref để throttle weather fetch — chỉ gọi lại khi di chuyển >1km
+  const lastWeatherPosRef = React.useRef(null);
 
   const isMobile = window.innerWidth <= 1024;
 
@@ -153,19 +156,23 @@ const ShipperDashboard = ({
   const [sessionTimeMs, setSessionTimeMs] = useState(gpsTotalMs);
   const [weatherData, setWeatherData] = useState(null);
 
+  // FIX: Tách weather fetch khỏi GPS update
+  // Bug cũ: [shipperPos] → fire mỗi giây → 60 API calls/phút!
+  // Fix: Chỉ fetch khi lần đầu có vị trí, sau đó chỉ khi di chuyển >1km
   useEffect(() => {
     if (!shipperPos || !shipperPos[0]) return;
-    const fetchWeather = async () => {
+
+    const fetchWeather = async (lat, lng) => {
       try {
         const res = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${shipperPos[0]}&longitude=${shipperPos[1]}&current_weather=true`
+          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`
         );
         const data = await res.json();
         if (data?.current_weather) {
           let city = 'Vị trí hiện tại';
           try {
             const geoRes = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${shipperPos[0]}&lon=${shipperPos[1]}`
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
             );
             const geoData = await geoRes.json();
             city =
@@ -178,9 +185,24 @@ const ShipperDashboard = ({
         }
       } catch (e) {}
     };
-    fetchWeather();
-    const interval = setInterval(fetchWeather, 600000);
-    return () => clearInterval(interval);
+
+    const [lat, lng] = shipperPos;
+    const prev = lastWeatherPosRef.current;
+
+    // Lần đầu tiên có vị trí → fetch ngay
+    if (!prev) {
+      lastWeatherPosRef.current = [lat, lng];
+      fetchWeather(lat, lng);
+      const interval = setInterval(() => fetchWeather(lat, lng), 600000);
+      return () => clearInterval(interval);
+    }
+
+    // Chỉ re-fetch nếu di chuyển >1km
+    const dist = getDistance(prev[0], prev[1], lat, lng);
+    if (dist >= 1) {
+      lastWeatherPosRef.current = [lat, lng];
+      fetchWeather(lat, lng);
+    }
   }, [shipperPos]);
 
   const handleIgnoreOrder = (orderId) => {
