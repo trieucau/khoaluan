@@ -119,7 +119,8 @@ const HomePageShipper = () => {
     return () => socketRef.current?.disconnect();
   }, []);
 
-  // Location Tracking
+  // Location Tracking — Throttle 1s để tránh flood socket
+  const lastEmitRef = React.useRef(0);
   useEffect(() => {
     if (gpsData.isOnline && navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
@@ -127,15 +128,20 @@ const HomePageShipper = () => {
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
           setShipperPos([lat, lng]);
-          socketRef.current?.emit('shipper:location', {
-            shipperId,
-            lat,
-            lng,
-            orderIds: activeOrders.map((o) => o.id),
-          });
+          // Throttle: chỉ emit socket tối đa 1 lần/giây
+          const now = Date.now();
+          if (now - lastEmitRef.current >= 1000) {
+            lastEmitRef.current = now;
+            socketRef.current?.emit('shipper:location', {
+              shipperId,
+              lat,
+              lng,
+              orderIds: activeOrders.map((o) => o.id),
+            });
+          }
         },
         (err) => console.error(err),
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
       );
       return () => navigator.geolocation.clearWatch(watchId);
     }

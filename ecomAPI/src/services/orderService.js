@@ -452,23 +452,29 @@ let getAllOrdersByShipper = (data) => {
 
       let res = await db.OrderProduct.findAll(objectFilter);
 
-      // FIX N+1: Chạy song song (Promise.all) thay vì tuần tự (for loop)
-      // 50 đơn: từ 100 queries tuần tự → 100 queries song song (~10x nhanh hơn)
-      await Promise.all(
-        res.map(async (item) => {
-          const addressUser = await db.AddressUser.findOne({
-            where: { id: item.addressUserId },
-          });
-          if (addressUser) {
-            const user = await db.User.findOne({
-              where: { id: addressUser.userId },
-              attributes: { exclude: ['password', 'image'] },
+      // FIX CONNECTION POOL EXHAUSTION:
+      // Promise.all không giới hạn → 30 đơn × 2 queries = 60 connections đồng thời
+      // → vượt giới hạn Aiven free tier → 502 Bad Gateway
+      // Giải pháp: xử lý theo batch 3 đơn/lần → max 6 connections tại một thời điểm
+      const BATCH_SIZE = 3;
+      for (let i = 0; i < res.length; i += BATCH_SIZE) {
+        const batch = res.slice(i, i + BATCH_SIZE);
+        await Promise.all(
+          batch.map(async (item) => {
+            const addressUser = await db.AddressUser.findOne({
+              where: { id: item.addressUserId },
             });
-            item.userData = user;
-            item.addressUser = addressUser;
-          }
-        })
-      );
+            if (addressUser) {
+              const user = await db.User.findOne({
+                where: { id: addressUser.userId },
+                attributes: { exclude: ['password', 'image'] },
+              });
+              item.userData = user;
+              item.addressUser = addressUser;
+            }
+          })
+        );
+      }
 
       resolve({
         errCode: 0,
