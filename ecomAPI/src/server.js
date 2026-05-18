@@ -8,8 +8,37 @@ import initwebRoutes from './route/web.js';
 import connectDB from './config/connectDB.js';
 import http from 'http';
 import { sendMessage } from './services/messageService.js';
-import { upsertShipperLocation } from './services/shipperLocationService.js';
+import { batchUpsertLocations } from './services/shipperLocationService.js';
 import db from './models/index.js';
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   IN-MEMORY LOCATION CACHE
+   Mục đích: Không ghi DB mỗi giây (gây quá tải). Thay vào đó:
+   - Lưu vị trí mới nhất vào Map in-memory (cực nhanh, không tốn DB I/O)
+   - Socket relay cho khách vẫn chạy realtime (không ảnh hưởng)
+   - Flush toàn bộ cache vào DB mỗi DB_FLUSH_INTERVAL_MS (15 giây)
+   Kết quả: Giảm DB write từ 60/phút/shipper xuống còn 4/phút/shipper (giảm 93%)
+───────────────────────────────────────────────────────────────────────────── */
+const locationCache = new Map(); // shipperId → { lat, lng, updatedAt }
+const DB_FLUSH_INTERVAL_MS = 15_000; // flush vào DB mỗi 15 giây
+
+const flushLocationCache = async () => {
+  if (locationCache.size === 0) return;
+  // Snapshot và xóa cache trước khi ghi (tránh race condition)
+  const snapshot = new Map(locationCache);
+  locationCache.clear();
+  try {
+    await batchUpsertLocations(snapshot);
+  } catch (err) {
+    console.error('[LocationCache] Flush error:', err.message);
+    // Nếu ghi lỗi → đưa lại vào cache (không mất data)
+    for (const [id, loc] of snapshot) {
+      if (!locationCache.has(id)) locationCache.set(id, loc);
+    }
+  }
+};
+
+setInterval(flushLocationCache, DB_FLUSH_INTERVAL_MS);
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 let app = express();
@@ -63,11 +92,17 @@ socketIo.on('connection', (socket) => {
     socketIo.to(data.roomId).emit('loadRoomServer', { data });
   });
 
-  // Shipper gửi vị trí realtime (mỗi 10s khi đang giao)
-  socket.on('shipper:location', async (data) => {
+  // Shipper gửi vị trí realtime (mỗi 1s khi đang giao)
+  // FIX HIỆU NĂNG: KHÔNG ghi DB trực tiếp → lưu vào locationCache
+  // Flush cache → DB chỉ xảy ra mỗi 15s (giảm 93% DB writes)
+  socket.on('shipper:location', (data) => {
     const { shipperId, lat, lng, orderIds } = data || {};
     if (!shipperId || lat == null || lng == null) return;
-    await upsertShipperLocation(shipperId, lat, lng);
+
+    // 1. Lưu vào in-memory cache (O(1), không chạm DB)
+    locationCache.set(String(shipperId), { lat, lng, updatedAt: Date.now() });
+
+    // 2. Relay realtime cho khách hàng đang theo dõi (qua socket, không qua DB)
     const ids = Array.isArray(orderIds) ? orderIds : [];
     ids.forEach((orderId) => {
       socketIo.to(`order:tracking:${orderId}`).emit('order:shipper_location', {
@@ -77,6 +112,8 @@ socketIo.on('connection', (socket) => {
         lng,
       });
     });
+
+    // 3. Relay cho admin map
     socketIo.to('admin:shipper_map').emit('shipper:location', { shipperId, lat, lng });
   });
 

@@ -104,60 +104,52 @@ export const useOrderTracking = (orderId) => {
     });
     socketRef.current = socket;
 
-    // Hàm join room — gọi cả khi connect lần đầu và khi reconnect
-    const joinRoom = () => {
-      socket.emit('join_order_tracking', { orderId, token });
+    /* ── Socket event handlers ── */
+    const joinRoom = () => socket.emit('join_order_tracking', { orderId, token });
+
+    const startPolling = () => {
+      if (pollRef.current) return;
+      pollRef.current = setInterval(async () => {
+        if (!mountedRef.current) return;
+        try {
+          const locRes = await getOrderShipperLocation(orderId);
+          if (locRes?.errCode === 0 && locRes.data?.lat && locRes.data?.lng) {
+            if (mountedRef.current)
+              setShipperLoc({ lat: parseFloat(locRes.data.lat), lng: parseFloat(locRes.data.lng) });
+          }
+        } catch { /* bỏ qua lỗi poll */ }
+      }, POLL_INTERVAL_MS);
     };
 
-    socket.on('connect', () => {
-      joinRoom(); // ← KEY FIX: join sau khi đã connected
-    });
+    const stopPolling = () => {
+      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    };
 
-    // Re-join sau mỗi lần reconnect (mạng yếu, điện thoại tắt màn hình...)
-    socket.on('reconnect', () => {
-      joinRoom();
-    });
+    // Kết nối thành công: join room + dừng polling (socket đảm nhiệm)
+    socket.on('connect', () => { stopPolling(); joinRoom(); });
 
-    /* ── Nhận vị trí realtime từ shipper ── */
+    // Mất kết nối: bật polling fallback
+    socket.on('disconnect', () => startPolling());
+
+    // Nhận vị trí thời gian thực từ shipper → tắt polling ngay
     socket.on('order:shipper_location', (data) => {
-      // So sánh loose (số hoặc string đều ok) để tránh bug type mismatch
       if (String(data?.orderId) === String(orderId) && data.lat != null && data.lng != null) {
-        if (mountedRef.current) {
-          setShipperLoc({
-            lat: parseFloat(data.lat),
-            lng: parseFloat(data.lng),
-          });
-        }
+        if (mountedRef.current)
+          setShipperLoc({ lat: parseFloat(data.lat), lng: parseFloat(data.lng) });
+        stopPolling(); // socket OK → không cần poll nữa
       }
     });
 
-    /* ── Fallback polling mỗi 3s ──────────────────────────────────────────────
-       Backup phòng trường hợp socket không nhận được vì:
-       - token hết hạn → server từ chối join room
-       - mạng bị timeout
-       - shipper và khách dùng khác network
-    ─────────────────────────────────────────────────────────────────────────── */
-    pollRef.current = setInterval(async () => {
-      if (!mountedRef.current) return;
-      try {
-        const locRes = await getOrderShipperLocation(orderId);
-        if (locRes?.errCode === 0 && locRes.data?.lat && locRes.data?.lng) {
-          if (mountedRef.current) {
-            setShipperLoc({
-              lat: parseFloat(locRes.data.lat),
-              lng: parseFloat(locRes.data.lng),
-            });
-          }
-        }
-      } catch {
-        // bỏ qua lỗi poll
-      }
-    }, POLL_INTERVAL_MS);
+    socket.on('reconnect', joinRoom);
+
+    // Bật polling ban đầu (fallback trong khi chờ socket join room)
+    startPolling();
 
     return () => {
       mountedRef.current = false;
-      clearInterval(pollRef.current);
+      stopPolling();
       socket.off('connect');
+      socket.off('disconnect');
       socket.off('reconnect');
       socket.off('order:shipper_location');
       socket.disconnect();
