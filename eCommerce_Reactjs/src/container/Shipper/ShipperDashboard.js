@@ -229,8 +229,14 @@ const ShipperDashboard = ({
 
   const heroOrder = useMemo(() => {
     if (!activeOrders || activeOrders.length === 0) return null;
+    // Nếu shipper đang lọc đơn (nhấn Lộ trình) → hiện đúng đơn đó
+    if (selectedOrderId) {
+      const selected = activeOrders.find((o) => o.id === selectedOrderId);
+      if (selected) return selected;
+    }
+    // Mặc định: đơn mới nhất
     return [...activeOrders].sort((a, b) => b.id - a.id)[0];
-  }, [activeOrders]);
+  }, [activeOrders, selectedOrderId]);
 
   const [dailyStats, setDailyStats] = useState({ count: 0, income: 0 });
   const [reliabilityScore, setReliabilityScore] = useState(0);
