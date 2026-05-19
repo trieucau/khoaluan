@@ -64,11 +64,21 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations, selectedOrderId, onSele
             })()
           : null;
 
+      const shippingFee = order?.typeShipData?.price != null ? Number(order.typeShipData.price) : 0;
+      let velocity = 40; // fallback if needed, but handled below
+      if (shippingFee >= 50000) {
+        velocity = 50;
+      } else if (shippingFee >= 30000) {
+        velocity = 30;
+      } else {
+        velocity = 20;
+      }
+
       const durationSeconds =
         osrmDurations?.[order.id] != null
           ? osrmDurations[order.id]
           : distKm != null
-            ? (distKm / 40) * 3600
+            ? (distKm / velocity) * 3600
             : null;
 
       const rawDetails = order?.orderDetail || order?.orderDetails || [];
@@ -114,7 +124,7 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations, selectedOrderId, onSele
   const COLS = [
     { label: 'Mã đơn', key: null, w: '10%' },
     { label: 'Khoảng cách', key: 'distKm', w: '14%', sortable: true },
-    { label: 'Thời gian', key: 'durationSeconds', w: '13%', sortable: true },
+    { label: 'Dự kiến', key: 'durationSeconds', w: '13%', sortable: true },
     { label: 'Giá trị', key: null, w: '15%' },
     { label: 'Phí ship', key: null, w: '13%' },
     { label: 'Tên – SĐT', key: null, w: '25%' },

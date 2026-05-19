@@ -858,6 +858,20 @@ const AdminShipperMap = ({ isMini = false }) => {
                               whiteSpace: 'nowrap',
                             }}
                           >
+                            Dự kiến
+                          </th>
+                          <th
+                            style={{
+                              padding: '9px 10px',
+                              textAlign: 'left',
+                              fontWeight: 700,
+                              color: '#64748b',
+                              fontSize: 10,
+                              textTransform: 'uppercase',
+                              borderBottom: '1px solid #1e293b',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
                             Phí ship
                           </th>
                           <th
@@ -898,6 +912,7 @@ const AdminShipperMap = ({ isMini = false }) => {
                           const customerName = addr?.shipName || order.userData?.firstName || '—';
 
                           let distKm = '—';
+                          let distKmNum = null;
                           if (
                             selectedShipper.lat &&
                             selectedShipper.lng &&
@@ -910,6 +925,7 @@ const AdminShipperMap = ({ isMini = false }) => {
                               addr.lat,
                               addr.lng
                             );
+                            distKmNum = km;
                             distKm = km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
                           }
 
@@ -918,6 +934,26 @@ const AdminShipperMap = ({ isMini = false }) => {
                             style: 'currency',
                             currency: 'VND',
                           }).format(shipPrice);
+
+                          let etaStr = '—';
+                          if (distKmNum != null) {
+                            let velocity = 40;
+                            const fee = Number(shipPrice) || 0;
+                            if (fee >= 50000) velocity = 50;
+                            else if (fee >= 30000) velocity = 30;
+                            else velocity = 20;
+
+                            const durationSeconds = (distKmNum / velocity) * 3600;
+                            const totalMinutes = Math.ceil(durationSeconds / 60);
+                            
+                            if (totalMinutes < 60) {
+                              etaStr = `${totalMinutes} phút`;
+                            } else {
+                              const hours = Math.floor(totalMinutes / 60);
+                              const minutes = totalMinutes % 60;
+                              etaStr = minutes > 0 ? `${hours} giờ ${minutes} phút` : `${hours} giờ`;
+                            }
+                          }
 
                           return (
                             <tr
@@ -957,6 +993,16 @@ const AdminShipperMap = ({ isMini = false }) => {
                                 }}
                               >
                                 {distKm}
+                              </td>
+                              <td
+                                style={{
+                                  padding: '9px 10px',
+                                  color: '#a78bfa',
+                                  fontWeight: 600,
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {etaStr}
                               </td>
                               <td
                                 style={{

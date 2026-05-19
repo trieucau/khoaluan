@@ -252,6 +252,7 @@ const OrderTracking = () => {
               shipperLoc={shipperLoc}
               deliveryCoords={deliveryCoords}
               statusId={order.statusId}
+              shippingFee={order.typeShipData?.price}
             />
           </div>
         ) : (

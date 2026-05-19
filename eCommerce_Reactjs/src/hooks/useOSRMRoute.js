@@ -6,7 +6,7 @@ import { formatDistance, formatETA } from '../utils/MapUtils';
    Khi shipper di chuyển liên tục mỗi giây, OSRM chỉ được gọi sau khi waypoints
    ổn định ít nhất 2 giây hoặc khi đã di chuyển đáng kể (handled by caller).
 ───────────────────────────────────────────────────────────────────────────── */
-export const useOSRMRoute = (waypoints) => {
+export const useOSRMRoute = (waypoints, shippingFee = 0) => {
   const [routeCoords, setRouteCoords] = useState([]);
   const [distanceKm, setDistanceKm] = useState(null);
   const [eta, setEta] = useState(null);
@@ -56,7 +56,20 @@ export const useOSRMRoute = (waypoints) => {
 
         setRouteCoords(coords);
         setDistanceKm(formatDistance(route.distance));
-        setEta(formatETA(route.duration));
+
+        let velocity = 40;
+        const fee = Number(shippingFee) || 0;
+        if (fee >= 50000) {
+          velocity = 50;
+        } else if (fee >= 30000) {
+          velocity = 30;
+        } else {
+          velocity = 20;
+        }
+
+        const distKmRaw = route.distance / 1000;
+        const durationSeconds = (distKmRaw / velocity) * 3600;
+        setEta(formatETA(durationSeconds));
       } catch (err) {
         if (err.name !== 'AbortError') {
           console.error('OSRM error:', err);

@@ -158,7 +158,7 @@ const TrackingMapInner = ({ shipperLoc, deliveryCoords, statusId, isDomestic, ro
 };
 
 /* ── Main component ── */
-const TrackingMap = ({ shipperLoc, deliveryCoords, statusId }) => {
+const TrackingMap = ({ shipperLoc, deliveryCoords, statusId, shippingFee = 0 }) => {
   const isDomestic =
     shipperLoc &&
     deliveryCoords &&
@@ -166,7 +166,7 @@ const TrackingMap = ({ shipperLoc, deliveryCoords, statusId }) => {
     isInVietnam(deliveryCoords);
 
   const waypoints = isDomestic ? [shipperLoc, deliveryCoords] : [];
-  const { routeCoords, distanceKm, eta } = useOSRMRoute(waypoints);
+  const { routeCoords, distanceKm, eta } = useOSRMRoute(waypoints, shippingFee);
 
   return (
     <div style={{ position: 'relative' }}>
