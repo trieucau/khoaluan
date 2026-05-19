@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const dirsToScan = [
-  'e:\\clone\\ecomFullStack\\eCommerce_Reactjs\\src\\container\\System'
-];
+const dirsToScan = ['e:\\clone\\ecomFullStack\\eCommerce_Reactjs\\src\\container\\System'];
 
 const emojiRegex = /\p{Extended_Pictographic}/gu;
 
@@ -19,7 +17,7 @@ function scanDir(dir) {
       for (let i = 0; i < lines.length; i++) {
         const match = lines[i].match(emojiRegex);
         if (match) {
-            console.log(`File: ${fullPath}, Line: ${i + 1}, Match: ${match.join('')}`);
+          console.log(`File: ${fullPath}, Line: ${i + 1}, Match: ${match.join('')}`);
         }
       }
     }

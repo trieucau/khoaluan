@@ -1,7 +1,7 @@
 import db from '../models/index.js';
 import jsrecommender from 'js-recommender';
 import 'dotenv/config';
-import { uploadImage } from '../utils/cloudinary.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 import { Op } from 'sequelize';
 function dynamicSort(property) {
   var sortOrder = 1;
@@ -61,7 +61,10 @@ let createNewProduct = (data) => {
           if (productdetail) {
             await db.ProductImage.create({
               productdetailId: productdetail.id,
-              image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
+              image:
+                data.image && data.image.startsWith('data:image/')
+                  ? await uploadImage(data.image)
+                  : data.image,
             });
             await db.ProductDetailSize.create({
               productdetailId: productdetail.id,
@@ -141,9 +144,7 @@ let getAllProductAdmin = (data) => {
             where: { productdetailId: res.rows[i].productDetail[j].id },
             raw: true,
           });
-          for (let k = 0; k < res.rows[i].productDetail[j].productImage.length; k++) {
-
-          }
+          
         }
       }
       if (data.sortPrice && data.sortPrice === 'true') {
@@ -220,9 +221,7 @@ let getAllProductUser = (data) => {
             where: { productdetailId: res.rows[i].productDetail[j].id },
             raw: true,
           });
-          for (let k = 0; k < res.rows[i].productDetail[j].productImage.length; k++) {
-
-          }
+          
         }
       }
       if (data.sortPrice && data.sortPrice === 'true') {
@@ -361,9 +360,7 @@ let getDetailProductById = (id) => {
             raw: true,
             nest: true,
           });
-          for (let j = 0; j < res.productDetail[i].productImage.length; j++) {
-
-          }
+          
           for (let k = 0; k < res.productDetail[i].productDetailSize.length; k++) {
             let receiptDetail = await db.ReceiptDetail.findAll({
               where: {
@@ -457,14 +454,7 @@ let getAllProductDetailById = (data) => {
             productdetail.rows[i].productsize = await db.ProductDetailSize.findAll({
               where: { productdetailId: productdetail.rows[i].id },
             });
-            if (
-              productdetail.rows[i].productImageData &&
-              productdetail.rows[i].productImageData.length > 0
-            ) {
-              for (let j = 0; j < productdetail.rows[i].productImageData.length; j++) {
-
-              }
-            }
+            
           }
         }
         resolve({
@@ -493,9 +483,7 @@ let getAllProductDetailImageById = (data) => {
           offset: +data.offset,
         });
         if (productImage.rows && productImage.rows.length > 0) {
-          productImage.rows.map(
-            (item) => item
-          );
+          productImage.rows.map((item) => item);
         }
 
         resolve({
@@ -533,9 +521,12 @@ let createNewProductDetail = (data) => {
         });
         if (productdetail) {
           await db.ProductImage.create({
-              productdetailId: productdetail.id,
-              image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
-            });
+            productdetailId: productdetail.id,
+            image:
+              data.image && data.image.startsWith('data:image/')
+                ? await uploadImage(data.image)
+                : data.image,
+          });
           await db.ProductDetailSize.create({
             productdetailId: productdetail.id,
             width: data.width,
@@ -624,7 +615,10 @@ let createNewProductDetailImage = (data) => {
         await db.ProductImage.create({
           productdetailId: data.id,
           caption: data.caption,
-          image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
+          image:
+            data.image && data.image.startsWith('data:image/')
+              ? await uploadImage(data.image)
+              : data.image,
         });
         resolve({
           errCode: 0,
@@ -648,9 +642,7 @@ let getDetailProductImageById = (id) => {
         let productdetailImage = await db.ProductImage.findOne({
           where: { id: id },
         });
-        if (productdetailImage) {
-
-        }
+        
         resolve({
           errCode: 0,
           data: productdetailImage,
@@ -676,7 +668,14 @@ let updateProductDetailImage = (data) => {
         });
         if (productImage) {
           productImage.caption = data.caption;
-          productImage.image = data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image;
+          if (data.image && data.image.startsWith('data:image/')) {
+            if (productImage.image) {
+              deleteImage(productImage.image).catch(console.error);
+            }
+            productImage.image = await uploadImage(data.image);
+          } else {
+            productImage.image = data.image;
+          }
 
           await productImage.save();
           resolve({
@@ -709,6 +708,9 @@ let deleteProductDetailImage = (data) => {
           raw: false,
         });
         if (productImage) {
+          if (productImage.image) {
+            deleteImage(productImage.image).catch(console.error);
+          }
           await db.ProductImage.destroy({
             where: { id: data.id },
           });
@@ -779,6 +781,15 @@ let deleteProductDetail = (data) => {
           }
 
           // 5. Delete ProductImage
+          let productImages = await db.ProductImage.findAll({
+            where: { productdetailId: data.id },
+            raw: true,
+          });
+          for (let img of productImages) {
+            if (img.image) {
+              deleteImage(img.image).catch(console.error);
+            }
+          }
           await db.ProductImage.destroy({
             where: { productdetailId: data.id },
           });
@@ -1022,9 +1033,7 @@ let getProductFeature = (limit) => {
             where: { productdetailId: res[i].productDetail[j].id },
             raw: true,
           });
-          for (let k = 0; k < res[i].productDetail[j].productImage.length; k++) {
-
-          }
+          
         }
       }
 
@@ -1080,9 +1089,7 @@ let getProductNew = (limit) => {
             where: { productdetailId: res[i].productDetail[j].id },
             raw: true,
           });
-          for (let k = 0; k < res[i].productDetail[j].productImage.length; k++) {
-
-          }
+          
         }
       }
 
@@ -1170,9 +1177,7 @@ let getProductShopCart = (data) => {
                 where: { productdetailId: productArr[g].productDetail[j].id },
                 raw: true,
               });
-              for (let k = 0; k < productArr[g].productDetail[j].productImage.length; k++) {
-
-              }
+              
             }
           }
         }
@@ -1253,9 +1258,7 @@ let getProductRecommend = (data) => {
                 where: { productdetailId: productArr[g].productDetail[j].id },
                 raw: true,
               });
-              for (let k = 0; k < productArr[g].productDetail[j].productImage.length; k++) {
-
-              }
+              
             }
           }
         }

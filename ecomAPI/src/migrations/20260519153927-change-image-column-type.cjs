@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     const tableNames = ['users', 'productimages', 'orderproducts', 'comments', 'blogs', 'banners'];
     for (let table of tableNames) {
       await queryInterface.changeColumn(table, 'image', {
@@ -12,7 +12,7 @@ module.exports = {
     }
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     const tableNames = ['users', 'productimages', 'orderproducts', 'comments', 'blogs', 'banners'];
     for (let table of tableNames) {
       await queryInterface.changeColumn(table, 'image', {
@@ -20,5 +20,5 @@ module.exports = {
         allowNull: true,
       });
     }
-  }
+  },
 };

@@ -37,7 +37,7 @@ export const deleteImage = async (imageUrl) => {
     const splitUrl = imageUrl.split('/');
     const publicIdWithExt = splitUrl[splitUrl.length - 1];
     const publicId = `ecom_images/${publicIdWithExt.split('.')[0]}`;
-    
+
     await cloudinary.uploader.destroy(publicId);
     return true;
   } catch (error) {

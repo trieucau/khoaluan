@@ -149,11 +149,7 @@ let getAllShopCartByUserId = (id) => {
           res[i].productDetailImage = await db.ProductImage.findAll({
             where: { productdetailId: res[i].productDetail.id },
           });
-          if (res[i].productDetailImage && res[i].productDetailImage.length > 0) {
-            for (let j = 0; j < res[i].productDetailImage.length; j++) {
-
-            }
-          }
+          
           res[i].productData = await db.Product.findOne({
             where: { id: res[i].productDetail.productId },
           });

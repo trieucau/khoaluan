@@ -1,5 +1,5 @@
 import db from '../models/index.js';
-import { uploadImage } from '../utils/cloudinary.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 import 'dotenv/config';
 import { Op } from 'sequelize';
 let createNewBlog = (data) => {
@@ -23,7 +23,10 @@ let createNewBlog = (data) => {
           title: data.title,
           subjectId: data.subjectId,
           statusId: 'S1',
-          image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
+          image:
+            data.image && data.image.startsWith('data:image/')
+              ? await uploadImage(data.image)
+              : data.image,
           contentMarkdown: data.contentMarkdown,
           contentHTML: data.contentHTML,
           userId: data.userId,
@@ -68,9 +71,7 @@ let getDetailBlogById = (id) => {
         });
         res.userData = await db.User.findOne({ where: { id: res.userId } });
 
-        if (res && res.image) {
-
-        }
+        
         resolve({
           errCode: 0,
           data: res,
@@ -114,7 +115,6 @@ let getAllBlog = (data) => {
       let res = await db.Blog.findAndCountAll(objectFilter);
       if (res.rows && res.rows.length > 0) {
         for (let i = 0; i < res.rows.length; i++) {
-
           res.rows[i].userData = await db.User.findOne({
             where: { id: res.rows[i].userId },
           });
@@ -158,7 +158,14 @@ let updateBlog = (data) => {
           blog.title = data.title;
           blog.contentMarkdown = data.contentMarkdown;
           blog.contentHTML = data.contentHTML;
-          blog.image = data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image;
+          if (data.image && data.image.startsWith('data:image/')) {
+            if (blog.image) {
+              deleteImage(blog.image).catch(console.error);
+            }
+            blog.image = await uploadImage(data.image);
+          } else {
+            blog.image = data.image;
+          }
           blog.subjectId = data.subjectId;
           blog.shortdescription = data.shortdescription;
 
@@ -187,6 +194,9 @@ let deleteBlog = (data) => {
           where: { id: data.id },
         });
         if (blog) {
+          if (blog.image) {
+            deleteImage(blog.image).catch(console.error);
+          }
           await db.Blog.destroy({
             where: { id: data.id },
           });
@@ -220,7 +230,6 @@ let getFeatureBlog = (data) => {
       });
       if (res && res.length > 0) {
         for (let i = 0; i < res.length; i++) {
-
           res[i].userData = await db.User.findOne({
             where: { id: res[i].userId },
           });
@@ -258,7 +267,6 @@ let getNewBlog = (data) => {
       });
       if (res && res.length > 0) {
         for (let i = 0; i < res.length; i++) {
-
           res[i].userData = await db.User.findOne({
             where: { id: res[i].userId },
           });

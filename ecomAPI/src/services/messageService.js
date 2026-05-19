@@ -124,9 +124,7 @@ let loadMessage = (data) => {
           message[i].userData = await db.User.findOne({
             where: { id: message[i].userId },
           });
-          if (message[i].userData && message[i].userData.image) {
-
-          }
+          
         }
         resolve({
           errCode: 0,
@@ -159,15 +157,11 @@ let listRoomOfUser = (userId) => {
           room[i].userOneData = await db.User.findOne({
             where: { id: room[i].userOne },
           });
-          if (room[i].userOneData && room[i].userOneData.image) {
-
-          }
+          
           room[i].userTwoData = await db.User.findOne({
             where: { id: room[i].userTwo },
           });
-          if (room[i].userTwoData && room[i].userTwoData.image) {
-
-          }
+          
         }
         resolve({
           errCode: 0,
@@ -190,15 +184,11 @@ let listRoomOfAdmin = (userId) => {
         room[i].userOneData = await db.User.findOne({
           where: { id: room[i].userOne },
         });
-        if (room[i].userOneData && room[i].userOneData.image) {
-
-        }
+        
         room[i].userTwoData = await db.User.findOne({
           where: { id: room[i].userTwo },
         });
-        if (room[i].userTwoData && room[i].userTwoData.image) {
-
-        }
+        
       }
       resolve({
         errCode: 0,

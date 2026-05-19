@@ -1,5 +1,5 @@
 import db from '../models/index.js';
-import { uploadImage } from '../utils/cloudinary.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 import 'dotenv/config';
 
 let createNewReview = (data) => {
@@ -16,7 +16,10 @@ let createNewReview = (data) => {
           productId: data.productId,
           userId: data.userId,
           star: data.star,
-          image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
+          image:
+            data.image && data.image.startsWith('data:image/')
+              ? await uploadImage(data.image)
+              : data.image,
         });
         resolve({
           errCode: 0,
@@ -46,8 +49,6 @@ let getAllReviewByProductId = (id) => {
 
         if (res && res.length > 0) {
           for (let i = 0; i < res.length; i++) {
-            
-
             res[i].childComment = await db.Comment.findAll({
               where: { parentId: res[i].id },
             });
@@ -57,7 +58,6 @@ let getAllReviewByProductId = (id) => {
                 exclude: ['password'],
               },
             });
-
           }
         }
 
@@ -109,6 +109,8 @@ let deleteReview = (data) => {
           where: { id: data.id },
         });
         if (review) {
+          
+          
           await db.Comment.destroy({
             where: { id: data.id },
           });
@@ -136,7 +138,10 @@ let createNewComment = (data) => {
           content: data.content,
           blogId: data.blogId,
           userId: data.userId,
-          image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
+          image:
+            data.image && data.image.startsWith('data:image/')
+              ? await uploadImage(data.image)
+              : data.image,
         });
         resolve({
           errCode: 0,
@@ -168,9 +173,7 @@ let getAllCommentByBlogId = (id) => {
 
         for (let i = 0; i < res.length; i++) {
           // comment image
-          if (res[i].image) {
-
-          } else {
+          if (!res[i].image) {
             res[i].image = '';
           }
 
@@ -185,9 +188,7 @@ let getAllCommentByBlogId = (id) => {
             attributes: { exclude: ['password'] },
           });
 
-          if (res[i].user && res[i].user.image) {
-
-          } else if (res[i].user) {
+          if (res[i].user && !res[i].user.image) {
             res[i].user.image = '';
           }
         }
@@ -240,6 +241,8 @@ let deleteComment = (data) => {
           where: { id: data.id },
         });
         if (comment) {
+          
+          
           await db.Comment.destroy({
             where: { id: data.id },
           });

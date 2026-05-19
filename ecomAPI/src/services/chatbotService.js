@@ -1310,9 +1310,10 @@ const chatWithGemini = async (userId, messages, res) => {
       userMessage = 'Lỗi cấu hình, vui lòng liên hệ admin.';
     }
 
-    const detailedError = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'development'
-      ? userMessage 
-      : `${userMessage} (Chi tiết server: ${err.message})`; // Chỉ dùng log server, không ném ra cho user thấy
+    const detailedError =
+      process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'development'
+        ? userMessage
+        : `${userMessage} (Chi tiết server: ${err.message})`; // Chỉ dùng log server, không ném ra cho user thấy
 
     if (!res.headersSent) {
       res.status(500).json({ errCode: -1, errMessage: detailedError });

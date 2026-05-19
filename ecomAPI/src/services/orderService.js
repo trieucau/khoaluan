@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import db from '../models/index.js';
-import { uploadImage } from '../utils/cloudinary.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 import paypal from 'paypal-rest-sdk';
 import { Op } from 'sequelize';
 import querystring from 'qs';
@@ -116,9 +116,7 @@ let getAllOrders = (data) => {
             nest: true,
           });
 
-          if (user && user.image) {
-
-          }
+          
 
           res.rows[i].userData = user;
           res.rows[i].addressUser = addressUser;
@@ -175,7 +173,6 @@ let getDetailOrderById = (id, requesterId, requesterRole) => {
 
         if (order.image) {
           // FIX 1: Buffer.from -> Buffer.from
-
         }
         if (order.voucherData && order.voucherData.typeVoucherId) {
           order.voucherData.typeVoucherOfVoucherData = await db.TypeVoucher.findOne({
@@ -225,7 +222,6 @@ let getDetailOrderById = (id, requesterId, requesterRole) => {
           });
           for (let j = 0; j < orderDetail[i].productImage.length; j++) {
             // FIX 1: Buffer.from -> Buffer.from
-
           }
         }
 
@@ -387,9 +383,7 @@ let getAllOrdersByUser = (data) => {
                 productdetailId: orderDetail[k].productDetail.id,
               },
             });
-            for (let f = 0; f < orderDetail[k].productImage.length; f++) {
-
-            }
+            
           }
 
           orders[j].orderDetail = orderDetail;
@@ -427,7 +421,9 @@ let getAllOrdersByShipper = (data) => {
           {
             model: db.AddressUser,
             as: 'addressUser',
-            include: [{ model: db.User, as: 'userData', attributes: { exclude: ['password', 'image'] } }],
+            include: [
+              { model: db.User, as: 'userData', attributes: { exclude: ['password', 'image'] } },
+            ],
           },
         ],
         order: [['createdAt', 'DESC']],
@@ -481,7 +477,9 @@ let getOrdersAvailableForShipper = () => {
           {
             model: db.AddressUser,
             as: 'addressUser',
-            include: [{ model: db.User, as: 'userData', attributes: { exclude: ['password', 'image'] } }],
+            include: [
+              { model: db.User, as: 'userData', attributes: { exclude: ['password', 'image'] } },
+            ],
           },
         ],
         order: [['createdAt', 'DESC']],
@@ -567,7 +565,14 @@ let shipperUpdateOrderStatus = (data) => {
       }
       order.statusId = statusId;
       if (image) {
-        order.image = image.startsWith('data:image/') ? await uploadImage(image) : image;
+        if (image.startsWith('data:image/')) {
+          if (order.image) {
+            deleteImage(order.image).catch(console.error);
+          }
+          order.image = await uploadImage(image);
+        } else {
+          order.image = image;
+        }
       }
       if (statusReason) order.statusReason = statusReason;
       await order.save();
@@ -646,9 +651,7 @@ let getAdminShippersOnMap = () => {
           nest: true,
         });
 
-        if (user && user.image) {
-
-        }
+        
         const location = await db.ShipperLocation.findOne({
           where: { shipperId: sid },
           raw: true,
@@ -1065,7 +1068,10 @@ let updateImageOrder = (data) => {
           where: { id: data.id },
           raw: false,
         });
-        order.image = data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image;
+        order.image =
+          data.image && data.image.startsWith('data:image/')
+            ? await uploadImage(data.image)
+            : data.image;
         await order.save();
 
         resolve({

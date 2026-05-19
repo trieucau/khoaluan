@@ -132,9 +132,7 @@ let getAllReceipt = (data) => {
           nest: true,
         });
 
-        if (user && user.image) {
-
-        }
+        
 
         res.rows[i].userData = user;
 

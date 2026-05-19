@@ -1,5 +1,5 @@
 import db from '../models/index.js';
-import { uploadImage } from '../utils/cloudinary.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 import 'dotenv/config';
 import { Op } from 'sequelize';
 let createNewBanner = (data) => {
@@ -14,7 +14,10 @@ let createNewBanner = (data) => {
         await db.Banner.create({
           name: data.name,
           description: data.description,
-          image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
+          image:
+            data.image && data.image.startsWith('data:image/')
+              ? await uploadImage(data.image)
+              : data.image,
           statusId: 'S1',
         });
         resolve({
@@ -39,9 +42,7 @@ let getDetailBanner = (id) => {
         let res = await db.Banner.findOne({
           where: { id: id },
         });
-        if (res && res.image) {
-
-        }
+        
         resolve({
           errCode: 0,
           data: res,
@@ -97,7 +98,14 @@ let updateBanner = (data) => {
         if (banner) {
           banner.name = data.name;
           banner.description = data.description;
-          banner.image = data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image;
+          if (data.image && data.image.startsWith('data:image/')) {
+            if (banner.image) {
+              deleteImage(banner.image).catch(console.error);
+            }
+            banner.image = await uploadImage(data.image);
+          } else {
+            banner.image = data.image;
+          }
 
           await banner.save();
           resolve({
@@ -124,6 +132,9 @@ let deleteBanner = (data) => {
           where: { id: data.id },
         });
         if (banner) {
+          if (banner.image) {
+            deleteImage(banner.image).catch(console.error);
+          }
           await db.Banner.destroy({
             where: { id: data.id },
           });

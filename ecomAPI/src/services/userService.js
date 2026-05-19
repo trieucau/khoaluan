@@ -7,7 +7,7 @@ import { Op } from 'sequelize';
 import admin from '../config/firebaseAdmin.js';
 import fetch from 'node-fetch';
 import 'dotenv/config';
-import { uploadImage } from '../utils/cloudinary.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 const salt = bcrypt.genSaltSync(10);
 
 let buildUrlEmail = (token, userId) => {
@@ -107,6 +107,9 @@ let deleteUser = (userId) => {
             errMessage: `The user isn't exist`,
           });
         }
+        if (foundUser && foundUser.image) {
+          deleteImage(foundUser.image).catch(console.error);
+        }
         await db.User.destroy({
           where: { id: userId },
         });
@@ -144,6 +147,9 @@ let updateUserData = (data) => {
           if (data.image) {
             // Check if it's a new base64 string
             if (data.image.startsWith('data:image/')) {
+              if (user.image) {
+                deleteImage(user.image).catch(console.error);
+              }
               user.image = await uploadImage(data.image);
             } else {
               user.image = data.image; // Assume it's already a URL

@@ -52,8 +52,8 @@ app.use(compression());
 
 // 2. Rate limiting: ngăn flood request
 const shipperLimiter = rateLimit({
-  windowMs: 60 * 1000,   // 1 phút
-  max: 60,               // tối đa 60 req/phút/IP
+  windowMs: 60 * 1000, // 1 phút
+  max: 60, // tối đa 60 req/phút/IP
   standardHeaders: true,
   legacyHeaders: false,
   message: { errCode: 429, errMessage: 'Quá nhiều yêu cầu, vui lòng thử lại sau.' },
@@ -162,7 +162,6 @@ socketIo.on('connection', (socket) => {
       socket.join(`order:tracking:${orderId}`);
     }
   });
-
 
   // Admin/Saler join room bản đồ shipper
   socket.on('join_admin_shipper_map', async (data) => {
