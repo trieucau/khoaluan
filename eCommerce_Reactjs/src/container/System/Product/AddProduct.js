@@ -247,7 +247,10 @@ const AddProduct = () => {
           {/* Variant */}
           <div className="ap-card">
             <div className="ap-card-header">
-              <span className="ap-card-title">🧩 Phân loại sản phẩm</span>
+              <span className="ap-card-title">
+                <i className="fa-solid fa-puzzle-piece" style={{ marginRight: 8 }}></i> Phân loại
+                sản phẩm
+              </span>
             </div>
             <div className="ap-card-body">
               <div className="ap-form-group">
@@ -323,7 +326,10 @@ const AddProduct = () => {
           {/* Dimensions */}
           <div className="ap-card">
             <div className="ap-card-header">
-              <span className="ap-card-title">📐 Kích thước & trọng lượng</span>
+              <span className="ap-card-title">
+                <i className="fa-solid fa-ruler-combined" style={{ marginRight: 8 }}></i> Kích thước
+                & trọng lượng
+              </span>
             </div>
             <div className="ap-card-body">
               <div className="ap-form-row">
@@ -381,7 +387,8 @@ const AddProduct = () => {
                 className="ap-btn ap-btn-ghost"
                 style={{ width: '100%', justifyContent: 'center', cursor: 'pointer' }}
               >
-                📤 Chọn ảnh (JPG/PNG/WEBP ≤ 30MB)
+                <i className="fa-solid fa-upload" style={{ marginRight: 8 }}></i> Chọn ảnh
+                (JPG/PNG/WEBP ≤ 30MB)
               </label>
               {values.imageReview && (
                 <div style={{ marginTop: 10, textAlign: 'center' }}>
@@ -412,7 +419,16 @@ const AddProduct = () => {
             disabled={loading}
             style={{ width: '100%', justifyContent: 'center', padding: '13px 0', fontSize: 15 }}
           >
-            {loading ? '⏳ Đang tạo sản phẩm...' : '🚀 Tạo sản phẩm'}
+            {loading ? (
+              <>
+                <i className="fa-solid fa-hourglass-half" style={{ marginRight: 8 }}></i> Đang tạo
+                sản phẩm...
+              </>
+            ) : (
+              <>
+                <i className="fa-solid fa-rocket" style={{ marginRight: 8 }}></i> Tạo sản phẩm
+              </>
+            )}
           </button>
         </div>
       </div>

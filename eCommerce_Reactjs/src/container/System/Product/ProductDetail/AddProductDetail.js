@@ -95,7 +95,12 @@ const AddProductDetail = (props) => {
   return (
     <div className="ap-page">
       <PageHeader
-        title="➕ Thêm mới chi tiết sản phẩm"
+        title={
+          <>
+            <i className="fa-solid fa-plus" style={{ marginRight: 8 }}></i> Thêm mới chi tiết sản
+            phẩm
+          </>
+        }
         subtitle={`Thêm phân loại mới cho sản phẩm #${id}`}
         actions={
           <button className="ap-btn ap-btn-ghost" onClick={() => navigate(-1)}>

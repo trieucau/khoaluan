@@ -55,7 +55,12 @@ const ManageProductDetail = () => {
   return (
     <div className="ap-page">
       <PageHeader
-        title="🧩 Chi tiết sản phẩm"
+        title={
+          <>
+            <i className="fa-solid fa-puzzle-piece" style={{ marginRight: 8 }}></i> Chi tiết sản
+            phẩm
+          </>
+        }
         subtitle={`Quản lý các loại phân loại cho sản phẩm #${id}`}
         actions={
           <div className="d-flex gap-2">
@@ -85,7 +90,12 @@ const ManageProductDetail = () => {
                 <SkeletonRows cols={5} />
               ) : data.length === 0 ? (
                 <EmptyState
-                  icon="🧩"
+                  icon={
+                    <i
+                      className="fa-solid fa-puzzle-piece"
+                      style={{ fontSize: 48, marginBottom: 12, opacity: 0.4 }}
+                    ></i>
+                  }
                   title="Chưa có phân loại nào"
                   desc="Nhấn '+ Thêm phân loại' để bắt đầu"
                 />

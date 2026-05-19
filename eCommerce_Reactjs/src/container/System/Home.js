@@ -303,7 +303,8 @@ const Home = () => {
             }}
           >
             <span className="ap-card-title" style={{ fontSize: 14 }}>
-              📍 Bảng Điều Hành Shipper Trực Tuyến
+              <i className="fa-solid fa-map-location-dot" style={{ marginRight: 8 }}></i> Bảng Điều
+              Hành Shipper Trực Tuyến
             </span>
             <Link
               to="/admin/shipper-map"
@@ -315,7 +316,8 @@ const Home = () => {
                 alignSelf: isMobile ? 'flex-end' : 'auto',
               }}
             >
-              Mở lớn ↗
+              Mở lớn{' '}
+              <i className="fa-solid fa-arrow-up-right-from-square" style={{ marginLeft: 4 }}></i>
             </Link>
           </div>
           <div
@@ -353,7 +355,8 @@ const Home = () => {
             }}
           >
             <span className="ap-card-title" style={{ fontSize: 14 }}>
-              🥧 Trạng thái đơn hàng
+              <i className="fa-solid fa-chart-pie" style={{ marginRight: 8 }}></i> Trạng thái đơn
+              hàng
             </span>
             <div
               className="ap-chart-toolbar"
@@ -459,7 +462,8 @@ const Home = () => {
             }}
           >
             <span className="ap-card-title" style={{ fontSize: 14 }}>
-              📈 Doanh thu theo tháng
+              <i className="fa-solid fa-chart-line" style={{ marginRight: 8 }}></i> Doanh thu theo
+              tháng
             </span>
             <div
               className="ap-chart-toolbar"

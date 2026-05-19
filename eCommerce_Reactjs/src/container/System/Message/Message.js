@@ -58,7 +58,9 @@ const Message = () => {
             background: 'var(--ap-surface)',
           }}
         >
-          <div style={{ fontSize: 20 }}>💬</div>
+          <div style={{ fontSize: 20 }}>
+            <i className="fa-solid fa-comment-dots"></i>
+          </div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 16 }}>Tin nhắn khách hàng</div>
             <div style={{ fontSize: 12, color: 'var(--ap-text-muted)' }}>
@@ -118,7 +120,9 @@ const Message = () => {
                   color: 'var(--ap-text-muted)',
                 }}
               >
-                <div style={{ fontSize: 64, opacity: 0.3 }}>💬</div>
+                <div style={{ fontSize: 64, opacity: 0.3 }}>
+                  <i className="fa-solid fa-comment-dots"></i>
+                </div>
                 <div style={{ fontWeight: 600, fontSize: 16 }}>Chọn cuộc trò chuyện</div>
                 <div style={{ fontSize: 13 }}>Nhấn vào một phòng chat bên trái để bắt đầu</div>
               </div>

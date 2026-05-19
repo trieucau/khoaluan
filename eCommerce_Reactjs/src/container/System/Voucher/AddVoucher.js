@@ -195,7 +195,8 @@ const AddVoucher = () => {
               </div>
               {isExpired && (
                 <div style={{ fontSize: 12, color: '#fca5a5', marginTop: 4 }}>
-                  ⚠️ Ngày kết thúc đã qua
+                  <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: 4 }}></i>{' '}
+                  Ngày kết thúc đã qua
                 </div>
               )}
             </div>
@@ -203,7 +204,17 @@ const AddVoucher = () => {
 
           <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
             <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
-              {loading ? '⏳ Đang lưu...' : '💾 Lưu thông tin'}
+              {loading ? (
+                <>
+                  <i className="fa-solid fa-hourglass-half" style={{ marginRight: 8 }}></i> Đang
+                  lưu...
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: 8 }}></i> Lưu thông
+                  tin
+                </>
+              )}
             </button>
             <Link to="/admin/list-voucher" className="ap-btn ap-btn-ghost">
               Hủy

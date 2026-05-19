@@ -111,7 +111,10 @@ function DetailOrder() {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">🧾 Chi tiết đơn hàng #{order.id}</div>
+            <div className="ap-page-title">
+              <i className="fa-solid fa-file-invoice" style={{ marginRight: 8 }}></i> Chi tiết đơn
+              hàng #{order.id}
+            </div>
             <div className="ap-page-subtitle">Xem và quản lý trạng thái đơn hàng</div>
           </div>
           <Link to="/admin/list-order" className="ap-btn ap-btn-ghost">
@@ -213,7 +216,10 @@ function DetailOrder() {
           {order.image && (
             <div className="ap-card">
               <div className="ap-card-header">
-                <span className="ap-card-title">📸 Ảnh xác nhận giao hàng</span>
+                <span className="ap-card-title">
+                  <i className="fa-solid fa-camera" style={{ marginRight: 8 }}></i> Ảnh xác nhận
+                  giao hàng
+                </span>
               </div>
               <div className="ap-card-body">
                 <img
@@ -315,12 +321,14 @@ function DetailOrder() {
           {/* Payment summary */}
           <div className="ap-card">
             <div className="ap-card-header">
-              <span className="ap-card-title">💰 Thanh toán</span>
+              <span className="ap-card-title">
+                <i className="fa-solid fa-coins" style={{ marginRight: 8 }}></i> Thanh toán
+              </span>
             </div>
             <div className="ap-card-body">
               <InfoRow
                 label="Hình thức"
-                value={order.isPaymentOnlien === 0 ? '💵 Tiền mặt' : '💳 Online'}
+                value={order.isPaymentOnlien === 0 ? 'Tiền mặt' : 'Online'}
               />
               <InfoRow
                 label="Loại ship"

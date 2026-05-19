@@ -70,7 +70,8 @@ const EditProduct = () => {
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <Link to={`/admin/list-product-detail/${id}`} className="ap-btn ap-btn-ghost">
-              🧩 Quản lý phân loại
+              <i className="fa-solid fa-puzzle-piece" style={{ marginRight: 8 }}></i> Quản lý phân
+              loại
             </Link>
             <Link to="/admin/list-product" className="ap-btn ap-btn-ghost">
               ← Quay lại
@@ -174,7 +175,17 @@ const EditProduct = () => {
 
           <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
             <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
-              {loading ? '⏳ Đang cập nhật...' : '💾 Lưu thay đổi'}
+              {loading ? (
+                <>
+                  <i className="fa-solid fa-hourglass-half" style={{ marginRight: 8 }}></i> Đang cập
+                  nhật...
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: 8 }}></i> Lưu thay
+                  đổi
+                </>
+              )}
             </button>
             <Link to="/admin/list-product" className="ap-btn ap-btn-ghost">
               Hủy

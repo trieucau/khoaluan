@@ -68,7 +68,7 @@ const Header = ({ onToggleSidebar }) => {
     <nav className="ap-header-bar">
       {/* Hamburger — mobile only */}
       <button className="ap-hamburger" onClick={onToggleSidebar} aria-label="Mở menu">
-        ☰
+        <i className="fa-solid fa-bars"></i>
       </button>
 
       <Link className="ap-logo" to="/admin" style={{ marginLeft: 8 }}>

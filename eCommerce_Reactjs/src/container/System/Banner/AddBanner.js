@@ -128,7 +128,17 @@ const AddBanner = () => {
             </div>
             <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
               <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
-                {loading ? '⏳ Đang lưu...' : '💾 Lưu Banner'}
+                {loading ? (
+                  <>
+                    <i className="fa-solid fa-hourglass-half" style={{ marginRight: 8 }}></i> Đang
+                    lưu...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-floppy-disk" style={{ marginRight: 8 }}></i> Lưu
+                    Banner
+                  </>
+                )}
               </button>
               <Link to="/admin/list-banner" className="ap-btn ap-btn-ghost">
                 Hủy
@@ -163,7 +173,9 @@ const AddBanner = () => {
                 cursor: 'pointer',
               }}
             >
-              <div style={{ fontSize: 36 }}>📤</div>
+              <div style={{ fontSize: 36 }}>
+                <i className="fa-solid fa-upload"></i>
+              </div>
               <div style={{ fontWeight: 600 }}>Click để chọn ảnh</div>
               <div style={{ fontSize: 12, color: 'var(--ap-text-dim)' }}>JPG/PNG/WEBP · ≤ 30MB</div>
               <div style={{ fontSize: 11, color: 'var(--ap-text-dim)' }}>
@@ -190,7 +202,7 @@ const AddBanner = () => {
                   className="ap-btn ap-btn-ghost ap-btn-sm"
                   style={{ position: 'absolute', top: 8, right: 8, cursor: 'pointer' }}
                 >
-                  🔄
+                  <i className="fa-solid fa-rotate-right"></i>
                 </label>
               </div>
             )}

@@ -214,11 +214,11 @@ const AdminShipperMap = ({ isMini = false }) => {
             : 'Shipper';
           const popup = `
             <div style="min-width:180px;font-family:sans-serif">
-              <div style="font-weight:700;font-size:14px;margin-bottom:4px">🛵 ${name}</div>
-              <div style="font-size:12px;color:#555">📞 ${s.shipper?.phonenumber || '—'}</div>
+              <div style="font-weight:700;font-size:14px;margin-bottom:4px"><i class="fa-solid fa-motorcycle" style="margin-right: 8px"></i> ${name}</div>
+              <div style="font-size:12px;color:#555"><i class="fa-solid fa-phone" style="margin-right: 8px"></i> ${s.shipper?.phonenumber || '—'}</div>
               <div style="font-size:11px;color:#888;margin-top:4px">GPS: ${sLat.toFixed(5)}, ${sLng.toFixed(5)}</div>
             </div>`;
-          const icon = makeIcon(color, '🛵', s.shipper?.image);
+          const icon = makeIcon(color, '<i class="fa-solid fa-motorcycle"></i>', s.shipper?.image);
           const m = window.L.marker([sLat, sLng], { icon: icon || undefined })
             .bindPopup(popup)
             .addTo(map);
@@ -281,7 +281,7 @@ const AdminShipperMap = ({ isMini = false }) => {
         const seqNumber = hasShipperLoc ? pIdx + 1 : '';
         const iconContent = seqNumber
           ? `<span style="font-size:11px;font-weight:900;color:#fff">${seqNumber}</span>`
-          : '📍';
+          : '<i class="fa-solid fa-location-dot"></i>';
 
         const popup = `
           <div style="min-width:200px;font-family:sans-serif">
@@ -290,7 +290,7 @@ const AdminShipperMap = ({ isMini = false }) => {
               Mã đơn #${p.oid}
             </div>
             <div style="font-size:12px;color:#555"><i className="fa-solid fa-user" style={{marginRight: 8}}></i>${customerName}</div>
-            <div style="font-size:12px;color:#555;margin-top:4px">🏠 ${address || '—'}</div>
+            <div style="font-size:12px;color:#555;margin-top:4px"><i class="fa-solid fa-house" style="margin-right: 8px"></i> ${address || '—'}</div>
           </div>`;
         const icon = makeIcon(color, iconContent, null, 22);
         const m = window.L.marker([p.lat, p.lng], { icon: icon || undefined })
@@ -424,9 +424,24 @@ const AdminShipperMap = ({ isMini = false }) => {
             }}
           >
             {[
-              { label: 'Tổng shipper', value: shipperCount, icon: '🛵', color: '#6366f1' },
-              { label: 'GPS Online', value: onlineCount, icon: '📡', color: '#10b981' },
-              { label: 'Điểm giao', value: orderCount, icon: '📍', color: '#f59e0b' },
+              {
+                label: 'Tổng shipper',
+                value: shipperCount,
+                icon: <i className="fa-solid fa-motorcycle"></i>,
+                color: '#6366f1',
+              },
+              {
+                label: 'GPS Online',
+                value: onlineCount,
+                icon: <i className="fa-solid fa-satellite-dish"></i>,
+                color: '#10b981',
+              },
+              {
+                label: 'Điểm giao',
+                value: orderCount,
+                icon: <i className="fa-solid fa-location-dot"></i>,
+                color: '#f59e0b',
+              },
             ].map((s, i) => (
               <div
                 key={i}
@@ -555,7 +570,8 @@ const AdminShipperMap = ({ isMini = false }) => {
                     <div
                       style={{ fontWeight: 800, fontSize: 15, color: '#fff', letterSpacing: 0.3 }}
                     >
-                      🛵 Danh sách Shipper
+                      <i className="fa-solid fa-motorcycle" style={{ marginRight: 8 }}></i> Danh
+                      sách Shipper
                     </div>
                     <div
                       style={{
@@ -592,7 +608,9 @@ const AdminShipperMap = ({ isMini = false }) => {
                         color: '#475569',
                       }}
                     >
-                      <div style={{ fontSize: 48, marginBottom: 12, opacity: 0.4 }}>📭</div>
+                      <div style={{ fontSize: 48, marginBottom: 12, opacity: 0.4 }}>
+                        <i className="fa-solid fa-box-open"></i>
+                      </div>
                       <div style={{ fontSize: 14, fontWeight: 600 }}>
                         Không có shipper đang giao
                       </div>
@@ -668,7 +686,8 @@ const AdminShipperMap = ({ isMini = false }) => {
                               {name}
                             </div>
                             <div style={{ fontSize: 12, color: '#94a3b8', margin: '2px 0' }}>
-                              📞 {s.shipper?.phonenumber || '—'}
+                              <i className="fa-solid fa-phone" style={{ marginRight: 8 }}></i>{' '}
+                              {s.shipper?.phonenumber || '—'}
                             </div>
                             <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                               <span
@@ -1003,7 +1022,8 @@ const AdminShipperMap = ({ isMini = false }) => {
                                   {customerName}
                                 </div>
                                 <div style={{ color: '#64748b', fontSize: 11, marginTop: 2 }}>
-                                  📞 {addr?.shipPhonenumber || '—'}
+                                  <i className="fa-solid fa-phone" style={{ marginRight: 8 }}></i>{' '}
+                                  {addr?.shipPhonenumber || '—'}
                                 </div>
                               </td>
                               <td style={{ padding: '9px 10px', whiteSpace: 'nowrap' }}>
@@ -1036,7 +1056,11 @@ const AdminShipperMap = ({ isMini = false }) => {
                                     fontWeight: 600,
                                   }}
                                 >
-                                  Chi tiết ↗
+                                  Chi tiết{' '}
+                                  <i
+                                    className="fa-solid fa-arrow-up-right-from-square"
+                                    style={{ marginLeft: 4 }}
+                                  ></i>
                                 </a>
                               </td>
                             </tr>
@@ -1070,7 +1094,10 @@ const AdminShipperMap = ({ isMini = false }) => {
           }}
         >
           <div>
-            <div className="ap-page-title">🗺️ Bản đồ Shipper</div>
+            <div className="ap-page-title">
+              <i className="fa-solid fa-map-location-dot" style={{ marginRight: 8 }}></i> Bản đồ
+              Shipper
+            </div>
             <div className="ap-page-subtitle">Vị trí realtime của shipper và điểm giao hàng</div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -1084,7 +1111,10 @@ const AdminShipperMap = ({ isMini = false }) => {
                   gap: 6,
                 }}
               >
-                <span style={{ animation: 'apPulse 1s infinite' }}>⏳</span> Đang tải...
+                <span style={{ animation: 'apPulse 1s infinite' }}>
+                  <i className="fa-solid fa-hourglass-half"></i>
+                </span>{' '}
+                Đang tải...
               </span>
             )}
             <button
@@ -1100,7 +1130,7 @@ const AdminShipperMap = ({ isMini = false }) => {
                   .finally(() => setLoading(false));
               }}
             >
-              🔄 Làm mới
+              <i className="fa-solid fa-rotate-right" style={{ marginRight: 8 }}></i> Làm mới
             </button>
           </div>
         </div>

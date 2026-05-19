@@ -247,7 +247,21 @@ const AddBlog = () => {
 
           <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
             <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
-              {loading ? '⏳ Đang lưu...' : isAdd ? '🚀 Đăng bài' : '💾 Lưu thay đổi'}
+              {loading ? (
+                <>
+                  <i className="fa-solid fa-hourglass-half" style={{ marginRight: 8 }}></i> Đang
+                  lưu...
+                </>
+              ) : isAdd ? (
+                <>
+                  <i className="fa-solid fa-rocket" style={{ marginRight: 8 }}></i> Đăng bài
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: 8 }}></i> Lưu thay
+                  đổi
+                </>
+              )}
             </button>
             <Link to="/admin/list-blog" className="ap-btn ap-btn-ghost">
               Hủy

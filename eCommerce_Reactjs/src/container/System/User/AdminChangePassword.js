@@ -43,7 +43,7 @@ const AdminChangePassword = () => {
         oldpassword: values.oldpassword,
       });
       if (res?.errCode === 0) {
-        toast.success('✅ Đổi mật khẩu thành công!');
+        toast.success('Đổi mật khẩu thành công!');
         setValues({ oldpassword: '', newpassword: '', confirmpassword: '' });
       } else toast.error(res?.errMessage || 'Đổi mật khẩu thất bại');
     } finally {
@@ -81,7 +81,11 @@ const AdminChangePassword = () => {
         padding: 0,
       }}
     >
-      {showPass[field] ? '🙈' : '👁️'}
+      {showPass[field] ? (
+        <i className="fa-solid fa-eye-slash"></i>
+      ) : (
+        <i className="fa-solid fa-eye"></i>
+      )}
     </button>
   );
 
@@ -99,7 +103,9 @@ const AdminChangePassword = () => {
           }}
         >
           <div>
-            <div className="ap-page-title">🔐 Đổi mật khẩu</div>
+            <div className="ap-page-title">
+              <i className="fa-solid fa-key" style={{ marginRight: 8 }}></i> Đổi mật khẩu
+            </div>
             <div className="ap-page-subtitle">Cập nhật mật khẩu bảo mật tài khoản Quản trị</div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -107,7 +113,7 @@ const AdminChangePassword = () => {
               ← Thông tin
             </Link>
             <Link to="/admin" className="ap-btn ap-btn-ghost">
-              🏠 Dashboard
+              <i className="fa-solid fa-house" style={{ marginRight: 8 }}></i> Dashboard
             </Link>
           </div>
         </div>
@@ -116,7 +122,9 @@ const AdminChangePassword = () => {
       <div style={{ maxWidth: 460 }}>
         <div className="ap-card">
           <div className="ap-card-header">
-            <span className="ap-card-title">🔐 Cập nhật mật khẩu</span>
+            <span className="ap-card-title">
+              <i className="fa-solid fa-key" style={{ marginRight: 8 }}></i> Cập nhật mật khẩu
+            </span>
           </div>
           <div className="ap-card-body">
             {/* Tips */}
@@ -132,7 +140,8 @@ const AdminChangePassword = () => {
                 lineHeight: 1.7,
               }}
             >
-              💡 Mật khẩu mạnh nên có <b>ít nhất 10 ký tự</b>, bao gồm chữ hoa, chữ thường và số.
+              <i className="fa-solid fa-lightbulb" style={{ marginRight: 8 }}></i> Mật khẩu mạnh nên
+              có <b>ít nhất 10 ký tự</b>, bao gồm chữ hoa, chữ thường và số.
             </div>
 
             {/* Old password */}
@@ -232,11 +241,14 @@ const AdminChangePassword = () => {
               <EyeBtn field="confirm" />
               {mismatch && (
                 <div style={{ fontSize: 12, color: '#fca5a5', marginTop: 4 }}>
-                  ⚠️ Mật khẩu không khớp
+                  <i className="fa-solid fa-triangle-exclamation" style={{ marginRight: 8 }}></i>{' '}
+                  Mật khẩu không khớp
                 </div>
               )}
               {values.confirmpassword && !mismatch && values.newpassword && (
-                <div style={{ fontSize: 12, color: '#6ee7b7', marginTop: 4 }}>✅ Mật khẩu khớp</div>
+                <div style={{ fontSize: 12, color: '#6ee7b7', marginTop: 4 }}>
+                  <i className="fa-solid fa-check" style={{ marginRight: 8 }}></i> Mật khẩu khớp
+                </div>
               )}
             </div>
 
@@ -252,7 +264,16 @@ const AdminChangePassword = () => {
                 alignItems: 'center',
               }}
             >
-              {loading ? '⏳ Đang cập nhật...' : '🔐 Đổi mật khẩu'}
+              {loading ? (
+                <>
+                  <i className="fa-solid fa-hourglass-half" style={{ marginRight: 8 }}></i> Đang cập
+                  nhật...
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-key" style={{ marginRight: 8 }}></i> Đổi mật khẩu
+                </>
+              )}
             </button>
           </div>
         </div>

@@ -184,7 +184,7 @@ const Information = () => {
                   border: '2px solid var(--ap-surface)',
                 }}
               >
-                📷
+                <i className="fa-solid fa-camera"></i>
               </label>
             </div>
             <div style={{ fontWeight: 700, fontSize: 16 }}>
@@ -201,9 +201,13 @@ const Information = () => {
             >
               <span style={{ fontSize: 13, color: 'var(--ap-text-muted)' }}>{values.email}</span>
               {values.isActiveEmail === 1 ? (
-                <span style={{ color: '#10b981', fontSize: 16 }}>✔</span>
+                <span style={{ color: '#10b981', fontSize: 16 }}>
+                  <i className="fa-solid fa-check"></i>
+                </span>
               ) : (
-                <span style={{ color: '#ef4444', fontSize: 16 }}>✖</span>
+                <span style={{ color: '#ef4444', fontSize: 16 }}>
+                  <i className="fa-solid fa-xmark"></i>
+                </span>
               )}
             </div>
             {values.isActiveEmail === 0 && (
@@ -212,7 +216,8 @@ const Information = () => {
                 style={{ marginTop: 10, fontSize: 12 }}
                 onClick={handleSendEmail}
               >
-                📧 Gửi email xác thực
+                <i className="fa-solid fa-envelope" style={{ marginRight: 8 }}></i> Gửi email xác
+                thực
               </button>
             )}
             <div style={{ marginTop: 12 }}>
@@ -220,7 +225,9 @@ const Information = () => {
                 className={`ap-badge ${values.roleId === 'R1' ? 'ap-badge-indigo' : 'ap-badge-cyan'}`}
               >
                 {values.roleId === 'R1' ? (
-                  '👑 Admin'
+                  <>
+                    <i className="fa-solid fa-crown" style={{ marginRight: 8 }}></i>Admin
+                  </>
                 ) : values.roleId === 'R2' ? (
                   <>
                     <i className="fa-solid fa-box" style={{ marginRight: 8 }}></i>Shipper
@@ -319,10 +326,20 @@ const Information = () => {
             </div>
             <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
               <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
-                {loading ? '⏳ Đang lưu...' : '💾 Lưu thông tin'}
+                {loading ? (
+                  <>
+                    <i className="fa-solid fa-hourglass-half" style={{ marginRight: 8 }}></i> Đang
+                    lưu...
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-floppy-disk" style={{ marginRight: 8 }}></i> Lưu thông
+                    tin
+                  </>
+                )}
               </button>
               <Link to={`/admin/change-password/${id}`} className="ap-btn ap-btn-ghost">
-                🔐 Đổi mật khẩu
+                <i className="fa-solid fa-key" style={{ marginRight: 8 }}></i> Đổi mật khẩu
               </Link>
             </div>
           </div>

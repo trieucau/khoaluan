@@ -103,7 +103,10 @@ const AddReceipt = () => {
       <div className="ap-page-header">
         <div className="ap-page-header-row">
           <div>
-            <div className="ap-page-title">📥 Tạo phiếu nhập hàng</div>
+            <div className="ap-page-title">
+              <i className="fa-solid fa-download" style={{ marginRight: 8 }}></i> Tạo phiếu nhập
+              hàng
+            </div>
             <div className="ap-page-subtitle">Ghi nhận hàng hóa nhập từ nhà cung cấp</div>
           </div>
           <Link to="/admin/list-receipt" className="ap-btn ap-btn-ghost">
@@ -238,7 +241,7 @@ const AddReceipt = () => {
                 fontSize: 13,
               }}
             >
-              💰 Tổng giá trị nhập:{' '}
+              <i className="fa-solid fa-coins" style={{ marginRight: 8 }}></i> Tổng giá trị nhập:{' '}
               <strong style={{ color: '#fbbf24' }}>
                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
                   values.quantity * values.price
@@ -249,7 +252,16 @@ const AddReceipt = () => {
 
           <div style={{ display: 'flex', gap: 10 }}>
             <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
-              {loading ? '⏳ Đang tạo...' : '📥 Tạo phiếu nhập'}
+              {loading ? (
+                <>
+                  <i className="fa-solid fa-hourglass-half" style={{ marginRight: 8 }}></i> Đang
+                  tạo...
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-download" style={{ marginRight: 8 }}></i> Tạo phiếu nhập
+                </>
+              )}
             </button>
             <Link to="/admin/list-receipt" className="ap-btn ap-btn-ghost">
               Hủy

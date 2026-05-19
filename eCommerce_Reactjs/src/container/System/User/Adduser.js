@@ -258,7 +258,17 @@ const Adduser = () => {
           </div>
           <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
             <button className="ap-btn ap-btn-primary" onClick={handleSave} disabled={loading}>
-              {loading ? '⏳ Đang lưu...' : '💾 Lưu thông tin'}
+              {loading ? (
+                <>
+                  <i className="fa-solid fa-hourglass-half" style={{ marginRight: 8 }}></i> Đang
+                  lưu...
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-floppy-disk" style={{ marginRight: 8 }}></i> Lưu thông
+                  tin
+                </>
+              )}
             </button>
             <Link to="/admin/list-user" className="ap-btn ap-btn-ghost">
               Hủy

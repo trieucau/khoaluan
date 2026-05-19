@@ -261,7 +261,9 @@ const ManageOrder = () => {
                 <tr>
                   <td colSpan={10} style={{ padding: 0, border: 'none' }}>
                     <div className="ap-empty">
-                      <div className="ap-empty-icon">📭</div>
+                      <div className="ap-empty-icon">
+                        <i className="fa-solid fa-box-open"></i>
+                      </div>
                       <div className="ap-empty-title">Không có đơn hàng</div>
                       <div className="ap-empty-desc">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</div>
                     </div>
