@@ -267,14 +267,14 @@ const ManageProduct = () => {
                               className="ap-btn ap-btn-warning ap-btn-sm"
                               onClick={() => handleBan(item.id)}
                             >
-                              🚫 Ẩn
+                              Ẩn
                             </button>
                           ) : (
                             <button
                               className="ap-btn ap-btn-success ap-btn-sm"
                               onClick={() => handleActive(item.id)}
                             >
-                              ✅ Hiện
+                              Hiện
                             </button>
                           )}
                         </div>

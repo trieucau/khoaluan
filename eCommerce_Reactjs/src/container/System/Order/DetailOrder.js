@@ -262,7 +262,7 @@ function DetailOrder() {
                       style={{ width: '100%', justifyContent: 'center' }}
                       onClick={() => updateStatus('S4')}
                     >
-                      ✅ Xác nhận đơn hàng
+                      Xác nhận đơn hàng
                     </button>
                     {order.isPaymentOnlien === 0 && (
                       <button
@@ -270,7 +270,7 @@ function DetailOrder() {
                         style={{ width: '100%', justifyContent: 'center' }}
                         onClick={() => updateStatus('S7')}
                       >
-                        🚫 Hủy đơn hàng
+                        Hủy đơn hàng
                       </button>
                     )}
                   </>
@@ -290,7 +290,7 @@ function DetailOrder() {
                     style={{ width: '100%', justifyContent: 'center' }}
                     onClick={() => updateStatus('S6')}
                   >
-                    🎉 Đã giao hàng
+                    Đã giao hàng
                   </button>
                 )}
               </div>
