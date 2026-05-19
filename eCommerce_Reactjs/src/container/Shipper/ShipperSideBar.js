@@ -25,7 +25,7 @@ const NAV_ITEMS = [
     label: 'Tổng quan',
   },
   {
-    to: '/shipper/orders-available',
+    to: '/shipper/history',
     icon: (
       <svg
         className="sp-nav-icon"
@@ -36,49 +36,13 @@ const NAV_ITEMS = [
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-        <rect x="9" y="3" width="6" height="4" rx="1" />
-        <path d="M9 12h6M9 16h4" />
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
       </svg>
     ),
-    label: 'Việc mới',
+    label: 'Lịch sử',
   },
-  {
-    to: '/shipper/my-orders',
-    icon: (
-      <svg
-        className="sp-nav-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" />
-        <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
-      </svg>
-    ),
-    label: 'Đang làm',
-  },
-  {
-    to: '/shipper/returns',
-    icon: (
-      <svg
-        className="sp-nav-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-        <path d="M3 3v5h5" />
-      </svg>
-    ),
-    label: 'Hoàn trả',
-  },
+
   {
     to: '/shipper/activity-rate',
     icon: (
@@ -117,41 +81,8 @@ const NAV_ITEMS = [
     ),
     label: 'Phần thưởng',
   },
-  {
-    to: '/shipper/reviews',
-    icon: (
-      <svg
-        className="sp-nav-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-      </svg>
-    ),
-    label: 'Đánh giá',
-  },
-  {
-    to: '/shipper/history',
-    icon: (
-      <svg
-        className="sp-nav-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-      </svg>
-    ),
-    label: 'Lịch sử',
-  },
+
+
   {
     to: '/shipper/profile',
     icon: (
@@ -328,25 +259,6 @@ const ShipperSideBar = ({ onLinkClick, availableCount = 0, activeCount = 0 }) =>
           <div className="sp-nav-label">Danh mục điều hướng</div>
           {NAV_ITEMS.map((item) => {
             let badge = null;
-            if (item.to === '/shipper/orders-available' && availableCount > 0) {
-              badge = (
-                <span
-                  className="sp-badge sp-badge-blue"
-                  style={{ marginLeft: 'auto', padding: '2px 6px', fontSize: 10 }}
-                >
-                  {availableCount}
-                </span>
-              );
-            } else if (item.to === '/shipper/my-orders' && activeCount > 0) {
-              badge = (
-                <span
-                  className="sp-badge sp-badge-amber"
-                  style={{ marginLeft: 'auto', padding: '2px 6px', fontSize: 10 }}
-                >
-                  {activeCount}
-                </span>
-              );
-            }
             return (
               <NavLink
                 key={item.to}

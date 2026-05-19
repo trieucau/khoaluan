@@ -6,9 +6,7 @@ import ShipperSideBar from './ShipperSideBar';
 import ShipperDashboard from './ShipperDashboard';
 import ShipperProfile from './ShipperProfile';
 import ShipperChangePassword from './ShipperChangePassword';
-import OrdersAvailable from './OrdersAvailable';
-import OrdersActive from './OrdersActive';
-import OrdersReturn from './OrdersReturn';
+
 import ActivityRate from './ActivityRate';
 import ShipperRewards from './ShipperRewards';
 import ShipperHistory from './ShipperHistory';
@@ -43,7 +41,7 @@ const BOTTOM_NAV = [
     label: 'Tổng quan',
   },
   {
-    to: '/shipper/orders-available',
+    to: '/shipper/history',
     icon: (
       <svg
         className="sp-icon-sm"
@@ -52,29 +50,13 @@ const BOTTOM_NAV = [
         stroke="currentColor"
         strokeWidth="2.5"
       >
-        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
-        <rect x="9" y="3" width="6" height="4" rx="1" />
-        <path d="M9 12h6M9 16h4" />
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
       </svg>
     ),
-    label: 'Việc mới',
+    label: 'Lịch sử',
   },
-  {
-    to: '/shipper/my-orders',
-    icon: (
-      <svg
-        className="sp-icon-sm"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-      >
-        <path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
-        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-      </svg>
-    ),
-    label: 'Đang làm',
-  },
+
   {
     to: '/shipper/profile',
     icon: (
@@ -300,9 +282,7 @@ const HomePageShipper = () => {
               }
             />
 
-            <Route path="/orders-available" element={<OrdersAvailable />} />
-            <Route path="/my-orders" element={<OrdersActive />} />
-            <Route path="/returns" element={<OrdersReturn />} />
+
             <Route path="/activity-rate" element={<ActivityRate />} />
             <Route path="/rewards" element={<ShipperRewards />} />
             <Route path="/history" element={<ShipperHistory />} />
