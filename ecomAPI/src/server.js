@@ -44,6 +44,7 @@ setInterval(flushLocationCache, DB_FLUSH_INTERVAL_MS);
 
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 let app = express();
+app.set('trust proxy', 1);
 
 // --- PERFORMANCE MIDDLEWARE ---
 // 1. Compression: giảm response size 60-80%
