@@ -2,7 +2,13 @@
 import { Model } from 'sequelize';
 export default (sequelize, DataTypes) => {
   class AddressUser extends Model {
-    static associate(models) {}
+    static associate(models) {
+      AddressUser.belongsTo(models.User, {
+        foreignKey: 'userId',
+        targetKey: 'id',
+        as: 'userData',
+      });
+    }
   }
   AddressUser.init(
     {

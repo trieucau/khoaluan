@@ -429,6 +429,11 @@ let getAllOrdersByShipper = (data) => {
           },
           { model: db.Allcode, as: 'statusOrderData' },
           { model: db.OrderDetail, as: 'orderDetail' },
+          {
+            model: db.AddressUser,
+            as: 'addressUser',
+            include: [{ model: db.User, as: 'userData', attributes: { exclude: ['password', 'image'] } }],
+          },
         ],
         order: [['createdAt', 'DESC']],
         raw: true,
@@ -452,41 +457,12 @@ let getAllOrdersByShipper = (data) => {
         return resolve({ errCode: 0, data: statsOrders });
       }
 
-      // FIX HIỆU NĂNG: Chỉ lấy đơn đang hoạt động (S4, S5) nếu không có filter cụ thể
-      // Tránh load toàn bộ lịch sử đơn (S6, S7, S8) gây chậm
-
-      if (!data.status) {
-        objectFilter.where = {
-          ...objectFilter.where,
-          statusId: { [Op.in]: ['S4', 'S5', 'S6'] },
-        };
-      }
+      // FIX HIỆU NĂNG: Eager loading (include AddressUser) đã giải quyết N+1
+      // Nên ta có thể an tâm trả về toàn bộ lịch sử (bao gồm S7, S8) để Frontend tính tỉ lệ ActivityRate.
 
       let res = await db.OrderProduct.findAll(objectFilter);
-
-      // FIX CONNECTION POOL EXHAUSTION:
-      // Promise.all không giới hạn → 30 đơn × 2 queries = 60 connections đồng thời
-      // → vượt giới hạn Aiven free tier → 502 Bad Gateway
-      // Giải pháp: xử lý theo batch 3 đơn/lần → max 6 connections tại một thời điểm
-      const BATCH_SIZE = 3;
-      for (let i = 0; i < res.length; i += BATCH_SIZE) {
-        const batch = res.slice(i, i + BATCH_SIZE);
-        await Promise.all(
-          batch.map(async (item) => {
-            const addressUser = await db.AddressUser.findOne({
-              where: { id: item.addressUserId },
-            });
-            if (addressUser) {
-              const user = await db.User.findOne({
-                where: { id: addressUser.userId },
-                attributes: { exclude: ['password', 'image'] },
-              });
-              item.userData = user;
-              item.addressUser = addressUser;
-            }
-          })
-        );
-      }
+      // Removed the N+1 loop for AddressUser and User because it was exhausting the connection pool and causing 12-second timeouts (502 Bad Gateway).
+      // They are now eager loaded in the objectFilter.include array using JOINs.
 
       resolve({
         errCode: 0,
@@ -506,31 +482,18 @@ let getOrdersAvailableForShipper = () => {
           { model: db.TypeShip, as: 'typeShipData' },
           { model: db.Voucher, as: 'voucherData' },
           { model: db.Allcode, as: 'statusOrderData' },
+          {
+            model: db.AddressUser,
+            as: 'addressUser',
+            include: [{ model: db.User, as: 'userData', attributes: { exclude: ['password', 'image'] } }],
+          },
         ],
         order: [['createdAt', 'DESC']],
         raw: true,
         nest: true,
       });
-      // FIX N+1: batch(3) — max 6 DB connections, không vượt pool Aiven free tier
-      const BATCH = 3;
-      for (let i = 0; i < orders.length; i += BATCH) {
-        const slice = orders.slice(i, i + BATCH);
-        await Promise.all(
-          slice.map(async (item, j) => {
-            const addressUser = await db.AddressUser.findOne({
-              where: { id: item.addressUserId },
-            });
-            if (addressUser) {
-              orders[i + j].addressUser = addressUser;
-              const user = await db.User.findOne({
-                where: { id: addressUser.userId },
-                attributes: { exclude: ['password', 'image'] },
-              });
-              orders[i + j].userData = user;
-            }
-          })
-        );
-      }
+      // Removed the N+1 loop for AddressUser and User because it was exhausting the connection pool and causing 12-second timeouts (502 Bad Gateway).
+      // They are now eager loaded in the objectFilter.include array using JOINs.
       resolve({ errCode: 0, data: orders });
     } catch (error) {
       reject(error);

@@ -22,6 +22,11 @@ export default (sequelize, DataTypes) => {
         foreignKey: 'orderId',
         as: 'orderDetail',
       });
+      OrderProduct.belongsTo(models.AddressUser, {
+        foreignKey: 'addressUserId',
+        targetKey: 'id',
+        as: 'addressUser',
+      });
     }
   }
   OrderProduct.init(
