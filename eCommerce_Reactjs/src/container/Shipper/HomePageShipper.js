@@ -282,7 +282,6 @@ const HomePageShipper = () => {
               }
             />
 
-
             <Route path="/activity-rate" element={<ActivityRate />} />
             <Route path="/rewards" element={<ShipperRewards />} />
             <Route path="/history" element={<ShipperHistory />} />

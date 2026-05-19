@@ -132,7 +132,9 @@ const CompleteModal = ({ orderId, onClose, onDone, mode = 'complete' }) => {
                       <circle cx="12" cy="13" r="4" />
                     </svg>
                     <div style={{ fontSize: 13, fontWeight: 600 }}>Nhấn để chụp/tải ảnh</div>
-                    <div style={{ fontSize: 11, marginTop: 4 }}>Bằng chứng đã giao hàng cho khách</div>
+                    <div style={{ fontSize: 11, marginTop: 4 }}>
+                      Bằng chứng đã giao hàng cho khách
+                    </div>
                   </div>
                 )}
               </label>
@@ -159,7 +161,7 @@ const CompleteModal = ({ orderId, onClose, onDone, mode = 'complete' }) => {
                   fontSize: 14,
                   minHeight: 120,
                   resize: 'vertical',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
                 }}
               />
             </>
@@ -176,14 +178,14 @@ const CompleteModal = ({ orderId, onClose, onDone, mode = 'complete' }) => {
             className={`sp-btn ${mode === 'complete' ? 'sp-btn-success' : ''}`}
             onClick={handleConfirm}
             disabled={loading || (mode === 'complete' ? !img : !reason.trim())}
-            style={{ 
+            style={{
               minWidth: 120,
               background: mode === 'complete' ? '' : '#ef4444',
               color: '#fff',
-              border: 'none'
+              border: 'none',
             }}
           >
-            {loading ? 'Đang xử lý...' : (mode === 'complete' ? 'Xác nhận giao' : 'Xác nhận hủy')}
+            {loading ? 'Đang xử lý...' : mode === 'complete' ? 'Xác nhận giao' : 'Xác nhận hủy'}
           </button>
         </div>
       </div>

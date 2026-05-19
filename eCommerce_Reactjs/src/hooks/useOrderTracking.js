@@ -73,8 +73,16 @@ export const useOrderTracking = (orderId) => {
               if (deliveryLat && deliveryLng) {
                 let minDist = calculateDistance(nearest.lat, nearest.lng, deliveryLat, deliveryLng);
                 for (let i = 1; i < warehouses.length; i++) {
-                  const d = calculateDistance(warehouses[i].lat, warehouses[i].lng, deliveryLat, deliveryLng);
-                  if (d < minDist) { minDist = d; nearest = warehouses[i]; }
+                  const d = calculateDistance(
+                    warehouses[i].lat,
+                    warehouses[i].lng,
+                    deliveryLat,
+                    deliveryLng
+                  );
+                  if (d < minDist) {
+                    minDist = d;
+                    nearest = warehouses[i];
+                  }
                 }
               }
               setWarehouse(nearest);
@@ -117,16 +125,24 @@ export const useOrderTracking = (orderId) => {
             if (mountedRef.current)
               setShipperLoc({ lat: parseFloat(locRes.data.lat), lng: parseFloat(locRes.data.lng) });
           }
-        } catch { /* bỏ qua lỗi poll */ }
+        } catch {
+          /* bỏ qua lỗi poll */
+        }
       }, POLL_INTERVAL_MS);
     };
 
     const stopPolling = () => {
-      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
     };
 
     // Kết nối thành công: join room + dừng polling (socket đảm nhiệm)
-    socket.on('connect', () => { stopPolling(); joinRoom(); });
+    socket.on('connect', () => {
+      stopPolling();
+      joinRoom();
+    });
 
     // Mất kết nối: bật polling fallback
     socket.on('disconnect', () => startPolling());

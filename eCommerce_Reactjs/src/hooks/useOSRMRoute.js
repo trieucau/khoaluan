@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { formatDistance, formatETA } from '../utils/MapUtils';
+import { formatDistance, formatETA, getDistance } from '../utils/MapUtils';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    useOSRMRoute — Fetch đường đi từ OSRM với debounce 2s để tránh spam API.
@@ -55,7 +55,15 @@ export const useOSRMRoute = (waypoints, shippingFee = 0) => {
         const coords = route.geometry.coordinates.map((c) => [c[1], c[0]]);
 
         setRouteCoords(coords);
-        setDistanceKm(formatDistance(route.distance));
+
+        // Use Haversine for consistent distance across all roles
+        const distKmRaw = getDistance(
+          waypoints[0].lat,
+          waypoints[0].lng,
+          waypoints[waypoints.length - 1].lat,
+          waypoints[waypoints.length - 1].lng
+        );
+        setDistanceKm(formatDistance(distKmRaw));
 
         let velocity = 40;
         const fee = Number(shippingFee) || 0;
@@ -67,7 +75,6 @@ export const useOSRMRoute = (waypoints, shippingFee = 0) => {
           velocity = 20;
         }
 
-        const distKmRaw = route.distance / 1000;
         const durationSeconds = (distKmRaw / velocity) * 3600;
         setEta(formatETA(durationSeconds));
       } catch (err) {

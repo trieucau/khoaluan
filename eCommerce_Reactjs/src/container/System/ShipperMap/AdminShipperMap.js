@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import socketIOClient from 'socket.io-client';
-import { getAdminShippersOnMap, getDetailOrder } from '../../../services/userService';
+import { getDetailOrder, getAdminShippersOnMap } from '../../../services/userService';
+import { getDistance, formatDistance, formatETA } from '../../../utils/MapUtils';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:6969';
 
@@ -40,14 +41,6 @@ const makeIcon = (color, emoji, image = null, size = 38) => {
     iconAnchor: [size / 2, size],
     popupAnchor: [0, -size],
   });
-};
-
-const calcDistanceKm = (lat1, lon1, lat2, lon2) => {
-  const p = 0.017453292519943295;
-  const c = Math.cos;
-  const a =
-    0.5 - c((lat2 - lat1) * p) / 2 + (c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p))) / 2;
-  return 12742 * Math.asin(Math.sqrt(a));
 };
 
 const waitForLeaflet = (cb, tries = 0) => {
@@ -257,7 +250,7 @@ const AdminShipperMap = ({ isMini = false }) => {
           let closestIdx = 0;
           let minDistance = Infinity;
           for (let i = 0; i < unvisited.length; i++) {
-            const dist = calcDistanceKm(
+            const dist = getDistance(
               currentLoc.lat,
               currentLoc.lng,
               unvisited[i].lat,
@@ -917,20 +910,15 @@ const AdminShipperMap = ({ isMini = false }) => {
 
                           let distKm = '—';
                           let distKmNum = null;
-                          if (
-                            activeShipper.lat &&
-                            activeShipper.lng &&
-                            addr?.lat &&
-                            addr?.lng
-                          ) {
-                            const km = calcDistanceKm(
+                          if (activeShipper.lat && activeShipper.lng && addr?.lat && addr?.lng) {
+                            const km = getDistance(
                               activeShipper.lat,
                               activeShipper.lng,
                               addr.lat,
                               addr.lng
                             );
                             distKmNum = km;
-                            distKm = km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
+                            distKm = formatDistance(km);
                           }
 
                           const shipPrice = order.typeShipData?.price || 0;
@@ -948,15 +936,7 @@ const AdminShipperMap = ({ isMini = false }) => {
                             else velocity = 20;
 
                             const durationSeconds = (distKmNum / velocity) * 3600;
-                            const totalMinutes = Math.ceil(durationSeconds / 60);
-                            
-                            if (totalMinutes < 60) {
-                              etaStr = `${totalMinutes} phút`;
-                            } else {
-                              const hours = Math.floor(totalMinutes / 60);
-                              const minutes = totalMinutes % 60;
-                              etaStr = minutes > 0 ? `${hours} giờ ${minutes} phút` : `${hours} giờ`;
-                            }
+                            etaStr = formatETA(durationSeconds);
                           }
 
                           return (

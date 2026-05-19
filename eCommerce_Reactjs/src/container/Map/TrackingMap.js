@@ -5,8 +5,7 @@ import BaseMap from '../../component/Map/BaseMap';
 import { useOSRMRoute } from '../../hooks/useOSRMRoute';
 import { truckIcon, deliveryIcon, warehouseIcon } from './mapIcons';
 
-const isInVietnam = ({ lat, lng }) =>
-  lat >= 8.18 && lat <= 23.39 && lng >= 102.14 && lng <= 109.46;
+const isInVietnam = ({ lat, lng }) => lat >= 8.18 && lat <= 23.39 && lng >= 102.14 && lng <= 109.46;
 
 /* ─────────────────────────────────────────────────────────────────────────────
    AutoFit — zoom vừa khít cả 2 điểm [shipper, điểm giao] ngay khi lần đầu render.
@@ -20,7 +19,7 @@ const AutoFit = ({ shipperLoc, deliveryCoords }) => {
     if (hasFit.current || !shipperLoc || !deliveryCoords) return;
     const bounds = L.latLngBounds(
       [shipperLoc.lat, shipperLoc.lng],
-      [deliveryCoords.lat, deliveryCoords.lng],
+      [deliveryCoords.lat, deliveryCoords.lng]
     );
     map.fitBounds(bounds, { padding: [70, 70], animate: true, duration: 1.2 });
     hasFit.current = true;
@@ -93,7 +92,7 @@ const SmoothShipperMarker = ({ shipperLoc, icon }) => {
 
         const inner = L.latLngBounds(
           [b.getSouth() + latSpan * pad, b.getWest() + lngSpan * pad],
-          [b.getNorth() - latSpan * pad, b.getEast() - lngSpan * pad],
+          [b.getNorth() - latSpan * pad, b.getEast() - lngSpan * pad]
         );
 
         if (!inner.contains(latlng)) {
@@ -160,10 +159,7 @@ const TrackingMapInner = ({ shipperLoc, deliveryCoords, statusId, isDomestic, ro
 /* ── Main component ── */
 const TrackingMap = ({ shipperLoc, deliveryCoords, statusId, shippingFee = 0 }) => {
   const isDomestic =
-    shipperLoc &&
-    deliveryCoords &&
-    isInVietnam(shipperLoc) &&
-    isInVietnam(deliveryCoords);
+    shipperLoc && deliveryCoords && isInVietnam(shipperLoc) && isInVietnam(deliveryCoords);
 
   const waypoints = isDomestic ? [shipperLoc, deliveryCoords] : [];
   const { routeCoords, distanceKm, eta } = useOSRMRoute(waypoints, shippingFee);
@@ -187,7 +183,7 @@ const TrackingMap = ({ shipperLoc, deliveryCoords, statusId, shippingFee = 0 }) 
             <>
               <div className="ot-map-info-row">
                 <i className="fa-solid fa-route" style={{ color: '#FF6B9D' }} />
-                <span>{distanceKm} km</span>
+                <span>{distanceKm}</span>
               </div>
               <div className="ot-map-info-row">
                 <i className="fa-solid fa-clock" style={{ color: '#F8B195' }} />

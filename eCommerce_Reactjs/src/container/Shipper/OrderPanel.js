@@ -1,15 +1,5 @@
 import React, { useState, useMemo } from 'react';
-
-const formatDistance = (km) => {
-  if (km == null) return '—';
-  return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
-};
-
-const formatDuration = (seconds) => {
-  if (seconds == null) return '—';
-  const m = Math.round(seconds / 60);
-  return m < 60 ? `${m} phút` : `${Math.floor(m / 60)}h ${m % 60}p`;
-};
+import { getDistance, formatDistance, formatETA } from '../../utils/MapUtils';
 
 const formatPrice = (val) => {
   if (val == null) return '—';
@@ -50,19 +40,7 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations, selectedOrderId, onSele
       const lat = parseFloat(order?.addressUser?.lat);
       const lng = parseFloat(order?.addressUser?.lng);
       const distKm =
-        shipperLoc && lat && lng
-          ? (() => {
-              const R = 6371;
-              const dLat = ((lat - shipperLoc.lat) * Math.PI) / 180;
-              const dLng = ((lng - shipperLoc.lng) * Math.PI) / 180;
-              const a =
-                Math.sin(dLat / 2) ** 2 +
-                Math.cos((shipperLoc.lat * Math.PI) / 180) *
-                  Math.cos((lat * Math.PI) / 180) *
-                  Math.sin(dLng / 2) ** 2;
-              return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            })()
-          : null;
+        shipperLoc && lat && lng ? getDistance(shipperLoc.lat, shipperLoc.lng, lat, lng) : null;
 
       const shippingFee = order?.typeShipData?.price != null ? Number(order.typeShipData.price) : 0;
       let velocity = 40; // fallback if needed, but handled below
@@ -376,7 +354,7 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations, selectedOrderId, onSele
                       {formatDistance(order.distKm)}
                     </td>
                     <td style={{ padding: '9px 10px', color: '#a78bfa', fontWeight: 600 }}>
-                      {formatDuration(order.durationSeconds)}
+                      {formatETA(order.durationSeconds)}
                     </td>
                     <td style={{ padding: '9px 10px', color: '#fbbf24', fontWeight: 600 }}>
                       {formatPrice(order.totalPrice)}
@@ -481,7 +459,7 @@ const OrderPanel = ({ orders, shipperLoc, osrmDurations, selectedOrderId, onSele
               </svg>
               Tổng TG:{' '}
               <strong style={{ color: '#a78bfa' }}>
-                {formatDuration(sortedOrders.reduce((s, o) => s + (o.durationSeconds || 0), 0))}
+                {formatETA(sortedOrders.reduce((s, o) => s + (o.durationSeconds || 0), 0))}
               </strong>
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

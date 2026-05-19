@@ -82,7 +82,6 @@ const NAV_ITEMS = [
     label: 'Phần thưởng',
   },
 
-
   {
     to: '/shipper/profile',
     icon: (

@@ -11,8 +11,9 @@ export const getDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 // ================= FORMAT DISTANCE
-export const formatDistance = (meters) => {
-  return (meters / 1000).toFixed(2);
+export const formatDistance = (km) => {
+  if (km == null) return '—';
+  return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
 };
 
 // ================= FORMAT ETA (3 mức độ)

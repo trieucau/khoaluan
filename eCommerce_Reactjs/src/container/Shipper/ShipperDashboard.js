@@ -52,14 +52,32 @@ const IconBox = () => (
 );
 
 const IconClose = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <line x1="18" y1="6" x2="6" y2="18"></line>
     <line x1="6" y1="6" x2="18" y2="18"></line>
   </svg>
 );
 
 const IconGear = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <circle cx="12" cy="12" r="3"></circle>
     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
   </svg>
@@ -287,45 +305,57 @@ const ShipperDashboard = ({
     // PERF FIX: Delay 3s để tránh thundering herd (HomePageShipper cũng gọi API lúc mount)
     // Dùng status='all' để lấy đủ S6+S8 cho stats, nhưng backend chỉ trả id+statusId+updatedAt
     const timer = setTimeout(() => {
-      getAllOrdersByShipper({ shipperId, status: 'stats' }).then((res) => {
-        if (res?.errCode === 0) {
-          const allOrders = res.data || [];
-          // Daily Stats — chỉ dùng statusId và updatedAt
-          const todayDone = allOrders.filter(
-            (o) => o.statusId === 'S6' && moment(o.updatedAt).format('YYYY-MM-DD') === today
-          );
-          setDailyStats({ count: todayDone.length, income: todayDone.length * 20000 });
-
-          // Reliability Score
-          const total = allOrders.length;
-          if (total > 0) {
-            const completed = allOrders.filter((o) => o.statusId === 'S6').length;
-            const failed = allOrders.filter((o) => o.statusId === 'S8').length;
-            const completionRate = Math.round((completed / total) * 100);
-            const successRate =
-              completed + failed > 0 ? Math.round((completed / (completed + failed)) * 100) : 0;
-            const score = Math.max(
-              0,
-              Math.min(100, Math.round(completionRate * 0.7 + successRate * 0.3))
+      getAllOrdersByShipper({ shipperId, status: 'stats' })
+        .then((res) => {
+          if (res?.errCode === 0) {
+            const allOrders = res.data || [];
+            // Daily Stats — chỉ dùng statusId và updatedAt
+            const todayDone = allOrders.filter(
+              (o) => o.statusId === 'S6' && moment(o.updatedAt).format('YYYY-MM-DD') === today
             );
-            setReliabilityScore(score);
+            setDailyStats({ count: todayDone.length, income: todayDone.length * 20000 });
 
-            let nextGoal = 70;
-            let nextRank = 'Hạng Bạc';
-            if (score >= 95) { nextGoal = 100; nextRank = 'Bạch Kim (Legend)'; }
-            else if (score >= 90) { nextGoal = 95; nextRank = 'Bạch Kim'; }
-            else if (score >= 80) { nextGoal = 90; nextRank = 'Kim Cương'; }
-            else if (score >= 70) { nextGoal = 80; nextRank = 'Hạng Vàng'; }
+            // Reliability Score
+            const total = allOrders.length;
+            if (total > 0) {
+              const completed = allOrders.filter((o) => o.statusId === 'S6').length;
+              const failed = allOrders.filter((o) => o.statusId === 'S8').length;
+              const completionRate = Math.round((completed / total) * 100);
+              const successRate =
+                completed + failed > 0 ? Math.round((completed / (completed + failed)) * 100) : 0;
+              const score = Math.max(
+                0,
+                Math.min(100, Math.round(completionRate * 0.7 + successRate * 0.3))
+              );
+              setReliabilityScore(score);
 
-            setRankProgress({ score, nextGoal, nextRank, total });
+              let nextGoal = 70;
+              let nextRank = 'Hạng Bạc';
+              if (score >= 95) {
+                nextGoal = 100;
+                nextRank = 'Bạch Kim (Legend)';
+              } else if (score >= 90) {
+                nextGoal = 95;
+                nextRank = 'Bạch Kim';
+              } else if (score >= 80) {
+                nextGoal = 90;
+                nextRank = 'Kim Cương';
+              } else if (score >= 70) {
+                nextGoal = 80;
+                nextRank = 'Hạng Vàng';
+              }
+
+              setRankProgress({ score, nextGoal, nextRank, total });
+            }
           }
-        }
-      }).catch(() => {/* ignore stats error */});
+        })
+        .catch(() => {
+          /* ignore stats error */
+        });
     }, 3000); // delay 3s để không đụng HomePageShipper
 
     return () => clearTimeout(timer);
   }, [shipperId]);
-
 
   const sortedDestinations = useMemo(() => {
     if (!shipperPos) return [];
