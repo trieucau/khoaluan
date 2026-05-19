@@ -438,6 +438,7 @@ let getAllOrdersByShipper = (data) => {
         order: [['createdAt', 'DESC']],
         raw: true,
         nest: true,
+        attributes: { exclude: ['image'] },
         where: { shipperId: data.shipperId },
       };
 
@@ -491,6 +492,7 @@ let getOrdersAvailableForShipper = () => {
         order: [['createdAt', 'DESC']],
         raw: true,
         nest: true,
+        attributes: { exclude: ['image'] },
       });
       // Removed the N+1 loop for AddressUser and User because it was exhausting the connection pool and causing 12-second timeouts (502 Bad Gateway).
       // They are now eager loaded in the objectFilter.include array using JOINs.
