@@ -96,6 +96,7 @@ const ShipperDashboard = ({
   const [ignoredOrders, setIgnoredOrders] = useState(new Set());
   const [showOrderItems, setShowOrderItems] = useState(false);
   const [completeModal, setCompleteModal] = useState(null);
+  const [cancelModal, setCancelModal] = useState(null);
 
   const [isMinimized, setIsMinimized] = useState(false);
   const [isHubExpanded, setIsHubExpanded] = useState(false);
@@ -229,6 +230,7 @@ const ShipperDashboard = ({
 
   const handleDeliveryDone = () => {
     setCompleteModal(null);
+    setCancelModal(null);
     window.location.reload();
   };
 
@@ -513,6 +515,7 @@ const ShipperDashboard = ({
                 toggleMinimize={() => setIsMinimized(!isMinimized)}
                 onShowItems={() => setShowOrderItems(true)}
                 onComplete={(id) => setCompleteModal(id)}
+                onCancel={(id) => setCancelModal(id)}
                 formatMoney={formatMoney}
                 isMobile={isMobile}
               />
@@ -951,8 +954,18 @@ const ShipperDashboard = ({
 
           {completeModal && (
             <CompleteModal
+              mode="complete"
               orderId={completeModal}
               onClose={() => setCompleteModal(null)}
+              onDone={handleDeliveryDone}
+            />
+          )}
+
+          {cancelModal && (
+            <CompleteModal
+              mode="cancel"
+              orderId={cancelModal}
+              onClose={() => setCancelModal(null)}
               onDone={handleDeliveryDone}
             />
           )}

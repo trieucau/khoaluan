@@ -15,21 +15,7 @@ const IconPhone = ({ size = 24 }) => (
     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
   </svg>
 );
-const IconMessageSquare = ({ size = 24 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="lucide"
-  >
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  </svg>
-);
+
 const IconFileText = ({ size = 24 }) => (
   <svg
     width={size}
@@ -66,10 +52,29 @@ const IconCheckCircle = ({ size = 24 }) => (
   </svg>
 );
 
+const IconXCircle = ({ size = 24 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="lucide"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <line x1="15" y1="9" x2="9" y2="15" />
+    <line x1="9" y1="9" x2="15" y2="15" />
+  </svg>
+);
+
 const ActiveOrderWidget = ({
   order,
   onShowItems,
   onComplete,
+  onCancel,
   isMinimized,
   toggleMinimize,
   formatMoney,
@@ -251,7 +256,7 @@ const ActiveOrderWidget = ({
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 12,
+            gap: isMobile ? 8 : 12,
           }}
         >
           <a
@@ -274,25 +279,7 @@ const ActiveOrderWidget = ({
             <IconPhone size={isMobile ? 20 : 18} />
             <span style={{ fontSize: 9, fontWeight: 800, opacity: 0.7 }}>GỌI</span>
           </a>
-          <button
-            className="sp-action-icon-btn"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: isMobile ? 64 : 56,
-              borderRadius: 18,
-              background: 'rgba(255,255,255,0.03)',
-              color: '#fff',
-              border: '1px solid rgba(255,255,255,0.05)',
-              gap: 6,
-              cursor: 'pointer',
-            }}
-          >
-            <IconMessageSquare size={isMobile ? 20 : 18} />
-            <span style={{ fontSize: 9, fontWeight: 800, opacity: 0.7 }}>CHAT</span>
-          </button>
+
           <button
             className="sp-action-icon-btn"
             onClick={onShowItems}
@@ -312,6 +299,26 @@ const ActiveOrderWidget = ({
           >
             <IconFileText size={isMobile ? 20 : 18} />
             <span style={{ fontSize: 9, fontWeight: 800, opacity: 0.7 }}>XEM</span>
+          </button>
+          <button
+            className="sp-action-icon-btn cancel"
+            onClick={() => onCancel(order.id)}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: isMobile ? 64 : 56,
+              background: 'rgba(239, 68, 68, 0.1)',
+              color: '#ef4444',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              gap: 6,
+              cursor: 'pointer',
+              borderRadius: 18,
+            }}
+          >
+            <IconXCircle size={isMobile ? 20 : 18} />
+            <span style={{ fontSize: 9, fontWeight: 900 }}>HỦY</span>
           </button>
           <button
             className="sp-action-icon-btn success"
