@@ -957,12 +957,10 @@
 }
 
 .sp-skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--sp-surface2) 25%,
-    var(--sp-surface) 50%,
-    var(--sp-surface2) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--sp-surface2) 25%,
+      var(--sp-surface) 50%,
+      var(--sp-surface2) 75%);
   background-size: 600px 100%;
   animation: spShimmer 1.4s infinite;
 }
@@ -1315,6 +1313,7 @@
 
 /* ---- ANIMATIONS ---- */
 @keyframes spPulse {
+
   0%,
   100% {
     opacity: 1;
@@ -1372,6 +1371,7 @@
 }
 
 @keyframes spBounce {
+
   0%,
   100% {
     transform: translateY(0);
@@ -2416,6 +2416,7 @@ svg.lucide {
    TOUCH IMPROVEMENTS
    ============================================================ */
 @media (hover: none) {
+
   .sp-nav-link,
   .sp-bottom-nav-item {
     min-height: 44px;
@@ -2458,6 +2459,7 @@ svg.lucide {
 
 /* iOS zoom prevention */
 @media (max-width: 900px) {
+
   .sp-textarea,
   .sp-search-bar input {
     font-size: 16px !important;
@@ -2519,7 +2521,7 @@ svg.lucide {
   /* CRITICAL: Prevent clipping of floating widgets */
 }
 
-.sp-overlay-container > * {
+.sp-overlay-container>* {
   pointer-events: auto;
 }
 
@@ -2541,7 +2543,7 @@ svg.lucide {
   pointer-events: none;
 }
 
-.sp-float-middle > * {
+.sp-float-middle>* {
   pointer-events: auto;
 }
 
@@ -2561,7 +2563,7 @@ svg.lucide {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sp-float-side > * {
+.sp-float-side>* {
   pointer-events: auto;
 }
 
@@ -2593,7 +2595,7 @@ svg.lucide {
     pointer-events: none;
   }
 
-  .sp-float-side > div:not(.sp-float-active-wrapper) {
+  .sp-float-side>div:not(.sp-float-active-wrapper) {
     display: none;
     /* Hide non-essential widgets on mobile to prioritize map */
   }
@@ -2652,9 +2654,9 @@ svg.lucide {
 }
 
 .sp-ticker-content {
-  display: inline-block;
-  padding-left: 100%;
-  animation: sp-ticker 30s linear infinite;
+  display: flex;
+  width: max-content;
+  animation: sp-ticker 20s linear infinite;
   color: var(--sp-text);
   font-weight: 500;
 }
@@ -2665,7 +2667,7 @@ svg.lucide {
   }
 
   100% {
-    transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -2713,7 +2715,7 @@ svg.lucide {
     transform: translateX(-50%);
   }
 
-  .sp-float-side.hub-expanded > div {
+  .sp-float-side.hub-expanded>div {
     display: flex !important;
     width: 100%;
     animation: spFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -3304,6 +3306,7 @@ svg.lucide {
 }
 
 @keyframes spRewardFloat {
+
   0%,
   100% {
     transform: translateY(0);
