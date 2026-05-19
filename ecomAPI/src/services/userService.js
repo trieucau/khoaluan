@@ -7,6 +7,7 @@ import { Op } from 'sequelize';
 import admin from '../config/firebaseAdmin.js';
 import fetch from 'node-fetch';
 import 'dotenv/config';
+import { uploadImage } from '../utils/cloudinary.js';
 const salt = bcrypt.genSaltSync(10);
 
 let buildUrlEmail = (token, userId) => {
@@ -57,6 +58,10 @@ let handleCreateNewUser = (data) => {
           });
         } else {
           let hashPassword = await hashUserPasswordFromBcrypt(data.password);
+          let imageUrl = null;
+          if (data.avatar) {
+            imageUrl = await uploadImage(data.avatar);
+          }
           await db.User.create({
             email: data.email,
             password: hashPassword,
@@ -66,7 +71,7 @@ let handleCreateNewUser = (data) => {
             roleId: data.roleId,
             genderId: data.genderId,
             phonenumber: data.phonenumber,
-            image: data.avatar,
+            image: imageUrl,
             dob: data.dob,
             isActiveEmail: 0,
             statusId: 'S1',
@@ -137,7 +142,12 @@ let updateUserData = (data) => {
           user.phonenumber = data.phonenumber;
           user.dob = data.dob;
           if (data.image) {
-            user.image = data.image;
+            // Check if it's a new base64 string
+            if (data.image.startsWith('data:image/')) {
+              user.image = await uploadImage(data.image);
+            } else {
+              user.image = data.image; // Assume it's already a URL
+            }
           }
           await user.save();
           resolve({
@@ -258,11 +268,7 @@ let handleLoginSocial = (data) => {
         let avatarBase64 = null;
         if (picture) {
           try {
-            const response = await fetch(picture);
-            const arrayBuffer = await response.arrayBuffer();
-            // Store as base64 data URL — consistent with manual upload (readAsDataURL)
-            const base64 = Buffer.from(arrayBuffer).toString('base64');
-            avatarBase64 = `data:image/jpeg;base64,${base64}`;
+            avatarBase64 = picture;
           } catch (e) {
             console.error('Error fetching social avatar:', e);
           }
@@ -304,12 +310,8 @@ let handleLoginSocial = (data) => {
         }
 
         if (!user.image && picture) {
-          // Re-fetch Google avatar and store as base64 data URL (fix old raw-binary format)
           try {
-            const response = await fetch(picture);
-            const arrayBuffer = await response.arrayBuffer();
-            const base64 = Buffer.from(arrayBuffer).toString('base64');
-            needsUpdate.image = `data:image/jpeg;base64,${base64}`;
+            needsUpdate.image = picture;
           } catch (e) {
             console.error('[AVATAR] Không thể tải ảnh đại diện:', e.message);
           }
@@ -405,9 +407,6 @@ let getAllUser = (data) => {
       let res = await db.User.findAndCountAll(objectFilter);
       if (res.rows && res.rows.length > 0) {
         res.rows = res.rows.map((item) => {
-          if (item.image) {
-            item.image = Buffer.from(item.image, 'base64').toString('binary');
-          }
           return item;
         });
       }
@@ -463,9 +462,6 @@ let getDetailUserById = (userid, requesterId, requesterRole) => {
           raw: true,
           nest: true,
         });
-        if (res && res.image) {
-          res.image = Buffer.from(res.image, 'base64').toString('binary');
-        }
         resolve({
           errCode: 0,
           data: res,

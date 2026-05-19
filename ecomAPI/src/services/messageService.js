@@ -1,4 +1,5 @@
 import db from '../models/index.js';
+import { uploadImage } from '../utils/cloudinary.js';
 import { Op } from 'sequelize';
 
 let createNewRoom = (data) => {
@@ -124,9 +125,7 @@ let loadMessage = (data) => {
             where: { id: message[i].userId },
           });
           if (message[i].userData && message[i].userData.image) {
-            message[i].userData.image = Buffer.from(message[i].userData.image, 'base64').toString(
-              'binary'
-            );
+
           }
         }
         resolve({
@@ -161,17 +160,13 @@ let listRoomOfUser = (userId) => {
             where: { id: room[i].userOne },
           });
           if (room[i].userOneData && room[i].userOneData.image) {
-            room[i].userOneData.image = Buffer.from(room[i].userOneData.image, 'base64').toString(
-              'binary'
-            );
+
           }
           room[i].userTwoData = await db.User.findOne({
             where: { id: room[i].userTwo },
           });
           if (room[i].userTwoData && room[i].userTwoData.image) {
-            room[i].userTwoData.image = Buffer.from(room[i].userTwoData.image, 'base64').toString(
-              'binary'
-            );
+
           }
         }
         resolve({
@@ -196,17 +191,13 @@ let listRoomOfAdmin = (userId) => {
           where: { id: room[i].userOne },
         });
         if (room[i].userOneData && room[i].userOneData.image) {
-          room[i].userOneData.image = Buffer.from(room[i].userOneData.image, 'base64').toString(
-            'binary'
-          );
+
         }
         room[i].userTwoData = await db.User.findOne({
           where: { id: room[i].userTwo },
         });
         if (room[i].userTwoData && room[i].userTwoData.image) {
-          room[i].userTwoData.image = Buffer.from(room[i].userTwoData.image, 'base64').toString(
-            'binary'
-          );
+
         }
       }
       resolve({

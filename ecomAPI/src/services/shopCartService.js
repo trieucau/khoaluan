@@ -1,4 +1,5 @@
 import db from '../models/index.js';
+import { uploadImage } from '../utils/cloudinary.js';
 
 let addShopCart = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -150,10 +151,7 @@ let getAllShopCartByUserId = (id) => {
           });
           if (res[i].productDetailImage && res[i].productDetailImage.length > 0) {
             for (let j = 0; j < res[i].productDetailImage.length; j++) {
-              res[i].productDetailImage[j].image = Buffer.from(
-                res[i].productDetailImage[j].image,
-                'base64'
-              ).toString('binary');
+
             }
           }
           res[i].productData = await db.Product.findOne({

@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import db from '../models/index.js';
+import { uploadImage } from '../utils/cloudinary.js';
 import paypal from 'paypal-rest-sdk';
 import { Op } from 'sequelize';
 import querystring from 'qs';
@@ -116,7 +117,7 @@ let getAllOrders = (data) => {
           });
 
           if (user && user.image) {
-            user.image = Buffer.from(user.image, 'base64').toString('binary');
+
           }
 
           res.rows[i].userData = user;
@@ -174,7 +175,7 @@ let getDetailOrderById = (id, requesterId, requesterRole) => {
 
         if (order.image) {
           // FIX 1: Buffer.from -> Buffer.from
-          order.image = Buffer.from(order.image, 'base64').toString('binary');
+
         }
         if (order.voucherData && order.voucherData.typeVoucherId) {
           order.voucherData.typeVoucherOfVoucherData = await db.TypeVoucher.findOne({
@@ -224,10 +225,7 @@ let getDetailOrderById = (id, requesterId, requesterRole) => {
           });
           for (let j = 0; j < orderDetail[i].productImage.length; j++) {
             // FIX 1: Buffer.from -> Buffer.from
-            orderDetail[i].productImage[j].image = Buffer.from(
-              orderDetail[i].productImage[j].image,
-              'base64'
-            ).toString('binary');
+
           }
         }
 
@@ -390,10 +388,7 @@ let getAllOrdersByUser = (data) => {
               },
             });
             for (let f = 0; f < orderDetail[k].productImage.length; f++) {
-              orderDetail[k].productImage[f].image = Buffer.from(
-                orderDetail[k].productImage[f].image,
-                'base64'
-              ).toString('binary');
+
             }
           }
 
@@ -571,7 +566,9 @@ let shipperUpdateOrderStatus = (data) => {
         });
       }
       order.statusId = statusId;
-      if (image) order.image = image;
+      if (image) {
+        order.image = image.startsWith('data:image/') ? await uploadImage(image) : image;
+      }
       if (statusReason) order.statusReason = statusReason;
       await order.save();
       if (statusId === 'S7' || statusId === 'S8') {
@@ -650,7 +647,7 @@ let getAdminShippersOnMap = () => {
         });
 
         if (user && user.image) {
-          user.image = Buffer.from(user.image, 'base64').toString('binary');
+
         }
         const location = await db.ShipperLocation.findOne({
           where: { shipperId: sid },
@@ -1068,7 +1065,7 @@ let updateImageOrder = (data) => {
           where: { id: data.id },
           raw: false,
         });
-        order.image = data.image;
+        order.image = data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image;
         await order.save();
 
         resolve({

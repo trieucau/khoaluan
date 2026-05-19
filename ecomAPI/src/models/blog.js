@@ -16,7 +16,7 @@ export default (sequelize, DataTypes) => {
       title: DataTypes.STRING,
       subjectId: DataTypes.STRING,
       statusId: DataTypes.STRING,
-      image: DataTypes.BLOB('long'),
+      image: DataTypes.STRING,
       contentMarkdown: DataTypes.TEXT('long'),
       contentHTML: DataTypes.TEXT('long'),
       userId: DataTypes.INTEGER,

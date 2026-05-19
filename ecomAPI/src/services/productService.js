@@ -1,6 +1,7 @@
 import db from '../models/index.js';
 import jsrecommender from 'js-recommender';
 import 'dotenv/config';
+import { uploadImage } from '../utils/cloudinary.js';
 import { Op } from 'sequelize';
 function dynamicSort(property) {
   var sortOrder = 1;
@@ -60,7 +61,7 @@ let createNewProduct = (data) => {
           if (productdetail) {
             await db.ProductImage.create({
               productdetailId: productdetail.id,
-              image: data.image,
+              image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
             });
             await db.ProductDetailSize.create({
               productdetailId: productdetail.id,
@@ -141,10 +142,7 @@ let getAllProductAdmin = (data) => {
             raw: true,
           });
           for (let k = 0; k < res.rows[i].productDetail[j].productImage.length; k++) {
-            res.rows[i].productDetail[j].productImage[k].image = Buffer.from(
-              res.rows[i].productDetail[j].productImage[k].image,
-              'base64'
-            ).toString('binary');
+
           }
         }
       }
@@ -223,10 +221,7 @@ let getAllProductUser = (data) => {
             raw: true,
           });
           for (let k = 0; k < res.rows[i].productDetail[j].productImage.length; k++) {
-            res.rows[i].productDetail[j].productImage[k].image = Buffer.from(
-              res.rows[i].productDetail[j].productImage[k].image,
-              'base64'
-            ).toString('binary');
+
           }
         }
       }
@@ -367,10 +362,7 @@ let getDetailProductById = (id) => {
             nest: true,
           });
           for (let j = 0; j < res.productDetail[i].productImage.length; j++) {
-            res.productDetail[i].productImage[j].image = Buffer.from(
-              res.productDetail[i].productImage[j].image,
-              'base64'
-            ).toString('binary');
+
           }
           for (let k = 0; k < res.productDetail[i].productDetailSize.length; k++) {
             let receiptDetail = await db.ReceiptDetail.findAll({
@@ -470,10 +462,7 @@ let getAllProductDetailById = (data) => {
               productdetail.rows[i].productImageData.length > 0
             ) {
               for (let j = 0; j < productdetail.rows[i].productImageData.length; j++) {
-                productdetail.rows[i].productImageData[j].image = Buffer.from(
-                  productdetail.rows[i].productImageData[j].image,
-                  'base64'
-                ).toString('binary');
+
               }
             }
           }
@@ -505,7 +494,7 @@ let getAllProductDetailImageById = (data) => {
         });
         if (productImage.rows && productImage.rows.length > 0) {
           productImage.rows.map(
-            (item) => (item.image = Buffer.from(item.image, 'base64').toString('binary'))
+            (item) => item
           );
         }
 
@@ -544,9 +533,9 @@ let createNewProductDetail = (data) => {
         });
         if (productdetail) {
           await db.ProductImage.create({
-            productdetailId: productdetail.id,
-            image: data.image,
-          });
+              productdetailId: productdetail.id,
+              image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
+            });
           await db.ProductDetailSize.create({
             productdetailId: productdetail.id,
             width: data.width,
@@ -635,7 +624,7 @@ let createNewProductDetailImage = (data) => {
         await db.ProductImage.create({
           productdetailId: data.id,
           caption: data.caption,
-          image: data.image,
+          image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
         });
         resolve({
           errCode: 0,
@@ -660,9 +649,7 @@ let getDetailProductImageById = (id) => {
           where: { id: id },
         });
         if (productdetailImage) {
-          productdetailImage.image = Buffer.from(productdetailImage.image, 'base64').toString(
-            'binary'
-          );
+
         }
         resolve({
           errCode: 0,
@@ -689,7 +676,7 @@ let updateProductDetailImage = (data) => {
         });
         if (productImage) {
           productImage.caption = data.caption;
-          productImage.image = data.image;
+          productImage.image = data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image;
 
           await productImage.save();
           resolve({
@@ -1036,10 +1023,7 @@ let getProductFeature = (limit) => {
             raw: true,
           });
           for (let k = 0; k < res[i].productDetail[j].productImage.length; k++) {
-            res[i].productDetail[j].productImage[k].image = Buffer.from(
-              res[i].productDetail[j].productImage[k].image,
-              'base64'
-            ).toString('binary');
+
           }
         }
       }
@@ -1097,10 +1081,7 @@ let getProductNew = (limit) => {
             raw: true,
           });
           for (let k = 0; k < res[i].productDetail[j].productImage.length; k++) {
-            res[i].productDetail[j].productImage[k].image = Buffer.from(
-              res[i].productDetail[j].productImage[k].image,
-              'base64'
-            ).toString('binary');
+
           }
         }
       }
@@ -1190,10 +1171,7 @@ let getProductShopCart = (data) => {
                 raw: true,
               });
               for (let k = 0; k < productArr[g].productDetail[j].productImage.length; k++) {
-                productArr[g].productDetail[j].productImage[k].image = Buffer.from(
-                  productArr[g].productDetail[j].productImage[k].image,
-                  'base64'
-                ).toString('binary');
+
               }
             }
           }
@@ -1276,10 +1254,7 @@ let getProductRecommend = (data) => {
                 raw: true,
               });
               for (let k = 0; k < productArr[g].productDetail[j].productImage.length; k++) {
-                productArr[g].productDetail[j].productImage[k].image = Buffer.from(
-                  productArr[g].productDetail[j].productImage[k].image,
-                  'base64'
-                ).toString('binary');
+
               }
             }
           }

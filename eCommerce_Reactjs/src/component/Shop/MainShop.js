@@ -180,9 +180,9 @@ function MainShop(props) {
                   height={'254px'}
                   type="col-lg-4 col-md-6"
                   name={item.name}
-                  img={item.productDetail[0].productImage[0].image}
-                  discountPrice={item.productDetail[0].discountPrice}
-                  price={item.productDetail[0].originalPrice}
+                  img={item?.productDetail?.[0]?.productImage?.[0]?.image || ''}
+                  discountPrice={item?.productDetail?.[0]?.discountPrice || 0}
+                  price={item?.productDetail?.[0]?.originalPrice || 0}
                 ></ItemProduct>
               );
             })}

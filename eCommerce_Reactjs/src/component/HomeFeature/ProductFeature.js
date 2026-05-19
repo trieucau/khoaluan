@@ -43,9 +43,9 @@ function ProductFeature(props) {
                       height={419}
                       type="col-lg-4 col-md-6"
                       name={item.name}
-                      img={item.productDetail[0].productImage[0].image}
-                      price={item.productDetail[0].originalPrice}
-                      discountPrice={item.productDetail[0].discountPrice}
+                      img={item?.productDetail?.[0]?.productImage?.[0]?.image || ''}
+                      price={item?.productDetail?.[0]?.originalPrice || 0}
+                      discountPrice={item?.productDetail?.[0]?.discountPrice || 0}
                     ></ItemProduct>
                   );
                 })}

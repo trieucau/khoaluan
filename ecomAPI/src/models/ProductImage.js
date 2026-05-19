@@ -15,7 +15,7 @@ export default (sequelize, DataTypes) => {
     {
       caption: DataTypes.STRING,
       productdetailId: DataTypes.INTEGER,
-      image: DataTypes.BLOB('long'),
+      image: DataTypes.STRING,
     },
     {
       sequelize,

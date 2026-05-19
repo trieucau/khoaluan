@@ -12,7 +12,7 @@ export default (sequelize, DataTypes) => {
       userId: DataTypes.INTEGER,
       blogId: DataTypes.INTEGER,
       star: DataTypes.INTEGER,
-      image: DataTypes.BLOB('long'),
+      image: DataTypes.STRING,
     },
     {
       sequelize,

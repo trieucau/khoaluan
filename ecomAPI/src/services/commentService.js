@@ -1,4 +1,5 @@
 import db from '../models/index.js';
+import { uploadImage } from '../utils/cloudinary.js';
 import 'dotenv/config';
 
 let createNewReview = (data) => {
@@ -15,7 +16,7 @@ let createNewReview = (data) => {
           productId: data.productId,
           userId: data.userId,
           star: data.star,
-          image: data.image,
+          image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
         });
         resolve({
           errCode: 0,
@@ -45,9 +46,7 @@ let getAllReviewByProductId = (id) => {
 
         if (res && res.length > 0) {
           for (let i = 0; i < res.length; i++) {
-            res[i].image = res[i].image
-              ? Buffer.from(res[i].image, 'base64').toString('binary')
-              : '';
+            
 
             res[i].childComment = await db.Comment.findAll({
               where: { parentId: res[i].id },
@@ -58,7 +57,7 @@ let getAllReviewByProductId = (id) => {
                 exclude: ['password'],
               },
             });
-            res[i].user.image = Buffer.from(res[i].user.image, 'base64').toString('binary');
+
           }
         }
 
@@ -137,7 +136,7 @@ let createNewComment = (data) => {
           content: data.content,
           blogId: data.blogId,
           userId: data.userId,
-          image: data.image,
+          image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
         });
         resolve({
           errCode: 0,
@@ -170,7 +169,7 @@ let getAllCommentByBlogId = (id) => {
         for (let i = 0; i < res.length; i++) {
           // comment image
           if (res[i].image) {
-            res[i].image = Buffer.from(res[i].image, 'base64').toString('binary');
+
           } else {
             res[i].image = '';
           }
@@ -187,7 +186,7 @@ let getAllCommentByBlogId = (id) => {
           });
 
           if (res[i].user && res[i].user.image) {
-            res[i].user.image = Buffer.from(res[i].user.image, 'base64').toString('binary');
+
           } else if (res[i].user) {
             res[i].user.image = '';
           }

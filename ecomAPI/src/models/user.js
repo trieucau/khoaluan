@@ -24,7 +24,7 @@ export default (sequelize, DataTypes) => {
       address: DataTypes.STRING,
       genderId: DataTypes.STRING,
       phonenumber: DataTypes.STRING,
-      image: DataTypes.BLOB('long'),
+      image: DataTypes.STRING,
       dob: DataTypes.STRING,
       isActiveEmail: DataTypes.BOOLEAN,
       roleId: DataTypes.STRING,

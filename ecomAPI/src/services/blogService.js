@@ -1,4 +1,5 @@
 import db from '../models/index.js';
+import { uploadImage } from '../utils/cloudinary.js';
 import 'dotenv/config';
 import { Op } from 'sequelize';
 let createNewBlog = (data) => {
@@ -22,7 +23,7 @@ let createNewBlog = (data) => {
           title: data.title,
           subjectId: data.subjectId,
           statusId: 'S1',
-          image: data.image,
+          image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
           contentMarkdown: data.contentMarkdown,
           contentHTML: data.contentHTML,
           userId: data.userId,
@@ -68,7 +69,7 @@ let getDetailBlogById = (id) => {
         res.userData = await db.User.findOne({ where: { id: res.userId } });
 
         if (res && res.image) {
-          res.image = Buffer.from(res.image, 'base64').toString('binary');
+
         }
         resolve({
           errCode: 0,
@@ -113,7 +114,7 @@ let getAllBlog = (data) => {
       let res = await db.Blog.findAndCountAll(objectFilter);
       if (res.rows && res.rows.length > 0) {
         for (let i = 0; i < res.rows.length; i++) {
-          res.rows[i].image = Buffer.from(res.rows[i].image, 'base64').toString('binary');
+
           res.rows[i].userData = await db.User.findOne({
             where: { id: res.rows[i].userId },
           });
@@ -157,7 +158,7 @@ let updateBlog = (data) => {
           blog.title = data.title;
           blog.contentMarkdown = data.contentMarkdown;
           blog.contentHTML = data.contentHTML;
-          blog.image = data.image;
+          blog.image = data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image;
           blog.subjectId = data.subjectId;
           blog.shortdescription = data.shortdescription;
 
@@ -219,7 +220,7 @@ let getFeatureBlog = (data) => {
       });
       if (res && res.length > 0) {
         for (let i = 0; i < res.length; i++) {
-          res[i].image = Buffer.from(res[i].image, 'base64').toString('binary');
+
           res[i].userData = await db.User.findOne({
             where: { id: res[i].userId },
           });
@@ -257,7 +258,7 @@ let getNewBlog = (data) => {
       });
       if (res && res.length > 0) {
         for (let i = 0; i < res.length; i++) {
-          res[i].image = Buffer.from(res[i].image, 'base64').toString('binary');
+
           res[i].userData = await db.User.findOne({
             where: { id: res[i].userId },
           });

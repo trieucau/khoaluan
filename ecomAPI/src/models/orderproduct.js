@@ -38,7 +38,7 @@ export default (sequelize, DataTypes) => {
       note: DataTypes.STRING,
       isPaymentOnlien: DataTypes.INTEGER,
       shipperId: DataTypes.INTEGER,
-      image: DataTypes.BLOB('long'),
+      image: DataTypes.STRING,
       statusReason: DataTypes.TEXT,
     },
     {

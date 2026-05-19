@@ -1,4 +1,5 @@
 import db from '../models/index.js';
+import { uploadImage } from '../utils/cloudinary.js';
 import 'dotenv/config';
 import { Op } from 'sequelize';
 let createNewReceipt = (data) => {
@@ -132,7 +133,7 @@ let getAllReceipt = (data) => {
         });
 
         if (user && user.image) {
-          user.image = Buffer.from(user.image, 'base64').toString('binary');
+
         }
 
         res.rows[i].userData = user;

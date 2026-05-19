@@ -9,7 +9,7 @@ export default (sequelize, DataTypes) => {
       description: DataTypes.STRING,
       name: DataTypes.STRING,
       statusId: DataTypes.STRING,
-      image: DataTypes.BLOB('long'),
+      image: DataTypes.STRING,
     },
     {
       sequelize,

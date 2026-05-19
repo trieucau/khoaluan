@@ -1,4 +1,5 @@
 import db from '../models/index.js';
+import { uploadImage } from '../utils/cloudinary.js';
 import 'dotenv/config';
 import { Op } from 'sequelize';
 let createNewBanner = (data) => {
@@ -13,7 +14,7 @@ let createNewBanner = (data) => {
         await db.Banner.create({
           name: data.name,
           description: data.description,
-          image: data.image,
+          image: data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image,
           statusId: 'S1',
         });
         resolve({
@@ -39,7 +40,7 @@ let getDetailBanner = (id) => {
           where: { id: id },
         });
         if (res && res.image) {
-          res.image = Buffer.from(res.image, 'base64').toString('binary');
+
         }
         resolve({
           errCode: 0,
@@ -68,7 +69,7 @@ let getAllBanner = (data) => {
         };
       let res = await db.Banner.findAndCountAll(objectFilter);
       if (res.rows && res.rows.length > 0) {
-        res.rows.map((item) => (item.image = Buffer.from(item.image, 'base64').toString('binary')));
+        res.rows.map((item) => item);
       }
       resolve({
         errCode: 0,
@@ -96,7 +97,7 @@ let updateBanner = (data) => {
         if (banner) {
           banner.name = data.name;
           banner.description = data.description;
-          banner.image = data.image;
+          banner.image = data.image && data.image.startsWith('data:image/') ? await uploadImage(data.image) : data.image;
 
           await banner.save();
           resolve({
