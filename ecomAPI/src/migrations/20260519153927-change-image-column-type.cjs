@@ -5,6 +5,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     const tableNames = ['users', 'productimages', 'orderproducts', 'comments', 'blogs', 'banners'];
     for (let table of tableNames) {
+      await queryInterface.sequelize.query(`UPDATE ${table} SET image = NULL`);
       await queryInterface.changeColumn(table, 'image', {
         type: Sequelize.STRING,
         allowNull: true,

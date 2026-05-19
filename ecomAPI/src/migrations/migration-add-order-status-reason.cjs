@@ -2,12 +2,16 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.addColumn('Orderproducts', 'statusReason', {
-      type: Sequelize.TEXT,
-      allowNull: true,
-    });
+    try {
+      await queryInterface.addColumn('orderproducts', 'statusReason', {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      });
+    } catch (e) {
+      if (!e.message.includes('Duplicate column name')) throw e;
+    }
   },
   down: async (queryInterface) => {
-    await queryInterface.removeColumn('Orderproducts', 'statusReason');
+    try { await queryInterface.removeColumn('orderproducts', 'statusReason'); } catch (e) {}
   },
 };
