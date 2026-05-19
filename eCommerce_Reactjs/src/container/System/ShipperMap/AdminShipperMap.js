@@ -384,6 +384,10 @@ const AdminShipperMap = ({ isMini = false }) => {
   const sidebarLeft = isPanelOpen ? 0 : '-100%';
   const toggleLeft = isPanelOpen ? (sidebarWidth === '100%' ? 'calc(100% - 28px)' : '40%') : 0;
 
+  const activeShipper = selectedShipper
+    ? list.find((s) => s.shipperId === selectedShipper.shipperId) || selectedShipper
+    : null;
+
   const mapContent = (
     <div
       style={{
@@ -754,8 +758,8 @@ const AdminShipperMap = ({ isMini = false }) => {
                       }}
                     >
                       <i className="fa-solid fa-box" style={{ marginRight: 8 }}></i>Đơn của{' '}
-                      {selectedShipper.shipper
-                        ? `${selectedShipper.shipper.firstName} ${selectedShipper.shipper.lastName}`
+                      {activeShipper.shipper
+                        ? `${activeShipper.shipper.firstName} ${activeShipper.shipper.lastName}`
                         : 'Shipper'}
                     </div>
                     <div
@@ -777,7 +781,7 @@ const AdminShipperMap = ({ isMini = false }) => {
                           display: 'inline-block',
                         }}
                       />
-                      {selectedShipper.orderIds?.length || 0} đơn đang giao
+                      {activeShipper.orderIds?.length || 0} đơn đang giao
                       {selectedOrderId && (
                         <button
                           onClick={() => setSelectedOrderId(null)}
@@ -905,7 +909,7 @@ const AdminShipperMap = ({ isMini = false }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {(selectedShipper.orderIds || []).map((oid, idx) => {
+                        {(activeShipper.orderIds || []).map((oid, idx) => {
                           const order = orderDetails[oid];
                           if (!order) return null;
                           const addr = order.addressUser;
@@ -914,14 +918,14 @@ const AdminShipperMap = ({ isMini = false }) => {
                           let distKm = '—';
                           let distKmNum = null;
                           if (
-                            selectedShipper.lat &&
-                            selectedShipper.lng &&
+                            activeShipper.lat &&
+                            activeShipper.lng &&
                             addr?.lat &&
                             addr?.lng
                           ) {
                             const km = calcDistanceKm(
-                              selectedShipper.lat,
-                              selectedShipper.lng,
+                              activeShipper.lat,
+                              activeShipper.lng,
                               addr.lat,
                               addr.lng
                             );
